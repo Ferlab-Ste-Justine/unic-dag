@@ -1,0 +1,6 @@
+[32m2021-10-14 15:34:05[0m - dagster - [34mDEBUG[0m - hello_cereal_pipeline - 14965a2f-e06d-4671-95a4-ef4ddb7edca3 - 4773 - hello_cereal - LOGS_CAPTURED - Started capturing logs for solid: hello_cereal.
+[32m2021-10-14 15:34:05[0m - dagster - [34mDEBUG[0m - hello_cereal_pipeline - 14965a2f-e06d-4671-95a4-ef4ddb7edca3 - 4773 - hello_cereal - STEP_START - Started execution of step "hello_cereal".
+[32m2021-10-14 15:34:05[0m - dagster - [34mINFO[0m - hello_cereal_pipeline - 14965a2f-e06d-4671-95a4-ef4ddb7edca3 - hello_cereal - Found 77 cereals
+[32m2021-10-14 15:34:05[0m - dagster - [34mDEBUG[0m - hello_cereal_pipeline - 14965a2f-e06d-4671-95a4-ef4ddb7edca3 - 4773 - hello_cereal - STEP_OUTPUT - Yielded output "result" of type "Any". (Type check passed).
+[32m2021-10-14 15:34:05[0m - dagster - [34mDEBUG[0m - hello_cereal_pipeline - 14965a2f-e06d-4671-95a4-ef4ddb7edca3 - 4773 - hello_cereal - HANDLED_OUTPUT - Handled output "result" using IO manager "io_manager"
+[32m2021-10-14 15:34:05[0m - dagster - [34mDEBUG[0m - hello_cereal_pipeline - 14965a2f-e06d-4671-95a4-ef4ddb7edca3 - 4773 - hello_cereal - STEP_SUCCESS - Finished execution of step "hello_cereal" in 103ms.
