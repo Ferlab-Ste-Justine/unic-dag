@@ -2,26 +2,26 @@ from dagster import solid, pipeline, Output, OutputDefinition, ModeDefinition, f
     default_executors
 from dagster.experimental import DynamicOutput, DynamicOutputDefinition
 import time
-from random import randrange
 
-@solid (output_defs=[
-    OutputDefinition(name="common_data"),
-    DynamicOutputDefinition(name="data")
-])
+@solid (config_schema={"time": int},
+        output_defs=[
+            OutputDefinition(name="common_data"),
+            DynamicOutputDefinition(name="data")
+        ])
 
 def expensive_setup(context):
     context.log.info("Starting Expensive Setup ...")
-    time.sleep(randrange(10))
+    time.sleep(context.solid_config["time"])
 
     yield Output("This is a complicated data.",
                  output_name="common_data")
     for i in range(10):
-        yield DynamicOutput(output_name="data", value=i, mapping_key=str(i))
+        yield DynamicOutput(output_name="gi", value=i, mapping_key=str(i))
 
-@solid
+@solid(config_schema={"time":int})
 def expensive_analyzes(context, data_common, data):
     context.log.info("Doing something with a complicate data ...")
-    time.sleep(randrange(10))
+    time.sleep(context.solid_config["time"])
 
 @pipeline(mode_defs=[
     ModeDefinition(resource_defs={"io_manager": fs_io_manager},
