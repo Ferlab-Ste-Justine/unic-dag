@@ -1,28 +1,34 @@
+import json
 from dagster import solid, pipeline, Output, OutputDefinition, ModeDefinition, fs_io_manager, multiprocess_executor, \
     default_executors
 from dagster.experimental import DynamicOutput, DynamicOutputDefinition
 import time
 from random import randrange
 
-@solid (config_schema={"time": int},
-        output_defs=[
-            OutputDefinition(name="common_data"),
-            DynamicOutputDefinition(name="data")
-        ])
+
+def read_json_file(file_path):
+    with open(file_path) as f:
+        return json.load(f)
+
+@solid (output_defs=[
+    OutputDefinition(name="common_data"),
+    DynamicOutputDefinition(name="data")
+])
 
 def expensive_setup(context):
     context.log.info("Starting Expensive Setup ...")
-    time.sleep(context.solid_config["time"])
+    data = read_json_file("src/main/jobs.json")
+    time.sleep(randrange(5))
 
     yield Output("This is a complicated data.",
                  output_name="common_data")
-    for i in range(10):
-        yield DynamicOutput(output_name="data", value=i, mapping_key=str(i))
+    for job in data['jobs']:
+        yield DynamicOutput(output_name="data", value=job["source"], mapping_key=job["source"])
 
-@solid(config_schema={"time":int})
+@solid
 def expensive_analyzes(context, data_common, data):
     context.log.info("Doing something with a complicate data ...")
-    time.sleep(context.solid_config["time"])
+    time.sleep(randrange(5))
 
 @pipeline(mode_defs=[
     ModeDefinition(resource_defs={"io_manager": fs_io_manager},

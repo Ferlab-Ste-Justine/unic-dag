@@ -1,0 +1,7 @@
+{
+  "jobs":[
+    {"source": "cathydb_d_bed", "destination": "raw_icca_d_bed"},
+    {"source": "cathydb_d_careprovider", "destination": "raw_icca_d_careprovider"},
+    {"source": "cathydb_d_document", "destination": "cathydb_d_document"}
+  ]
+}
