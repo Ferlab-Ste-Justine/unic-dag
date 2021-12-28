@@ -9,9 +9,10 @@ default_args = {
     "email": "cbotek@ferlab.bio"
 }
 
-NAMESPACE = "ingestion"
-SCHEMAS = ["eclinibase", "icca"]
+namespace = "ingestion"
+schemas = ["eclinibase", "icca", "pericalm"]
+config_file = "config/prod.conf"
 
-for schema in SCHEMAS:
-    dag_id = f"{NAMESPACE}_{schema}"
-    globals()[dag_id] = ingestion_dag(dag_id, NAMESPACE, schema, default_args)
+for schema in schemas:
+    dag_id = f"{namespace}_{schema}".lower()
+    globals()[dag_id] = ingestion_dag(dag_id, namespace, schema, config_file, default_args)

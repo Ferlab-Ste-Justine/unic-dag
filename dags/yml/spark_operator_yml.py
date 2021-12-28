@@ -10,15 +10,6 @@ from airflow.utils.dates import days_ago
 now = datetime.now()
 dt_string = now.strftime("%d%m%Y-%H%M%S")
 
-DEFAULT_ARGS = {
-    "owner": "cbotek",
-    "depends_on_past": False,
-    "email_on_failure": False,
-    "email_on_retry": False,
-    "email": "cbotek@ferlab.bio"
-}
-
-
 def read_json(path: str):
     f = open(path)
     return json.load(f)
@@ -27,60 +18,58 @@ def read_json(path: str):
 def ingestion_dag(dagid: str,
                   namespace: str,
                   schema: str,
-                  args=None):
+                  config_file: str,
+                  args: dict):
     with DAG(
-        dag_id=dagid,
-        schedule_interval=None,
-        default_args=args,
-        start_date=days_ago(2),
-        max_active_tasks=2,
-        catchup=False
+            dag_id=dagid,
+            schedule_interval=None,
+            default_args=args,
+            start_date=days_ago(2),
+            max_active_tasks=1,
+            catchup=False
     ) as dag:
         start = DummyOperator(
             task_id="start_operator",
             dag=dag
         )
 
-    config = read_json(f"/Users/christophebotek/airflow/dags/config/{namespace}/{schema}_config.json")
+        config = read_json(f"/Users/christophebotek/airflow/dags/config/{namespace}/{schema}_config.json")
 
-    for conf in config:
-        destination = conf['dataset_id']
-        run_type = conf['run_type']
-        create_job = SparkKubernetesOperator(
-            task_id=f"create_{destination}",
-            namespace=namespace,
-            application_file=ingestion_job(destination, run_type),
-            priority_weight=1,
-            weight_rule="absolute",
-            do_xcom_push=True,
-            dag=dag,
-        )
+        for conf in config:
+            destination = conf['dataset_id']
+            create_job = SparkKubernetesOperator(
+                task_id=f"create_{destination}",
+                namespace=namespace,
+                application_file=ingestion_job(destination, conf['run_type'], config_file),
+                priority_weight=1,
+                weight_rule="absolute",
+                do_xcom_push=True,
+                dag=dag
+            )
 
-        check_job = SparkKubernetesSensor(
-            task_id=f'check_{destination}',
-            namespace=namespace,
-            priority_weight=999,
-            weight_rule="absolute",
-            application_name=f"{{{{ task_instance.xcom_pull(task_ids='create_{destination}')['metadata']['name'] }}}}",
-            dag=dag,
-        )
-
-        start >> create_job >> check_job
+            check_job = SparkKubernetesSensor(
+                task_id=f'check_{destination}',
+                namespace=namespace,
+                priority_weight=999,
+                weight_rule="absolute",
+                application_name=f"{{{{ task_instance.xcom_pull(task_ids='create_{destination}')['metadata']['name'] }}}}",
+                poke_interval=30,
+                timeout=21600,  # 6 hours
+                dag=dag,
+            )
+            start >> create_job >> check_job
     return dag
 
 
-
-def ingestion_job(namespace: str,
-                  destination: str,
-                  load_type: str = "initial",
-                  conf: str = "config/prod.conf"):
-
+def ingestion_job(destination: str,
+                  load_type: str,
+                  conf: str):
     yml = f"""
     apiVersion: "sparkoperator.k8s.io/v1beta2"
     kind: SparkApplication
     metadata:
       name: {destination.replace("_", "-")}-{dt_string}
-      namespace: {namespace}
+      namespace: ingestion
     spec:
       type: Scala
       mode: cluster
@@ -115,8 +104,8 @@ def ingestion_job(namespace: str,
       restartPolicy:
         type: Never
       driver:
-        cores: 4
-        memory: "28G"
+        cores: 8
+        memory: "56G"
         labels:
           version: 3.0.0
         serviceAccount: spark
@@ -141,9 +130,9 @@ def ingestion_job(namespace: str,
             key: INTEGRATION_DB_PASSWORD
     
       executor:
-        cores: 4
-        instances: 2
-        memory: "28G"
+        cores: 8
+        instances: 1
+        memory: "56G"
         labels:
           version: 3.0.0
         envSecretKeyRefs:
