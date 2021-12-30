@@ -1,7 +1,7 @@
 from yml.spark_operator_yml import ingestion_dag
 
 # DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=task_fail_slack_alert)
-default_args = {
+DEFAULT_ARGS = {
     "owner": "cbotek",
     "depends_on_past": False,
     "email_on_failure": False,
@@ -9,10 +9,14 @@ default_args = {
     "email": "cbotek@ferlab.bio"
 }
 
-namespace = "ingestion"
-schemas = ["eclinibase", "icca", "pericalm"]
-config_file = "config/prod.conf"
+NAMESPACE = "ingestion"
+SCHEMAS = [
+    "eclinibase",
+    "icca",
+#     "pericalm"
+]
+CONFIG_FILE = "config/prod.conf"
 
-for schema in schemas:
-    dag_id = f"{namespace}_{schema}".lower()
-    globals()[dag_id] = ingestion_dag(dag_id, namespace, schema, config_file, default_args)
+for schema in SCHEMAS:
+    dag_id = f"{NAMESPACE}_{schema}".lower()
+    globals()[dag_id] = ingestion_dag(dag_id, NAMESPACE, schema, CONFIG_FILE, DEFAULT_ARGS)

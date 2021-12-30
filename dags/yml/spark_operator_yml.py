@@ -20,45 +20,48 @@ def ingestion_dag(dagid: str,
                   schema: str,
                   config_file: str,
                   args: dict):
-    with DAG(
-            dag_id=dagid,
-            schedule_interval=None,
-            default_args=args,
-            start_date=days_ago(2),
-            max_active_tasks=1,
-            catchup=False
-    ) as dag:
+    dag = DAG(
+        dag_id=dagid,
+        schedule_interval=None,
+        default_args=args,
+        start_date=days_ago(2),
+        max_active_tasks=1,
+        catchup=False
+    )
+    with dag:
+
         start = DummyOperator(
             task_id="start_operator",
             dag=dag
         )
-
-        config = read_json(f"/Users/christophebotek/airflow/dags/config/{namespace}/{schema}_config.json")
-
-        for conf in config:
-            destination = conf['dataset_id']
-            create_job = SparkKubernetesOperator(
-                task_id=f"create_{destination}",
-                namespace=namespace,
-                application_file=ingestion_job(destination, conf['run_type'], config_file),
-                priority_weight=1,
-                weight_rule="absolute",
-                do_xcom_push=True,
-                dag=dag
-            )
-
-            check_job = SparkKubernetesSensor(
-                task_id=f'check_{destination}',
-                namespace=namespace,
-                priority_weight=999,
-                weight_rule="absolute",
-                application_name=f"{{{{ task_instance.xcom_pull(task_ids='create_{destination}')['metadata']['name'] }}}}",
-                poke_interval=30,
-                timeout=21600,  # 6 hours
-                dag=dag,
-            )
-            start >> create_job >> check_job
     return dag
+
+#        config = read_json(f"/Users/christophebotek/airflow/dags/config/{namespace}/{schema}_config.json")
+#
+#        for conf in config:
+#            destination = conf['dataset_id']
+#            create_job = SparkKubernetesOperator(
+#                task_id=f"create_{destination}",
+#                namespace=namespace,
+#                application_file=ingestion_job(destination, conf['run_type'], config_file),
+#                priority_weight=1,
+#                weight_rule="absolute",
+#                do_xcom_push=True,
+#                dag=dag
+#            )
+#
+#            check_job = SparkKubernetesSensor(
+#                task_id=f'check_{destination}',
+#                namespace=namespace,
+#                priority_weight=999,
+#                weight_rule="absolute",
+#                application_name=f"{{{{ task_instance.xcom_pull(task_ids='create_{destination}')['metadata']['name'] }}}}",
+#                poke_interval=30,
+#                timeout=21600,  # 6 hours
+#                dag=dag,
+#            )
+#            start >> create_job >> check_job
+#    return dag
 
 
 def ingestion_job(destination: str,
@@ -68,7 +71,7 @@ def ingestion_job(destination: str,
     apiVersion: "sparkoperator.k8s.io/v1beta2"
     kind: SparkApplication
     metadata:
-      name: {destination.replace("_", "-")}-{dt_string}
+      name: {destination[:40].replace("_", "-")}-{dt_string}
       namespace: ingestion
     spec:
       type: Scala
