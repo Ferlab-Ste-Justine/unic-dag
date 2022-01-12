@@ -29,7 +29,7 @@ with DAG(
         schedule_interval=None,
         default_args=args,
         start_date=days_ago(2),
-        max_active_tasks=2,
+        concurrency=2,
         catchup=False
 ) as dag:
     start = DummyOperator(

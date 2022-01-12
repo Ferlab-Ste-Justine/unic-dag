@@ -25,7 +25,7 @@ def ingestion_dag(dagid: str,
         schedule_interval=None,
         default_args=args,
         start_date=days_ago(2),
-        max_active_tasks=1,
+        concurrency=1,
         catchup=False
     )
     with dag:

@@ -1,12 +1,11 @@
-# https://raw.githubusercontent.com/apache/airflow/constraints-2.2.1/constraints-3.8.txt
+# https://raw.githubusercontent.com/apache/airflow/constraints-2.1.4/constraints-3.8.txt
 
-apache-airflow==2.2.1
-apache-airflow-providers-amazon==2.3.0
-apache-airflow-providers-cncf-kubernetes==2.0.3
-apache-airflow-providers-slack==4.1.0
-apache-airflow-providers-slack[http]==4.1.0
-boto3==1.18.58
+apache-airflow-providers-amazon==2.2.0
+apache-airflow-providers-cncf-kubernetes==2.0.2
+apache-airflow-providers-slack==4.0.1
+apache-airflow-providers-slack[http]==4.0.1
+boto3==1.17.112
 boto==2.49.0
-botocore==1.21.58
+botocore==1.20.112
 kubernetes==11.0.0
 numpy==1.20.3
