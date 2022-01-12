@@ -18,7 +18,7 @@ DEFAULT_ARGS = {
 }
 NAMESPACE = "ingestion"
 CONFIG_FILE = "config/prod.conf"
-dagid = f"{NAMESPACE}_pericalm".lower()
+dagid = f"ingestion_pericalm_static".lower()
 args = DEFAULT_ARGS
 namespace = NAMESPACE
 schema = "pericalm"
@@ -36,13 +36,13 @@ with DAG(
         task_id="start_operator",
         dag=dag
     )
-    config = read_json(f"/Users/christophebotek/airflow/dags/config/{namespace}/{schema}_config.json")
+    config = read_json(f"/opt/airflow/dags/repo/dags/config/ingestion/{schema}_config.json")
     for conf in config:
         destination = conf['dataset_id']
         create_job = SparkKubernetesOperator(
             task_id=f"create_{destination}",
             namespace=namespace,
-            application_file=ingestion_job(destination, conf['run_type'], config_file),
+            application_file=ingestion_job(namespace, destination, conf['run_type'], config_file),
             priority_weight=1,
             weight_rule="absolute",
             do_xcom_push=True,

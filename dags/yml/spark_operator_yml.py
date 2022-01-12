@@ -64,7 +64,8 @@ def ingestion_dag(dagid: str,
 #    return dag
 
 
-def ingestion_job(destination: str,
+def ingestion_job(namespace: str,
+                  destination: str,
                   load_type: str,
                   conf: str):
     yml = f"""
@@ -72,7 +73,7 @@ def ingestion_job(destination: str,
     kind: SparkApplication
     metadata:
       name: {destination[:40].replace("_", "-")}-{dt_string}
-      namespace: ingestion
+      namespace: {namespace}
     spec:
       type: Scala
       mode: cluster
