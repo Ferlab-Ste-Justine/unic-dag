@@ -36,37 +36,42 @@ def ingestion_dag(dagid: str,
         )
     return dag
 
-#        config = read_json(f"/Users/christophebotek/airflow/dags/config/{namespace}/{schema}_config.json")
-#
-#        for conf in config:
-#            destination = conf['dataset_id']
-#            create_job = SparkKubernetesOperator(
-#                task_id=f"create_{destination}",
-#                namespace=namespace,
-#                application_file=ingestion_job(destination, conf['run_type'], config_file),
-#                priority_weight=1,
-#                weight_rule="absolute",
-#                do_xcom_push=True,
-#                dag=dag
-#            )
-#
-#            check_job = SparkKubernetesSensor(
-#                task_id=f'check_{destination}',
-#                namespace=namespace,
-#                priority_weight=999,
-#                weight_rule="absolute",
-#                application_name=f"{{{{ task_instance.xcom_pull(task_ids='create_{destination}')['metadata']['name'] }}}}",
-#                poke_interval=30,
-#                timeout=21600,  # 6 hours
-#                dag=dag,
-#            )
-#            start >> create_job >> check_job
-#    return dag
+
+
+def create_spark_job(destination: str,
+                     namespace: str,
+                     run_type: str,
+                     config_file: str,
+                     dag: DAG):
+    return SparkKubernetesOperator(
+        task_id=f"create_{destination}",
+        namespace=namespace,
+        application_file=ingestion_job(namespace, destination, run_type, config_file),
+        priority_weight=1,
+        weight_rule="absolute",
+        do_xcom_push=True,
+        dag=dag
+    )
+
+
+def check_spark_job(destination: str,
+                    namespace: str,
+                    dag: DAG):
+    return SparkKubernetesSensor(
+        task_id=f'check_{destination}',
+        namespace=namespace,
+        priority_weight=999,
+        weight_rule="absolute",
+        application_name=f"{{{{ task_instance.xcom_pull(task_ids='create_{destination}')['metadata']['name'] }}}}",
+        poke_interval=30,
+        timeout=21600,  # 6 hours
+        dag=dag,
+    )
 
 
 def ingestion_job(namespace: str,
                   destination: str,
-                  load_type: str,
+                  run_type: str,
                   conf: str):
     yml = f"""
     apiVersion: "sparkoperator.k8s.io/v1beta2"
@@ -88,11 +93,11 @@ def ingestion_job(namespace: str,
           - com.microsoft.azure:spark-mssql-connector_2.12:1.1.0
           - com.microsoft.aad:adal4j:0.0.2
           - com.microsoft.sqlserver:mssql-jdbc:8.4.1.jre8
-      mainClass: bio.ferlab.ui.etl.red.raw.ImportTables
+      mainClass: bio.ferlab.ui.etl.red.raw.Main
       mainApplicationFile: "s3a://spark-prd/jars/unic-etl-3.0.0.jar"
       arguments:
         - "{conf}"
-        - "{load_type}"
+        - "{run_type}"
         - "{destination}"
       sparkVersion: "3.0.0"
       sparkConf:

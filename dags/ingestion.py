@@ -9,11 +9,12 @@ DEFAULT_ARGS = {
     "email": "cbotek@ferlab.bio"
 }
 
-NAMESPACE = "airflow"
+NAMESPACE = "ingestion"
 SCHEMAS = [
-    "eclinibase",
-    "icca",
-    "pericalm"
+    #"eclinibase",
+    #"icca",
+    #"pericalm",
+    "viewpoint5"
 ]
 CONFIG_FILE = "config/prod.conf"
 
