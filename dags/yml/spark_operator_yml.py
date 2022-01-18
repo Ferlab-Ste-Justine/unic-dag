@@ -72,7 +72,12 @@ def check_spark_job(destination: str,
 def ingestion_job(namespace: str,
                   destination: str,
                   run_type: str,
-                  conf: str):
+                  conf: str,
+                  driver_ram: int = 32,
+                  driver_core: int = 8,
+                  worker_ram: int = 32,
+                  worker_core: int = 8,
+                  worker_number: int = 1):
     yml = f"""
     apiVersion: "sparkoperator.k8s.io/v1beta2"
     kind: SparkApplication
@@ -113,8 +118,8 @@ def ingestion_job(namespace: str,
       restartPolicy:
         type: Never
       driver:
-        cores: 8
-        memory: "56G"
+        cores: {driver_core}
+        memory: "{driver_ram}G"
         labels:
           version: 3.0.0
         serviceAccount: spark
@@ -139,9 +144,9 @@ def ingestion_job(namespace: str,
             key: INTEGRATION_DB_PASSWORD
     
       executor:
-        cores: 8
-        instances: 1
-        memory: "56G"
+        cores: {worker_core}
+        instances: {worker_number}
+        memory: "{worker_ram}G"
         labels:
           version: 3.0.0
         envSecretKeyRefs:
