@@ -92,7 +92,7 @@ def ingestion_job(namespace: str,
       type: Scala
       mode: cluster
       image: ferlabcrsj/spark-operator:3.0.0
-      imagePullPolicy: Always
+      imagePullPolicy: IfNotPresent
       deps:
         repositories:
           - https://repos.spark-packages.org
@@ -196,7 +196,7 @@ def anonymized_job(namespace: str,
       type: Scala
       mode: cluster
       image: ferlabcrsj/spark-operator:3.0.0
-      imagePullPolicy: Always
+      imagePullPolicy: IfNotPresent
       deps:
         repositories:
           - https://repos.spark-packages.org
