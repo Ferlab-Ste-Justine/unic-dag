@@ -153,6 +153,7 @@ def ingestion_job(namespace: str,
         memory: "{worker_ram}G"
         labels:
           version: 3.0.0
+        serviceAccount: spark
         envSecretKeyRefs:
           AWS_ACCESS_KEY_ID:
             name: spark-ingestion-minio
@@ -248,6 +249,7 @@ def anonymized_job(namespace: str,
         memory: "{worker_ram}G"
         labels:
           version: 3.0.0
+        serviceAccount: spark
         envSecretKeyRefs:
           AWS_ACCESS_KEY_ID:
             name: spark-anonymized-minio
