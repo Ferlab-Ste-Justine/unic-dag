@@ -14,7 +14,7 @@ DEFAULT_ARGS = {
 }
 NAMESPACE = "anonymized"
 CONFIG_FILE = "config/prod.conf"
-SCHEMA = "eclinibase"
+SCHEMA = "pericalm"
 dagid = f"{NAMESPACE}_{SCHEMA}_static".lower()
 args = DEFAULT_ARGS
 
@@ -25,7 +25,7 @@ with DAG(
         schedule_interval=None,
         default_args=args,
         start_date=days_ago(2),
-        concurrency=1,
+        concurrency=2,
         catchup=False
 ) as dag:
     start = DummyOperator(
