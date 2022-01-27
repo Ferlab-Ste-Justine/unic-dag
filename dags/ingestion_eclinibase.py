@@ -1,6 +1,5 @@
 from airflow import DAG
 from airflow.operators.dummy import DummyOperator
-from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.utils.dates import days_ago
 
 from yml.spark_operator_yml import read_json, create_spark_job, check_spark_job
@@ -45,13 +44,14 @@ with DAG(
             "etl_config_file": "config/prod.conf",
             "run_type": conf['run_type']
         }
-        trigger_job = TriggerDagRunOperator(task_id=f"trigger_{conf['dataset_id']}",
-                                            trigger_dag_id="spark_operator_job",
-                                            conf={"destination": conf['dataset_id']},
-                                            wait_for_completion=True,
-                                            poke_interval=30)
+        # trigger_job = TriggerDagRunOperator(task_id=f"trigger_{conf['dataset_id']}",
+        #                                     trigger_dag_id="spark_operator_job",
+        #                                     conf={"destination": conf['dataset_id']},
+        #                                     wait_for_completion=True,
+        #                                     poke_interval=30)
+        # start >> trigger_job
 
-        # create_job = create_spark_job(conf['dataset_id'], NAMESPACE, conf['run_type'], config_file, dag)
-        # check_job = check_spark_job(conf['dataset_id'], NAMESPACE, dag)
+        create_job = create_spark_job(conf['dataset_id'], NAMESPACE, conf['run_type'], config_file, dag)
+        check_job = check_spark_job(conf['dataset_id'], NAMESPACE, dag)
 
-        start >> trigger_job
+        start >> create_job >> check_job

@@ -7,6 +7,7 @@ from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKu
 from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
 from airflow.utils.dates import days_ago
 
+
 def read_json(path: str):
     f = open(path)
     return json.load(f)
@@ -40,7 +41,7 @@ def create_spark_job(destination: str,
                      dag: DAG):
     yml = ingestion_job(namespace, destination, destination, run_type, config_file)
     if namespace == "anonymized":
-        yml = anonymized_job(namespace, destination, run_type, config_file)
+        yml = anonymized_job(namespace, destination, destination, run_type, config_file)
 
     return SparkKubernetesOperator(
         task_id=f"create_{destination}",
@@ -66,6 +67,7 @@ def check_spark_job(destination: str,
         timeout=21600,  # 6 hours
         dag=dag,
     )
+
 
 DEPENDENCIES = """
       deps:
@@ -128,6 +130,93 @@ ANONYMIZED_ENV = """
 """
 
 
+def generic_job(namespace: str,
+                pod_name: str,
+                destination: str,
+                run_type: str,
+                conf: str,
+                jar: str,
+                main_class: str,
+                env: str,
+                driver_ram: int = 32,
+                driver_core: int = 8,
+                worker_ram: int = 32,
+                worker_core: int = 8,
+                worker_number: int = 1,
+                dependencies: str = DEPENDENCIES,
+                spark_conf: str = SPARK_CONF,
+                spark_version: str = "3.0.0",
+                image: str = "ferlabcrsj/spark-operator:{spark_version}",
+                service_account: str = "spark"):
+    dt_string = datetime.now().strftime("%d%m%Y-%H%M%S")
+    yml = f"""
+    apiVersion: "sparkoperator.k8s.io/v1beta2"
+    kind: SparkApplication
+    metadata:
+      name: {pod_name}-{dt_string}
+      namespace: {namespace}
+    spec:
+      type: Scala
+      mode: cluster
+      image: {image}
+      imagePullPolicy: IfNotPresent
+      {dependencies}
+      mainClass: {main_class}
+      mainApplicationFile: "{jar}"
+      arguments:
+        - "{conf}"
+        - "{run_type}"
+        - "{destination}"
+      sparkVersion: "{spark_version}"
+      {spark_conf}
+      restartPolicy:
+        type: Never
+      driver:
+        cores: {driver_core}
+        memory: "{driver_ram}G"
+        labels:
+          version: {spark_version}
+        serviceAccount: {service_account}
+        {env}
+    
+      executor:
+        cores: {worker_core}
+        instances: {worker_number}
+        memory: "{worker_ram}G"
+        labels:
+          version: {spark_version}
+        serviceAccount: {service_account}
+        {env}
+        """
+    return yml
+
+
+def anonymized_job(namespace: str,
+                   pod_name: str,
+                   destination: str,
+                   run_type: str,
+                   conf: str,
+                   main_class: str = "bio.ferlab.ui.etl.yellow.anonymized.Main",
+                   driver_ram: int = 32,
+                   driver_core: int = 8,
+                   worker_ram: int = 32,
+                   worker_core: int = 8,
+                   worker_number: int = 1):
+    return generic_job(namespace,
+                       pod_name,
+                       destination,
+                       run_type,
+                       conf,
+                       "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
+                       main_class,
+                       ANONYMIZED_ENV,
+                       driver_ram,
+                       driver_core,
+                       worker_ram,
+                       worker_core,
+                       worker_number)
+
+
 def ingestion_job(namespace: str,
                   pod_name: str,
                   destination: str,
@@ -139,97 +228,16 @@ def ingestion_job(namespace: str,
                   worker_ram: int = 32,
                   worker_core: int = 8,
                   worker_number: int = 1):
-    dt_string = datetime.now().strftime("%d%m%Y-%H%M%S")
-    yml = f"""
-    apiVersion: "sparkoperator.k8s.io/v1beta2"
-    kind: SparkApplication
-    metadata:
-      name: {pod_name}-{dt_string}
-      namespace: {namespace}
-    spec:
-      type: Scala
-      mode: cluster
-      image: ferlabcrsj/spark-operator:3.0.0
-      imagePullPolicy: IfNotPresent
-      {DEPENDENCIES}
-      mainClass: {main_class}
-      mainApplicationFile: "s3a://spark-prd/jars/unic-etl-3.0.0.jar"
-      arguments:
-        - "{conf}"
-        - "{run_type}"
-        - "{destination}"
-      sparkVersion: "3.0.0"
-      {SPARK_CONF}
-      restartPolicy:
-        type: Never
-      driver:
-        cores: {driver_core}
-        memory: "{driver_ram}G"
-        labels:
-          version: 3.0.0
-        serviceAccount: spark
-        {INGESTION_ENV}
-    
-      executor:
-        cores: {worker_core}
-        instances: {worker_number}
-        memory: "{worker_ram}G"
-        labels:
-          version: 3.0.0
-        serviceAccount: spark
-        {INGESTION_ENV}
-    """
-    return yml
-
-
-def anonymized_job(namespace: str,
-                   destination: str,
-                   run_type: str,
-                   conf: str,
-                   main_class: str = "bio.ferlab.ui.etl.yellow.anonymized.Main",
-                   driver_ram: int = 32,
-                   driver_core: int = 8,
-                   worker_ram: int = 32,
-                   worker_core: int = 8,
-                   worker_number: int = 1):
-    dt_string = datetime.now().strftime("%d%m%Y-%H%M%S")
-    yml = f"""
-    apiVersion: "sparkoperator.k8s.io/v1beta2"
-    kind: SparkApplication
-    metadata:
-      name: {destination[:40].replace("_", "-")}-{dt_string}
-      namespace: {namespace}
-    spec:
-      type: Scala
-      mode: cluster
-      image: ferlabcrsj/spark-operator:3.0.0
-      imagePullPolicy: IfNotPresent
-      {DEPENDENCIES}
-      mainClass: {main_class}
-      mainApplicationFile: "s3a://spark-prd/jars/unic-etl-3.0.0.jar"
-      arguments:
-        - "{conf}"
-        - "{run_type}"
-        - "{destination}"
-      sparkVersion: "3.0.0"
-      {SPARK_CONF}
-      restartPolicy:
-        type: Never
-      driver:
-        cores: {driver_core}
-        memory: "{driver_ram}G"
-        labels:
-          version: 3.0.0
-        serviceAccount: spark
-        {ANONYMIZED_ENV}
-    
-      executor:
-        cores: {worker_core}
-        instances: {worker_number}
-        memory: "{worker_ram}G"
-        labels:
-          version: 3.0.0
-        serviceAccount: spark
-        {ANONYMIZED_ENV}
-        """
-    return yml
+    return generic_job(namespace,
+                       pod_name,
+                       destination,
+                       run_type,
+                       conf,
+                       "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
+                       main_class,
+                       INGESTION_ENV,
+                       driver_ram,
+                       driver_core,
+                       worker_ram,
+                       worker_core,
+                       worker_number)
