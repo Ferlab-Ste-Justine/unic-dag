@@ -1,5 +1,6 @@
 from airflow import DAG
 from airflow.operators.dummy import DummyOperator
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.utils.dates import days_ago
 
 from yml.spark_operator_yml import read_json, create_spark_job, check_spark_job
@@ -25,7 +26,7 @@ with DAG(
         schedule_interval=None,
         default_args=args,
         start_date=days_ago(2),
-        concurrency=1,
+        concurrency=2,
         catchup=False
 ) as dag:
     start = DummyOperator(
@@ -36,7 +37,21 @@ with DAG(
     config = read_json(f"/opt/airflow/dags/repo/dags/config/ingestion/{SCHEMA}_config.json")
 
     for conf in config:
-        create_job = create_spark_job(conf['dataset_id'], NAMESPACE, conf['run_type'], config_file, dag)
-        check_job = check_spark_job(conf['dataset_id'], NAMESPACE, dag)
+        spark_operator_conf = {
+            "job_type": NAMESPACE,
+            "schema": SCHEMA,
+            "namespace": NAMESPACE,
+            "destination": conf['dataset_id'],
+            "etl_config_file": "config/prod.conf",
+            "run_type": conf['run_type']
+        }
+        trigger_job = TriggerDagRunOperator(task_id=f"trigger_{conf['dataset_id']}",
+                                            trigger_dag_id="spark_operator_job",
+                                            conf={"destination": conf['dataset_id']},
+                                            wait_for_completion=True,
+                                            poke_interval=30)
 
-        start >> create_job >> check_job
+        # create_job = create_spark_job(conf['dataset_id'], NAMESPACE, conf['run_type'], config_file, dag)
+        # check_job = check_spark_job(conf['dataset_id'], NAMESPACE, dag)
+
+        start >> trigger_job

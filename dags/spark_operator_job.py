@@ -18,22 +18,20 @@ SCHEMA = "{{ dag_run.conf.get('schema', 'pericalm') }}"
 NAMESPACE = "{{ dag_run.conf.get('namespace', 'ingestion') }}"
 ETL_CONFIG_FILE = "{{ dag_run.conf.get('etl_config_file', 'config/prod.conf') }}"
 RUN_TYPE = "{{ dag_run.conf.get('run_type', 'default') }}"
-# doesn't work because the string is then trimed down the line
-# DESTINATION = "{{ dag_run.conf.get('destination', 'raw_pericalm_addresses') }}"
-DESTINATION = "raw_pericalm_addresses"
+DESTINATION = "{{ dag_run.conf.get('destination', 'raw_pericalm_addresses') }}"
+POD_NAME = "{{ dag_run.conf.get('destination', 'raw_pericalm_addresses')[:40].replace('_', '-') }}"
 
 with DAG(
         dag_id="spark_operator_job",
         schedule_interval=None,
         default_args=default_args,
         start_date=days_ago(2),
-        max_active_runs=2,
         catchup=False
 ) as dag:
     create_job = SparkKubernetesOperator(
         task_id="create_spark_operator_job",
         namespace=NAMESPACE,
-        application_file=ingestion_job(NAMESPACE, DESTINATION, RUN_TYPE, ETL_CONFIG_FILE),
+        application_file=ingestion_job(NAMESPACE, POD_NAME, DESTINATION, RUN_TYPE, ETL_CONFIG_FILE),
         priority_weight=1,
         weight_rule="absolute",
         do_xcom_push=True,

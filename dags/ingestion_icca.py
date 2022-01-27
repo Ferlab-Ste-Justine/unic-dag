@@ -14,7 +14,7 @@ DEFAULT_ARGS = {
 }
 NAMESPACE = "ingestion"
 CONFIG_FILE = "config/prod.conf"
-SCHEMA = "viewpoint5"
+SCHEMA = "icca"
 dagid = f"{NAMESPACE}_{SCHEMA}_static".lower()
 args = DEFAULT_ARGS
 
