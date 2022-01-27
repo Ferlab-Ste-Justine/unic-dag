@@ -39,9 +39,10 @@ def create_spark_job(destination: str,
                      run_type: str,
                      config_file: str,
                      dag: DAG):
-    yml = ingestion_job(namespace, destination, destination, run_type, config_file)
+    pod_name = destination[:40].replace("_", "-")
+    yml = ingestion_job(namespace, pod_name, destination, run_type, config_file)
     if namespace == "anonymized":
-        yml = anonymized_job(namespace, destination, destination, run_type, config_file)
+        yml = anonymized_job(namespace, pod_name, destination, run_type, config_file)
 
     return SparkKubernetesOperator(
         task_id=f"create_{destination}",
@@ -146,7 +147,7 @@ def generic_job(namespace: str,
                 dependencies: str = DEPENDENCIES,
                 spark_conf: str = SPARK_CONF,
                 spark_version: str = "3.0.0",
-                image: str = "ferlabcrsj/spark-operator:{spark_version}",
+                image: str = "ferlabcrsj/spark-operator:3.0.0",
                 service_account: str = "spark"):
     dt_string = datetime.now().strftime("%d%m%Y-%H%M%S")
     yml = f"""
