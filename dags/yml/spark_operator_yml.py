@@ -33,17 +33,23 @@ def ingestion_dag(dagid: str,
         )
     return dag
 
-
 def create_spark_job(destination: str,
                      namespace: str,
                      run_type: str,
+                     cluster_type: str,
                      config_file: str,
                      dag: DAG,
                      main_class: str):
+    worker_number = 1
+    if cluster_type == "medium":
+        worker_number = 2
+    if cluster_type == "large":
+        worker_number = 4
+
     pod_name = destination[:40].replace("_", "-")
-    yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, main_class)
+    yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, main_class, worker_number=worker_number)
     if namespace == "anonymized":
-        yml = anonymized_job(namespace, pod_name, destination, run_type, config_file, main_class)
+        yml = anonymized_job(namespace, pod_name, destination, run_type, config_file, main_class, worker_number=worker_number)
 
     return SparkKubernetesOperator(
         task_id=f"create_{destination}",
@@ -199,9 +205,9 @@ def anonymized_job(namespace: str,
                    run_type: str,
                    conf: str,
                    main_class: str = "bio.ferlab.ui.etl.yellow.anonymized.Main",
-                   driver_ram: int = 32,
+                   driver_ram: int = 40,
                    driver_core: int = 8,
-                   worker_ram: int = 32,
+                   worker_ram: int = 40,
                    worker_core: int = 8,
                    worker_number: int = 1):
     return generic_job(namespace,
@@ -225,9 +231,9 @@ def ingestion_job(namespace: str,
                   run_type: str,
                   conf: str,
                   main_class: str = "bio.ferlab.ui.etl.red.raw.Main",
-                  driver_ram: int = 32,
+                  driver_ram: int = 40,
                   driver_core: int = 8,
-                  worker_ram: int = 32,
+                  worker_ram: int = 40,
                   worker_core: int = 8,
                   worker_number: int = 1):
     return generic_job(namespace,

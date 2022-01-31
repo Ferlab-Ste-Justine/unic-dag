@@ -14,10 +14,10 @@ DEFAULT_ARGS = {
 }
 NAMESPACE = "ingestion"
 CONFIG_FILE = "config/prod.conf"
-SCHEMA = "softlab"
+SCHEMA = "softmic"
 dagid = f"{NAMESPACE}_{SCHEMA}_static".lower()
 args = DEFAULT_ARGS
-main_class = "bio.ferlab.ui.etl.red.raw.softlab.Main"
+main_class = "bio.ferlab.ui.etl.red.raw.softmic.Main"
 config_file = CONFIG_FILE
 
 with DAG(
