@@ -17,7 +17,7 @@ CONFIG_FILE = "config/prod.conf"
 SCHEMA = "eclinibase"
 dagid = f"{NAMESPACE}_{SCHEMA}_static".lower()
 args = DEFAULT_ARGS
-
+main_class = "bio.ferlab.ui.etl.red.raw.Main"
 config_file = CONFIG_FILE
 
 with DAG(
@@ -51,7 +51,7 @@ with DAG(
         #                                     poke_interval=30)
         # start >> trigger_job
 
-        create_job = create_spark_job(conf['dataset_id'], NAMESPACE, conf['run_type'], config_file, dag)
+        create_job = create_spark_job(conf['dataset_id'], NAMESPACE, conf['run_type'], config_file, dag, main_class)
         check_job = check_spark_job(conf['dataset_id'], NAMESPACE, dag)
 
         start >> create_job >> check_job

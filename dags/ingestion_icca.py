@@ -17,7 +17,7 @@ CONFIG_FILE = "config/prod.conf"
 SCHEMA = "icca"
 dagid = f"{NAMESPACE}_{SCHEMA}_static".lower()
 args = DEFAULT_ARGS
-
+main_class = "bio.ferlab.ui.etl.red.raw.Main"
 config_file = CONFIG_FILE
 
 with DAG(
@@ -36,7 +36,7 @@ with DAG(
     config = read_json(f"/opt/airflow/dags/repo/dags/config/ingestion/{SCHEMA}_config.json")
 
     for conf in config:
-        create_job = create_spark_job(conf['dataset_id'], NAMESPACE, conf['run_type'], config_file, dag)
+        create_job = create_spark_job(conf['dataset_id'], NAMESPACE, conf['run_type'], config_file, dag, main_class)
         check_job = check_spark_job(conf['dataset_id'], NAMESPACE, dag)
 
         start >> create_job >> check_job
