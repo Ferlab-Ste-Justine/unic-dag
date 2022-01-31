@@ -38,11 +38,12 @@ def create_spark_job(destination: str,
                      namespace: str,
                      run_type: str,
                      config_file: str,
-                     dag: DAG):
+                     dag: DAG,
+                     main_class: str):
     pod_name = destination[:40].replace("_", "-")
-    yml = ingestion_job(namespace, pod_name, destination, run_type, config_file)
+    yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, main_class)
     if namespace == "anonymized":
-        yml = anonymized_job(namespace, pod_name, destination, run_type, config_file)
+        yml = anonymized_job(namespace, pod_name, destination, run_type, config_file, main_class)
 
     return SparkKubernetesOperator(
         task_id=f"create_{destination}",
