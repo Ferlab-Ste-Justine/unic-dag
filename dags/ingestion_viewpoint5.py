@@ -36,7 +36,7 @@ with DAG(
     config = read_json(f"/opt/airflow/dags/repo/dags/config/ingestion/{SCHEMA}_config.json")
 
     for conf in config:
-        create_job = create_spark_job(conf['dataset_id'], NAMESPACE, conf['run_type'], config_file, dag, main_class)
+        create_job = create_spark_job(conf['dataset_id'], NAMESPACE, conf['run_type'], conf['cluster_type'], config_file, dag, main_class)
         check_job = check_spark_job(conf['dataset_id'], NAMESPACE, dag)
 
         start >> create_job >> check_job
