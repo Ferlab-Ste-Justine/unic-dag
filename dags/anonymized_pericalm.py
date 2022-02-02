@@ -26,7 +26,8 @@ with DAG(
         default_args=args,
         start_date=days_ago(2),
         concurrency=2,
-        catchup=False
+        catchup=False,
+        tags=["anonymized"]
 ) as dag:
     start = DummyOperator(
         task_id="start_operator",
