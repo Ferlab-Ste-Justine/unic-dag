@@ -6,5 +6,5 @@
   {"dataset_id": "raw_softlab_v_p_lab_patient"       , "cluster_type": "small" , "run_type": "initial"},
   {"dataset_id": "raw_softlab_v_p_lab_specimen"      , "cluster_type": "small" , "run_type": "initial"},
   {"dataset_id": "raw_softlab_v_p_lab_stay"          , "cluster_type": "small" , "run_type": "initial"},
-  {"dataset_id": "raw_softlab_v_p_lab_test_result"   , "cluster_type": "large" , "run_type": "default"}
+  {"dataset_id": "raw_softlab_v_p_lab_test_result"   , "cluster_type": "large" , "run_type": "initial"}
 ]
