@@ -1,4 +1,7 @@
-from yml.spark_operator_yml import ingestion_dag
+from airflow import DAG
+from airflow.utils.dates import days_ago
+
+from yml.spark_operator_yml import read_json, setupDag
 
 # DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=task_fail_slack_alert)
 DEFAULT_ARGS = {
@@ -9,15 +12,34 @@ DEFAULT_ARGS = {
     "email": "cbotek@ferlab.bio"
 }
 
-NAMESPACE = "ingestion"
 SCHEMAS = [
-    #"eclinibase",
-    #"icca",
-    #"pericalm",
-    "viewpoint5"
+    ("anonymized", "eclinibase", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
+    ("anonymized", "pericalm", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
+
+    ("ingestion", "eclinibase", "bio.ferlab.ui.etl.red.raw.Main"),
+    ("ingestion", "etraceline", "bio.ferlab.ui.etl.red.raw.Main"),
+    ("ingestion", "icca", "bio.ferlab.ui.etl.red.raw.Main"),
+    ("ingestion", "pericalm", "bio.ferlab.ui.etl.red.raw.Main"),
+    ("ingestion", "viewpoint5", "bio.ferlab.ui.etl.red.raw.Main"),
+    ("ingestion", "softlab", "bio.ferlab.ui.etl.red.raw.softlab.Main"),
+    ("ingestion", "softmic", "bio.ferlab.ui.etl.red.raw.softmic.Main"),
+    ("ingestion", "softpath", "bio.ferlab.ui.etl.red.raw.softpath.Main")
 ]
 CONFIG_FILE = "config/prod.conf"
 
-for schema in SCHEMAS:
-    dag_id = f"ingestion_{schema}".lower()
-    globals()[dag_id] = ingestion_dag(dag_id, NAMESPACE, schema, CONFIG_FILE, DEFAULT_ARGS)
+for namespace, schema, main_class in SCHEMAS:
+    dagid = f"{namespace}_{schema}".lower()
+    dag = DAG(
+        dag_id=dagid,
+        schedule_interval=None,
+        default_args=DEFAULT_ARGS,
+        start_date=days_ago(2),
+        concurrency=1,
+        catchup=False,
+        tags=[namespace]
+    )
+    with dag:
+        config = read_json(f"/opt/airflow/dags/repo/dags/config/ingestion/{schema}_config.json")
+
+        setupDag(dag, config, namespace, CONFIG_FILE, main_class)
+    globals()[dagid] = dag

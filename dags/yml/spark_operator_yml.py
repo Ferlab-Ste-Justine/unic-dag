@@ -8,11 +8,11 @@ from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKube
 from airflow.utils.dates import days_ago
 
 
-def getDag(dag: DAG,
-           config: dict,
-           namespace: str,
-           config_file: str,
-           main_class: str):
+def setupDag(dag: DAG,
+             config: dict,
+             namespace: str,
+             config_file: str,
+             main_class: str):
 
     start = DummyOperator(
         task_id="start_operator",

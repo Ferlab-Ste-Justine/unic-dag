@@ -1,7 +1,7 @@
 from airflow import DAG
 from airflow.utils.dates import days_ago
 
-from yml.spark_operator_yml import read_json, getDag
+from yml.spark_operator_yml import read_json, setupDag
 
 # DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=task_fail_slack_alert)
 DEFAULT_ARGS = {
@@ -17,7 +17,6 @@ SCHEMA = "softlab"
 dagid = f"{NAMESPACE}_{SCHEMA}_static".lower()
 args = DEFAULT_ARGS
 main_class = "bio.ferlab.ui.etl.red.raw.softlab.Main"
-config_file = CONFIG_FILE
 
 with DAG(
         dag_id=dagid,
@@ -31,4 +30,4 @@ with DAG(
 
     config = read_json(f"/opt/airflow/dags/repo/dags/config/ingestion/{SCHEMA}_config.json")
 
-    getDag(dag, config, NAMESPACE, config_file, main_class)
+    setupDag(dag, config, NAMESPACE, CONFIG_FILE, main_class)
