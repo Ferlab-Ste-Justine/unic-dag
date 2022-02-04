@@ -8,6 +8,34 @@ from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKube
 from airflow.utils.dates import days_ago
 
 
+def getDag(dag: DAG,
+           config: dict,
+           namespace: str,
+           config_file: str,
+           main_class: str):
+
+    start = DummyOperator(
+        task_id="start_operator",
+        dag=dag
+    )
+    jobs = {}
+
+    for conf in config:
+
+        dataset_id = conf['dataset_id']
+        create_job = create_spark_job(dataset_id, namespace, conf['run_type'], conf['cluster_type'], config_file, dag, main_class)
+        check_job = check_spark_job(dataset_id, namespace, dag)
+
+        create_job >> check_job
+        jobs[dataset_id] = {"create_job": create_job, "check_job": check_job, "dependencies": conf['dependencies']}
+
+    for j in jobs:
+        for dependency in jobs[j]['dependencies']:
+            jobs[dependency]['check_job'] >> jobs[j]['create_job']
+        if len(jobs[j]['dependencies']) == 0:
+            start >> jobs[j]['create_job']
+
+
 def read_json(path: str):
     f = open(path)
     return json.load(f)

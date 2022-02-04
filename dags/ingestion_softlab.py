@@ -1,8 +1,7 @@
 from airflow import DAG
-from airflow.operators.dummy import DummyOperator
 from airflow.utils.dates import days_ago
 
-from yml.spark_operator_yml import read_json, create_spark_job, check_spark_job
+from yml.spark_operator_yml import read_json, getDag
 
 # DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=task_fail_slack_alert)
 DEFAULT_ARGS = {
@@ -29,16 +28,7 @@ with DAG(
         catchup=False,
         tags=["ingestion"]
 ) as dag:
-    start = DummyOperator(
-        task_id="start_operator",
-        dag=dag
-    )
 
     config = read_json(f"/opt/airflow/dags/repo/dags/config/ingestion/{SCHEMA}_config.json")
 
-    for conf in config:
-
-        create_job = create_spark_job(conf['dataset_id'], NAMESPACE, conf['run_type'], conf['cluster_type'], config_file, dag, main_class)
-        check_job = check_spark_job(conf['dataset_id'], NAMESPACE, dag)
-
-        start >> create_job >> check_job
+    getDag(dag, config, NAMESPACE, config_file, main_class)
