@@ -21,8 +21,9 @@ SCHEMAS = [
     ("ingestion", "icca", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "laboratoire_systeme", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "pericalm", "bio.ferlab.ui.etl.red.raw.Main"),
-    ("ingestion", "viewpoint5", "bio.ferlab.ui.etl.red.raw.Main"),
+    ("ingestion", "pharmacie", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "softlab", "bio.ferlab.ui.etl.red.raw.softlab.Main"),
+    ("ingestion", "viewpoint5", "bio.ferlab.ui.etl.red.raw.Main"),
     # ("ingestion", "softmic", "bio.ferlab.ui.etl.red.raw.softmic.Main"),
     # ("ingestion", "softpath", "bio.ferlab.ui.etl.red.raw.softpath.Main")
 ]

@@ -45,7 +45,7 @@ with DAG(
         weight_rule="absolute",
         application_name="{{ task_instance.xcom_pull(task_ids='create_spark_operator_job')['metadata']['name'] }}",
         poke_interval=30,
-        timeout=21600,  # 6 hours
+        timeout=43200,  # 12 hours
         dag=dag,
     )
 
