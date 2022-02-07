@@ -68,16 +68,28 @@ def create_spark_job(destination: str,
                      config_file: str,
                      dag: DAG,
                      main_class: str):
+    driver_ram = 32
+    driver_core = 4
     worker_number = 1
+    worker_ram = 32
+    worker_core = 4
     if cluster_type == "medium":
+        driver_ram = 36
+        driver_core = 6
         worker_number = 2
+        worker_ram = 36
+        worker_core = 6
     if cluster_type == "large":
+        driver_ram = 40
+        driver_core = 8
         worker_number = 4
+        worker_ram = 40
+        worker_core = 8
 
     pod_name = destination[:40].replace("_", "-")
-    yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, main_class, worker_number=worker_number)
+    yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core, worker_ram, worker_core, worker_number)
     if namespace == "anonymized":
-        yml = anonymized_job(namespace, pod_name, destination, run_type, config_file, main_class, worker_number=worker_number)
+        yml = anonymized_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core, worker_ram, worker_core, worker_number)
 
     return SparkKubernetesOperator(
         task_id=f"create_{destination}",
