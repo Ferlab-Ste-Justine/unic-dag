@@ -15,6 +15,7 @@ DEFAULT_ARGS = {
 SCHEMAS = [
     ("anonymized", "eclinibase", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "pericalm", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
+    ("anonymized", "softlab", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
 
     ("ingestion", "eclinibase", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "etraceline", "bio.ferlab.ui.etl.red.raw.Main"),
@@ -23,9 +24,7 @@ SCHEMAS = [
     ("ingestion", "pericalm", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "pharmacie", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "softlab", "bio.ferlab.ui.etl.red.raw.softlab.Main"),
-    ("ingestion", "viewpoint5", "bio.ferlab.ui.etl.red.raw.Main"),
-    # ("ingestion", "softmic", "bio.ferlab.ui.etl.red.raw.softmic.Main"),
-    # ("ingestion", "softpath", "bio.ferlab.ui.etl.red.raw.softpath.Main")
+    ("ingestion", "viewpoint5", "bio.ferlab.ui.etl.red.raw.Main")
 ]
 CONFIG_FILE = "config/prod.conf"
 
@@ -41,7 +40,7 @@ for namespace, schema, main_class in SCHEMAS:
         tags=[namespace]
     )
     with dag:
-        config = read_json(f"/opt/airflow/dags/repo/dags/config/ingestion/{schema}_config.json")
+        config = read_json(f"/opt/airflow/dags/repo/dags/config/{namespace}/{schema}_config.json")
 
         setupDag(dag, config, namespace, CONFIG_FILE, main_class)
     globals()[dagid] = dag
