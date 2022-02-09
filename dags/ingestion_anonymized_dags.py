@@ -24,6 +24,7 @@ SCHEMAS = [
     ("ingestion", "pericalm", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "pharmacie", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "softlab", "bio.ferlab.ui.etl.red.raw.softlab.Main"),
+    ("ingestion", "softpath", "bio.ferlab.ui.etl.red.raw.softpath.Main"),
     ("ingestion", "viewpoint5", "bio.ferlab.ui.etl.red.raw.Main")
 ]
 CONFIG_FILE = "config/prod.conf"
@@ -35,7 +36,7 @@ for namespace, schema, main_class in SCHEMAS:
         schedule_interval=None,
         default_args=DEFAULT_ARGS,
         start_date=days_ago(2),
-        concurrency=1,
+        concurrency=2,
         catchup=False,
         tags=[namespace]
     )
