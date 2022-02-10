@@ -1,0 +1,12 @@
+[
+  {"dataset_id": "anonymized_softmic_v_p_mic_active_order", "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_softmic_v_p_mic_comm"        , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_softmic_v_p_mic_isocomm"     , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_softmic_v_p_mic_isolate"     , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_softmic_v_p_mic_media"       , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_softmic_v_p_mic_mediacomm"   , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_softmic_v_p_mic_order_comm"  , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_softmic_v_p_mic_sensi"       , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_softmic_v_p_mic_test"        , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_softmic_v_p_mic_testcomm"    , "cluster_type": "small" , "run_type": "initial", "dependencies": []}
+]
