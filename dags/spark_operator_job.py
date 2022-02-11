@@ -1,3 +1,6 @@
+"""
+Generic Spark Operator
+"""
 from airflow import DAG
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
 from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
@@ -29,7 +32,7 @@ with DAG(
         catchup=False
 ) as dag:
     create_job = SparkKubernetesOperator(
-        task_id="create_spark_operator_job",
+        task_id="create_job",
         namespace=NAMESPACE,
         application_file=ingestion_job(NAMESPACE, POD_NAME, DESTINATION, RUN_TYPE, ETL_CONFIG_FILE),
         priority_weight=1,
@@ -39,15 +42,14 @@ with DAG(
     )
 
     check_job = SparkKubernetesSensor(
-        task_id="check_spark_operator_job",
+        task_id="check_job",
         namespace=NAMESPACE,
         priority_weight=999,
         weight_rule="absolute",
-        application_name="{{ task_instance.xcom_pull(task_ids='create_spark_operator_job')['metadata']['name'] }}",
+        application_name="{{ task_instance.xcom_pull(task_ids='create_job')['metadata']['name'] }}",
         poke_interval=30,
         timeout=43200,  # 12 hours
         dag=dag,
     )
 
     create_job >> check_job
-
