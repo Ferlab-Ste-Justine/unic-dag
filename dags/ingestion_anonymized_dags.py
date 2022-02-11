@@ -15,6 +15,7 @@ DEFAULT_ARGS = {
 SCHEMAS = [
     ("anonymized", "eclinibase", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "pericalm", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
+    ("anonymized", "laboratoire_systeme", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "softlab", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "softmic", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "viewpoint5", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
