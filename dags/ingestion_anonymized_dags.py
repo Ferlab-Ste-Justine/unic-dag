@@ -44,7 +44,7 @@ for namespace, schema, main_class in SCHEMAS:
         schedule_interval=None,
         default_args=DEFAULT_ARGS,
         start_date=days_ago(2),
-        concurrency=2,
+        concurrency=3,
         catchup=False,
         tags=[namespace]
     )
