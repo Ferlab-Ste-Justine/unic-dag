@@ -18,6 +18,7 @@ SCHEMAS = [
     ("anonymized", "laboratoire_systeme", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "softlab", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "softmic", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
+    ("anonymized", "softpath", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "viewpoint5", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "etraceline", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
 
