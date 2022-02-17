@@ -40,27 +40,6 @@ def read_json(path: str):
     f = open(path)
     return json.load(f)
 
-
-def ingestion_dag(dagid: str,
-                  namespace: str,
-                  schema: str,
-                  config_file: str,
-                  args: dict):
-    dag = DAG(
-        dag_id=dagid,
-        schedule_interval=None,
-        default_args=args,
-        start_date=days_ago(2),
-        concurrency=1,
-        catchup=False
-    )
-    with dag:
-        start = DummyOperator(
-            task_id="start_operator",
-            dag=dag
-        )
-    return dag
-
 def create_spark_job(destination: str,
                      namespace: str,
                      run_type: str,
@@ -90,7 +69,8 @@ def create_spark_job(destination: str,
     yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core, worker_ram, worker_core, worker_number)
     if namespace == "anonymized":
         yml = anonymized_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core, worker_ram, worker_core, worker_number)
-
+    if namespace == "curated":
+        yml = curated_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core, worker_ram, worker_core, worker_number)
     return SparkKubernetesOperator(
         task_id=f"create_{destination}",
         namespace=namespace,
@@ -162,6 +142,16 @@ INGESTION_ENV = """
           INTEGRATION_DB_PASSWORD:
             name: spark-ingestion-integration-db
             key: INTEGRATION_DB_PASSWORD
+"""
+
+CURATED_ENV = """
+        envSecretKeyRefs:
+          AWS_ACCESS_KEY_ID:
+            name: spark-curated-minio
+            key: AWS_ACCESS_KEY_ID
+          AWS_SECRET_ACCESS_KEY:
+            name: spark-curated-minio
+            key: AWS_SECRET_ACCESS_KEY
 """
 
 ANONYMIZED_ENV = """
@@ -258,6 +248,32 @@ def anonymized_job(namespace: str,
                        "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
                        main_class,
                        ANONYMIZED_ENV,
+                       driver_ram,
+                       driver_core,
+                       worker_ram,
+                       worker_core,
+                       worker_number)
+
+
+def curated_job(namespace: str,
+                pod_name: str,
+                destination: str,
+                run_type: str,
+                conf: str,
+                main_class: str = "bio.ferlab.ui.etl.yellow.anonymized.Main",
+                driver_ram: int = 40,
+                driver_core: int = 8,
+                worker_ram: int = 40,
+                worker_core: int = 8,
+                worker_number: int = 1):
+    return generic_job(namespace,
+                       pod_name,
+                       destination,
+                       run_type,
+                       conf,
+                       "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
+                       main_class,
+                       CURATED_ENV,
                        driver_ram,
                        driver_core,
                        worker_ram,

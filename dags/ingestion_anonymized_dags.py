@@ -16,6 +16,7 @@ DEFAULT_ARGS = {
 }
 
 SCHEMAS = [
+
     ("anonymized", "eclinibase", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "etraceline", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "laboratoire_systeme", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
@@ -24,7 +25,10 @@ SCHEMAS = [
     ("anonymized", "softlab", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "softmic", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "softpath", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
+    ("anonymized", "unic", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "viewpoint5", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
+
+    ("curated", "unic", "bio.ferlab.ui.etl.red.curated.Main"),
 
     ("ingestion", "eclinibase", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "etraceline", "bio.ferlab.ui.etl.red.raw.Main"),
