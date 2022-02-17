@@ -21,6 +21,6 @@ jobs:
          pip install -r requirements.txt
          pip install pylint
          pip install pylint-airflow
-         pylint --load-plugins=pylint_airflow --fail-under=9.0 */**.py
+         pylint --load-plugins=pylint_airflow --fail-under=9.3 */**.py
 
 
