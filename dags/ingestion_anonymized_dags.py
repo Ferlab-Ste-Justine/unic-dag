@@ -30,6 +30,8 @@ SCHEMAS = [
 
     ("curated", "unic", "bio.ferlab.ui.etl.red.curated.Main"),
 
+    ("enriched", "mfm", "bio.ferlab.ui.etl.yellow.enriched.mfm.Main"),
+
     ("ingestion", "eclinibase", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "etraceline", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "icca", "bio.ferlab.ui.etl.red.raw.Main"),

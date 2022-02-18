@@ -71,6 +71,8 @@ def create_spark_job(destination: str,
         yml = anonymized_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core, worker_ram, worker_core, worker_number)
     if namespace == "curated":
         yml = curated_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core, worker_ram, worker_core, worker_number)
+    if namespace == "enriched":
+        yml = enriched_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core, worker_ram, worker_core, worker_number)
     return SparkKubernetesOperator(
         task_id=f"create_{destination}",
         namespace=namespace,
@@ -151,6 +153,16 @@ CURATED_ENV = """
             key: AWS_ACCESS_KEY_ID
           AWS_SECRET_ACCESS_KEY:
             name: spark-curated-minio
+            key: AWS_SECRET_ACCESS_KEY
+"""
+
+ENRICHED_ENV = """
+        envSecretKeyRefs:
+          AWS_ACCESS_KEY_ID:
+            name: spark-enriched-minio
+            key: AWS_ACCESS_KEY_ID
+          AWS_SECRET_ACCESS_KEY:
+            name: spark-enriched-minio
             key: AWS_SECRET_ACCESS_KEY
 """
 
@@ -254,7 +266,6 @@ def anonymized_job(namespace: str,
                        worker_core,
                        worker_number)
 
-
 def curated_job(namespace: str,
                 pod_name: str,
                 destination: str,
@@ -274,6 +285,32 @@ def curated_job(namespace: str,
                        "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
                        main_class,
                        CURATED_ENV,
+                       driver_ram,
+                       driver_core,
+                       worker_ram,
+                       worker_core,
+                       worker_number)
+
+
+def enriched_job(namespace: str,
+                 pod_name: str,
+                 destination: str,
+                 run_type: str,
+                 conf: str,
+                 main_class: str,
+                 driver_ram: int = 40,
+                 driver_core: int = 8,
+                 worker_ram: int = 40,
+                 worker_core: int = 8,
+                 worker_number: int = 1):
+    return generic_job(namespace,
+                       pod_name,
+                       destination,
+                       run_type,
+                       conf,
+                       "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
+                       main_class,
+                       ENRICHED_ENV,
                        driver_ram,
                        driver_core,
                        worker_ram,
