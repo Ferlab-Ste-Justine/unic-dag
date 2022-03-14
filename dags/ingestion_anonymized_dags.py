@@ -36,6 +36,7 @@ SCHEMAS = [
     ("ingestion", "etraceline", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "icca", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "laboratoire_systeme", "bio.ferlab.ui.etl.red.raw.Main"),
+    ("ingestion", "medecho", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "pericalm", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "pharmacie", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "softlab", "bio.ferlab.ui.etl.red.raw.softlab.Main"),
