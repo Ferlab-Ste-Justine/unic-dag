@@ -5,6 +5,7 @@
   {"dataset_id": "raw_laboratoire_systeme_v_s_lab_doctor"                , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
   {"dataset_id": "raw_laboratoire_systeme_v_s_lab_environment"           , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
   {"dataset_id": "raw_laboratoire_systeme_v_s_lab_location"              , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id": "raw_laboratoire_systeme_v_s_lab_specimen"              , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
   {"dataset_id": "raw_laboratoire_systeme_v_s_lab_test"                  , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
   {"dataset_id": "raw_laboratoire_systeme_v_s_lab_workstation"           , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
   {"dataset_id": "raw_laboratoire_systeme_v_s_mic_drug"                  , "cluster_type": "small" , "run_type": "initial", "dependencies": []},

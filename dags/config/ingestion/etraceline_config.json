@@ -1,4 +1,5 @@
 [
+  {"dataset_id": "raw_etraceline_etat_produit"    , "cluster_type": "small", "run_type": "initial", "dependencies": []},
   {"dataset_id": "raw_etraceline_acte_produits"    , "cluster_type": "small", "run_type": "initial", "dependencies": []},
   {"dataset_id": "raw_etraceline_demande_results_a", "cluster_type": "small", "run_type": "initial", "dependencies": []},
   {"dataset_id": "raw_etraceline_demande_results_t", "cluster_type": "small", "run_type": "initial", "dependencies": []},
