@@ -20,6 +20,7 @@ SCHEMAS = [
     ("anonymized", "eclinibase", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "etraceline", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "laboratoire_systeme", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
+    ("anonymized", "medecho", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "pericalm", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "pharmacie", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
     ("anonymized", "softlab", "bio.ferlab.ui.etl.yellow.anonymized.Main"),

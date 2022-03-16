@@ -1,0 +1,15 @@
+[
+  {"dataset_id": "anonymized_medecho_mep_vue_accident"       , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_medecho_mep_vue_congetemporaire", "cluster_type": "small", "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_medecho_mep_vue_consultation"   , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_medecho_mep_vue_destination"    , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_medecho_mep_vue_diagnostic"     , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_medecho_mep_vue_episode"        , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_medecho_mep_vue_etude"          , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_medecho_mep_vue_intervention"   , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_medecho_mep_vue_merenouveaune"  , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_medecho_mep_vue_parachevement"  , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_medecho_mep_vue_provenance"     , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_medecho_mep_vue_service"        , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+  {"dataset_id": "anonymized_medecho_mep_vue_unitesoins"     , "cluster_type": "small", "run_type": "initial", "dependencies": []}
+]
