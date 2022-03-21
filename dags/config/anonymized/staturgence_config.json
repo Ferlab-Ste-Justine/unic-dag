@@ -1,0 +1,8 @@
+[
+  {"dataset_id":"anonymized_staturgence_recherche_logtransaction", "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id":"anonymized_staturgence_recherche_bcm"           , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id":"anonymized_staturgence_recherche_episode"       , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id":"anonymized_staturgence_recherche_fadm"          , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id":"anonymized_staturgence_recherche_priseencharge" , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+  {"dataset_id":"anonymized_staturgence_recherche_triage"        , "cluster_type": "small" , "run_type": "initial", "dependencies": []}
+]
