@@ -35,6 +35,7 @@ SCHEMAS = [
 
     ("ingestion", "eclinibase", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "etraceline", "bio.ferlab.ui.etl.red.raw.Main"),
+    ("ingestion", "growthxp", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "icca", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "laboratoire_systeme", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "medecho", "bio.ferlab.ui.etl.red.raw.Main"),
@@ -42,6 +43,7 @@ SCHEMAS = [
     ("ingestion", "pharmacie", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "softlab", "bio.ferlab.ui.etl.red.raw.softlab.Main"),
     ("ingestion", "softpath", "bio.ferlab.ui.etl.red.raw.softpath.Main"),
+    ("ingestion", "staturgence", "bio.ferlab.ui.etl.red.raw.Main"),
     ("ingestion", "viewpoint5", "bio.ferlab.ui.etl.red.raw.Main")
 ]
 CONFIG_FILE = "config/prod.conf"
