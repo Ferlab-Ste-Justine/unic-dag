@@ -23,5 +23,6 @@
   {"dataset_id": "raw_etraceline_suppl_def"        , "cluster_type": "small", "run_type": "initial", "dependencies": []},
   {"dataset_id": "raw_etraceline_test_request_l"   , "cluster_type": "small", "run_type": "initial", "dependencies": []},
   {"dataset_id": "raw_etraceline_transf_prod"      , "cluster_type": "small", "run_type": "initial", "dependencies": []},
-  {"dataset_id": "raw_etraceline_transfusion"      , "cluster_type": "small", "run_type": "initial", "dependencies": []}
+  {"dataset_id": "raw_etraceline_transfusion"      , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+  {"dataset_id": "raw_etraceline_unit_poso"        , "cluster_type": "small", "run_type": "initial", "dependencies": []}
 ]
