@@ -1,3 +1,7 @@
-[
-  {"dataset_id":"curated_unic_patient_index", "cluster_type": "medium" , "run_type": "initial", "dependencies": []}
-]
+{
+  "schemas": [],
+  "datasets":
+  [
+    {"dataset_id":"curated_unic_patient_index", "cluster_type": "medium" , "run_type": "initial", "dependencies": []}
+  ]
+}

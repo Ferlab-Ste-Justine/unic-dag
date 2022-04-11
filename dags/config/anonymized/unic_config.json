@@ -1,3 +1,7 @@
-[
-  {"dataset_id":"anonymized_unic_patient_index", "cluster_type": "small" , "run_type": "initial", "dependencies": []}
-]
+{
+  "schemas": [],
+  "datasets":
+  [
+    {"dataset_id":"anonymized_unic_patient_index", "cluster_type": "small" , "run_type": "initial", "dependencies": []}
+  ]
+}

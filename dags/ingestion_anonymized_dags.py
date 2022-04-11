@@ -4,7 +4,7 @@ Ingestion and anonymized dags
 from airflow import DAG
 from airflow.utils.dates import days_ago
 
-from yml.spark_operator_yml import read_json, setupDag
+from yml.spark_operator_yml import read_json, setup_dag
 
 # DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=task_fail_slack_alert)
 DEFAULT_ARGS = {
@@ -66,5 +66,5 @@ for namespace, schema, main_class in SCHEMAS:
     with dag:
         config = read_json(f"/opt/airflow/dags/repo/dags/config/{namespace}/{schema}_config.json")
 
-        setupDag(schema, dag, config, namespace, CONFIG_FILE, main_class, LOG_MAIN_CLASS)
+        setup_dag(dag, config, namespace, CONFIG_FILE, main_class, LOG_MAIN_CLASS)
     globals()[dagid] = dag
