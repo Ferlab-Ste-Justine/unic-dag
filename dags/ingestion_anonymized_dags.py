@@ -15,6 +15,8 @@ DEFAULT_ARGS = {
     "email": "cbotek@ferlab.bio"
 }
 
+LOG_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.UpdateLog"
+
 SCHEMAS = [
 
     ("anonymized", "eclinibase", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
@@ -64,5 +66,5 @@ for namespace, schema, main_class in SCHEMAS:
     with dag:
         config = read_json(f"/opt/airflow/dags/repo/dags/config/{namespace}/{schema}_config.json")
 
-        setupDag(dag, config, namespace, CONFIG_FILE, main_class)
+        setupDag(schema, dag, config, namespace, CONFIG_FILE, main_class, LOG_MAIN_CLASS)
     globals()[dagid] = dag
