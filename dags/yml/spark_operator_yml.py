@@ -1,23 +1,45 @@
 import json
 from datetime import datetime
 
+import yaml
 from airflow import DAG
 from airflow.operators.dummy import DummyOperator
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
 from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
-from airflow.utils.dates import days_ago
 
 
-def setupDag(dag: DAG,
+def updateLogTable(schema: str,
+                   log_table: str,
+                   config_file: str,
+                   main_class: str,
+                   dag: DAG):
+    task = f"log_update_{schema}_ingestion_log"
+    pod_name = task.replace("_", "-")
+    yml = log_job("ingestion", pod_name, log_table, "set", schema, config_file, main_class)
+    return SparkKubernetesOperator(
+        task_id=task,
+        namespace="ingestion",
+        application_file=yml,
+        priority_weight=1,
+        weight_rule="absolute",
+        do_xcom_push=True,
+        dag=dag
+    )
+
+
+def setupDag(schema: str,
+             dag: DAG,
              config: dict,
              namespace: str,
              config_file: str,
-             main_class: str):
+             main_class: str,
+             log_main_class: str):
 
     start = DummyOperator(
         task_id="start_operator",
         dag=dag
     )
+    update_log = updateLogTable(schema, "journalisation.ETL_Truncate_Table", config_file, log_main_class, dag)
     jobs = {}
 
     for conf in config:
@@ -26,7 +48,7 @@ def setupDag(dag: DAG,
         create_job = create_spark_job(dataset_id, namespace, conf['run_type'], conf['cluster_type'], config_file, dag, main_class)
         check_job = check_spark_job(dataset_id, namespace, dag)
 
-        create_job >> check_job
+        create_job >> check_job >> update_log
         jobs[dataset_id] = {"create_job": create_job, "check_job": check_job, "dependencies": conf['dependencies']}
 
     for j in jobs:
@@ -34,6 +56,7 @@ def setupDag(dag: DAG,
             jobs[dependency]['check_job'] >> jobs[j]['create_job']
         if len(jobs[j]['dependencies']) == 0:
             start >> jobs[j]['create_job']
+
 
 
 def read_json(path: str):
@@ -182,9 +205,7 @@ ANONYMIZED_ENV = """
 
 def generic_job(namespace: str,
                 pod_name: str,
-                destination: str,
-                run_type: str,
-                conf: str,
+                arguments: list,
                 jar: str,
                 main_class: str,
                 env: str,
@@ -213,10 +234,7 @@ def generic_job(namespace: str,
       {dependencies}
       mainClass: {main_class}
       mainApplicationFile: "{jar}"
-      arguments:
-        - "{conf}"
-        - "{run_type}"
-        - "{destination}"
+      arguments: {yaml.dump(arguments)}
       sparkVersion: "{spark_version}"
       {spark_conf}
       restartPolicy:
@@ -254,9 +272,7 @@ def anonymized_job(namespace: str,
                    worker_number: int = 1):
     return generic_job(namespace,
                        pod_name,
-                       destination,
-                       run_type,
-                       conf,
+                       [conf, run_type, destination],
                        "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
                        main_class,
                        ANONYMIZED_ENV,
@@ -265,6 +281,7 @@ def anonymized_job(namespace: str,
                        worker_ram,
                        worker_core,
                        worker_number)
+
 
 def curated_job(namespace: str,
                 pod_name: str,
@@ -279,9 +296,7 @@ def curated_job(namespace: str,
                 worker_number: int = 1):
     return generic_job(namespace,
                        pod_name,
-                       destination,
-                       run_type,
-                       conf,
+                       [conf, run_type, destination],
                        "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
                        main_class,
                        CURATED_ENV,
@@ -305,9 +320,7 @@ def enriched_job(namespace: str,
                  worker_number: int = 1):
     return generic_job(namespace,
                        pod_name,
-                       destination,
-                       run_type,
-                       conf,
+                       [conf, run_type, destination],
                        "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
                        main_class,
                        ENRICHED_ENV,
@@ -331,9 +344,7 @@ def ingestion_job(namespace: str,
                   worker_number: int = 1):
     return generic_job(namespace,
                        pod_name,
-                       destination,
-                       run_type,
-                       conf,
+                       [conf, run_type, destination],
                        "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
                        main_class,
                        INGESTION_ENV,
@@ -342,3 +353,23 @@ def ingestion_job(namespace: str,
                        worker_ram,
                        worker_core,
                        worker_number)
+
+
+def log_job(namespace: str,
+            pod_name: str,
+            log_table: str,
+            run_type: str,
+            schema: str,
+            conf: str,
+            main_class: str):
+    return generic_job(namespace,
+                       pod_name,
+                       [conf, log_table, schema, run_type],
+                       "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
+                       main_class,
+                       INGESTION_ENV,
+                       16,
+                       4,
+                       4,
+                       1,
+                       1)
