@@ -6,7 +6,7 @@ from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKu
 from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
 from airflow.utils.dates import days_ago
 
-from yml.spark_operator_yml import ingestion_job
+from spark_operators import ingestion_job
 
 default_args = {
     "owner": "cbotek",

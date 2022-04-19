@@ -119,6 +119,10 @@ def create_spark_job(destination: str,
     if namespace == "enriched":
         yml = enriched_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core,
                            worker_ram, worker_core, worker_number)
+    if namespace == "warehouse":
+        yml = warehouse_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core,
+                            worker_ram, worker_core, worker_number)
+
     return SparkKubernetesOperator(
         task_id=f"create_{destination}",
         namespace=namespace,
@@ -211,6 +215,17 @@ ENRICHED_ENV = {
     },
     "AWS_SECRET_ACCESS_KEY": {
         "name": "spark-enriched-minio",
+        "key": "AWS_SECRET_ACCESS_KEY"
+    }
+}
+
+WAREHOUSE_ENV = {
+    "AWS_ACCESS_KEY_ID": {
+        "name": "spark-warehouse-minio",
+        "key": "AWS_ACCESS_KEY_ID"
+    },
+    "AWS_SECRET_ACCESS_KEY": {
+        "name": "spark-warehouse-minio",
         "key": "AWS_SECRET_ACCESS_KEY"
     }
 }
@@ -364,6 +379,30 @@ def enriched_job(namespace: str,
                        worker_ram,
                        worker_core,
                        worker_number)
+
+def warehouse_job(namespace: str,
+                  pod_name: str,
+                  destination: str,
+                  run_type: str,
+                  conf: str,
+                  main_class: str,
+                  driver_ram: int = 40,
+                  driver_core: int = 8,
+                  worker_ram: int = 40,
+                  worker_core: int = 8,
+                  worker_number: int = 1):
+    return generic_job(namespace,
+                       pod_name,
+                       [conf, run_type, destination],
+                       "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
+                       main_class,
+                       WAREHOUSE_ENV,
+                       driver_ram,
+                       driver_core,
+                       worker_ram,
+                       worker_core,
+                       worker_number)
+
 
 
 def ingestion_job(namespace: str,
