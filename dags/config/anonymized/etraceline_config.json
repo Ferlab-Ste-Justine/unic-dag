@@ -8,6 +8,7 @@
     {"dataset_id": "anonymized_etraceline_acte_produits"     , "cluster_type": "small", "run_type": "initial", "dependencies": []},
     {"dataset_id": "anonymized_etraceline_demande_results_a" , "cluster_type": "small", "run_type": "initial", "dependencies": []},
     {"dataset_id": "anonymized_etraceline_demande_results_t" , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+    {"dataset_id": "anonymized_etraceline_etat_produit"      , "cluster_type": "small", "run_type": "initial", "dependencies": []},
     {"dataset_id": "anonymized_etraceline_famp_supp"         , "cluster_type": "small", "run_type": "initial", "dependencies": []},
     {"dataset_id": "anonymized_etraceline_groupe"            , "cluster_type": "small", "run_type": "initial", "dependencies": []},
     {"dataset_id": "anonymized_etraceline_lab_request"       , "cluster_type": "small", "run_type": "initial", "dependencies": []},
