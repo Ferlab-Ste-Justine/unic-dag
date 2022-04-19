@@ -1,11 +1,11 @@
 {
   "concurrency": 1,
-  "main_class": "bio.ferlab.ui.etl.red.raw.Main",
-  "publish_class": "bio.ferlab.ui.etl.yellow.warehouse.Main",
+  "main_class": "bio.ferlab.ui.etl.yellow.warehouse.Main",
+  "publish_class": "",
   "schemas": [],
   "datasets":
   [
-    {"dataset_id":"warehouse_lab_results"        , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
+    {"dataset_id":"warehouse_lab_results"        , "cluster_type": "large" , "run_type": "initial", "dependencies": []},
     {"dataset_id":"warehouse_medications"        , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
     {"dataset_id":"warehouse_medications_manual" , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
     {"dataset_id":"warehouse_microbiology"       , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
