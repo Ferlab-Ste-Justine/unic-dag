@@ -1,4 +1,6 @@
 {
+  "main_class": "bio.ferlab.ui.etl.red.curated.Main",
+  "publish_class": "",
   "schemas": [],
   "datasets":
   [

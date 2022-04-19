@@ -42,9 +42,7 @@ def update_log_table(schemas: list,
 def setup_dag(dag: DAG,
               config: dict,
               namespace: str,
-              config_file: str,
-              main_class: str,
-              log_main_class: str):
+              config_file: str):
     start = DummyOperator(
         task_id="start_operator",
         dag=dag
@@ -52,7 +50,11 @@ def setup_dag(dag: DAG,
 
     publish = None
     if namespace == "ingestion":
-        publish = update_log_table(config['schemas'], "journalisation.ETL_Truncate_Table", config_file, log_main_class, dag)
+        publish = update_log_table(config['schemas'],
+                                   "journalisation.ETL_Truncate_Table",
+                                   config_file,
+                                   config['publish_class'],
+                                   dag)
     else:
         publish = DummyOperator(
             task_id="publish_operator",
@@ -64,7 +66,7 @@ def setup_dag(dag: DAG,
     for conf in config['datasets']:
         dataset_id = conf['dataset_id']
         create_job = create_spark_job(dataset_id, namespace, conf['run_type'], conf['cluster_type'], config_file, dag,
-                                      main_class)
+                                      config['main_class'])
         check_job = check_spark_job(dataset_id, namespace, dag)
 
         create_job >> check_job >> publish

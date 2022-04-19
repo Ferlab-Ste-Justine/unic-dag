@@ -1,4 +1,6 @@
 {
+  "main_class": "bio.ferlab.ui.etl.red.raw.softpath.Main",
+  "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": ["softpath"],
   "datasets":
   [

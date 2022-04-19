@@ -68,5 +68,5 @@ for namespace, schema, main_class in SCHEMAS:
     with dag:
         config = read_json(f"/opt/airflow/dags/repo/dags/config/{namespace}/{schema}_config.json")
 
-        setup_dag(dag, config, namespace, CONFIG_FILE, main_class, PUBLISH_MAIN_CLASS)
+        setup_dag(dag, config, namespace, CONFIG_FILE)
     globals()[dagid] = dag
