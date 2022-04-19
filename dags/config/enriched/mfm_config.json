@@ -1,4 +1,5 @@
 {
+  "concurrency": 3,
   "main_class": "bio.ferlab.ui.etl.yellow.enriched.mfm.Main",
   "publish_class": "",
   "schemas": [],

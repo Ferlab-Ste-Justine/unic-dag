@@ -1,9 +1,10 @@
 """
 Ingestion and anonymized dags
 """
+import os
+import re
 from airflow import DAG
 from airflow.utils.dates import days_ago
-
 from spark_operators import read_json, setup_dag
 
 # DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=task_fail_slack_alert)
@@ -15,58 +16,29 @@ DEFAULT_ARGS = {
     "email": "cbotek@ferlab.bio"
 }
 
-PUBLISH_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.UpdateLog"
-
-SCHEMAS = [
-
-    ("anonymized", "eclinibase", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
-    ("anonymized", "etraceline", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
-    ("anonymized", "growthxp", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
-    ("anonymized", "laboratoire_systeme", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
-    ("anonymized", "medecho", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
-    ("anonymized", "pericalm", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
-    ("anonymized", "pharmacie", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
-    ("anonymized", "softlab", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
-    ("anonymized", "softmic", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
-    ("anonymized", "softpath", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
-    ("anonymized", "unic", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
-    ("anonymized", "staturgence", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
-    ("anonymized", "viewpoint5", "bio.ferlab.ui.etl.yellow.anonymized.Main"),
-
-    ("curated", "unic", "bio.ferlab.ui.etl.red.curated.Main"),
-
-    ("enriched", "mfm", "bio.ferlab.ui.etl.yellow.enriched.mfm.Main"),
-
-    ("ingestion", "eclinibase", "bio.ferlab.ui.etl.red.raw.Main"),
-    ("ingestion", "etraceline", "bio.ferlab.ui.etl.red.raw.Main"),
-    ("ingestion", "growthxp", "bio.ferlab.ui.etl.red.raw.Main"),
-    ("ingestion", "icca", "bio.ferlab.ui.etl.red.raw.Main"),
-    ("ingestion", "laboratoire_systeme", "bio.ferlab.ui.etl.red.raw.Main"),
-    ("ingestion", "medecho", "bio.ferlab.ui.etl.red.raw.Main"),
-    ("ingestion", "pericalm", "bio.ferlab.ui.etl.red.raw.Main"),
-    ("ingestion", "pharmacie", "bio.ferlab.ui.etl.red.raw.Main"),
-    ("ingestion", "softlab", "bio.ferlab.ui.etl.red.raw.softlab.Main"),
-    ("ingestion", "softpath", "bio.ferlab.ui.etl.red.raw.softpath.Main"),
-    ("ingestion", "staturgence", "bio.ferlab.ui.etl.red.raw.Main"),
-    ("ingestion", "viewpoint5", "bio.ferlab.ui.etl.red.raw.Main"),
-
-    ("warehouse", "unic", "bio.ferlab.ui.etl.yellow.warehouse.Main")
-]
+ROOT = '/opt/airflow/dags/repo/dags/config'
+EXTRACT_SCHEMA = '(.*)_config.json'
 CONFIG_FILE = "config/prod.conf"
 
-for namespace, schema, main_class in SCHEMAS:
-    dagid = f"{namespace}_{schema}".lower()
-    dag = DAG(
-        dag_id=dagid,
-        schedule_interval=None,
-        default_args=DEFAULT_ARGS,
-        start_date=days_ago(2),
-        concurrency=3,
-        catchup=False,
-        tags=[namespace]
-    )
-    with dag:
-        config = read_json(f"/opt/airflow/dags/repo/dags/config/{namespace}/{schema}_config.json")
-
-        setup_dag(dag, config, namespace, CONFIG_FILE)
-    globals()[dagid] = dag
+for (r, folders, files) in os.walk(ROOT):
+    if r == ROOT:
+        print(r)
+        print(folders)
+        for namespace in folders:
+            for configs in os.walk(f'{ROOT}/{namespace}'):
+                for f in configs[2]:
+                    schema = re.search(EXTRACT_SCHEMA, f).group(1)
+                    dagid = f"{namespace}_{schema}".lower()
+                    config = read_json(f"{ROOT}/{namespace}/{schema}_config.json")
+                    dag = DAG(
+                        dag_id=dagid,
+                        schedule_interval=None,
+                        default_args=DEFAULT_ARGS,
+                        start_date=days_ago(2),
+                        concurrency=config['concurrency'],
+                        catchup=False,
+                        tags=[namespace]
+                    )
+                    with dag:
+                        setup_dag(dag, config, namespace, CONFIG_FILE)
+                    globals()[dagid] = dag

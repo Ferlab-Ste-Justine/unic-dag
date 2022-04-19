@@ -1,4 +1,5 @@
 {
+  "concurrency": 1,
   "main_class": "bio.ferlab.ui.etl.red.raw.Main",
   "publish_class": "bio.ferlab.ui.etl.yellow.warehouse.Main",
   "schemas": [],
