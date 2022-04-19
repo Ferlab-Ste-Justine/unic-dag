@@ -1,0 +1,7 @@
+[MASTER]
+
+disable=
+  line-too-long,
+  pointless-statement, #pylint doesn't understand statement like op1 >> op2
+  too-many-arguments,
+  different-operator-varname-taskid

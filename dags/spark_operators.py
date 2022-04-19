@@ -1,3 +1,6 @@
+"""
+Help class containing custom SparkKubernetesOperator
+"""
 import json
 from datetime import datetime
 
@@ -13,11 +16,20 @@ def update_log_table(schemas: list,
                      config_file: str,
                      main_class: str,
                      dag: DAG):
-    task = f"log_update_{'_'.join(schemas)}_ingestion_log"
-    pod_name = task.replace("_", "-")
+    """
+    Create a SparkKubernetesOperator updating log table after ingestion job
+    :param schemas:
+    :param log_table:
+    :param config_file:
+    :param main_class:
+    :param dag:
+    :return:
+    """
+    create_job_id = f"log_update_{'_'.join(schemas)}_ingestion_log"
+    pod_name = create_job_id.replace("_", "-")
     yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, main_class)
     create_job = SparkKubernetesOperator(
-        task_id=task,
+        task_id=create_job_id,
         namespace="ingestion",
         application_file=yml,
         priority_weight=1,
@@ -26,11 +38,11 @@ def update_log_table(schemas: list,
         dag=dag
     )
     check_job = SparkKubernetesSensor(
-        task_id=f'check_{task}',
+        task_id=f'check_{create_job_id}',
         namespace="ingestion",
         priority_weight=999,
         weight_rule="absolute",
-        application_name=f"{{{{ task_instance.xcom_pull(task_ids='{task}')['metadata']['name'] }}}}",
+        application_name=f"{{{{ task_instance.xcom_pull(task_ids='{create_job_id}')['metadata']['name'] }}}}",
         poke_interval=30,
         timeout=21600,  # 6 hours
         dag=dag,
@@ -43,6 +55,14 @@ def setup_dag(dag: DAG,
               config: dict,
               namespace: str,
               config_file: str):
+    """
+    setup a dag
+    :param dag:
+    :param config:
+    :param namespace:
+    :param config_file:
+    :return:
+    """
     start = DummyOperator(
         task_id="start_operator",
         dag=dag
@@ -80,7 +100,12 @@ def setup_dag(dag: DAG,
 
 
 def read_json(path: str):
-    f = open(path)
+    """
+    read json file
+    :param path:
+    :return:
+    """
+    f = open(path, encoding='UTF8')
     return json.load(f)
 
 
@@ -91,6 +116,17 @@ def create_spark_job(destination: str,
                      config_file: str,
                      dag: DAG,
                      main_class: str):
+    """
+    create spark job operator
+    :param destination:
+    :param namespace:
+    :param run_type:
+    :param cluster_type:
+    :param config_file:
+    :param dag:
+    :param main_class:
+    :return:
+    """
     driver_ram = 32
     driver_core = 4
     worker_number = 1
@@ -139,6 +175,13 @@ def create_spark_job(destination: str,
 def check_spark_job(destination: str,
                     namespace: str,
                     dag: DAG):
+    """
+    check spark job sensor
+    :param destination:
+    :param namespace:
+    :param dag:
+    :return:
+    """
     return SparkKubernetesSensor(
         task_id=f'check_{destination}',
         namespace=namespace,
@@ -254,16 +297,36 @@ def generic_job(namespace: str,
                 jar: str,
                 main_class: str,
                 env: dict,
+                dependencies: dict,
+                spark_conf: dict,
                 driver_ram: int = 32,
                 driver_core: int = 8,
                 worker_ram: int = 32,
                 worker_core: int = 8,
                 worker_number: int = 1,
-                dependencies: dict = DEPENDENCIES,
-                spark_conf: dict = SPARK_CONF,
                 spark_version: str = "3.0.0",
                 image: str = "ferlabcrsj/spark-operator:3.0.0",
                 service_account: str = "spark"):
+    """
+    Generic yml representing spark job
+    :param namespace:
+    :param pod_name:
+    :param arguments:
+    :param jar:
+    :param main_class:
+    :param env:
+    :param dependencies:
+    :param spark_conf:
+    :param driver_ram:
+    :param driver_core:
+    :param worker_ram:
+    :param worker_core:
+    :param worker_number:
+    :param spark_version:
+    :param image:
+    :param service_account:
+    :return:
+    """
     dt_string = datetime.now().strftime("%d%m%Y-%H%M%S")
     yml = {
         "apiVersion": "sparkoperator.k8s.io/v1beta2",
@@ -322,12 +385,29 @@ def anonymized_job(namespace: str,
                    worker_ram: int = 40,
                    worker_core: int = 8,
                    worker_number: int = 1):
+    """
+    yml for anonymized job
+    :param namespace:
+    :param pod_name:
+    :param destination:
+    :param run_type:
+    :param conf:
+    :param main_class:
+    :param driver_ram:
+    :param driver_core:
+    :param worker_ram:
+    :param worker_core:
+    :param worker_number:
+    :return:
+    """
     return generic_job(namespace,
                        pod_name,
                        [conf, run_type, destination],
                        "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
                        main_class,
                        ANONYMIZED_ENV,
+                       DEPENDENCIES,
+                       SPARK_CONF,
                        driver_ram,
                        driver_core,
                        worker_ram,
@@ -346,12 +426,29 @@ def curated_job(namespace: str,
                 worker_ram: int = 40,
                 worker_core: int = 8,
                 worker_number: int = 1):
+    """
+    yml for curated job
+    :param namespace:
+    :param pod_name:
+    :param destination:
+    :param run_type:
+    :param conf:
+    :param main_class:
+    :param driver_ram:
+    :param driver_core:
+    :param worker_ram:
+    :param worker_core:
+    :param worker_number:
+    :return:
+    """
     return generic_job(namespace,
                        pod_name,
                        [conf, run_type, destination],
                        "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
                        main_class,
                        CURATED_ENV,
+                       DEPENDENCIES,
+                       SPARK_CONF,
                        driver_ram,
                        driver_core,
                        worker_ram,
@@ -370,12 +467,29 @@ def enriched_job(namespace: str,
                  worker_ram: int = 40,
                  worker_core: int = 8,
                  worker_number: int = 1):
+    """
+    yml for enriched job
+    :param namespace:
+    :param pod_name:
+    :param destination:
+    :param run_type:
+    :param conf:
+    :param main_class:
+    :param driver_ram:
+    :param driver_core:
+    :param worker_ram:
+    :param worker_core:
+    :param worker_number:
+    :return:
+    """
     return generic_job(namespace,
                        pod_name,
                        [conf, run_type, destination],
                        "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
                        main_class,
                        ENRICHED_ENV,
+                       DEPENDENCIES,
+                       SPARK_CONF,
                        driver_ram,
                        driver_core,
                        worker_ram,
@@ -393,12 +507,29 @@ def warehouse_job(namespace: str,
                   worker_ram: int = 40,
                   worker_core: int = 8,
                   worker_number: int = 1):
+    """
+    yml for warehouse job
+    :param namespace:
+    :param pod_name:
+    :param destination:
+    :param run_type:
+    :param conf:
+    :param main_class:
+    :param driver_ram:
+    :param driver_core:
+    :param worker_ram:
+    :param worker_core:
+    :param worker_number:
+    :return:
+    """
     return generic_job(namespace,
                        pod_name,
                        [conf, run_type, destination],
                        "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
                        main_class,
                        WAREHOUSE_ENV,
+                       DEPENDENCIES,
+                       SPARK_CONF,
                        driver_ram,
                        driver_core,
                        worker_ram,
@@ -418,12 +549,29 @@ def ingestion_job(namespace: str,
                   worker_ram: int = 40,
                   worker_core: int = 8,
                   worker_number: int = 1):
+    """
+    yml for ingestion job
+    :param namespace:
+    :param pod_name:
+    :param destination:
+    :param run_type:
+    :param conf:
+    :param main_class:
+    :param driver_ram:
+    :param driver_core:
+    :param worker_ram:
+    :param worker_core:
+    :param worker_number:
+    :return:
+    """
     return generic_job(namespace,
                        pod_name,
                        [conf, run_type, destination],
                        "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
                        main_class,
                        INGESTION_ENV,
+                       DEPENDENCIES,
+                       SPARK_CONF,
                        driver_ram,
                        driver_core,
                        worker_ram,
@@ -438,12 +586,25 @@ def log_job(namespace: str,
             schemas: list,
             conf: str,
             main_class: str):
+    """
+    yml for ingestion log job
+    :param namespace:
+    :param pod_name:
+    :param log_table:
+    :param run_type:
+    :param schemas:
+    :param conf:
+    :param main_class:
+    :return:
+    """
     return generic_job(namespace,
                        pod_name,
                        [conf, log_table, run_type] + schemas,
                        "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
                        main_class,
                        INGESTION_ENV,
+                       DEPENDENCIES,
+                       SPARK_CONF,
                        16,
                        4,
                        4,
