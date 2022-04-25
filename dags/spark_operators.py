@@ -85,6 +85,7 @@ def setup_dag(dag: DAG,
 
     for conf in config['datasets']:
         dataset_id = conf['dataset_id']
+
         create_job = create_spark_job(dataset_id, namespace, conf['run_type'], conf['cluster_type'], config_file, dag,
                                       config['main_class'])
         check_job = check_spark_job(dataset_id, namespace, dag)
