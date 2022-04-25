@@ -82,6 +82,7 @@ def setup_dag(dag: DAG,
         )
 
     jobs = {}
+    all_dependencies = []
 
     for conf in config['datasets']:
         dataset_id = conf['dataset_id']
@@ -90,7 +91,8 @@ def setup_dag(dag: DAG,
                                       config['main_class'])
         check_job = check_spark_job(dataset_id, namespace, dag)
 
-        create_job >> check_job >> publish
+        create_job >> check_job
+        all_dependencies = all_dependencies + conf['dependencies']
         jobs[dataset_id] = {"create_job": create_job, "check_job": check_job, "dependencies": conf['dependencies']}
 
     for j in jobs:
@@ -98,6 +100,9 @@ def setup_dag(dag: DAG,
             jobs[dependency]['check_job'] >> jobs[j]['create_job']
         if len(jobs[j]['dependencies']) == 0:
             start >> jobs[j]['create_job']
+        if j not in all_dependencies:
+            jobs[j]['check_job'] >> publish
+
 
 
 def read_json(path: str):
