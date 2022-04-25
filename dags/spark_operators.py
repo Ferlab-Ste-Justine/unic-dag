@@ -158,7 +158,8 @@ def create_spark_job(destination: str,
         yml = enriched_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core,
                            worker_ram, worker_core, worker_number)
     if namespace == "warehouse":
-        yml = warehouse_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core,
+        yml = warehouse_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram,
+                            driver_core,
                             worker_ram, worker_core, worker_number)
 
     return SparkKubernetesOperator(
@@ -496,6 +497,7 @@ def enriched_job(namespace: str,
                        worker_core,
                        worker_number)
 
+
 def warehouse_job(namespace: str,
                   pod_name: str,
                   destination: str,
@@ -535,7 +537,6 @@ def warehouse_job(namespace: str,
                        worker_ram,
                        worker_core,
                        worker_number)
-
 
 
 def ingestion_job(namespace: str,
