@@ -25,7 +25,7 @@ def update_log_table(schemas: list,
     :param dag:
     :return:
     """
-    create_job_id = f"log_update_{'_'.join(schemas)}_ingestion_log"
+    create_job_id = f"log_update_{'_'.join(schemas)[:20]}"
     pod_name = create_job_id.replace("_", "-")
     yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, main_class)
     create_job = SparkKubernetesOperator(
