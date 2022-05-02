@@ -1,0 +1,11 @@
+{
+  "concurrency": 1,
+  "main_class": "bio.ferlab.ui.etl.red.raw.Main",
+  "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
+  "schemas": ["chartmaxx"],
+  "datasets":
+  [
+    {"dataset_id": "raw_chartmaxx_cmformcapture"         , "cluster_type": "medium", "run_type": "initial", "dependencies": []},
+    {"dataset_id": "raw_chartmaxx_cmformcapture_deletes" , "cluster_type": "medium", "run_type": "initial", "dependencies": []}
+  ]
+}
