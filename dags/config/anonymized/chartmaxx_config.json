@@ -1,0 +1,11 @@
+{
+  "concurrency": 3,
+  "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+  "publish_class": "",
+  "schemas": [],
+  "datasets":
+  [
+    {"dataset_id": "anonymized_chartmaxx_cmformcapture"         , "cluster_type": "medium", "run_type": "initial", "dependencies": []},
+    {"dataset_id": "anonymized_chartmaxx_cmformcapture_deletes" , "cluster_type": "medium", "run_type": "initial", "dependencies": []}
+  ]
+}
