@@ -2,6 +2,7 @@
 Help class containing custom SparkKubernetesOperator
 """
 import json
+import re
 from datetime import datetime
 
 import yaml
@@ -9,6 +10,15 @@ from airflow import DAG
 from airflow.operators.dummy import DummyOperator
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
 from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
+
+
+def sanitize_pod_name(name: str):
+    """
+    Replace all special character in a pod_name into dashes
+    :param name: name of the pod before being sanitized
+    :return: sanitized name
+    """
+    return re.sub("[^a-zA-Z0-9 ]", '-', name)
 
 
 def update_log_table(schemas: list,
@@ -26,7 +36,7 @@ def update_log_table(schemas: list,
     :return:
     """
     create_job_id = f"log_update_{'_'.join(schemas)[:20]}"
-    pod_name = create_job_id.replace("_", "-")
+    pod_name = sanitize_pod_name(create_job_id)
     yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, main_class)
     create_job = SparkKubernetesOperator(
         task_id=create_job_id,
@@ -150,7 +160,7 @@ def create_spark_job(destination: str,
         worker_ram = 40
         worker_core = 8
 
-    pod_name = destination[:40].replace("_", "-")
+    pod_name = pod_name = sanitize_pod_name(destination[:40])
     yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core,
                         worker_ram, worker_core, worker_number)
     if namespace == "anonymized":
