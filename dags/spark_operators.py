@@ -95,13 +95,13 @@ def setup_dag(dag: DAG,
         all_dependencies = all_dependencies + conf['dependencies']
         jobs[dataset_id] = {"create_job": create_job, "check_job": check_job, "dependencies": conf['dependencies']}
 
-    for j in jobs:
-        for dependency in jobs[j]['dependencies']:
-            jobs[dependency]['check_job'] >> jobs[j]['create_job']
-        if len(jobs[j]['dependencies']) == 0:
-            start >> jobs[j]['create_job']
-        if j not in all_dependencies:
-            jobs[j]['check_job'] >> publish
+    for dataset_id, job in jobs.items():
+        for dependency in job['dependencies']:
+            jobs[dependency]['check_job'] >> job['create_job']
+        if len(job['dependencies']) == 0:
+            start >> job['create_job']
+        if dataset_id not in all_dependencies:
+            job['check_job'] >> publish
 
 
 
@@ -111,8 +111,7 @@ def read_json(path: str):
     :param path:
     :return:
     """
-    f = open(path, encoding='UTF8')
-    return json.load(f)
+    return json.load(open(path, encoding='UTF8'))
 
 
 def create_spark_job(destination: str,
@@ -297,7 +296,7 @@ ANONYMIZED_ENV = {
     }
 }
 
-
+# pylint: disable=too-many-locals
 def generic_job(namespace: str,
                 pod_name: str,
                 arguments: list,
