@@ -5,6 +5,6 @@
   "schemas": [],
   "datasets":
   [
-    {"dataset_id":"curated_unic_patient_index", "cluster_type": "medium" , "run_type": "initial", "dependencies": []}
+    {"dataset_id":"curated_unic_patient_index", "cluster_type": "large" , "run_type": "initial", "dependencies": []}
   ]
 }
