@@ -5,10 +5,12 @@
   "schemas": [],
   "datasets":
   [
-    {"dataset_id":"enriched_mfm_baby"       , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
-    {"dataset_id":"enriched_mfm_delivery"   , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
-    {"dataset_id":"enriched_mfm_mother"     , "cluster_type": "small"  , "run_type": "initial", "dependencies": []},
-    {"dataset_id":"enriched_mfm_mother_test", "cluster_type": "small"  , "run_type": "default", "dependencies": ["enriched_mfm_mother"]},
-    {"dataset_id":"enriched_mfm_pregnancy"  , "cluster_type": "medium" , "run_type": "initial", "dependencies": []}
+    {"dataset_id":"enriched_mfm_baby"                      , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
+    {"dataset_id":"enriched_mfm_delivery"                  , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
+    {"dataset_id":"enriched_mfm_mother"                    , "cluster_type": "small"  , "run_type": "initial", "dependencies": []},
+    {"dataset_id":"enriched_mfm_mother_test"               , "cluster_type": "small"  , "run_type": "default", "dependencies": ["enriched_mfm_mother"]},
+    {"dataset_id":"enriched_mfm_pregnancy"                 , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
+    {"dataset_id":"enriched_mfm_pregnancy_index"           , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
+    {"dataset_id":"enriched_mfm_pregnancy_index_test"      , "cluster_type": "small"  , "run_type": "default", "dependencies": ["enriched_mfm_pregnancy_index"]}
   ]
 }
