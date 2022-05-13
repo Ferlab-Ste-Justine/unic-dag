@@ -3,6 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.yellow.enriched.mfm.Main",
   "publish_class": "",
   "schemas": [],
+  "schedule": null,
   "datasets":
   [
     {"dataset_id":"enriched_mfm_baby"                      , "cluster_type": "medium" , "run_type": "initial", "dependencies": ["enriched_mfm_pregnancy_index"]},

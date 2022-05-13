@@ -3,6 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.red.raw.Main",
   "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": [],
+  "schedule": null,
   "datasets":
   [
     {"dataset_id": "raw_icca_blood_gas"         , "cluster_type": "small", "run_type": "initial", "dependencies": []},

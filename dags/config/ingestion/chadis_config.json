@@ -4,6 +4,7 @@
   "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": ["chadis_conners_report", "chadis_diagnosis", "chadis_patient", "chadis_profile", "chadis_question", "chadis_questionnaire",
   "chadis_refusal", "chadis_report", "chadis_response", "chadis_response_response", "chadis_visit"],
+  "schedule": null,
   "datasets":
   [
     {"dataset_id": "raw_chadis_conners_report_conners_report"                       , "cluster_type": "small", "run_type": "initial", "dependencies": []},

@@ -3,6 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.red.raw.Main",
   "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": ["chartmaxx"],
+  "schedule": "0 6 * * 5",
   "datasets":
   [
     {"dataset_id": "raw_chartmaxx_cmformcapture"         , "cluster_type": "medium", "run_type": "initial", "dependencies": []},

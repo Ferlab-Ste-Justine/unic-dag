@@ -3,6 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.red.raw.Main",
   "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": ["laboratoire_systeme"],
+  "schedule": "0 21 * * 1",
   "datasets":
   [
     {"dataset_id": "raw_laboratoire_systeme_v_s_lab_canned_message"        , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
