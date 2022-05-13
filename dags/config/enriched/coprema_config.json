@@ -3,6 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.yellow.enriched.coprema.Main",
   "publish_class": "",
   "schemas": [],
+  "schedule": null,
   "datasets":
   [
     {"dataset_id":"enriched_coprema_baby"                  , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},

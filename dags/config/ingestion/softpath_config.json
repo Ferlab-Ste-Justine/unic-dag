@@ -3,6 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.red.raw.softpath.Main",
   "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": ["softpath"],
+  "schedule": "0 20 * * 1",
   "datasets":
   [
     {"dataset_id":"raw_softpath_v_p_pat_auxilarydoctor"      , "cluster_type": "small" , "run_type": "initial", "dependencies": []},

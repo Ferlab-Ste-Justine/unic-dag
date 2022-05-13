@@ -3,6 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
   "publish_class": "",
   "schemas": [],
+  "schedule": null,
   "datasets":
   [
     {"dataset_id":"anonymized_viewpoint_accounts"  , "cluster_type": "small" , "run_type": "initial", "dependencies": []},

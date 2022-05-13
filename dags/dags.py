@@ -32,7 +32,7 @@ for (r, folders, files) in os.walk(ROOT):
                     config = read_json(f"{ROOT}/{namespace}/{schema}_config.json")
                     dag = DAG(
                         dag_id=dagid,
-                        schedule_interval=None,
+                        schedule_interval=config['schedule'],
                         default_args=DEFAULT_ARGS,
                         start_date=days_ago(2),
                         concurrency=config['concurrency'],

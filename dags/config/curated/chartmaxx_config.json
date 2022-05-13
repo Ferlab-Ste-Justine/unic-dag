@@ -3,6 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.red.curated.Main",
   "publish_class": "",
   "schemas": [],
+  "schedule": null,
   "datasets":
   [
     {"dataset_id":"curated_chartmaxx_cmformcapture", "cluster_type": "medium" , "run_type": "initial", "dependencies": []}

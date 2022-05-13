@@ -3,6 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.red.raw.Main",
   "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": ["rdv_horaire", "rendez_vous", "tables_reference_index_patient", "tables_reference_rdv", "vues_index_patient"],
+  "schedule": "0 6 * * 3",
   "datasets":
   [
     {"dataset_id": "raw_eclinibase_v_horaire"                         , "cluster_type": "small", "run_type": "initial", "dependencies": []},
