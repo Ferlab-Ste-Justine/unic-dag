@@ -3,7 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.red.raw.Main",
   "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": ["staturgence"],
-  "schedule": "0 5 * * 1",
+  "schedule": "0 13 * * 1",
   "datasets":
   [
     {"dataset_id":"raw_staturgence_recherche_logtransaction", "cluster_type": "small" , "run_type": "default", "dependencies": []},
