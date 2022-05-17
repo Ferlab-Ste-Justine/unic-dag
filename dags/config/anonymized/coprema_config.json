@@ -1,0 +1,11 @@
+{
+  "concurrency": 2,
+  "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+  "publish_class": "",
+  "schemas": [],
+  "schedule": null,
+  "datasets":
+  [
+    {"dataset_id": "anonymized_coprema_patient_index", "cluster_type": "small", "run_type": "default", "dependencies": []}
+  ]
+}
