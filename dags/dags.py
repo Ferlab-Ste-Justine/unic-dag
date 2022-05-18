@@ -19,6 +19,7 @@ DEFAULT_ARGS = {
 ROOT = '/opt/airflow/dags/repo/dags/config'
 EXTRACT_SCHEMA = '(.*)_config.json'
 CONFIG_FILE = "config/prod.conf"
+JAR = "s3a://spark-prd/jars/unic-etl-{{ dag_run.conf.get('branch', 'master') }}.jar"
 
 for (r, folders, files) in os.walk(ROOT):
     if r == ROOT:
@@ -38,5 +39,5 @@ for (r, folders, files) in os.walk(ROOT):
                         tags=[namespace]
                     )
                     with dag:
-                        setup_dag(dag, config, namespace, CONFIG_FILE)
+                        setup_dag(dag, config, namespace, CONFIG_FILE, JAR)
                     globals()[dagid] = dag
