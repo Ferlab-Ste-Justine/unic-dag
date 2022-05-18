@@ -25,6 +25,7 @@ def update_log_table(schemas: list,
                      log_table: str,
                      config_file: str,
                      main_class: str,
+                     jar: str,
                      dag: DAG):
     """
     Create a SparkKubernetesOperator updating log table after ingestion job
@@ -32,12 +33,13 @@ def update_log_table(schemas: list,
     :param log_table:
     :param config_file:
     :param main_class:
+    :param jar:
     :param dag:
     :return:
     """
     create_job_id = f"log_update_{'_'.join(schemas)[:20]}"
     pod_name = sanitize_pod_name(create_job_id)
-    yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, main_class)
+    yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, main_class, jar)
     create_job = SparkKubernetesOperator(
         task_id=create_job_id,
         namespace="ingestion",
@@ -64,13 +66,15 @@ def update_log_table(schemas: list,
 def setup_dag(dag: DAG,
               config: dict,
               namespace: str,
-              config_file: str):
+              config_file: str,
+              jar: str):
     """
     setup a dag
     :param dag:
     :param config:
     :param namespace:
     :param config_file:
+    :param jar:
     :return:
     """
     start = DummyOperator(
@@ -84,6 +88,7 @@ def setup_dag(dag: DAG,
                                    "journalisation.ETL_Truncate_Table",
                                    config_file,
                                    config['publish_class'],
+                                   jar,
                                    dag)
     else:
         publish = DummyOperator(
@@ -97,8 +102,8 @@ def setup_dag(dag: DAG,
     for conf in config['datasets']:
         dataset_id = conf['dataset_id']
 
-        create_job = create_spark_job(dataset_id, namespace, conf['run_type'], conf['cluster_type'], config_file, dag,
-                                      config['main_class'])
+        create_job = create_spark_job(dataset_id, namespace, conf['run_type'], conf['cluster_type'], config_file, jar,
+                                      dag, config['main_class'])
         check_job = check_spark_job(dataset_id, namespace, dag)
 
         create_job >> check_job
@@ -129,6 +134,7 @@ def create_spark_job(destination: str,
                      run_type: str,
                      cluster_type: str,
                      config_file: str,
+                     jar: str,
                      dag: DAG,
                      main_class: str):
     """
@@ -138,6 +144,7 @@ def create_spark_job(destination: str,
     :param run_type:
     :param cluster_type:
     :param config_file:
+    :param jar:
     :param dag:
     :param main_class:
     :return:
@@ -161,19 +168,19 @@ def create_spark_job(destination: str,
         worker_core = 8
 
     pod_name = pod_name = sanitize_pod_name(destination[:40])
-    yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core,
+    yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, jar, main_class, driver_ram, driver_core,
                         worker_ram, worker_core, worker_number)
     if namespace == "anonymized":
-        yml = anonymized_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram,
+        yml = anonymized_job(namespace, pod_name, destination, run_type, config_file, jar, main_class, driver_ram,
                              driver_core, worker_ram, worker_core, worker_number)
     if namespace == "curated":
-        yml = curated_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core,
+        yml = curated_job(namespace, pod_name, destination, run_type, config_file, jar, main_class, driver_ram, driver_core,
                           worker_ram, worker_core, worker_number)
     if namespace == "enriched":
-        yml = enriched_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram, driver_core,
+        yml = enriched_job(namespace, pod_name, destination, run_type, config_file, jar, main_class, driver_ram, driver_core,
                            worker_ram, worker_core, worker_number)
     if namespace == "warehouse":
-        yml = warehouse_job(namespace, pod_name, destination, run_type, config_file, main_class, driver_ram,
+        yml = warehouse_job(namespace, pod_name, destination, run_type, config_file, jar, main_class, driver_ram,
                             driver_core,
                             worker_ram, worker_core, worker_number)
 
@@ -395,6 +402,7 @@ def anonymized_job(namespace: str,
                    destination: str,
                    run_type: str,
                    conf: str,
+                   jar: str,
                    main_class: str = "bio.ferlab.ui.etl.yellow.anonymized.Main",
                    driver_ram: int = 40,
                    driver_core: int = 8,
@@ -408,6 +416,7 @@ def anonymized_job(namespace: str,
     :param destination:
     :param run_type:
     :param conf:
+    :param jar:
     :param main_class:
     :param driver_ram:
     :param driver_core:
@@ -419,7 +428,7 @@ def anonymized_job(namespace: str,
     return generic_job(namespace,
                        pod_name,
                        [conf, run_type, destination],
-                       "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
+                       jar,
                        main_class,
                        ANONYMIZED_ENV,
                        DEPENDENCIES,
@@ -436,6 +445,7 @@ def curated_job(namespace: str,
                 destination: str,
                 run_type: str,
                 conf: str,
+                jar: str,
                 main_class: str = "bio.ferlab.ui.etl.yellow.anonymized.Main",
                 driver_ram: int = 40,
                 driver_core: int = 8,
@@ -449,6 +459,7 @@ def curated_job(namespace: str,
     :param destination:
     :param run_type:
     :param conf:
+    :param jar:
     :param main_class:
     :param driver_ram:
     :param driver_core:
@@ -460,7 +471,7 @@ def curated_job(namespace: str,
     return generic_job(namespace,
                        pod_name,
                        [conf, run_type, destination],
-                       "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
+                       jar,
                        main_class,
                        CURATED_ENV,
                        DEPENDENCIES,
@@ -477,6 +488,7 @@ def enriched_job(namespace: str,
                  destination: str,
                  run_type: str,
                  conf: str,
+                 jar: str,
                  main_class: str,
                  driver_ram: int = 40,
                  driver_core: int = 8,
@@ -490,6 +502,7 @@ def enriched_job(namespace: str,
     :param destination:
     :param run_type:
     :param conf:
+    :param jar:
     :param main_class:
     :param driver_ram:
     :param driver_core:
@@ -501,7 +514,7 @@ def enriched_job(namespace: str,
     return generic_job(namespace,
                        pod_name,
                        [conf, run_type, destination],
-                       "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
+                       jar,
                        main_class,
                        ENRICHED_ENV,
                        DEPENDENCIES,
@@ -518,6 +531,7 @@ def warehouse_job(namespace: str,
                   destination: str,
                   run_type: str,
                   conf: str,
+                  jar: str,
                   main_class: str,
                   driver_ram: int = 40,
                   driver_core: int = 8,
@@ -531,6 +545,7 @@ def warehouse_job(namespace: str,
     :param destination:
     :param run_type:
     :param conf:
+    :param jar:
     :param main_class:
     :param driver_ram:
     :param driver_core:
@@ -542,7 +557,7 @@ def warehouse_job(namespace: str,
     return generic_job(namespace,
                        pod_name,
                        [conf, run_type, destination],
-                       "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
+                       jar,
                        main_class,
                        WAREHOUSE_ENV,
                        DEPENDENCIES,
@@ -559,6 +574,7 @@ def ingestion_job(namespace: str,
                   destination: str,
                   run_type: str,
                   conf: str,
+                  jar: str,
                   main_class: str = "bio.ferlab.ui.etl.red.raw.Main",
                   driver_ram: int = 40,
                   driver_core: int = 8,
@@ -572,6 +588,7 @@ def ingestion_job(namespace: str,
     :param destination:
     :param run_type:
     :param conf:
+    :param jar:
     :param main_class:
     :param driver_ram:
     :param driver_core:
@@ -583,7 +600,7 @@ def ingestion_job(namespace: str,
     return generic_job(namespace,
                        pod_name,
                        [conf, run_type, destination],
-                       "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
+                       jar,
                        main_class,
                        INGESTION_ENV,
                        DEPENDENCIES,
@@ -601,6 +618,7 @@ def log_job(namespace: str,
             run_type: str,
             schemas: list,
             conf: str,
+            jar: str,
             main_class: str):
     """
     yml for ingestion log job
@@ -610,13 +628,14 @@ def log_job(namespace: str,
     :param run_type:
     :param schemas:
     :param conf:
+    :param jar:
     :param main_class:
     :return:
     """
     return generic_job(namespace,
                        pod_name,
                        [conf, log_table, run_type] + schemas,
-                       "s3a://spark-prd/jars/unic-etl-3.0.0.jar",
+                       jar,
                        main_class,
                        INGESTION_ENV,
                        DEPENDENCIES,
