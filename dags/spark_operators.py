@@ -42,26 +42,26 @@ def update_log_table(schemas: list,
     pod_name = sanitize_pod_name(create_job_id)
     yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, main_class, jar)
     with TaskGroup(create_job_id) as tg:
-      create_job = SparkKubernetesOperator(
-          task_id=create_job_id,
-          namespace="ingestion",
-          application_file=yml,
-          priority_weight=1,
-          weight_rule="absolute",
-          do_xcom_push=True,
-          dag=dag
-      )
-      check_job = SparkKubernetesSensor(
-          task_id=f'check_{create_job_id}',
-          namespace="ingestion",
-          priority_weight=999,
-          weight_rule="absolute",
-          application_name=f"{{{{ task_instance.xcom_pull(task_ids='{create_job_id}')['metadata']['name'] }}}}",
-          poke_interval=30,
-          timeout=21600,  # 6 hours
-          dag=dag,
-      )
-      create_job >> check_job
+        create_job = SparkKubernetesOperator(
+            task_id=create_job_id,
+            namespace="ingestion",
+            application_file=yml,
+            priority_weight=1,
+            weight_rule="absolute",
+            do_xcom_push=True,
+            dag=dag
+        )
+        check_job = SparkKubernetesSensor(
+            task_id=f'check_{create_job_id}',
+            namespace="ingestion",
+            priority_weight=999,
+            weight_rule="absolute",
+            application_name=f"{{{{ task_instance.xcom_pull(task_ids='{create_job_id}')['metadata']['name'] }}}}",
+            poke_interval=30,
+            timeout=21600,  # 6 hours
+            dag=dag,
+        )
+        create_job >> check_job
     return tg
 
 
@@ -102,23 +102,24 @@ def setup_dag(dag: DAG,
     all_dependencies = []
 
     for conf in config['datasets']:
+
         dataset_id = conf['dataset_id']
+        with TaskGroup(dataset_id) as tg:
+            create_job = create_spark_job(dataset_id, namespace, conf['run_type'], conf['cluster_type'], config_file, jar,
+                                        dag, config['main_class'])
+            check_job = check_spark_job(dataset_id, namespace, dag)
 
-        create_job = create_spark_job(dataset_id, namespace, conf['run_type'], conf['cluster_type'], config_file, jar,
-                                      dag, config['main_class'])
-        check_job = check_spark_job(dataset_id, namespace, dag)
-
-        create_job >> check_job
-        all_dependencies = all_dependencies + conf['dependencies']
-        jobs[dataset_id] = {"create_job": create_job, "check_job": check_job, "dependencies": conf['dependencies']}
+            create_job >> check_job
+            all_dependencies = all_dependencies + conf['dependencies']
+            jobs[dataset_id] = {"task_group": tg, "dependencies": conf['dependencies']}
 
     for dataset_id, job in jobs.items():
         for dependency in job['dependencies']:
-            jobs[dependency]['check_job'] >> job['create_job']
+            jobs[dependency]['task_group'] >> job['task_group']
         if len(job['dependencies']) == 0:
-            start >> job['create_job']
+            start >> job['task_group']
         if dataset_id not in all_dependencies:
-            job['check_job'] >> publish
+            job['task_group'] >> publish
 
 
 
