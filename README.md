@@ -1,15 +1,20 @@
 # unic-dag
 
-## how to run a DAG
+## how access airflow
 
-### port forward
+#### Forward 8080 port to your local machine
 
 ```
 kubectl port-forward svc/airflow-web 8888:8080 -n airflow
 ```
 
-### go to the web-ui
+### access the web-ui on localhost
 
 ```
-https://localhost:8888
+http://localhost:8888
 ```
+
+## how to run a dag
+
+To run production dag, simply hit the play button of a specific dag
+To debug a dag, 
