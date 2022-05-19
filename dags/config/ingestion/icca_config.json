@@ -11,7 +11,7 @@
     {"dataset_id": "raw_icca_d_bed"             , "cluster_type": "medium", "run_type": "initial", "dependencies": []},
     {"dataset_id": "raw_icca_d_careprovider"    , "cluster_type": "medium", "run_type": "initial", "dependencies": []},
     {"dataset_id": "raw_icca_d_document"        , "cluster_type": "medium", "run_type": "initial", "dependencies": []},
-    {"dataset_id": "raw_icca_d_encounter"       , "cluster_type": "large" , "run_type": "initial", "dependencies": []},
+    {"dataset_id": "raw_icca_d_encounter"       , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
     {"dataset_id": "raw_icca_d_intervention"    , "cluster_type": "medium", "run_type": "initial", "dependencies": []},
     {"dataset_id": "raw_icca_d_order"           , "cluster_type": "medium", "run_type": "initial", "dependencies": []},
     {"dataset_id": "raw_icca_d_site"            , "cluster_type": "medium", "run_type": "initial", "dependencies": []},

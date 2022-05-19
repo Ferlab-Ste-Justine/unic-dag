@@ -10,6 +10,7 @@ from airflow import DAG
 from airflow.operators.dummy import DummyOperator
 from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
 from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
+from airflow.utils.task_group import TaskGroup
 
 
 def sanitize_pod_name(name: str):
@@ -40,27 +41,28 @@ def update_log_table(schemas: list,
     create_job_id = f"log_update_{'_'.join(schemas)[:20]}"
     pod_name = sanitize_pod_name(create_job_id)
     yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, main_class, jar)
-    create_job = SparkKubernetesOperator(
-        task_id=create_job_id,
-        namespace="ingestion",
-        application_file=yml,
-        priority_weight=1,
-        weight_rule="absolute",
-        do_xcom_push=True,
-        dag=dag
-    )
-    check_job = SparkKubernetesSensor(
-        task_id=f'check_{create_job_id}',
-        namespace="ingestion",
-        priority_weight=999,
-        weight_rule="absolute",
-        application_name=f"{{{{ task_instance.xcom_pull(task_ids='{create_job_id}')['metadata']['name'] }}}}",
-        poke_interval=30,
-        timeout=21600,  # 6 hours
-        dag=dag,
-    )
-    create_job >> check_job
-    return create_job
+    with TaskGroup(create_job_id) as tg:
+      create_job = SparkKubernetesOperator(
+          task_id=create_job_id,
+          namespace="ingestion",
+          application_file=yml,
+          priority_weight=1,
+          weight_rule="absolute",
+          do_xcom_push=True,
+          dag=dag
+      )
+      check_job = SparkKubernetesSensor(
+          task_id=f'check_{create_job_id}',
+          namespace="ingestion",
+          priority_weight=999,
+          weight_rule="absolute",
+          application_name=f"{{{{ task_instance.xcom_pull(task_ids='{create_job_id}')['metadata']['name'] }}}}",
+          poke_interval=30,
+          timeout=21600,  # 6 hours
+          dag=dag,
+      )
+      create_job >> check_job
+    return tg
 
 
 def setup_dag(dag: DAG,
@@ -78,7 +80,7 @@ def setup_dag(dag: DAG,
     :return:
     """
     start = DummyOperator(
-        task_id="start_operator",
+        task_id="start",
         dag=dag
     )
 
@@ -92,7 +94,7 @@ def setup_dag(dag: DAG,
                                    dag)
     else:
         publish = DummyOperator(
-            task_id="publish_operator",
+            task_id="publish",
             dag=dag
         )
 
