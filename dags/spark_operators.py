@@ -39,7 +39,7 @@ def update_log_table(schemas: list,
     """
     create_job_id = f"log_update_{'_'.join(schemas)[:20]}"
     pod_name = sanitize_pod_name(create_job_id)
-    yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, main_class, jar)
+    yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, jar, main_class)
     create_job = SparkKubernetesOperator(
         task_id=create_job_id,
         namespace="ingestion",
