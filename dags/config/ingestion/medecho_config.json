@@ -3,7 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.red.raw.Main",
   "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": ["medecho"],
-  "schedule": "0 6 * * 6",
+  "schedule": "0 5 * * 7",
   "datasets":
   [
     {"dataset_id":"raw_medecho_mep_vue_accident"       , "cluster_type": "small" , "run_type": "initial", "dependencies": []},

@@ -3,7 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.red.raw.Main",
   "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": ["pericalm"],
-  "schedule": "0 3 * * 4",
+  "schedule": "0 2 * * 5",
   "datasets":
   [
     {"dataset_id": "raw_pericalm_addresses"                              , "cluster_type": "small", "run_type": "default", "dependencies": []},

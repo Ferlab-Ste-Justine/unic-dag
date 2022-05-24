@@ -3,7 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.red.raw.Main",
   "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": ["GrowthXP"],
-  "schedule": "0 6 * * 4",
+  "schedule": "0 5 * * 5",
   "datasets":
   [
     {"dataset_id":"raw_growthxp_patient", "cluster_type": "small" , "run_type": "initial", "dependencies": []},
