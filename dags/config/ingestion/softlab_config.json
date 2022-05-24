@@ -3,7 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.red.raw.softlab.Main",
   "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": ["softlab", "softmic"],
-  "schedule": "0 6 * * 3",
+  "schedule": "0 12 * * 3",
   "datasets":
   [
     {"dataset_id": "raw_softlab_v_p_genindex_hisaux"         , "cluster_type": "small" , "run_type": "default", "dependencies": []},

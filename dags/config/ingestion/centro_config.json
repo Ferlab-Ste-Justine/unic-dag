@@ -3,7 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.red.raw.centro.Main",
   "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": ["centro"],
-  "schedule": "0 2 * * 1",
+  "schedule": "0 8 * * 1",
   "datasets":
   [
     {"dataset_id": "raw_centro_aid_"   , "cluster_type": "small", "run_type": "default", "dependencies": []},

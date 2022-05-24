@@ -3,7 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.red.raw.Main",
   "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": ["Pharmacie"],
-  "schedule": "0 22 * * 4",
+  "schedule": "0 4 * * 5",
   "datasets":
   [
     {"dataset_id":"raw_pharmacie_glite_protocole"                                  , "cluster_type": "small", "run_type": "default", "dependencies": []},

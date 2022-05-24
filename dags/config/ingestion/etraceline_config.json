@@ -3,7 +3,7 @@
   "main_class": "bio.ferlab.ui.etl.red.raw.Main",
   "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
   "schemas": ["etraceline"],
-  "schedule": "0 2 * * 6",
+  "schedule": "0 8 * * 6",
   "datasets":
   [
     {"dataset_id": "raw_etraceline_acte_produits"    , "cluster_type": "small", "run_type": "default", "dependencies": []},
