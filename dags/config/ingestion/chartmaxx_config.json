@@ -6,7 +6,7 @@
   "schedule": "0 5 * * 6",
   "datasets":
   [
-    {"dataset_id": "raw_chartmaxx_cmformcapture"         , "cluster_type": "medium", "run_type": "initial", "dependencies": []},
-    {"dataset_id": "raw_chartmaxx_cmformcapture_deletes" , "cluster_type": "medium", "run_type": "initial", "dependencies": []}
+    {"dataset_id": "raw_chartmaxx_cmformcapture"         , "cluster_type": "medium", "run_type": "default", "dependencies": []},
+    {"dataset_id": "raw_chartmaxx_cmformcapture_deletes" , "cluster_type": "medium", "run_type": "default", "dependencies": []}
   ]
 }
