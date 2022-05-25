@@ -3,6 +3,8 @@ Ingestion and anonymized dags
 """
 import os
 import re
+from datetime import datetime
+
 from airflow import DAG
 from airflow.utils.dates import days_ago
 from spark_operators import read_json, setup_dag
@@ -33,7 +35,7 @@ for (r, folders, files) in os.walk(ROOT):
                         dag_id=dagid,
                         schedule_interval=config['schedule'],
                         default_args=DEFAULT_ARGS,
-                        start_date=days_ago(2),
+                        start_date=datetime(2021, 1, 1),
                         concurrency=config['concurrency'],
                         catchup=False,
                         tags=[namespace]
