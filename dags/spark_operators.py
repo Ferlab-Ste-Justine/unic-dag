@@ -77,12 +77,21 @@ def get_start_oprator(namespace: str,
         dag=dag
     )
 
-
+# pylint: disable=too-many-locals,no-else-return
 def get_publish_oprator(dag_config: dict,
                         etl_config_file: str,
                         jar: str,
                         dag: DAG,
                         schema: str):
+    """
+    Create a publish task based on the config publish_class
+    :param dag_config:
+    :param etl_config_file:
+    :param jar:
+    :param dag:
+    :param schema:
+    :return: both start and end to the publish operator if the operator contain multiple task
+    """
     if dag_config['publish_class'] == "bio.ferlab.ui.etl.red.raw.UpdateLog":
         return update_log_table(dag_config['schemas'],
                                 "journalisation.ETL_Truncate_Table",
@@ -104,7 +113,7 @@ def setup_dag(dag: DAG,
               jar: str,
               schema: str):
     """
-    steup a dag
+    setup a dag
     :param dag:
     :param dag_config:
     :param etl_config_file:
