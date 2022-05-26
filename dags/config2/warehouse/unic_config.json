@@ -1,0 +1,18 @@
+{
+  "concurrency": 2,
+  "schedule": "18 16 * * 4",
+  "steps": [{
+    "namespace": "warehouse",
+    "main_class": "bio.ferlab.ui.etl.yellow.warehouse.Main",
+    "publish_class": "",
+    "schemas": [],
+    "datasets":
+    [
+      {"dataset_id":"warehouse_lab_results"        , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
+      {"dataset_id":"warehouse_medications"        , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
+      {"dataset_id":"warehouse_medications_manual" , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
+      {"dataset_id":"warehouse_microbiology"       , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
+      {"dataset_id":"warehouse_transfusions"       , "cluster_type": "medium" , "run_type": "initial", "dependencies": []}
+    ]
+  }]
+}

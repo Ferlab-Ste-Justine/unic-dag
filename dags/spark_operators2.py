@@ -60,18 +60,20 @@ def update_log_table(schemas: list,
         dag=dag,
     )
     create_job >> check_job
-    return create_job
+    return create_job, check_job
 
 
 def get_start_oprator(namespace: str,
-                      dag: DAG):
+                      dag: DAG,
+                      schema: str):
     """
     :param namespace:
     :param dag:
+    :param schema:
     :return:
     """
     return DummyOperator(
-        task_id=f"start_{namespace}",
+        task_id=f"start_{namespace}_{schema}",
         dag=dag
     )
 
@@ -79,7 +81,8 @@ def get_start_oprator(namespace: str,
 def get_publish_oprator(dag_config: dict,
                         etl_config_file: str,
                         jar: str,
-                        dag: DAG):
+                        dag: DAG,
+                        schema: str):
     if dag_config['publish_class'] == "bio.ferlab.ui.etl.red.raw.UpdateLog":
         return update_log_table(dag_config['schemas'],
                                 "journalisation.ETL_Truncate_Table",
@@ -88,57 +91,59 @@ def get_publish_oprator(dag_config: dict,
                                 jar,
                                 dag)
     else:
-        return DummyOperator(
-            task_id="publish_placeholder",
+        publish = DummyOperator(
+            task_id=f"publish_{dag_config['namespace']}_{schema}",
             dag=dag
         )
+        return publish, publish
 
 
 def setup_dag(dag: DAG,
               dag_config: dict,
               etl_config_file: str,
-              jar: str):
+              jar: str,
+              schema: str):
     """
-    setup a dag
+    steup a dag
     :param dag:
     :param dag_config:
-    :param namespace:
     :param etl_config_file:
     :param jar:
+    :param schema:
     :return:
     """
 
     previous_publish = None
 
-    for step in dag_config['steps']:
-        namespace = step['namespace']
-        start = get_start_oprator(namespace, dag)
-        publish = get_publish_oprator(dag_config, etl_config_file, jar, dag)
-        start >> publish
-        previous_publish >> start
-        previous_publish = publish
+    for step_config in dag_config['steps']:
+        start = get_start_oprator(step_config['namespace'], dag, schema)
+        start_publish, end_publish = get_publish_oprator(step_config, etl_config_file, jar, dag, schema)
+#        start >> start_publish
+        if previous_publish:
+            previous_publish >> start
+        previous_publish = end_publish
 
-#    jobs = {}
-#    all_dependencies = []
-#
-#    for conf in dag_config['datasets']:
-#        dataset_id = conf['dataset_id']
-#
-#        create_job = create_spark_job(dataset_id, namespace, conf['run_type'], conf['cluster_type'], etl_config_file, jar,
-#                                      dag, dag_config['main_class'])
-#        check_job = check_spark_job(dataset_id, namespace, dag)
-#
-#        create_job >> check_job
-#        all_dependencies = all_dependencies + conf['dependencies']
-#        jobs[dataset_id] = {"create_job": create_job, "check_job": check_job, "dependencies": conf['dependencies']}
-#
-#    for dataset_id, job in jobs.items():
-#        for dependency in job['dependencies']:
-#            jobs[dependency]['check_job'] >> job['create_job']
-#        if len(job['dependencies']) == 0:
-#            start >> job['create_job']
-#        if dataset_id not in all_dependencies:
-#            job['check_job'] >> publish
+        jobs = {}
+        all_dependencies = []
+
+        for conf in step_config['datasets']:
+            dataset_id = conf['dataset_id']
+
+            create_job = create_spark_job(dataset_id, step_config['namespace'], conf['run_type'], conf['cluster_type'], etl_config_file, jar,
+                                          dag, step_config['main_class'])
+            check_job = check_spark_job(dataset_id, step_config['namespace'], dag)
+
+            create_job >> check_job
+            all_dependencies = all_dependencies + conf['dependencies']
+            jobs[dataset_id] = {"create_job": create_job, "check_job": check_job, "dependencies": conf['dependencies']}
+
+        for dataset_id, job in jobs.items():
+            for dependency in job['dependencies']:
+                jobs[dependency]['check_job'] >> job['create_job']
+            if len(job['dependencies']) == 0:
+                start >> job['create_job']
+            if dataset_id not in all_dependencies:
+                job['check_job'] >> start_publish
 
 
 def read_json(path: str):

@@ -29,7 +29,7 @@ for (r, folders, files) in os.walk(ROOT):
             for configs in os.walk(f'{ROOT}/{namespace}'):
                 for f in configs[2]:
                     schema = re.search(EXTRACT_SCHEMA, f).group(1)
-                    dagid = f"{namespace}_{schema}".lower()
+                    dagid = f"{namespace}_{schema}_2".lower()
                     config = read_json(f"{ROOT}/{namespace}/{schema}_config.json")
                     dag = DAG(
                         dag_id=dagid,
@@ -41,5 +41,5 @@ for (r, folders, files) in os.walk(ROOT):
                         tags=[namespace]
                     )
                     with dag:
-                        setup_dag(dag, config, CONFIG_FILE, JAR)
+                        setup_dag(dag, config, CONFIG_FILE, JAR, schema)
                     globals()[dagid] = dag
