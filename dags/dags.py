@@ -18,7 +18,7 @@ DEFAULT_ARGS = {
     "email": "cbotek@ferlab.bio"
 }
 
-ROOT = '/opt/airflow/dags/repo/dags/config2'
+ROOT = '/opt/airflow/dags/repo/dags/config'
 EXTRACT_SCHEMA = '(.*)_config.json'
 CONFIG_FILE = "config/prod.conf"
 JAR = "s3a://spark-prd/jars/unic-etl-{{ dag_run.conf.get('branch', 'master') }}.jar"

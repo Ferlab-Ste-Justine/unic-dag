@@ -1,16 +1,34 @@
 {
   "concurrency": 3,
-  "main_class": "bio.ferlab.ui.etl.red.raw.Main",
-  "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
-  "schemas": ["staturgence"],
   "schedule": "0 10 * * 1",
-  "datasets":
-  [
-    {"dataset_id":"raw_staturgence_recherche_logtransaction", "cluster_type": "small" , "run_type": "default", "dependencies": []},
-    {"dataset_id":"raw_staturgence_recherche_bcm"           , "cluster_type": "small" , "run_type": "default", "dependencies": []},
-    {"dataset_id":"raw_staturgence_recherche_episode"       , "cluster_type": "small" , "run_type": "default", "dependencies": []},
-    {"dataset_id":"raw_staturgence_recherche_fadm"          , "cluster_type": "small" , "run_type": "default", "dependencies": []},
-    {"dataset_id":"raw_staturgence_recherche_priseencharge" , "cluster_type": "small" , "run_type": "default", "dependencies": []},
-    {"dataset_id":"raw_staturgence_recherche_triage"        , "cluster_type": "small" , "run_type": "default", "dependencies": []}
-  ]
+  "steps": [{
+    "namespace": "ingestion",
+    "main_class": "bio.ferlab.ui.etl.red.raw.Main",
+    "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
+    "schemas": ["staturgence"],
+    "datasets":
+    [
+      {"dataset_id":"raw_staturgence_recherche_logtransaction", "cluster_type": "small" , "run_type": "default", "dependencies": []},
+      {"dataset_id":"raw_staturgence_recherche_bcm"           , "cluster_type": "small" , "run_type": "default", "dependencies": []},
+      {"dataset_id":"raw_staturgence_recherche_episode"       , "cluster_type": "small" , "run_type": "default", "dependencies": []},
+      {"dataset_id":"raw_staturgence_recherche_fadm"          , "cluster_type": "small" , "run_type": "default", "dependencies": []},
+      {"dataset_id":"raw_staturgence_recherche_priseencharge" , "cluster_type": "small" , "run_type": "default", "dependencies": []},
+      {"dataset_id":"raw_staturgence_recherche_triage"        , "cluster_type": "small" , "run_type": "default", "dependencies": []}
+    ]
+  }, {
+    "namespace": "anonymized",
+    "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+    "publish_class": "",
+    "schemas": [],
+    "datasets":
+    [
+      {"dataset_id":"anonymized_staturgence_recherche_logtransaction", "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_bcm"           , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_episode"       , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_fadm"          , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_priseencharge" , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_triage"        , "cluster_type": "small" , "run_type": "initial", "dependencies": []}
+    ]
+  }]
+
 }

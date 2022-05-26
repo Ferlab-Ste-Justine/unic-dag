@@ -1,11 +1,14 @@
 {
-  "concurrency": 2,
-  "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
-  "publish_class": "",
-  "schemas": [],
+  "concurrency": 3,
   "schedule": null,
-  "datasets":
-  [
-    {"dataset_id": "anonymized_coprema_patient_index", "cluster_type": "small", "run_type": "default", "dependencies": []}
-  ]
+  "steps": [{
+    "namespace": "anonymized",
+    "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+    "publish_class": "",
+    "schemas": [],
+    "datasets":
+    [
+      {"dataset_id": "anonymized_coprema_patient_index", "cluster_type": "small", "run_type": "default", "dependencies": []}
+    ]
+  }]
 }
