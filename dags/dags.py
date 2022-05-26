@@ -6,7 +6,7 @@ import re
 from datetime import datetime
 
 from airflow import DAG
-from airflow.utils.dates import days_ago
+
 from spark_operators import read_json, setup_dag
 
 # DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=task_fail_slack_alert)
@@ -18,7 +18,7 @@ DEFAULT_ARGS = {
     "email": "cbotek@ferlab.bio"
 }
 
-ROOT = '/opt/airflow/dags/repo/dags/config'
+ROOT = '/opt/airflow/dags/repo/dags/config2'
 EXTRACT_SCHEMA = '(.*)_config.json'
 CONFIG_FILE = "config/prod.conf"
 JAR = "s3a://spark-prd/jars/unic-etl-{{ dag_run.conf.get('branch', 'master') }}.jar"
@@ -41,5 +41,5 @@ for (r, folders, files) in os.walk(ROOT):
                         tags=[namespace]
                     )
                     with dag:
-                        setup_dag(dag, config, namespace, CONFIG_FILE, JAR)
+                        setup_dag(dag, config, CONFIG_FILE, JAR, schema)
                     globals()[dagid] = dag

@@ -60,64 +60,90 @@ def update_log_table(schemas: list,
         dag=dag,
     )
     create_job >> check_job
-    return create_job
+    return create_job, check_job
 
 
-def setup_dag(dag: DAG,
-              config: dict,
-              namespace: str,
-              config_file: str,
-              jar: str):
+def get_start_oprator(namespace: str,
+                      dag: DAG,
+                      schema: str):
     """
-    setup a dag
-    :param dag:
-    :param config:
     :param namespace:
-    :param config_file:
-    :param jar:
+    :param dag:
+    :param schema:
     :return:
     """
-    start = DummyOperator(
-        task_id="start",
+    return DummyOperator(
+        task_id=f"start_{namespace}_{schema}",
         dag=dag
     )
 
-    publish = None
-    if namespace == "ingestion":
-        publish = update_log_table(config['schemas'],
-                                   "journalisation.ETL_Truncate_Table",
-                                   config_file,
-                                   config['publish_class'],
-                                   jar,
-                                   dag)
+
+def get_publish_oprator(dag_config: dict,
+                        etl_config_file: str,
+                        jar: str,
+                        dag: DAG,
+                        schema: str):
+    if dag_config['publish_class'] == "bio.ferlab.ui.etl.red.raw.UpdateLog":
+        return update_log_table(dag_config['schemas'],
+                                "journalisation.ETL_Truncate_Table",
+                                etl_config_file,
+                                dag_config['publish_class'],
+                                jar,
+                                dag)
     else:
         publish = DummyOperator(
-            task_id="publish",
+            task_id=f"publish_{dag_config['namespace']}_{schema}",
             dag=dag
         )
+        return publish, publish
 
-    jobs = {}
-    all_dependencies = []
 
-    for conf in config['datasets']:
-        dataset_id = conf['dataset_id']
+def setup_dag(dag: DAG,
+              dag_config: dict,
+              etl_config_file: str,
+              jar: str,
+              schema: str):
+    """
+    steup a dag
+    :param dag:
+    :param dag_config:
+    :param etl_config_file:
+    :param jar:
+    :param schema:
+    :return:
+    """
 
-        create_job = create_spark_job(dataset_id, namespace, conf['run_type'], conf['cluster_type'], config_file, jar,
-                                      dag, config['main_class'])
-        check_job = check_spark_job(dataset_id, namespace, dag)
+    previous_publish = None
 
-        create_job >> check_job
-        all_dependencies = all_dependencies + conf['dependencies']
-        jobs[dataset_id] = {"create_job": create_job, "check_job": check_job, "dependencies": conf['dependencies']}
+    for step_config in dag_config['steps']:
+        start = get_start_oprator(step_config['namespace'], dag, schema)
+        start_publish, end_publish = get_publish_oprator(step_config, etl_config_file, jar, dag, schema)
+#        start >> start_publish
+        if previous_publish:
+            previous_publish >> start
+        previous_publish = end_publish
 
-    for dataset_id, job in jobs.items():
-        for dependency in job['dependencies']:
-            jobs[dependency]['check_job'] >> job['create_job']
-        if len(job['dependencies']) == 0:
-            start >> job['create_job']
-        if dataset_id not in all_dependencies:
-            job['check_job'] >> publish
+        jobs = {}
+        all_dependencies = []
 
+        for conf in step_config['datasets']:
+            dataset_id = conf['dataset_id']
+
+            create_job = create_spark_job(dataset_id, step_config['namespace'], conf['run_type'], conf['cluster_type'], etl_config_file, jar,
+                                          dag, step_config['main_class'])
+            check_job = check_spark_job(dataset_id, step_config['namespace'], dag)
+
+            create_job >> check_job
+            all_dependencies = all_dependencies + conf['dependencies']
+            jobs[dataset_id] = {"create_job": create_job, "check_job": check_job, "dependencies": conf['dependencies']}
+
+        for dataset_id, job in jobs.items():
+            for dependency in job['dependencies']:
+                jobs[dependency]['check_job'] >> job['create_job']
+            if len(job['dependencies']) == 0:
+                start >> job['create_job']
+            if dataset_id not in all_dependencies:
+                job['check_job'] >> start_publish
 
 
 def read_json(path: str):
@@ -168,16 +194,19 @@ def create_spark_job(destination: str,
         worker_core = 8
 
     pod_name = pod_name = sanitize_pod_name(destination[:40])
-    yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, jar, main_class, driver_ram, driver_core,
+    yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, jar, main_class, driver_ram,
+                        driver_core,
                         worker_ram, worker_core, worker_number)
     if namespace == "anonymized":
         yml = anonymized_job(namespace, pod_name, destination, run_type, config_file, jar, main_class, driver_ram,
                              driver_core, worker_ram, worker_core, worker_number)
     if namespace == "curated":
-        yml = curated_job(namespace, pod_name, destination, run_type, config_file, jar, main_class, driver_ram, driver_core,
+        yml = curated_job(namespace, pod_name, destination, run_type, config_file, jar, main_class, driver_ram,
+                          driver_core,
                           worker_ram, worker_core, worker_number)
     if namespace == "enriched":
-        yml = enriched_job(namespace, pod_name, destination, run_type, config_file, jar, main_class, driver_ram, driver_core,
+        yml = enriched_job(namespace, pod_name, destination, run_type, config_file, jar, main_class, driver_ram,
+                           driver_core,
                            worker_ram, worker_core, worker_number)
     if namespace == "warehouse":
         yml = warehouse_job(namespace, pod_name, destination, run_type, config_file, jar, main_class, driver_ram,
@@ -312,6 +341,7 @@ ANONYMIZED_ENV = {
         "key": "ANONYMIZED_SALT"
     }
 }
+
 
 # pylint: disable=too-many-locals
 def generic_job(namespace: str,
