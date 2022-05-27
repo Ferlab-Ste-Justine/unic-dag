@@ -22,6 +22,7 @@ ROOT = '/opt/airflow/dags/repo/dags/config'
 EXTRACT_SCHEMA = '(.*)_config.json'
 CONFIG_FILE = "config/prod.conf"
 JAR = "s3a://spark-prd/jars/unic-etl-{{ dag_run.conf.get('branch', 'master') }}.jar"
+IMAGE = "ferlabcrsj/spark-operator:{{ dag_run.conf.get('imageVersion', '3.0.0_0') }}"
 
 for (r, folders, files) in os.walk(ROOT):
     if r == ROOT:
@@ -41,5 +42,12 @@ for (r, folders, files) in os.walk(ROOT):
                         tags=[namespace]
                     )
                     with dag:
-                        setup_dag(dag, config, CONFIG_FILE, JAR, schema)
+                        setup_dag(
+                            dag=dag,
+                            dag_config=config,
+                            etl_config_file=CONFIG_FILE,
+                            jar=JAR,
+                            image=IMAGE,
+                            schema=schema
+                        )
                     globals()[dagid] = dag
