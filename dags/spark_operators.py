@@ -12,13 +12,14 @@ from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKu
 from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
 
 
-def sanitize_pod_name(name: str):
+def sanitize_string(name: str, by: str):
     """
     Replace all special character in a pod_name into dashes
     :param name: name of the pod before being sanitized
+    :param by: replacement character
     :return: sanitized name
     """
-    return re.sub("[^a-zA-Z0-9 ]", '-', name)
+    return re.sub("[^a-zA-Z0-9 ]", by, name)
 
 
 def update_log_table(schemas: list,
@@ -40,7 +41,7 @@ def update_log_table(schemas: list,
     :return:
     """
     create_job_id = f"log_update_{'_'.join(schemas)[:20].lower()}"
-    pod_name = sanitize_pod_name(create_job_id)
+    pod_name = sanitize_string(create_job_id, '-')
     yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, jar, image, main_class)
     create_job = SparkKubernetesOperator(
         task_id=create_job_id,
@@ -135,7 +136,7 @@ def setup_dag(dag: DAG,
     for step_config in dag_config['steps']:
         start = get_start_oprator(step_config['namespace'], dag, schema)
         start_publish, end_publish = get_publish_oprator(step_config, etl_config_file, jar, dag, image, schema)
-#        start >> start_publish
+
         if previous_publish:
             previous_publish >> start
         previous_publish = end_publish
@@ -212,7 +213,7 @@ def create_spark_job(destination: str,
         worker_ram = 40
         worker_core = 8
 
-    pod_name = pod_name = sanitize_pod_name(destination[:40])
+    pod_name = sanitize_string(destination[:40], '-')
     yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class, driver_ram,
                         driver_core, worker_ram, worker_core, worker_number)
     if namespace == "anonymized":
@@ -229,7 +230,7 @@ def create_spark_job(destination: str,
                             driver_core, worker_ram, worker_core, worker_number)
 
     return SparkKubernetesOperator(
-        task_id=f"create_{destination}",
+        task_id=sanitize_string(f"create_{destination}", "_"),
         namespace=namespace,
         application_file=yml,
         priority_weight=1,
@@ -249,12 +250,13 @@ def check_spark_job(destination: str,
     :param dag:
     :return:
     """
+    task_to_check = sanitize_string(f"create_{destination}", "_")
     return SparkKubernetesSensor(
-        task_id=f'check_{destination}',
+        task_id=sanitize_string(f"check_{destination}", "_"),
         namespace=namespace,
         priority_weight=999,
         weight_rule="absolute",
-        application_name=f"{{{{ task_instance.xcom_pull(task_ids='create_{destination}')['metadata']['name'] }}}}",
+        application_name=f"{{{{ task_instance.xcom_pull(task_ids='{task_to_check}')['metadata']['name'] }}}}",
         poke_interval=30,
         timeout=21600,  # 6 hours
         dag=dag,
