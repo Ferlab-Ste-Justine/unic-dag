@@ -33,7 +33,7 @@
       {"dataset_id":"raw_pharmacie_phfprescripteur_operations"                       , "cluster_type": "small", "run_type": "default", "dependencies": []},
       {"dataset_id":"raw_pharmacie_phfprescripteur_poso"                             , "cluster_type": "small", "run_type": "default", "dependencies": []},
       {"dataset_id":"raw_pharmacie_phfprescripteur_voie"                             , "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id":"raw_pharmacie_phfprescriptions"                                 , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+      {"dataset_id":"raw_pharmacie_phfprescriptions"                                 , "cluster_type": "small", "run_type": "default", "dependencies": []},
       {"dataset_id":"raw_pharmacie_phfraisoncessation"                               , "cluster_type": "small", "run_type": "default", "dependencies": []},
       {"dataset_id":"raw_pharmacie_phfsoreh"                                         , "cluster_type": "small", "run_type": "default", "dependencies": []},
       {"dataset_id":"raw_pharmacie_phftype_prep"                                     , "cluster_type": "small", "run_type": "default", "dependencies": []},
