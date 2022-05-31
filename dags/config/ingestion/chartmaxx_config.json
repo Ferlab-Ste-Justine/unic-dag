@@ -20,7 +20,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id": "curated_chartmaxx_cmformcapture"  , "cluster_type": "medium", "run_type": "default", "dependencies": []}
+        {"dataset_id": "curated_chartmaxx_cmformcapture"  , "cluster_type": "medium", "run_type": "initial", "dependencies": []}
       ]
     },
     {
