@@ -20,6 +20,6 @@ In the JSON config, you can specify the following parameters to overwrite these 
 ```json
 {
   "branch": "master",
-  "imageVersion": "3.0.0_0"
+  "imageVersion": "3.0.0_1"
 }
 ```
