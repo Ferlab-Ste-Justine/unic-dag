@@ -12,14 +12,14 @@ from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKu
 from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
 
 
-def sanitize_string(name: str, by: str):
+def sanitize_string(string: str, replace_by: str):
     """
-    Replace all special character in a pod_name into dashes
-    :param name: name of the pod before being sanitized
-    :param by: replacement character
-    :return: sanitized name
+    Replace all special character in a string into another character
+    :param string: string to be sanitized
+    :param replace_by: replacement character
+    :return: sanitized string
     """
-    return re.sub("[^a-zA-Z0-9 ]", by, name)
+    return re.sub("[^a-zA-Z0-9 ]", replace_by, string)
 
 
 def update_log_table(schemas: list,
