@@ -7,16 +7,11 @@ from datetime import datetime
 
 from airflow import DAG
 
+from core.default_args import generate_default_args
+from core.slack_notification import task_fail_slack_alert
 from spark_operators import read_json, setup_dag
 
-# DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=task_fail_slack_alert)
-DEFAULT_ARGS = {
-    "owner": "cbotek",
-    "depends_on_past": False,
-    "email_on_failure": False,
-    "email_on_retry": False,
-    "email": "cbotek@ferlab.bio"
-}
+DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=task_fail_slack_alert)
 
 ROOT = '/opt/airflow/dags/repo/dags/config'
 EXTRACT_SCHEMA = '(.*)_config.json'
