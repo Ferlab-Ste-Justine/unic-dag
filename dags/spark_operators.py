@@ -418,9 +418,9 @@ def generic_job(namespace: str,
             "sparkConf": spark_conf,
             "restartPolicy": {
                 "type": "OnFailure",
-                "onFailureRetries": 3,
+                "onFailureRetries": 1,
                 "onFailureRetryInterval": 10,
-                "onSubmissionFailureRetries": 3,
+                "onSubmissionFailureRetries": 1,
                 "onSubmissionFailureRetryInterval": 10
             },
             "driver": {
