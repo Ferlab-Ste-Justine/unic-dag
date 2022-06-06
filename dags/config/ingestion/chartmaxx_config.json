@@ -1,6 +1,7 @@
 {
   "concurrency": 1,
   "schedule": "0 11 * * 6",
+  "timeout_hours": 4,
   "steps": [
     {
       "namespace": "ingestion",

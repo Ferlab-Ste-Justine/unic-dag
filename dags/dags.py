@@ -3,7 +3,7 @@ Ingestion and anonymized dags
 """
 import os
 import re
-from datetime import datetime
+from datetime import datetime, timedelta
 
 from airflow import DAG
 
@@ -12,6 +12,7 @@ from core.slack_notification import task_fail_slack_alert
 from spark_operators import read_json, setup_dag
 
 DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=task_fail_slack_alert)
+DEFAULT_TIMEOUT_HOURS = 4
 
 ROOT = '/opt/airflow/dags/repo/dags/config'
 EXTRACT_SCHEMA = '(.*)_config.json'
@@ -27,6 +28,8 @@ for (r, folders, files) in os.walk(ROOT):
                     schema = re.search(EXTRACT_SCHEMA, f).group(1)
                     dagid = f"{namespace}_{schema}".lower()
                     config = read_json(f"{ROOT}/{namespace}/{schema}_config.json")
+                    k = 'timeout_hours'
+                    timeout_hours = config[k] if k in config else DEFAULT_TIMEOUT_HOURS
                     dag = DAG(
                         dag_id=dagid,
                         schedule_interval=config['schedule'],
@@ -34,7 +37,8 @@ for (r, folders, files) in os.walk(ROOT):
                         start_date=datetime(2021, 1, 1),
                         concurrency=config['concurrency'],
                         catchup=False,
-                        tags=[namespace]
+                        tags=[namespace],
+                        dagrun_timeout=timedelta(hours=timeout_hours)
                     )
                     with dag:
                         setup_dag(

@@ -1,6 +1,7 @@
 {
   "concurrency": 2,
   "schedule": "18 16 * * 4",
+  "timeout_hours": 6,
   "steps": [{
     "namespace": "warehouse",
     "main_class": "bio.ferlab.ui.etl.yellow.warehouse.Main",

@@ -1,6 +1,7 @@
 {
   "concurrency": 2,
   "schedule": null,
+  "timeout_hours": 6,
   "steps": [{
     "namespace": "enriched",
     "main_class": "bio.ferlab.ui.etl.yellow.enriched.coprema.Main",
