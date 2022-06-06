@@ -1,6 +1,7 @@
 {
   "concurrency": 3,
   "schedule": "0 8 * * 6",
+  "timeout_hours": 4,
   "steps": [{
     "namespace": "ingestion",
     "main_class": "bio.ferlab.ui.etl.red.raw.Main",
