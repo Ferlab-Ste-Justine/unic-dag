@@ -31,7 +31,6 @@
       {"dataset_id":"anonymized_radimage_m*"        , "cluster_type": "small", "run_type": "default", "dependencies": []},
       {"dataset_id":"anonymized_radimage_p*"        , "cluster_type": "small", "run_type": "default", "dependencies": []},
       {"dataset_id":"anonymized_radimage_re*"       , "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id":"anonymized_radimage_rv*"       , "cluster_type": "small", "run_type": "default", "dependencies": []},
       {"dataset_id":"anonymized_radimage_s*"        , "cluster_type": "small", "run_type": "default", "dependencies": []}
     ]
   }]

@@ -25,7 +25,7 @@
       {"dataset_id":"enriched_mfm_delivery_test"                      , "cluster_type": "small"  , "run_type": "initial", "dependencies": ["enriched_mfm_delivery"]},
       {"dataset_id":"enriched_mfm_episode_of_care"                    , "cluster_type": "medium" , "run_type": "initial", "dependencies": ["enriched_mfm_participant_index_test", "enriched_mfm_baby_test"]},
       {"dataset_id":"enriched_mfm_episode_of_care_test"               , "cluster_type": "small"  , "run_type": "initial", "dependencies": ["enriched_mfm_episode_of_care"]},
-      {"dataset_id":"enriched_mfm_laboratory_results"                 , "cluster_type": "small"  , "run_type": "initial", "dependencies": ["enriched_mfm_baby"]},
+      {"dataset_id":"enriched_mfm_laboratory_results"                 , "cluster_type": "small"  , "run_type": "initial", "dependencies": ["enriched_mfm_baby_test"]},
       {"dataset_id":"enriched_mfm_mother"                             , "cluster_type": "small"  , "run_type": "initial", "dependencies": ["enriched_mfm_participant_index_test"]},
       {"dataset_id":"enriched_mfm_mother_test"                        , "cluster_type": "small"  , "run_type": "initial", "dependencies": ["enriched_mfm_mother"]},
       {"dataset_id":"enriched_mfm_participant_index"                  , "cluster_type": "medium" , "run_type": "initial", "dependencies": []},
