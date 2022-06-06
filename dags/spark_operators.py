@@ -173,6 +173,41 @@ def read_json(path: str):
     return json.load(open(path, encoding='UTF8'))
 
 
+def get_cluster_specs(cluster_type: str):
+    """
+    Return cluster specs based on cluster_type
+    :param cluster_type: string representing the cluster size: xsmall, small, medium or large
+    :return:
+    """
+    # xsmall
+    driver_ram = 16
+    driver_core = 2
+    worker_number = 1
+    worker_ram = 16
+    worker_core = 2
+    if cluster_type == "small":
+        driver_ram = 16
+        driver_core = 2
+        worker_number = 1
+        worker_ram = 16
+        worker_core = 2
+    if cluster_type == "medium":
+        driver_ram = 36
+        driver_core = 6
+        worker_number = 2
+        worker_ram = 36
+        worker_core = 6
+    if cluster_type == "large":
+        driver_ram = 40
+        driver_core = 8
+        worker_number = 4
+        worker_ram = 40
+        worker_core = 8
+
+    return driver_ram, driver_core, worker_number, worker_ram, worker_core
+
+
+
 def create_spark_job(destination: str,
                      namespace: str,
                      run_type: str,
@@ -195,23 +230,7 @@ def create_spark_job(destination: str,
     :param main_class:
     :return:
     """
-    driver_ram = 32
-    driver_core = 4
-    worker_number = 1
-    worker_ram = 32
-    worker_core = 4
-    if cluster_type == "medium":
-        driver_ram = 36
-        driver_core = 6
-        worker_number = 2
-        worker_ram = 36
-        worker_core = 6
-    if cluster_type == "large":
-        driver_ram = 40
-        driver_core = 8
-        worker_number = 4
-        worker_ram = 40
-        worker_core = 8
+    driver_ram, driver_core, worker_number, worker_ram, worker_core = get_cluster_specs(cluster_type)
 
     pod_name = sanitize_string(destination[:40], '-')
     yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class, driver_ram,
