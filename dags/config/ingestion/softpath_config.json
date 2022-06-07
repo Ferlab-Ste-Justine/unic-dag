@@ -23,7 +23,7 @@
       {"dataset_id":"raw_softpath_v_p_pat_specimenblock"       , "cluster_type": "small" , "run_type": "default", "dependencies": ["raw_softpath_v_p_pat_patcase"]},
       {"dataset_id":"raw_softpath_v_p_pat_specimendxadeq"      , "cluster_type": "small" , "run_type": "default", "dependencies": []},
       {"dataset_id":"raw_softpath_v_p_pat_stay"                , "cluster_type": "small" , "run_type": "default", "dependencies": []},
-      {"dataset_id":"raw_softpath_v_p_pat_test"                , "cluster_type": "small" , "run_type": "default", "dependencies": ["raw_softpath_v_p_pat_patcase"]}
+      {"dataset_id":"raw_softpath_v_p_pat_test"                , "cluster_type": "medium", "run_type": "default", "dependencies": ["raw_softpath_v_p_pat_patcase"]}
     ]
   }, {
     "namespace": "anonymized",
@@ -46,7 +46,7 @@
       {"dataset_id":"anonymized_softpath_v_p_pat_specimenblock"       , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
       {"dataset_id":"anonymized_softpath_v_p_pat_specimendxadeq"      , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
       {"dataset_id":"anonymized_softpath_v_p_pat_stay"                , "cluster_type": "small" , "run_type": "initial", "dependencies": []},
-      {"dataset_id":"anonymized_softpath_v_p_pat_test"                , "cluster_type": "small" , "run_type": "initial", "dependencies": []}
+      {"dataset_id":"anonymized_softpath_v_p_pat_test"                , "cluster_type": "medium" , "run_type": "initial", "dependencies": []}
     ]
   }]
 }
