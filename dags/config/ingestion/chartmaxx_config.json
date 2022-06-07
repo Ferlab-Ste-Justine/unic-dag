@@ -10,8 +10,8 @@
       "schemas": ["chartmaxx"],
       "datasets":
       [
-        {"dataset_id": "raw_chartmaxx_cmformcapture"         , "cluster_type": "medium", "run_type": "default", "dependencies": []},
-        {"dataset_id": "raw_chartmaxx_cmformcapture_deletes" , "cluster_type": "medium", "run_type": "default", "dependencies": []}
+        {"dataset_id": "raw_chartmaxx_cmformcapture"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "raw_chartmaxx_cmformcapture_deletes" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ]
     },
     {
@@ -21,7 +21,10 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id": "curated_chartmaxx_cmformcapture"  , "cluster_type": "large", "run_type": "initial", "dependencies": []}
+        {"dataset_id": "curated_chartmaxx_cmformcapture", "run_type": "initial", "cluster_type": "large", "cluster_specs": {
+          "worker_ram": 36,
+          "worker_core": 6
+        }, "dependencies": []}
       ]
     },
     {
@@ -31,8 +34,8 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id": "anonymized_chartmaxx_cmformcapture"        , "cluster_type": "small", "run_type": "default", "dependencies": []},
-        {"dataset_id": "anonymized_chartmaxx_cmformcapture_deletes", "cluster_type": "small", "run_type": "default", "dependencies": []}
+        {"dataset_id": "anonymized_chartmaxx_cmformcapture"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_chartmaxx_cmformcapture_deletes", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ]
     }
   ]

@@ -9,21 +9,21 @@
     "schemas": ["tables_reference_index_patient", "tables_reference_rdv"],
     "datasets":
     [
-      {"dataset_id": "raw_eclinibase_v_b*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_eclinibase_v_c*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_eclinibase_v_d*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_eclinibase_v_e*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_eclinibase_v_g*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_eclinibase_v_i*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_eclinibase_v_l*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_eclinibase_v_m*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_eclinibase_v_n*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_eclinibase_v_o*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_eclinibase_v_p*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_eclinibase_v_r*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_eclinibase_v_s*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_eclinibase_v_t*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_eclinibase_v_u*", "cluster_type": "small", "run_type": "default", "dependencies": []}
+      {"dataset_id": "raw_eclinibase_v_b*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_eclinibase_v_c*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_eclinibase_v_d*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_eclinibase_v_e*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_eclinibase_v_g*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_eclinibase_v_i*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_eclinibase_v_l*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_eclinibase_v_m*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_eclinibase_v_n*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_eclinibase_v_o*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_eclinibase_v_p*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_eclinibase_v_r*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_eclinibase_v_s*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_eclinibase_v_t*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_eclinibase_v_u*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
   }, {
     "namespace": "anonymized",
@@ -32,21 +32,21 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "anonymized_eclinibase_v_b*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_c*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_d*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_e*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_g*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_i*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_l*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_m*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_n*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_o*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_p*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_r*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_s*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_t*", "cluster_type": "small", "run_type": "default", "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_u*", "cluster_type": "small", "run_type": "default", "dependencies": []}
+      {"dataset_id": "anonymized_eclinibase_v_b*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_c*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_d*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_e*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_g*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_i*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_l*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_m*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_n*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_o*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_p*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_r*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_s*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_t*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_u*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
   }]
 }
