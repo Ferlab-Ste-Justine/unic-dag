@@ -182,7 +182,7 @@ def get_cluster_specs(cluster_type: str, cluster_specs: dict):
     :return: a dict with the cluster specs
     """
     driver_ram = "driver_ram"
-    driver_core = "driver_ram"
+    driver_core = "driver_core"
     worker_number = "worker_number"
     worker_ram = "worker_ram"
     worker_core = "worker_core"
