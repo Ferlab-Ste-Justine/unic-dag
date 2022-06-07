@@ -9,9 +9,9 @@
     "schemas": ["laboratoire_systeme"],
     "datasets":
     [
-      {"dataset_id": "raw_laboratoire_systeme_v_s_lab_*", "cluster_type": "small" , "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_laboratoire_systeme_v_s_mic_*", "cluster_type": "small" , "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_laboratoire_systeme_v_s_pat_*", "cluster_type": "small" , "run_type": "default", "dependencies": []}
+      {"dataset_id": "raw_laboratoire_systeme_v_s_lab_*", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_laboratoire_systeme_v_s_mic_*", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_laboratoire_systeme_v_s_pat_*", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
   }, {
     "namespace": "anonymized",
@@ -20,9 +20,9 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "anonymized_laboratoire_systeme_v_s_lab_*", "cluster_type": "small" , "run_type": "initial", "dependencies": []},
-      {"dataset_id": "anonymized_laboratoire_systeme_v_s_mic_*", "cluster_type": "small" , "run_type": "initial", "dependencies": []},
-      {"dataset_id": "anonymized_laboratoire_systeme_v_s_pat_*", "cluster_type": "small" , "run_type": "initial", "dependencies": []}
+      {"dataset_id": "anonymized_laboratoire_systeme_v_s_lab_*", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_laboratoire_systeme_v_s_mic_*", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_laboratoire_systeme_v_s_pat_*", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []}
     ]
   }]
 

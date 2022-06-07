@@ -148,7 +148,8 @@ def setup_dag(dag: DAG,
             dataset_id = conf['dataset_id']
 
             create_job = create_spark_job(dataset_id, step_config['namespace'], conf['run_type'], conf['cluster_type'],
-                                          etl_config_file, jar, image, dag, step_config['main_class'])
+                                          conf['cluster_specs'], etl_config_file, jar, image, dag,
+                                          step_config['main_class'])
             check_job = check_spark_job(dataset_id, step_config['namespace'], dag)
 
             create_job >> check_job
@@ -173,38 +174,58 @@ def read_json(path: str):
     return json.load(open(path, encoding='UTF8'))
 
 
-def get_cluster_specs(cluster_type: str):
+def get_cluster_specs(cluster_type: str, cluster_specs: dict):
     """
     Return cluster specs based on cluster_type
     :param cluster_type: string representing the cluster size: xsmall, small, medium or large
-    :return:
+    :param cluster_specs: specs to optionally override the default cluster_type ones
+    :return: a dict with the cluster specs
     """
-    # xsmall
-    driver_ram = 16
-    driver_core = 2
-    worker_number = 1
-    worker_ram = 16
-    worker_core = 2
-    if cluster_type == "small":
-        driver_ram = 16
-        driver_core = 2
-        worker_number = 1
-        worker_ram = 16
-        worker_core = 2
-    if cluster_type == "medium":
-        driver_ram = 36
-        driver_core = 6
-        worker_number = 2
-        worker_ram = 36
-        worker_core = 6
-    if cluster_type == "large":
-        driver_ram = 40
-        driver_core = 8
-        worker_number = 4
-        worker_ram = 40
-        worker_core = 8
+    driver_ram = "driver_ram"
+    driver_core = "driver_ram"
+    worker_number = "worker_number"
+    worker_ram = "worker_ram"
+    worker_core = "worker_core"
 
-    return driver_ram, driver_core, worker_number, worker_ram, worker_core
+    clusters = {
+        "xsmall": {
+            driver_ram: 8,
+            driver_core: 2,
+            worker_number: 1,
+            worker_ram: 8,
+            worker_core: 2
+        },
+        "small": {
+            driver_ram: 16,
+            driver_core: 2,
+            worker_number: 1,
+            worker_ram: 16,
+            worker_core: 2
+        },
+        "medium": {
+            driver_ram: 36,
+            driver_core: 6,
+            worker_number: 2,
+            worker_ram: 36,
+            worker_core: 6
+        },
+        "large": {
+            driver_ram: 40,
+            driver_core: 8,
+            worker_number: 4,
+            worker_ram: 40,
+            worker_core: 8
+        }
+    }
+
+    specs = {driver_ram: "", driver_core: "", worker_number: "", worker_ram: "", worker_core: ""}
+
+    for spec in specs.copy():
+        specs[spec] = cluster_specs[spec] if spec in cluster_specs \
+            else clusters[cluster_type][spec] if cluster_type in clusters \
+            else clusters["xsmall"][spec]
+
+    return specs
 
 
 
@@ -212,6 +233,7 @@ def create_spark_job(destination: str,
                      namespace: str,
                      run_type: str,
                      cluster_type: str,
+                     cluster_specs: dict,
                      config_file: str,
                      jar: str,
                      image: str,
@@ -223,6 +245,7 @@ def create_spark_job(destination: str,
     :param namespace:
     :param run_type:
     :param cluster_type:
+    :param cluster_specs: specs to optionally override the default cluster_type ones
     :param config_file:
     :param jar:
     :param image: The spark-operator Docker image
@@ -230,7 +253,12 @@ def create_spark_job(destination: str,
     :param main_class:
     :return:
     """
-    driver_ram, driver_core, worker_number, worker_ram, worker_core = get_cluster_specs(cluster_type)
+    specs = get_cluster_specs(cluster_type, cluster_specs)
+    driver_ram = specs["driver_ram"]
+    driver_core = specs["driver_core"]
+    worker_number = specs["worker_number"]
+    worker_ram = specs["worker_ram"]
+    worker_core = specs["worker_core"]
 
     pod_name = sanitize_string(destination[:40], '-')
     yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class, driver_ram,

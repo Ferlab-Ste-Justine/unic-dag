@@ -9,22 +9,22 @@
     "schemas": ["centro"],
     "datasets":
     [
-      {"dataset_id": "raw_centro_aid_*"   , "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_chi_*"   , "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_chusj_*" , "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_cirene_*", "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_crme_*"  , "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_ctc_*"   , "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_dev_*"   , "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_gen_*"   , "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_neo_*"   , "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_neu_*"   , "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_obg_*"   , "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_obs_*"   , "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_ped_*"   , "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_psc_*"   , "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_psy_*"   , "cluster_type": "xsmall", "run_type": "default", "dependencies": []},
-      {"dataset_id": "raw_centro_tel_*"   , "cluster_type": "xsmall", "run_type": "default", "dependencies": []}
+      {"dataset_id": "raw_centro_aid_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_chi_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_chusj_*" , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_cirene_*", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_crme_*"  , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_ctc_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_dev_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_gen_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_neo_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_neu_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_obg_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_obs_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_ped_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_psc_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_psy_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_tel_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
   }]
 }
