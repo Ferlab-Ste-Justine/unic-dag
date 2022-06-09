@@ -38,7 +38,7 @@
     [
       {"dataset_id": "anonymized_softlab_v_p_genindex_hisaux"         , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_softlab_v_p_lab_*"                   , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_softmic_v_p_mic_*"                   , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "anonymized_softmic_v_p_mic_*"                   , "cluster_type": "medium" , "run_type": "initial", "cluster_specs": {}, "dependencies": []}
     ]
   }]
 
