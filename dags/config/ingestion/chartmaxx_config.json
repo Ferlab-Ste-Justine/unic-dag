@@ -21,7 +21,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id": "curated_chartmaxx_cmformcapture", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "curated_chartmaxx_cmformcapture", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ]
     },
     {
@@ -31,8 +31,8 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id": "anonymized_chartmaxx_cmformcapture"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_chartmaxx_cmformcapture_deletes", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "anonymized_chartmaxx_cmformcapture_obstetric_record_*", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_chartmaxx_cmformcapture_deletes"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ]
     }
   ]
