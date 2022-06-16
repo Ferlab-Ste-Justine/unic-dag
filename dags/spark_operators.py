@@ -80,6 +80,7 @@ def get_start_oprator(namespace: str,
         dag=dag
     )
 
+
 # pylint: disable=too-many-locals,no-else-return
 def get_publish_oprator(dag_config: dict,
                         etl_config_file: str,
@@ -228,7 +229,6 @@ def get_cluster_specs(cluster_type: str, cluster_specs: dict):
     return specs
 
 
-
 def create_spark_job(destination: str,
                      namespace: str,
                      run_type: str,
@@ -266,15 +266,18 @@ def create_spark_job(destination: str,
     if namespace == "anonymized":
         yml = anonymized_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class,
                              driver_ram, driver_core, worker_ram, worker_core, worker_number)
-    if namespace == "curated":
+    elif namespace == "curated":
         yml = curated_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class, driver_ram,
                           driver_core, worker_ram, worker_core, worker_number)
-    if namespace == "enriched":
+    elif namespace == "enriched":
         yml = enriched_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class, driver_ram,
                            driver_core, worker_ram, worker_core, worker_number)
-    if namespace == "warehouse":
+    elif namespace == "warehouse":
         yml = warehouse_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class, driver_ram,
                             driver_core, worker_ram, worker_core, worker_number)
+    elif namespace == "published":
+        yml = published_job(namespace, pod_name, destination, run_type, config_file, jar, image, driver_ram,
+                            driver_core, worker_ram, worker_core, worker_number, main_class)
 
     return SparkKubernetesOperator(
         task_id=sanitize_string(f"create_{destination}", "_"),
@@ -406,6 +409,17 @@ ANONYMIZED_ENV = {
     }
 }
 
+PUBLISHED_ENV = {
+    "AWS_ACCESS_KEY_ID": {
+        "name": "spark-published-minio",
+        "key": "AWS_ACCESS_KEY_ID"
+    },
+    "AWS_SECRET_ACCESS_KEY": {
+        "name": "spark-published-minio",
+        "key": "AWS_SECRET_ACCESS_KEY"
+    }
+}
+
 
 # pylint: disable=too-many-locals
 def generic_job(namespace: str,
@@ -414,14 +428,14 @@ def generic_job(namespace: str,
                 jar: str,
                 main_class: str,
                 env: dict,
-                dependencies: dict,
-                spark_conf: dict,
                 image: str,
                 driver_ram: int = 32,
                 driver_core: int = 8,
                 worker_ram: int = 32,
                 worker_core: int = 8,
                 worker_number: int = 1,
+                dependencies: dict = None,
+                spark_conf: dict = None,
                 spark_version: str = "3.0.0",
                 service_account: str = "spark"):
     """
@@ -444,6 +458,12 @@ def generic_job(namespace: str,
     :param service_account:
     :return:
     """
+    if dependencies is None:
+        dependencies = DEPENDENCIES
+
+    if spark_conf is None:
+        spark_conf = SPARK_CONF
+
     dt_string = datetime.now().strftime("%d%m%Y-%H%M%S")
     yml = {
         "apiVersion": "sparkoperator.k8s.io/v1beta2",
@@ -527,8 +547,6 @@ def anonymized_job(namespace: str,
                        jar,
                        main_class,
                        ANONYMIZED_ENV,
-                       DEPENDENCIES,
-                       SPARK_CONF,
                        image,
                        driver_ram,
                        driver_core,
@@ -573,8 +591,6 @@ def curated_job(namespace: str,
                        jar,
                        main_class,
                        CURATED_ENV,
-                       DEPENDENCIES,
-                       SPARK_CONF,
                        image,
                        driver_ram,
                        driver_core,
@@ -619,8 +635,6 @@ def enriched_job(namespace: str,
                        jar,
                        main_class,
                        ENRICHED_ENV,
-                       DEPENDENCIES,
-                       SPARK_CONF,
                        image,
                        driver_ram,
                        driver_core,
@@ -665,8 +679,6 @@ def warehouse_job(namespace: str,
                        jar,
                        main_class,
                        WAREHOUSE_ENV,
-                       DEPENDENCIES,
-                       SPARK_CONF,
                        image,
                        driver_ram,
                        driver_core,
@@ -711,8 +723,6 @@ def ingestion_job(namespace: str,
                        jar,
                        main_class,
                        INGESTION_ENV,
-                       DEPENDENCIES,
-                       SPARK_CONF,
                        image,
                        driver_ram,
                        driver_core,
@@ -757,3 +767,47 @@ def log_job(namespace: str,
                        worker_ram=4,
                        worker_core=1,
                        worker_number=1)
+
+
+def published_job(namespace: str,
+                  pod_name: str,
+                  destination: str,
+                  run_type: str,
+                  conf: str,
+                  jar: str,
+                  image: str,
+                  driver_ram: int,
+                  driver_core: int,
+                  worker_ram: int,
+                  worker_core: int,
+                  worker_number: int,
+                  main_class: str = "bio.ferlab.ui.etl.green.published.Main"):
+    """
+    Generate yaml for published job
+    :param namespace: Kubernetes namespace
+    :param pod_name: Kubernetes pod name
+    :param destination: Dataset id of the ETL destination
+    :param run_type: ETL run type
+    :param conf: ETL config file
+    :param jar: Location of the jar containing the ETL jobs
+    :param image: Spark-operator Docker image
+    :param main_class: ETL main class, defaults to "bio.ferlab.ui.etl.green.published.Main"
+    :param driver_ram: RAM for the driver pod
+    :param driver_core: Number of cores for the driver pod
+    :param worker_ram: RAM for the worker pods
+    :param worker_core: Number of cores for the worker pods
+    :param worker_number: Number of worker pods
+    :return: A yaml for a published job
+    """
+    return generic_job(namespace,
+                       pod_name,
+                       [conf, run_type, destination],
+                       jar,
+                       main_class,
+                       PUBLISHED_ENV,
+                       image,
+                       driver_ram,
+                       driver_core,
+                       worker_ram,
+                       worker_core,
+                       worker_number)
