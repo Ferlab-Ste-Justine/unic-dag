@@ -53,7 +53,7 @@
         {"dataset_id":"published_mfm_laboratory_results"                , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_mfm_mother"                            , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_mfm_participant_index"                 , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_mfm_pregnancy"                         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_mfm_pregnancy"                         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
       ]
     }
   ]
