@@ -36,6 +36,7 @@
         {"dataset_id":"enriched_mfm_pregnancy"                         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_mfm_participant_index_test"]},
         {"dataset_id":"enriched_mfm_pregnancy_test"                    , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_mfm_pregnancy"]},
         {"dataset_id":"enriched_mfm_pregnancy_complications"           , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_mfm_pregnancy_test"]},
+        {"dataset_id":"enriched_mfm_prenatal_ultra_sound"              , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_mfm_participant_index_test", "enriched_mfm_baby_test"]},
         {"dataset_id":"enriched_mfm_transfusions"                      , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_mfm_participant_index_test", "enriched_mfm_baby_test"]}
       ]
     },
@@ -61,6 +62,7 @@
         {"dataset_id":"published_mfm_pathology_results"            , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_mfm_pregnancy"                    , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_mfm_pregnancy_complications"      , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_mfm_prenatal_ultra_sound"         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_mfm_transfusions"                 , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
       ]
     }
