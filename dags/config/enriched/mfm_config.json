@@ -61,7 +61,6 @@
         {"dataset_id":"published_mfm_participant_index"            , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_mfm_pathology_results"            , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_mfm_pregnancy"                    , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_mfm_pregnancy_complications"      , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_mfm_prenatal_ultra_sound"         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_mfm_transfusions"                 , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
       ]
