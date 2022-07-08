@@ -331,9 +331,7 @@ SPARK_CONF = {
     "spark.hadoop.fs.s3a.path.style.access": "true",
     "spark.hadoop.fs.s3a.connection.ssl.enabled": "true",
     "extraJavaOptions": "-Dcom.amazonaws.services.s3.enableV4=true",
-    "spark.driver.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp",
-    "spark.network.timeout": "300s",
-    "spark.executor.heartbeatInterval": "20s"
+    "spark.driver.extraJavaOptions": "-Divy.cache.dir=/tmp -Divy.home=/tmp"
 }
 
 INGESTION_ENV = {
