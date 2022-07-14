@@ -45,7 +45,7 @@
       {"dataset_id": "anonymized_eclinibase_v_p*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_eclinibase_v_r*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_eclinibase_v_s*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_t*", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_t*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_eclinibase_v_u*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
   }]
