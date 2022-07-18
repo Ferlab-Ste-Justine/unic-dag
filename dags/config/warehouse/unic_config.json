@@ -10,7 +10,7 @@
     "datasets":
     [
       {"dataset_id":"warehouse_fetal_ultra_sound" , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"warehouse_lab_results"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"warehouse_lab_results"       , "cluster_type": "large" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"warehouse_medications"       , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"warehouse_medications_manual", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"warehouse_microbiology"      , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
