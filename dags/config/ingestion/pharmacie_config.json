@@ -42,7 +42,7 @@
         {"dataset_id":"anonymized_pharmacie_phfhora1"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"anonymized_pharmacie_phfm*"                           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"anonymized_pharmacie_phfposol"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"anonymized_pharmacie_phfprescript*"                   , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_pharmacie_phfprescript*"                   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"anonymized_pharmacie_phfraisoncessation"              , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"anonymized_pharmacie_phfsoreh"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"anonymized_pharmacie_phftype_prep"                    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
