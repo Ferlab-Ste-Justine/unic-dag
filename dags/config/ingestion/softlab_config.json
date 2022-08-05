@@ -5,12 +5,12 @@
   "steps": [{
     "namespace": "ingestion",
     "main_class": "bio.ferlab.ui.etl.red.raw.softlab.Main",
-    "publish_class": "",
+    "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
     "schemas": ["softlab", "softmic"],
     "datasets":
     [
       {"dataset_id": "raw_softlab_v_p_genindex_hisaux" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_softlab_v_p_lab_message"     , "cluster_type": "medium" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_test_result", "raw_softlab_v_p_lab_patient", "raw_softlab_v_p_lab_stay", "raw_softlab_v_p_lab_order"]},
+      {"dataset_id": "raw_softlab_v_p_lab_message"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_test_result", "raw_softlab_v_p_lab_patient", "raw_softlab_v_p_lab_stay", "raw_softlab_v_p_lab_order"]},
       {"dataset_id": "raw_softlab_v_p_lab_order"       , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_stay"]},
       {"dataset_id": "raw_softlab_v_p_lab_ordered_test", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_softlab_v_p_lab_patient"     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_stay"]},
@@ -37,7 +37,7 @@
     "datasets":
     [
       {"dataset_id": "anonymized_softlab_v_p_genindex_hisaux", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_softlab_v_p_lab_message"    , "cluster_type": "medium" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_softlab_v_p_lab_message"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_softlab_v_p_lab_o*"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_softlab_v_p_lab_patient"    , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_softlab_v_p_lab_s*"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
