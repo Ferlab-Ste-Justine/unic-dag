@@ -10,13 +10,26 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"enriched_coda_bacterial_culture" , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"]},
-        {"dataset_id":"enriched_coda_laboratory_results", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"]},
-        {"dataset_id":"enriched_coda_medications"       , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"]},
-        {"dataset_id":"enriched_coda_participant_index" , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_pcr_data"]},
-        {"dataset_id":"enriched_coda_patient"           , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index", "enriched_coda_pcr_data"]},
-        {"dataset_id":"enriched_coda_pcr_data"          , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"enriched_coda_respiratory_care"  , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"]}
+        {"dataset_id":"enriched_coda_medications_administration", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"]},
+        {"dataset_id":"enriched_coda_observation_labs"          , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"]},
+        {"dataset_id":"enriched_coda_observation_pcr"           , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_coda_observation_vent"          , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"]},
+        {"dataset_id":"enriched_coda_participant_index"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_coda_patient"                   , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"]}
+      ]
+    },
+    {
+      "namespace": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"published_coda_medications_administration", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_coda_observation_labs"          , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_coda_observation_pcr"           , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_coda_observation_vent"          , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_coda_patient"                   , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
       ]
     }
   ]
