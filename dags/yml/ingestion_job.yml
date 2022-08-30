@@ -27,7 +27,7 @@ spec:
   sparkConf:
     spark.sql.legacy.timeParserPolicy: "CORRECTED"
     spark.sql.legacy.parquet.datetimeRebaseModeInWrite: "CORRECTED"
-    spark.hadoop.fs.s3a.endpoint: "https://minio-unic.infojutras.com"
+    spark.hadoop.fs.s3a.endpoint: "https://minio.unic.ferlab.bio"
     spark.hadoop.fs.s3a.impl: "org.apache.hadoop.fs.s3a.S3AFileSystem"
     spark.hadoop.fs.s3a.aws.credentials.provider: "com.amazonaws.auth.EnvironmentVariableCredentialsProvider"
     spark.hadoop.fs.s3a.path.style.access: "true"
