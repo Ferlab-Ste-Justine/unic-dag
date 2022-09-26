@@ -120,7 +120,8 @@ def setup_dag(dag: DAG,
               etl_config_file: str,
               jar: str,
               image: str,
-              schema: str):
+              schema: str,
+              version: str):
     """
     setup a dag
     :param dag:
@@ -129,6 +130,7 @@ def setup_dag(dag: DAG,
     :param jar:
     :param image: The spark-operator Docker image
     :param schema:
+    :param version: Version to release, defaults to "latest"
     :return:
     """
 
@@ -150,7 +152,7 @@ def setup_dag(dag: DAG,
 
             create_job = create_spark_job(dataset_id, step_config['namespace'], conf['run_type'], conf['cluster_type'],
                                           conf['cluster_specs'], etl_config_file, jar, image, dag,
-                                          step_config['main_class'])
+                                          step_config['main_class'], version)
             check_job = check_spark_job(dataset_id, step_config['namespace'], dag)
 
             create_job >> check_job
@@ -238,7 +240,8 @@ def create_spark_job(destination: str,
                      jar: str,
                      image: str,
                      dag: DAG,
-                     main_class: str):
+                     main_class: str,
+                     version: str):
     """
     create spark job operator
     :param destination:
@@ -251,6 +254,7 @@ def create_spark_job(destination: str,
     :param image: The spark-operator Docker image
     :param dag:
     :param main_class:
+    :param version: Version to release, defaults to "latest"
     :return:
     """
     specs = get_cluster_specs(cluster_type, cluster_specs)
@@ -278,6 +282,9 @@ def create_spark_job(destination: str,
     elif namespace == "published":
         yml = published_job(namespace, pod_name, destination, run_type, config_file, jar, image, driver_ram,
                             driver_core, worker_ram, worker_core, worker_number, main_class)
+    elif namespace == "released":
+        yml = released_job(namespace, pod_name, destination, run_type, config_file, jar, image, driver_ram,
+                           driver_core, worker_ram, worker_core, worker_number, main_class, version)
 
     return SparkKubernetesOperator(
         task_id=sanitize_string(f"create_{destination}", "_"),
@@ -416,6 +423,17 @@ PUBLISHED_ENV = {
     },
     "AWS_SECRET_ACCESS_KEY": {
         "name": "spark-published-minio",
+        "key": "AWS_SECRET_ACCESS_KEY"
+    }
+}
+
+RELEASED_ENV = {
+    "AWS_ACCESS_KEY_ID": {
+        "name": "spark-released-minio",
+        "key": "AWS_ACCESS_KEY_ID"
+    },
+    "AWS_SECRET_ACCESS_KEY": {
+        "name": "spark-released-minio",
         "key": "AWS_SECRET_ACCESS_KEY"
     }
 }
@@ -805,6 +823,52 @@ def published_job(namespace: str,
                        jar,
                        main_class,
                        PUBLISHED_ENV,
+                       image,
+                       driver_ram,
+                       driver_core,
+                       worker_ram,
+                       worker_core,
+                       worker_number)
+
+
+def released_job(namespace: str,
+                 pod_name: str,
+                 destination: str,
+                 run_type: str,
+                 conf: str,
+                 jar: str,
+                 image: str,
+                 driver_ram: int,
+                 driver_core: int,
+                 worker_ram: int,
+                 worker_core: int,
+                 worker_number: int,
+                 main_class: str = "bio.ferlab.ui.etl.green.released.Main",
+                 version: str = "latest"):
+    """
+    Generate yaml for a release job
+    :param namespace: Kubernetes namespace
+    :param pod_name: Kubernetes pod name
+    :param destination: Dataset id of the ETL destination
+    :param run_type: ETL run type
+    :param conf: ETL config file
+    :param jar: Location of the jar containing the ETL jobs
+    :param image: Spark-operator Docker image
+    :param main_class: ETL main class, defaults to "bio.ferlab.ui.etl.green.released.Main"
+    :param driver_ram: RAM for the driver pod
+    :param driver_core: Number of cores for the driver pod
+    :param worker_ram: RAM for the worker pods
+    :param worker_core: Number of cores for the worker pods
+    :param worker_number: Number of worker pods
+    :param version: Version to release, defaults to "latest"
+    :return: A yaml for a release job
+    """
+    return generic_job(namespace,
+                       pod_name,
+                       [conf, run_type, destination, version],
+                       jar,
+                       main_class,
+                       RELEASED_ENV,
                        image,
                        driver_ram,
                        driver_core,
