@@ -1,5 +1,6 @@
 # https://raw.githubusercontent.com/apache/airflow/constraints-2.1.4/constraints-3.8.txt
 
+apache-airflow==2.3.4
 apache-airflow-providers-amazon==2.2.0
 apache-airflow-providers-cncf-kubernetes==2.0.2
 apache-airflow-providers-slack==4.0.1
