@@ -4,7 +4,7 @@
   "timeout_hours": 4,
   "steps": [{
     "namespace": "ingestion",
-    "main_class": "bio.ferlab.ui.etl.red.schema.UpdateSchema",
+    "main_class": "bio.ferlab.ui.etl.schema.UpdateSchema",
     "publish_class": "",
     "schemas": [],
     "datasets":
