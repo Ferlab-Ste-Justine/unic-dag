@@ -1,0 +1,18 @@
+{
+  "concurrency": 3,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [{
+    "namespace": "anonymized",
+    "main_class": "bio.ferlab.ui.etl.schema.UpdateSchema",
+    "publish_class": "",
+    "schemas": [],
+    "datasets":
+    [
+      {"dataset_id": "anonymized_pharmacie_pharchive_phfadministration"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_pharmacie_pharchive_phfadministration_manuelle", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_pharmacie_phfadministration"                   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_pharmacie_phfadministration_manuelle"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+    ]
+  }]
+}
