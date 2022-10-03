@@ -24,7 +24,8 @@
       {"dataset_id": "raw_centro_ped_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_centro_psc_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_centro_psy_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_centro_tel_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "raw_centro_tel_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_centro_gen_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
   }]
 }
