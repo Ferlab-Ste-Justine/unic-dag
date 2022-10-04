@@ -26,5 +26,14 @@
       {"dataset_id": "raw_centro_psy_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_centro_tel_*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
+  }, {
+    "namespace": "anonymized",
+    "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+    "publish_class": "",
+    "schemas": [],
+    "datasets":
+    [
+      {"dataset_id": "anonymized_centro_gen_*", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+    ]
   }]
 }
