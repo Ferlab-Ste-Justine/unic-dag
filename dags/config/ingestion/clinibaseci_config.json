@@ -1,0 +1,25 @@
+{
+  "concurrency": 4,
+  "schedule": "0 10 * * 6",
+  "timeout_hours": 4,
+  "steps": [{
+    "namespace": "ingestion",
+    "main_class": "bio.ferlab.ui.etl.red.raw.Main",
+    "publish_class": "",
+    "schemas": ["clinibaseci"],
+    "datasets":
+    [
+      {"dataset_id": "raw_clinibaseci_a*"        , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_clinibaseci_ben*"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_clinibaseci_diagnostic", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_clinibaseci_lit_tb"    , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_clinibaseci_sejclin_tb", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_clinibaseci_sejhosp*"  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_clinibaseci_sejour*"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_clinibaseci_sejurg*"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_clinibaseci_service*"  , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_clinibaseci_typesoins" , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_clinibaseci_unitesoins", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+    ]
+  }]
+}
