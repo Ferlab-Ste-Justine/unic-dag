@@ -1,6 +1,6 @@
 {
   "concurrency": 3,
-  "schedule": null,
+  "schedule": "0 16 * * 4",
   "timeout_hours": 6,
   "steps": [{
     "namespace": "curated",
