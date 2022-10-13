@@ -1,6 +1,6 @@
 {
   "concurrency": 2,
-  "schedule": "18 16 * * 4",
+  "schedule": "0 18 * * 4",
   "timeout_hours": 6,
   "steps": [{
     "namespace": "warehouse",
