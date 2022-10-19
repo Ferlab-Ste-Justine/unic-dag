@@ -1,0 +1,16 @@
+{
+  "concurrency": 3,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [{
+    "namespace": "ingestion",
+    "main_class": "bio.ferlab.ui.etl.schema.UpdateSchema",
+    "publish_class": "",
+    "schemas": [],
+    "datasets":
+    [
+      {"dataset_id": "raw_centro_obs_grossesses_ant_rieures_d_tails_view", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+    ]
+  }]
+
+}
