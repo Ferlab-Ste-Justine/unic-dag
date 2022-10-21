@@ -8,16 +8,14 @@ from datetime import datetime
 import yaml
 from airflow import DAG
 from airflow.operators.dummy import DummyOperator
-from airflow.providers.cncf.kubernetes.operators.spark_kubernetes import SparkKubernetesOperator
-from airflow.providers.cncf.kubernetes.sensors.spark_kubernetes import SparkKubernetesSensor
-
+from dags.operators.spark import SparkOperator
 
 def sanitize_string(string: str, replace_by: str):
     """
     Replace all special character in a string into another character
     :param string: string to be sanitized
     :param replace_by: replacement character
-    :return: sanitized string
+    :return: sanitized stringfrom spark_operators import read_json, setup_dag
     """
     return re.sub("[^a-zA-Z0-9 ]", replace_by, string)
 
@@ -40,11 +38,11 @@ def update_log_table(schemas: list,
     :param dag:
     :return:
     """
-    create_job_id = f"log_update_{'_'.join(schemas)[:20].lower()}"
-    pod_name = sanitize_string(create_job_id, '-')
+    job_id = f"log_update_{'_'.join(schemas)[:20].lower()}"
+    pod_name = sanitize_string(job_id, '-')
     yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, jar, image, main_class)
-    create_job = SparkKubernetesOperator(
-        task_id=create_job_id,
+    job = SparkOperator(
+        task_id=job_id,
         namespace="ingestion",
         application_file=yml,
         priority_weight=1,
@@ -52,18 +50,8 @@ def update_log_table(schemas: list,
         do_xcom_push=True,
         dag=dag
     )
-    check_job = SparkKubernetesSensor(
-        task_id=f'check_{create_job_id}',
-        namespace="ingestion",
-        priority_weight=999,
-        weight_rule="absolute",
-        application_name=f"{{{{ task_instance.xcom_pull(task_ids='{create_job_id}')['metadata']['name'] }}}}",
-        poke_interval=30,
-        timeout=21600,  # 6 hours
-        dag=dag,
-    )
-    create_job >> check_job
-    return create_job, check_job
+
+    return job
 
 
 def get_start_oprator(namespace: str,
@@ -150,24 +138,20 @@ def setup_dag(dag: DAG,
         for conf in step_config['datasets']:
             dataset_id = conf['dataset_id']
 
-            create_job = create_spark_job(dataset_id, step_config['namespace'], conf['run_type'], conf['cluster_type'],
+            job = create_job(dataset_id, step_config['namespace'], conf['run_type'], conf['cluster_type'],
                                           conf['cluster_specs'], etl_config_file, jar, image, dag,
                                           step_config['main_class'], version)
-            check_job = check_spark_job(dataset_id, step_config['namespace'], dag)
 
-            create_job >> check_job
             all_dependencies = all_dependencies + conf['dependencies']
-            jobs[dataset_id] = {"create_job": create_job, "check_job": check_job, "dependencies": conf['dependencies']}
+            jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
 
         for dataset_id, job in jobs.items():
             for dependency in job['dependencies']:
-                jobs[dependency]['check_job'] >> job['create_job']
+                jobs[dependency]['job'] >> job['job']
             if len(job['dependencies']) == 0:
-                start >> job['create_job']
+                start >> job['job']
             if dataset_id not in all_dependencies:
-                job['check_job'] >> start_publish
-
-
+                start >> start_publish
 def read_json(path: str):
     """
     read json file
@@ -231,7 +215,7 @@ def get_cluster_specs(cluster_type: str, cluster_specs: dict):
     return specs
 
 
-def create_spark_job(destination: str,
+def create_job(destination: str,
                      namespace: str,
                      run_type: str,
                      cluster_type: str,
@@ -286,7 +270,7 @@ def create_spark_job(destination: str,
         yml = released_job(namespace, pod_name, destination, run_type, config_file, jar, image, driver_ram,
                            driver_core, worker_ram, worker_core, worker_number, main_class, version)
 
-    return SparkKubernetesOperator(
+    return SparkOperator(
         task_id=sanitize_string(f"create_{destination}", "_"),
         namespace=namespace,
         application_file=yml,
@@ -295,30 +279,6 @@ def create_spark_job(destination: str,
         do_xcom_push=True,
         dag=dag
     )
-
-
-def check_spark_job(destination: str,
-                    namespace: str,
-                    dag: DAG):
-    """
-    check spark job sensor
-    :param destination:
-    :param namespace:
-    :param dag:
-    :return:
-    """
-    task_to_check = sanitize_string(f"create_{destination}", "_")
-    return SparkKubernetesSensor(
-        task_id=sanitize_string(f"check_{destination}", "_"),
-        namespace=namespace,
-        priority_weight=999,
-        weight_rule="absolute",
-        application_name=f"{{{{ task_instance.xcom_pull(task_ids='{task_to_check}')['metadata']['name'] }}}}",
-        poke_interval=30,
-        timeout=21600,  # 6 hours
-        dag=dag,
-    )
-
 
 DEPENDENCIES = {
     "repositories": ["https://repos.spark-packages.org"],
