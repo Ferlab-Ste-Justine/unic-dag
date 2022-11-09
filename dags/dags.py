@@ -8,10 +8,10 @@ from datetime import datetime, timedelta
 from airflow import DAG
 
 from core.default_args import generate_default_args
-from core.slack_notification import task_fail_slack_alert
+from core.slack import Slack
 from spark_operators import read_json, setup_dag
 
-DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=task_fail_slack_alert)
+DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=Slack.notify_task_failure)
 DEFAULT_TIMEOUT_HOURS = 4
 
 ROOT = '/opt/airflow/dags/repo/dags/config'
