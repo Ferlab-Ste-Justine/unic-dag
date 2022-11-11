@@ -8,14 +8,14 @@ from datetime import datetime
 import yaml
 from airflow import DAG
 from airflow.operators.dummy import DummyOperator
-from dags.operators.spark import SparkOperator
+from operators.spark import SparkOperator
 
 def sanitize_string(string: str, replace_by: str):
     """
     Replace all special character in a string into another character
     :param string: string to be sanitized
     :param replace_by: replacement character
-    :return: sanitized stringfrom spark_operators import read_json, setup_dag
+    :return: sanitized string
     """
     return re.sub("[^a-zA-Z0-9 ]", replace_by, string)
 
