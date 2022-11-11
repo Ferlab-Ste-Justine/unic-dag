@@ -52,7 +52,7 @@ def update_log_table(schemas: list,
         dag=dag
     )
 
-    return job
+    return job, job #TODO: properly implement this, refer to master
 
 
 def get_start_oprator(namespace: str,
