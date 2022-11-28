@@ -139,6 +139,9 @@ def setup_dag(dag: DAG,
 
         for conf in step_config['datasets']:
             dataset_id = conf['dataset_id']
+            namespace = step_config['namespace']
+            spark_class = step_config['main_class']
+            config_type = step_config['cluster_type']
 
             # job = create_job(dataset_id, step_config['namespace'], conf['run_type'], conf['cluster_type'],
             #                               conf['cluster_specs'], etl_config_file, jar, image, dag,
@@ -146,11 +149,11 @@ def setup_dag(dag: DAG,
 
             job = SparkOperator(
                 task_id=sanitize_string(f"create_{dataset_id}", "_"),
-                name=sanitize_string(dataset_id[:40], '-'),
-                namespace=step_config['namespace'],
-                spark_class=step_config['main_class'],
+                name=sanitize_string({dataset_id}[:40], '-'),
+                namespace=namespace,
+                spark_class=spark_class,
                 spark_jar=jar,
-                spark_config=f"{step_config['cluster_type']}-etl",
+                spark_config=f"{config_type}-etl",
                 dag=dag
             )
 
