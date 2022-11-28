@@ -28,7 +28,6 @@ class SparkOperator(KubernetesPodOperator):
             image='ferlabcrsj/spark:3.3.1',
             retries=1,
             retry_delay=10,
-            k8s_context='unic_prod',
             priority_weight=1,
             weight_rule="absolute",
             do_xcom_push=True,
