@@ -20,43 +20,43 @@ def sanitize_string(string: str, replace_by: str):
     return re.sub("[^a-zA-Z0-9 ]", replace_by, string)
 
 
-def update_log_table(schemas: list,
-                     log_table: str,
-                     config_file: str,
-                     main_class: str,
-                     jar: str,
-                     image: str,
-                     dag: DAG):
-    """
-    Create a SparkKubernetesOperator updating log table after ingestion job
-    :param schemas:
-    :param log_table:
-    :param config_file:
-    :param main_class:
-    :param jar:
-    :param image: The spark-operator Docker image
-    :param dag:
-    :return:
-    """
-    job_id = f"log_update_{'_'.join(schemas)[:20].lower()}"
-    pod_name = sanitize_string(job_id, '-')
-    yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, jar, image, main_class)
+# def update_log_table(schemas: list,
+#                      log_table: str,
+#                      config_file: str,
+#                      main_class: str,
+#                      jar: str,
+#                      image: str,
+#                      dag: DAG):
+#     """
+#     Create a SparkKubernetesOperator updating log table after ingestion job
+#     :param schemas:
+#     :param log_table:
+#     :param config_file:
+#     :param main_class:
+#     :param jar:
+#     :param image: The spark-operator Docker image
+#     :param dag:
+#     :return:
+#     """
+#     job_id = f"log_update_{'_'.join(schemas)[:20].lower()}"
+#     pod_name = sanitize_string(job_id, '-')
+#     yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, jar, image, main_class)
+#
+#     # Update once we start updating log table
+#     job = SparkOperator(
+#         task_id=sanitize_string(f"create_{dataset_id}", "_"),
+#         name=sanitize_string(dataset_id[:40], '-'),
+#         namespace=step_config['namespace'],
+#         spark_class=step_config['main_class'],
+#         spark_jar=jar,
+#         spark_config=step_config['cluster_type'],
+#         dag=dag
+#     )
+#
+#     return job, job #TODO: properly implement this, refer to master
 
-    job = SparkOperator(
-        name=job_id,
-        task_id=job_id,
-        namespace="ingestion",
-        pod_template_file=yml,
-        priority_weight=1,
-        weight_rule="absolute",
-        do_xcom_push=True,
-        dag=dag
-    )
 
-    return job, job #TODO: properly implement this, refer to master
-
-
-def get_start_oprator(namespace: str,
+def get_start_operator(namespace: str,
                       dag: DAG,
                       schema: str):
     """
@@ -72,7 +72,7 @@ def get_start_oprator(namespace: str,
 
 
 # pylint: disable=too-many-locals,no-else-return
-def get_publish_oprator(dag_config: dict,
+def get_publish_operator(dag_config: dict,
                         etl_config_file: str,
                         jar: str,
                         dag: DAG,
@@ -88,21 +88,21 @@ def get_publish_oprator(dag_config: dict,
     :param schema:
     :return: both start and end to the publish operator if the operator contain multiple task
     """
-    if dag_config['publish_class'] == "bio.ferlab.ui.etl.red.raw.UpdateLog":
-        return update_log_table(dag_config['schemas'],
-                                "journalisation.ETL_Truncate_Table",
-                                etl_config_file,
-                                dag_config['publish_class'],
-                                jar,
-                                image,
-                                dag
-                                )
-    else:
-        publish = DummyOperator(
-            task_id=f"publish_{dag_config['namespace']}_{schema}",
-            dag=dag
-        )
-        return publish, publish
+    # if dag_config['publish_class'] == "bio.ferlab.ui.etl.red.raw.UpdateLog":
+    #     return update_log_table(dag_config['schemas'],
+    #                             "journalisation.ETL_Truncate_Table",
+    #                             etl_config_file,
+    #                             dag_config['publish_class'],
+    #                             jar,
+    #                             image,
+    #                             dag
+    #                             )
+    # else:
+    publish = DummyOperator(
+        task_id=f"publish_{dag_config['namespace']}_{schema}",
+        dag=dag
+    )
+    return publish, publish
 
 
 def setup_dag(dag: DAG,
@@ -127,8 +127,8 @@ def setup_dag(dag: DAG,
     previous_publish = None
 
     for step_config in dag_config['steps']:
-        start = get_start_oprator(step_config['namespace'], dag, schema)
-        start_publish, end_publish = get_publish_oprator(step_config, etl_config_file, jar, dag, image, schema)
+        start = get_start_operator(step_config['namespace'], dag, schema)
+        start_publish, end_publish = get_publish_operator(step_config, etl_config_file, jar, dag, image, schema)
 
         if previous_publish:
             previous_publish >> start
@@ -140,9 +140,19 @@ def setup_dag(dag: DAG,
         for conf in step_config['datasets']:
             dataset_id = conf['dataset_id']
 
-            job = create_job(dataset_id, step_config['namespace'], conf['run_type'], conf['cluster_type'],
-                                          conf['cluster_specs'], etl_config_file, jar, image, dag,
-                                          step_config['main_class'], version)
+            # job = create_job(dataset_id, step_config['namespace'], conf['run_type'], conf['cluster_type'],
+            #                               conf['cluster_specs'], etl_config_file, jar, image, dag,
+            #                               step_config['main_class'], version)
+
+            job = SparkOperator(
+                task_id=sanitize_string(f"create_{dataset_id}", "_"),
+                name=sanitize_string(dataset_id[:40], '-'),
+                namespace=step_config['namespace'],
+                spark_class=step_config['main_class'],
+                spark_jar=jar,
+                spark_config=f"{step_config['cluster_type']}-etl",
+                dag=dag
+            )
 
             all_dependencies = all_dependencies + conf['dependencies']
             jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
@@ -217,71 +227,70 @@ def get_cluster_specs(cluster_type: str, cluster_specs: dict):
     return specs
 
 
-def create_job(destination: str,
-                     namespace: str,
-                     run_type: str,
-                     cluster_type: str,
-                     cluster_specs: dict,
-                     config_file: str,
-                     jar: str,
-                     image: str,
-                     dag: DAG,
-                     main_class: str,
-                     version: str):
-    """
-    create spark job operator
-    :param destination:
-    :param namespace:
-    :param run_type:
-    :param cluster_type:
-    :param cluster_specs: specs to optionally override the default cluster_type ones
-    :param config_file:
-    :param jar:
-    :param image: The spark-operator Docker image
-    :param dag:
-    :param main_class:
-    :param version: Version to release, defaults to "latest"
-    :return:
-    """
-    specs = get_cluster_specs(cluster_type, cluster_specs)
-    driver_ram = specs["driver_ram"]
-    driver_core = specs["driver_core"]
-    worker_number = specs["worker_number"]
-    worker_ram = specs["worker_ram"]
-    worker_core = specs["worker_core"]
-
-    pod_name = sanitize_string(destination[:40], '-')
-    yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class, driver_ram,
-                        driver_core, worker_ram, worker_core, worker_number)
-    if namespace == "anonymized":
-        yml = anonymized_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class,
-                             driver_ram, driver_core, worker_ram, worker_core, worker_number)
-    elif namespace == "curated":
-        yml = curated_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class, driver_ram,
-                          driver_core, worker_ram, worker_core, worker_number)
-    elif namespace == "enriched":
-        yml = enriched_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class, driver_ram,
-                           driver_core, worker_ram, worker_core, worker_number)
-    elif namespace == "warehouse":
-        yml = warehouse_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class, driver_ram,
-                            driver_core, worker_ram, worker_core, worker_number)
-    elif namespace == "published":
-        yml = published_job(namespace, pod_name, destination, run_type, config_file, jar, image, driver_ram,
-                            driver_core, worker_ram, worker_core, worker_number, main_class)
-    elif namespace == "released":
-        yml = released_job(namespace, pod_name, destination, run_type, config_file, jar, image, driver_ram,
-                           driver_core, worker_ram, worker_core, worker_number, main_class, version)
-
-    return SparkOperator(
-        name=sanitize_string(f"create_{destination}", "_"),
-        task_id=sanitize_string(f"create_{destination}", "_"),
-        namespace=namespace,
-        pod_template_file=yml,
-        priority_weight=1,
-        weight_rule="absolute",
-        do_xcom_push=True,
-        dag=dag
-    )
+# def create_job(destination: str,
+#                      namespace: str,
+#                      run_type: str,
+#                      cluster_type: str,
+#                      cluster_specs: dict,
+#                      config_file: str,
+#                      jar: str,
+#                      image: str,
+#                      dag: DAG,
+#                      main_class: str,
+#                      version: str):
+#     """
+#     create spark job operator
+#     :param destination:
+#     :param namespace:
+#     :param run_type:
+#     :param cluster_type:
+#     :param cluster_specs: specs to optionally override the default cluster_type ones
+#     :param config_file:
+#     :param jar:
+#     :param image: The spark-operator Docker image
+#     :param dag:
+#     :param main_class:
+#     :param version: Version to release, defaults to "latest"
+#     :return:
+#     """
+#     specs = get_cluster_specs(cluster_type, cluster_specs)
+#     driver_ram = specs["driver_ram"]
+#     driver_core = specs["driver_core"]
+#     worker_number = specs["worker_number"]
+#     worker_ram = specs["worker_ram"]
+#     worker_core = specs["worker_core"]
+#
+#     pod_name = sanitize_string(destination[:40], '-')
+#     # yml = ingestion_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class, driver_ram,
+#     #                     driver_core, worker_ram, worker_core, worker_number)
+#     # if namespace == "anonymized":
+#     #     yml = anonymized_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class,
+#     #                          driver_ram, driver_core, worker_ram, worker_core, worker_number)
+#     # elif namespace == "curated":
+#     #     yml = curated_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class, driver_ram,
+#     #                       driver_core, worker_ram, worker_core, worker_number)
+#     # elif namespace == "enriched":
+#     #     yml = enriched_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class, driver_ram,
+#     #                        driver_core, worker_ram, worker_core, worker_number)
+#     # elif namespace == "warehouse":
+#     #     yml = warehouse_job(namespace, pod_name, destination, run_type, config_file, jar, image, main_class, driver_ram,
+#     #                         driver_core, worker_ram, worker_core, worker_number)
+#     # elif namespace == "published":
+#     #     yml = published_job(namespace, pod_name, destination, run_type, config_file, jar, image, driver_ram,
+#     #                         driver_core, worker_ram, worker_core, worker_number, main_class)
+#     # elif namespace == "released":
+#     #     yml = released_job(namespace, pod_name, destination, run_type, config_file, jar, image, driver_ram,
+#     #                        driver_core, worker_ram, worker_core, worker_number, main_class, version)
+#
+#     job = SparkOperator(
+#         task_id=sanitize_string(f"create_{dataset_id}", "_"),
+#         name=sanitize_string(dataset_id[:40], '-'),
+#         namespace=step_config['namespace'],
+#         spark_class=step_config['main_class'],
+#         spark_jar=jar,
+#         spark_config=step_config['cluster_type'],
+#         dag=dag
+#     )
 
 DEPENDENCIES = {
     "repositories": ["https://repos.spark-packages.org"],
@@ -440,18 +449,18 @@ def generic_job(namespace: str,
     :return:
     """
     if dependencies is None:
-        dependencies = DEPENDENCIES
+        dependencies = DEPENDENCIES # not sure where to put this
 
     if spark_conf is None:
-        spark_conf = SPARK_CONF
+        spark_conf = SPARK_CONF # in volume?
 
     dt_string = datetime.now().strftime("%d%m%Y-%H%M%S")
     yml = {
         "apiVersion": "sparkoperator.k8s.io/v1beta2",
         "kind": "SparkApplication",
         "metadata": {
-            "name": f"{pod_name}-{dt_string}",
-            "namespace": f"{namespace}"
+            "name": f"{pod_name}-{dt_string}", # name
+            "namespace": f"{namespace}" # namespace
         },
         "spec": {
             "type": "Scala",
@@ -465,21 +474,22 @@ def generic_job(namespace: str,
             "sparkVersion": spark_version,
             "sparkConf": spark_conf,
             "restartPolicy": {
-                "type": "OnFailure",
-                "onFailureRetries": 1,
-                "onFailureRetryInterval": 10,
-                "onSubmissionFailureRetries": 1,
-                "onSubmissionFailureRetryInterval": 10
+                "type": "OnFailure", # no equivalent
+                "onFailureRetries": 1, # retries
+                "onFailureRetryInterval": 10, # retry_delay
+                "onSubmissionFailureRetries": 1, # no equivalent
+                "onSubmissionFailureRetries": 1, # no equivalent
+                "onSubmissionFailureRetryInterval": 10 # no equivalent
             },
-            "driver": {
+            "driver": { # in volume?
                 "cores": driver_core,
                 "memory": f"{driver_ram}G",
                 "labels": {"version": "3.0.0"},
                 "serviceAccount": service_account,
                 "envSecretKeyRefs": env,
             },
-            "envSecretKeyRefs": env,
-            "executor": {
+            "envSecretKeyRefs": env, # in volume?
+            "executor": { # in volume?
                 "cores": worker_core,
                 "memory": f"{worker_ram}G",
                 "instances": worker_number,
