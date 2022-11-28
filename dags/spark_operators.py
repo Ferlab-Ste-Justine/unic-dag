@@ -149,7 +149,7 @@ def setup_dag(dag: DAG,
 
             job = SparkOperator(
                 task_id=sanitize_string(f"create_{dataset_id}", "_"),
-                name=sanitize_string({dataset_id}[:40], '-'),
+                name=sanitize_string(dataset_id[:40], '-'),
                 namespace=namespace,
                 spark_class=spark_class,
                 spark_jar=jar,
