@@ -141,7 +141,7 @@ def setup_dag(dag: DAG,
             dataset_id = conf['dataset_id']
             namespace = step_config['namespace']
             spark_class = step_config['main_class']
-            config_type = step_config['cluster_type']
+            config_type = conf['cluster_type']
 
             # job = create_job(dataset_id, step_config['namespace'], conf['run_type'], conf['cluster_type'],
             #                               conf['cluster_specs'], etl_config_file, jar, image, dag,
