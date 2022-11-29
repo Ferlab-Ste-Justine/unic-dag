@@ -166,7 +166,7 @@ def setup_dag(dag: DAG,
             if len(job['dependencies']) == 0:
                 start >> job['job']
             if dataset_id not in all_dependencies:
-                start >> start_publish
+                job['job'] >> start_publish
 def read_json(path: str):
     """
     read json file
