@@ -13,7 +13,7 @@ with DAG(
         task_id='test_pod_operator_default',
         name='test-pod-operator-default',
         is_delete_operator_pod=True,
-        namespace='anonymized',
+        namespace='unic-prod',
         image='alpine',
         cmds=['echo', 'hello'],
         arguments=[],
