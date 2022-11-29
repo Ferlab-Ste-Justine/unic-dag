@@ -20,40 +20,40 @@ def sanitize_string(string: str, replace_by: str):
     return re.sub("[^a-zA-Z0-9 ]", replace_by, string)
 
 
-# def update_log_table(schemas: list,
-#                      log_table: str,
-#                      config_file: str,
-#                      main_class: str,
-#                      jar: str,
-#                      image: str,
-#                      dag: DAG):
-#     """
-#     Create a SparkKubernetesOperator updating log table after ingestion job
-#     :param schemas:
-#     :param log_table:
-#     :param config_file:
-#     :param main_class:
-#     :param jar:
-#     :param image: The spark-operator Docker image
-#     :param dag:
-#     :return:
-#     """
-#     job_id = f"log_update_{'_'.join(schemas)[:20].lower()}"
-#     pod_name = sanitize_string(job_id, '-')
-#     yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, jar, image, main_class)
-#
-#     # Update once we start updating log table
-#     job = SparkOperator(
-#         task_id=sanitize_string(f"create_{dataset_id}", "_"),
-#         name=sanitize_string(dataset_id[:40], '-'),
-#         namespace=step_config['namespace'],
-#         spark_class=step_config['main_class'],
-#         spark_jar=jar,
-#         spark_config=step_config['cluster_type'],
-#         dag=dag
-#     )
-#
-#     return job, job #TODO: properly implement this, refer to master
+def update_log_table(schemas: list,
+                     log_table: str,
+                     config_file: str,
+                     main_class: str,
+                     jar: str,
+                     image: str,
+                     dag: DAG):
+    """
+    Create a SparkKubernetesOperator updating log table after ingestion job
+    :param schemas:
+    :param log_table:
+    :param config_file:
+    :param main_class:
+    :param jar:
+    :param image: The spark-operator Docker image
+    :param dag:
+    :return:
+    """
+    job_id = f"log_update_{'_'.join(schemas)[:20].lower()}"
+    pod_name = sanitize_string(job_id, '-')
+    # yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, jar, image, main_class)
+
+    # Update once we start updating log table
+    job = SparkOperator(
+        task_id=job_id,
+        name=pod_name,
+        namespace="ingestion",
+        spark_class=main_class,
+        spark_jar=jar,
+        spark_config="small-etl",
+        dag=dag
+    )
+
+    return job, job #TODO: properly implement this, refer to master
 
 
 def get_start_operator(namespace: str,
@@ -88,21 +88,21 @@ def get_publish_operator(dag_config: dict,
     :param schema:
     :return: both start and end to the publish operator if the operator contain multiple task
     """
-    # if dag_config['publish_class'] == "bio.ferlab.ui.etl.red.raw.UpdateLog":
-    #     return update_log_table(dag_config['schemas'],
-    #                             "journalisation.ETL_Truncate_Table",
-    #                             etl_config_file,
-    #                             dag_config['publish_class'],
-    #                             jar,
-    #                             image,
-    #                             dag
-    #                             )
-    # else:
-    publish = DummyOperator(
-        task_id=f"publish_{dag_config['namespace']}_{schema}",
-        dag=dag
-    )
-    return publish, publish
+    if dag_config['publish_class'] == "bio.ferlab.ui.etl.red.raw.UpdateLog":
+        return update_log_table(dag_config['schemas'],
+                                "journalisation.ETL_Truncate_Table",
+                                etl_config_file,
+                                dag_config['publish_class'],
+                                jar,
+                                image,
+                                dag
+                                )
+    else:
+        publish = DummyOperator(
+            task_id=f"publish_{dag_config['namespace']}_{schema}",
+            dag=dag
+        )
+        return publish, publish
 
 
 def setup_dag(dag: DAG,
