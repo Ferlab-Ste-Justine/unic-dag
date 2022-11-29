@@ -13,7 +13,6 @@ with DAG(
         task_id='test_pod_operator_default',
         name='test-pod-operator-default',
         is_delete_operator_pod=True,
-        config_file='~/.kube/config',
         namespace='anonymized',
         image='alpine',
         cmds=['echo', 'hello'],
