@@ -42,7 +42,7 @@ def update_log_table(schemas: list,
     pod_name = sanitize_string(job_id, '-')
     # yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, jar, image, main_class)
 
-    # Update once we start updating log table
+    # Add args
     job = SparkOperator(
         task_id=job_id,
         name=pod_name,
