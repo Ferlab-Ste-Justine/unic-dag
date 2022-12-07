@@ -18,7 +18,7 @@
       {"dataset_id": "raw_icca_ptassessment"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_icca_ptbedstay"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_icca_ptcensus"          , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_ptdemographic"     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_icca_ptdemographic"     , "cluster_type": "xsmall", "run_type": "skip"   , "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_icca_ptintake"          , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_icca_ptintervention"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_icca_ptlabresult"       , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
