@@ -1,5 +1,4 @@
 from airflow import DAG
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 from operators.spark import SparkOperator
 from datetime import datetime
 
@@ -13,7 +12,7 @@ with DAG(
     test_pod_operator_default = SparkOperator(
         task_id='test_pod_operator_default',
         name='test-pod-operator-default',
-        namespace="ingestion",
+        namespace="unic-prod",
         spark_class="bio.ferlab.ui.etl.experimental.TestClass",
         spark_jar=JAR,
         cmds=['echo', 'hello'],
