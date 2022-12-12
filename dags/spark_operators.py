@@ -90,7 +90,8 @@ def get_publish_operator(dag_config: dict,
                                 "journalisation.ETL_Truncate_Table",
                                 etl_config_file,
                                 dag_config['publish_class'],
-                                jar
+                                jar,
+                                dag
                                 )
     else:
         publish = DummyOperator(
