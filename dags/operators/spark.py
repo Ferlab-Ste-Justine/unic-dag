@@ -24,7 +24,6 @@ class SparkOperator(KubernetesPodOperator):
             is_delete_operator_pod=False,
             namespace=namespace,
             name=name,
-            service_account_name='unic-prod',
             image='ferlabcrsj/spark:3.3.1',
             retries=1,
             retry_delay=10,
