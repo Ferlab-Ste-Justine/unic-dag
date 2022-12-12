@@ -22,7 +22,6 @@ class SparkOperator(KubernetesPodOperator):
         super().__init__(
             task_id=task_id,
             is_delete_operator_pod=False,
-            config_file='~/.kube/config',
             namespace=namespace,
             name=name,
             service_account_name='spark',

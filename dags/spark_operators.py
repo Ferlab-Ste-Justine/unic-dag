@@ -25,7 +25,6 @@ def update_log_table(schemas: list,
                      config_file: str,
                      main_class: str,
                      jar: str,
-                     image: str,
                      dag: DAG):
     """
     Create a SparkKubernetesOperator updating log table after ingestion job
@@ -40,12 +39,11 @@ def update_log_table(schemas: list,
     """
     job_id = f"log_update_{'_'.join(schemas)[:20].lower()}"
     pod_name = sanitize_string(job_id, '-')
-    # yml = log_job("ingestion", pod_name, log_table, "set", schemas, config_file, jar, image, main_class)
 
-    # Add args
     job = SparkOperator(
         task_id=job_id,
         name=pod_name,
+        arguments=[config_file, log_table, "set"] + schemas,
         namespace="ingestion",
         spark_class=main_class,
         spark_jar=jar,
@@ -53,7 +51,7 @@ def update_log_table(schemas: list,
         dag=dag
     )
 
-    return job, job #TODO: properly implement this, refer to master
+    return job
 
 
 def get_start_operator(namespace: str,
@@ -76,7 +74,6 @@ def get_publish_operator(dag_config: dict,
                         etl_config_file: str,
                         jar: str,
                         dag: DAG,
-                        image: str,
                         schema: str):
     """
     Create a publish task based on the config publish_class
@@ -93,16 +90,14 @@ def get_publish_operator(dag_config: dict,
                                 "journalisation.ETL_Truncate_Table",
                                 etl_config_file,
                                 dag_config['publish_class'],
-                                jar,
-                                image,
-                                dag
+                                jar
                                 )
     else:
         publish = DummyOperator(
             task_id=f"publish_{dag_config['namespace']}_{schema}",
             dag=dag
         )
-        return publish, publish
+        return publish
 
 
 def setup_dag(dag: DAG,
@@ -128,11 +123,11 @@ def setup_dag(dag: DAG,
 
     for step_config in dag_config['steps']:
         start = get_start_operator(step_config['namespace'], dag, schema)
-        start_publish, end_publish = get_publish_operator(step_config, etl_config_file, jar, dag, image, schema)
+        publish = get_publish_operator(step_config, etl_config_file, jar, dag, schema)
 
         if previous_publish:
             previous_publish >> start
-        previous_publish = end_publish
+        previous_publish = publish
 
         jobs = {}
         all_dependencies = []
@@ -142,10 +137,6 @@ def setup_dag(dag: DAG,
             namespace = step_config['namespace']
             spark_class = step_config['main_class']
             config_type = conf['cluster_type']
-
-            # job = create_job(dataset_id, step_config['namespace'], conf['run_type'], conf['cluster_type'],
-            #                               conf['cluster_specs'], etl_config_file, jar, image, dag,
-            #                               step_config['main_class'], version)
 
             job = SparkOperator(
                 task_id=sanitize_string(f"create_{dataset_id}", "_"),
@@ -166,7 +157,7 @@ def setup_dag(dag: DAG,
             if len(job['dependencies']) == 0:
                 start >> job['job']
             if dataset_id not in all_dependencies:
-                job['job'] >> start_publish
+                job['job'] >> publish
 def read_json(path: str):
     """
     read json file
