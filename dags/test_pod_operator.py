@@ -12,7 +12,7 @@ with DAG(
     test_pod_operator_default = SparkOperator(
         task_id='test_pod_operator_default',
         name='test-pod-operator-default',
-        namespace="unic-prod",
+        namespace="raw",
         spark_class="bio.ferlab.ui.etl.experimental.TestClass",
         spark_jar=JAR,
         cmds=['echo', 'hello'],
