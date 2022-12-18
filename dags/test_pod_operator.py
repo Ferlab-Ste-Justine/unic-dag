@@ -5,13 +5,13 @@ from datetime import datetime
 JAR = "s3a://spark-prd/jars/unic-etl-UNIC-875.jar"
 
 with DAG(
-        dag_id='test_pod_operator_default',
+        dag_id='test_pod_operator',
         start_date=datetime(2022, 1, 1),
         schedule_interval=None,
 ) as dag:
-    test_pod_operator_default = SparkOperator(
-        task_id='test_pod_operator_default',
-        name='test-pod-operator-default',
+    test_pod_operator = SparkOperator(
+        task_id='test_pod_operator',
+        name='test-pod-operator',
         namespace="raw",
         spark_class="bio.ferlab.ui.etl.experimental.TestClass",
         spark_jar=JAR,

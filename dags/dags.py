@@ -19,7 +19,7 @@ EXTRACT_SCHEMA = '(.*)_config.json'
 CONFIG_FILE = "config/prod.conf"
 JAR = "s3a://spark-prd/jars/unic-etl-UNIC-875.jar" # figure out why we cant pass it the other way
 IMAGE = "ferlabcrsj/spark:3.3.1"
-VERSION = '{{ dag_run.conf.get("version", "latest") }}'
+# VERSION = '{{ dag_run.conf.get("version", "latest") }}'
 
 for (r, folders, files) in os.walk(ROOT):
     if r == ROOT:
@@ -48,7 +48,7 @@ for (r, folders, files) in os.walk(ROOT):
                             etl_config_file=CONFIG_FILE,
                             jar=JAR,
                             image=IMAGE,
-                            schema=schema,
-                            version=VERSION
+                            schema=schema
+                            # version=VERSION
                         )
                     globals()[dagid] = dag

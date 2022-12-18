@@ -114,10 +114,10 @@ class SparkOperator(KubernetesPodOperator):
         super().execute(**kwargs)
 
         # might not need to do this since only one context
-        kubernetes.config.load_kube_config(
-            config_file='~/.kube/config',
-            context='unic-prod',
-        )
+        # kubernetes.config.load_kube_config(
+        #     config_file='~/.kube/config',
+        #     context='unic-prod',
+        # )
 
         k8s_client = kubernetes.client.CoreV1Api()
 
