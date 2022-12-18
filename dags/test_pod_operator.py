@@ -2,7 +2,7 @@ from airflow import DAG
 from operators.spark import SparkOperator
 from datetime import datetime
 
-JAR = "s3a://spark-prd/jars/unic-etl-875.jar"
+JAR = "s3a://spark-prd/jars/unic-etl-UNIC-875.jar"
 
 with DAG(
         dag_id='test_pod_operator_default',
