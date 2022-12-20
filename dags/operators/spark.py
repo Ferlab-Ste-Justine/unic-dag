@@ -7,9 +7,9 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import Kubernete
 
 
 class SparkOperator(KubernetesPodOperator):
-    template_fields = KubernetesPodOperator.template_fields + (
-        'skip',
-    )
+    # template_fields = KubernetesPodOperator.template_fields + (
+    #     'skip',
+    # )
 
     def __init__(
             self,
