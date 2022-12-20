@@ -10,7 +10,7 @@
     "datasets":
     [
       {"dataset_id": "anonymized_cardiopathie_list_detaillee", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_cardiopathie_list_dossiers" , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "anonymized_cardiopathie_list_dossiers" , "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
     ]
   }]
 }
