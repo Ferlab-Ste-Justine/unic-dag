@@ -7,6 +7,9 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import Kubernete
 
 
 class SparkOperator(KubernetesPodOperator):
+    template_fields = KubernetesPodOperator.template_fields + (
+        'skip',
+    )
 
     def __init__(
             self,
@@ -56,7 +59,11 @@ class SparkOperator(KubernetesPodOperator):
         self.env_vars = [
             k8s.V1EnvVar(
                 name='SPARK_CLIENT_POD_NAME',
-                value=self.name,
+                value_from=k8s.V1EnvVarSource(
+                    field_ref=k8s.V1ObjectFieldSelector(
+                        field_path='metadata.name',
+                    ),
+                ),
             ),
             k8s.V1EnvVar(
                 name='SPARK_JAR',
