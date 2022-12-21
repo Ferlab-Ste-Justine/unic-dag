@@ -106,8 +106,7 @@ def setup_dag(dag: DAG,
               etl_config_file: str,
               jar: str,
               image: str,
-              schema: str,
-              version: str):
+              schema: str):
     """
     setup a dag
     :param dag:
