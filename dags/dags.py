@@ -21,34 +21,33 @@ JAR = "s3a://spark-prd/jars/unic-etl-UNIC-875.jar" # figure out why we cant pass
 IMAGE = "ferlabcrsj/spark:3.3.1"
 # VERSION = '{{ dag_run.conf.get("version", "latest") }}'
 
-# for (r, folders, files) in os.walk(ROOT):
-#     if r == ROOT:
-#         for namespace in folders:
-#             for configs in os.walk(f'{ROOT}/{namespace}'):
-#                 for f in configs[2]:
-#                     schema = re.search(EXTRACT_SCHEMA, f).group(1)
-#                     dagid = f"{namespace}_{schema}".lower()
-#                     config = read_json(f"{ROOT}/{namespace}/{schema}_config.json")
-#                     k = 'timeout_hours'
-#                     timeout_hours = config[k] if k in config else DEFAULT_TIMEOUT_HOURS
-#                     dag = DAG(
-#                         dag_id=dagid,
-#                         schedule_interval=config['schedule'],
-#                         default_args=DEFAULT_ARGS,
-#                         start_date=datetime(2021, 1, 1),
-#                         concurrency=config['concurrency'],
-#                         catchup=False,
-#                         tags=[namespace],
-#                         dagrun_timeout=timedelta(hours=timeout_hours)
-#                     )
-#                     with dag:
-#                         setup_dag(
-#                             dag=dag,
-#                             dag_config=config,
-#                             etl_config_file=CONFIG_FILE,
-#                             jar=JAR,
-#                             image=IMAGE,
-#                             schema=schema
-#                             # version=VERSION
-#                         )
-#                     globals()[dagid] = dag
+for (r, folders, files) in os.walk(ROOT):
+    if r == ROOT:
+        for namespace in folders:
+            for configs in os.walk(f'{ROOT}/{namespace}'):
+                for f in configs[2]:
+                    schema = re.search(EXTRACT_SCHEMA, f).group(1)
+                    dagid = f"{namespace}_{schema}".lower()
+                    config = read_json(f"{ROOT}/{namespace}/{schema}_config.json")
+                    k = 'timeout_hours'
+                    timeout_hours = config[k] if k in config else DEFAULT_TIMEOUT_HOURS
+                    dag = DAG(
+                        dag_id=dagid,
+                        schedule_interval=config['schedule'],
+                        default_args=DEFAULT_ARGS,
+                        start_date=datetime(2021, 1, 1),
+                        concurrency=config['concurrency'],
+                        catchup=False,
+                        tags=[namespace],
+                        dagrun_timeout=timedelta(hours=timeout_hours)
+                    )
+                    with dag:
+                        setup_dag(
+                            dag=dag,
+                            dag_config=config,
+                            etl_config_file=CONFIG_FILE,
+                            jar=JAR,
+                            image=IMAGE,
+                            schema=schema
+                        )
+                    globals()[dagid] = dag
