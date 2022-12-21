@@ -160,3 +160,11 @@ def setup_dag(dag: DAG,
             if dataset_id not in all_dependencies:
                 job['job'] >> publish
 
+def read_json(path: str):
+    """
+    read json file
+    :param path:
+    :return:
+    """
+    return json.load(open(path, encoding='UTF8'))
+
