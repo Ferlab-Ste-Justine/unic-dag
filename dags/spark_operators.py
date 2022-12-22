@@ -106,7 +106,8 @@ def setup_dag(dag: DAG,
               etl_config_file: str,
               jar: str,
               image: str,
-              schema: str):
+              schema: str,
+              version: str):
     """
     setup a dag
     :param dag:
@@ -137,11 +138,18 @@ def setup_dag(dag: DAG,
             namespace = step_config['namespace']
             spark_class = step_config['main_class']
             config_type = conf['cluster_type']
+            run_type = conf['run_type']
+
+            if namespace == 'released':
+                arguments = [etl_config_file, run_type, dataset_id, version]
+            else:
+                arguments = [etl_config_file, run_type, dataset_id]
 
             job = SparkOperator(
                 task_id=sanitize_string(f"create_{dataset_id}", "_"),
                 name=sanitize_string(dataset_id[:40], '-'),
                 namespace=namespace,
+                arguments=arguments,
                 spark_class=spark_class,
                 spark_jar=jar,
                 spark_config=f"{config_type}-etl",
