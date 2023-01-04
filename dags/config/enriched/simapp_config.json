@@ -1,0 +1,17 @@
+{
+  "concurrency": 4,
+  "schedule": null,
+  "timeout_hours": 1,
+  "steps": [{
+    "namespace": "enriched",
+    "main_class": "bio.ferlab.ui.etl.yellow.enriched.sil.simapp.Main",
+    "publish_class": "",
+    "schemas": [],
+    "datasets":
+    [
+      {"dataset_id": "enriched_simapp_laboratoire", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "enriched_simapp_patient"    , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_simapp_laboratoire"]},
+      {"dataset_id": "enriched_simapp_sejour"     , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_simapp_laboratoire"]}
+    ]
+  }]
+}
