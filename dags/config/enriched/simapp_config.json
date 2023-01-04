@@ -9,9 +9,9 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "enriched_simapp_laboratoire", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "enriched_simapp_patient"    , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_simapp_laboratoire"]},
-      {"dataset_id": "enriched_simapp_sejour"     , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_simapp_laboratoire"]}
+      {"dataset_id": "enriched_simapp_laboratoire", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "enriched_simapp_patient"    , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_simapp_laboratoire"]},
+      {"dataset_id": "enriched_simapp_sejour"     , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_simapp_laboratoire"]}
     ]
   }]
 }
