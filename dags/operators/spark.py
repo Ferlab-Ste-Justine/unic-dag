@@ -32,7 +32,6 @@ class SparkOperator(KubernetesPodOperator):
             retry_delay=10,
             priority_weight=1,
             weight_rule="absolute",
-            do_xcom_push=True,
             dag=dag,
             **kwargs
         )
