@@ -15,33 +15,21 @@ class SparkOperator(KubernetesPodOperator):
             self,
             spark_class: str,
             spark_jar: str,
-            name: str,
-            namespace: str,
-            task_id: str,
-            dag: DAG,
             spark_config: str = '',
             **kwargs,
     ) -> None:
         super().__init__(
-            task_id=task_id,
             is_delete_operator_pod=False,
-            namespace=namespace,
-            name=name,
             image='ferlabcrsj/spark:3.3.1',
             retries=1,
             retry_delay=10,
             priority_weight=1,
             weight_rule="absolute",
-            dag=dag,
             **kwargs
         )
         self.spark_class = spark_class
         self.spark_jar = spark_jar
-        self.name = name
-        self.namespace = namespace
-        self.task_id = task_id
         self.spark_config = spark_config
-        self.dag = dag
 
     def execute(self, **kwargs):
 
