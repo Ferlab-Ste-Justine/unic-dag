@@ -48,13 +48,6 @@ class SparkOperator(KubernetesPodOperator):
         self.cmds = ['/opt/client-entrypoint.sh']
         self.image_pull_policy = 'IfNotPresent'
 
-        # Might need to add this in
-        # self.image_pull_secrets = [
-        #     k8s.V1LocalObjectReference(
-        #         name='images-registry-credentials',
-        #     ),
-        # ]
-
         self.env_vars = [
             k8s.V1EnvVar(
                 name='SPARK_CLIENT_POD_NAME',
@@ -119,13 +112,10 @@ class SparkOperator(KubernetesPodOperator):
 
         super().execute(**kwargs)
 
-        # might not need to do this since only one context
-        # kubernetes.config.load_kube_config(
-        #     config_file='~/.kube/config',
-        #     context='unic-prod',
-        # )
-
         k8s_client = kubernetes.client.CoreV1Api()
+
+        print(f"namespace: {self.pod.metadata.name}")
+        print(f"name: {self.pod.metadata.namespace}")
 
         # Get driver pod log and delete driver pod
         driver_pod = k8s_client.list_namespaced_pod(
@@ -133,6 +123,8 @@ class SparkOperator(KubernetesPodOperator):
             field_selector=f'metadata.name={self.pod.metadata.name}-driver',
             limit=1,
         )
+
+        print(f"driver pod: {driver_pod}")
         if driver_pod.items:
             log = k8s_client.read_namespaced_pod_log(
                 name=f'{self.pod.metadata.name}-driver',
