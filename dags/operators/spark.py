@@ -7,9 +7,6 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import Kubernete
 
 
 class SparkOperator(KubernetesPodOperator):
-    # template_fields = KubernetesPodOperator.template_fields + (
-    #     'skip',
-    # )
 
     def __init__(
             self,
@@ -21,6 +18,7 @@ class SparkOperator(KubernetesPodOperator):
         super().__init__(
             is_delete_operator_pod=False,
             image='ferlabcrsj/spark:3.3.1',
+            service_account_name='airflow',
             retries=1,
             retry_delay=10,
             priority_weight=1,
