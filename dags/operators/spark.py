@@ -98,15 +98,9 @@ class SparkOperator(KubernetesPodOperator):
 
         super().execute(**kwargs)
 
-        kubernetes.config.load_kube_config(
-            config_file='~/.kube/config',
-            context='unic-prod'
-        )
+        kubernetes.config.load_incluster_config()
 
         k8s_client = kubernetes.client.CoreV1Api()
-
-        print(f"namespace: {self.pod.metadata.name}")
-        print(f"name: {self.pod.metadata.namespace}")
 
         # Get driver pod log and delete driver pod
         driver_pod = k8s_client.list_namespaced_pod(
@@ -115,7 +109,6 @@ class SparkOperator(KubernetesPodOperator):
             limit=1,
         )
 
-        print(f"driver pod: {driver_pod}")
         if driver_pod.items:
             log = k8s_client.read_namespaced_pod_log(
                 name=f'{self.pod.metadata.name}-driver',
