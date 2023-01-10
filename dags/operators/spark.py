@@ -18,7 +18,7 @@ class SparkOperator(KubernetesPodOperator):
         super().__init__(
             is_delete_operator_pod=False,
             image='ferlabcrsj/spark:3.3.1',
-            service_account_name='unic-prod-airflow-worker',
+            service_account_name='spark',
             retries=1,
             retry_delay=10,
             priority_weight=1,
