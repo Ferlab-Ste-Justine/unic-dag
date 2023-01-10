@@ -98,6 +98,11 @@ class SparkOperator(KubernetesPodOperator):
 
         super().execute(**kwargs)
 
+        kubernetes.config.load_kube_config(
+            config_file='~/.kube/config',
+            context='unic-prod'
+        )
+
         k8s_client = kubernetes.client.CoreV1Api()
 
         print(f"namespace: {self.pod.metadata.name}")
