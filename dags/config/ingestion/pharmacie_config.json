@@ -4,7 +4,7 @@
   "timeout_hours": 4,
   "steps": [
     {
-    "namespace": "ingestion",
+    "namespace": "raw",
     "main_class": "bio.ferlab.ui.etl.red.raw.Main",
     "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
     "schemas": ["Pharmacie"],
