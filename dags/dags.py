@@ -11,7 +11,7 @@ from core.default_args import generate_default_args
 from core.slack import Slack
 from spark_operators import read_json, setup_dag
 
-DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=Slack.notify_task_failure)
+# DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=Slack.notify_task_failure)
 DEFAULT_TIMEOUT_HOURS = 4
 
 ROOT = '/opt/airflow/dags/repo/dags/config'
@@ -34,7 +34,7 @@ for (r, folders, files) in os.walk(ROOT):
                     dag = DAG(
                         dag_id=dagid,
                         schedule_interval=config['schedule'],
-                        default_args=DEFAULT_ARGS,
+                        # default_args=DEFAULT_ARGS,
                         start_date=datetime(2021, 1, 1),
                         concurrency=config['concurrency'],
                         catchup=False,
