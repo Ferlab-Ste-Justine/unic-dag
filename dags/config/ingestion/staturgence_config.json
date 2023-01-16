@@ -5,16 +5,16 @@
   "steps": [{
     "namespace": "raw",
     "main_class": "bio.ferlab.ui.etl.red.raw.Main",
-    "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
+    "publish_class": "",
     "schemas": ["staturgence"],
     "datasets":
     [
-      {"dataset_id":"raw_staturgence_recherche_logtransaction", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_staturgence_recherche_bcm"           , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_staturgence_recherche_episode"       , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_staturgence_recherche_fadm"          , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_staturgence_recherche_priseencharge" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_staturgence_recherche_triage"        , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id":"raw_staturgence_recherche_logtransaction_test", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"raw_staturgence_recherche_bcm_test"           , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"raw_staturgence_recherche_episode_test"       , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"raw_staturgence_recherche_fadm_test"          , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"raw_staturgence_recherche_priseencharge_test" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"raw_staturgence_recherche_triage_test"        , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
   }, {
     "namespace": "anonymized",
@@ -23,12 +23,12 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id":"anonymized_staturgence_recherche_logtransaction", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_bcm"           , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_episode"       , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_fadm"          , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_priseencharge" , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_triage"        , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id":"anonymized_staturgence_recherche_logtransaction_test", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_bcm_test"           , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_episode_test"       , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_fadm_test"          , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_priseencharge_test" , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_triage_test"        , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []}
     ]
   }]
 
