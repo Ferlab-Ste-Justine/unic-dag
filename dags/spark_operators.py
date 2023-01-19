@@ -66,6 +66,51 @@ def update_log_table(schemas: list,
     return create_job, check_job
 
 
+def publish_to_aidbox(tables: list,
+                      config_file: str,
+                      main_class: str,
+                      namespace: str,
+                      jar: str,
+                      image: str,
+                      dag: DAG):
+    """
+    Create a SparkKubernetes Operator and Sensor tasks for publishing data to AidBox
+    :param tables: tables to publish
+    :param config_file: ETL config file
+    :param main_class: Main class to call
+    :param namespace: Kubernetes namesapce
+    :param jar: location of the jar
+    :param image: SparkOperator Docker image
+    :param dag: a reference to the dag the task is attached to
+    :return:
+    """
+    create_job_id = "publish_to_aidbox"
+    pod_name = sanitize_string(create_job_id, '-')
+    yml = generic_job(namespace, pod_name, [config_file, *tables], jar, main_class, PUBLISHED_ENV, image, driver_ram=16,
+                      driver_core=4, worker_ram=4, worker_core=1, worker_number=1)
+    create_job = SparkKubernetesOperator(
+        task_id=create_job_id,
+        namespace=namespace,
+        application_file=yml,
+        priority_weight=1,
+        weight_rule="absolute",
+        do_xcom_push=True,
+        dag=dag
+    )
+    check_job = SparkKubernetesSensor(
+        task_id=f'check_{create_job_id}',
+        namespace="ingestion",
+        priority_weight=999,
+        weight_rule="absolute",
+        application_name=f"{{{{ task_instance.xcom_pull(task_ids='{create_job_id}')['metadata']['name'] }}}}",
+        poke_interval=30,
+        timeout=21600,  # 6 hours
+        dag=dag,
+    )
+    create_job >> check_job
+    return create_job, check_job
+
+
 def get_start_oprator(namespace: str,
                       dag: DAG,
                       schema: str):
@@ -82,12 +127,12 @@ def get_start_oprator(namespace: str,
 
 
 # pylint: disable=too-many-locals,no-else-return
-def get_publish_oprator(dag_config: dict,
-                        etl_config_file: str,
-                        jar: str,
-                        dag: DAG,
-                        image: str,
-                        schema: str):
+def get_publish_operator(dag_config: dict,
+                         etl_config_file: str,
+                         jar: str,
+                         dag: DAG,
+                         image: str,
+                         schema: str):
     """
     Create a publish task based on the config publish_class
     :param dag_config:
@@ -107,6 +152,16 @@ def get_publish_oprator(dag_config: dict,
                                 image,
                                 dag
                                 )
+
+    elif dag_config['publish_class'] == "bio.ferlab.ui.etl.green.published.coda.PublishToAidbox":
+        return publish_to_aidbox(tables=dag_config['schemas'],
+                                 config_file=etl_config_file,
+                                 main_class=dag_config['publish_class'],
+                                 namespace=dag_config['namespace'],
+                                 jar=jar,
+                                 image=image,
+                                 dag=dag)
+
     else:
         publish = DummyOperator(
             task_id=f"publish_{dag_config['namespace']}_{schema}",
@@ -138,7 +193,7 @@ def setup_dag(dag: DAG,
 
     for step_config in dag_config['steps']:
         start = get_start_oprator(step_config['namespace'], dag, schema)
-        start_publish, end_publish = get_publish_oprator(step_config, etl_config_file, jar, dag, image, schema)
+        start_publish, end_publish = get_publish_operator(step_config, etl_config_file, jar, dag, image, schema)
 
         if previous_publish:
             previous_publish >> start
