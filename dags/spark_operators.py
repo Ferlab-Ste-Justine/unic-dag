@@ -211,7 +211,7 @@ def get_cluster_specs(cluster_type: str, cluster_specs: dict = None):
     specs = {driver_ram: "", driver_core: "", worker_number: "", worker_ram: "", worker_core: ""}
 
     for spec in specs.copy():
-        specs[spec] = cluster_specs[spec] if spec in cluster_specs \
+        specs[spec] = cluster_specs[spec] if cluster_specs is not None and spec in cluster_specs \
             else clusters[cluster_type][spec] if cluster_type in clusters \
             else clusters["xsmall"][spec]
 
