@@ -45,7 +45,7 @@ for (r, folders, files) in os.walk(ROOT):
                         setup_dag(
                             dag=dag,
                             dag_config=config,
-                            etl_config_file=CONFIG_FILE,
+                            config_file=CONFIG_FILE,
                             jar=JAR,
                             image=IMAGE,
                             schema=schema,
