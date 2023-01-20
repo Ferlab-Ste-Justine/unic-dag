@@ -12,6 +12,7 @@ class SparkOperator(KubernetesPodOperator):
             self,
             spark_class: str,
             spark_jar: str,
+            namespace: str,
             spark_config: str = '',
             **kwargs,
     ) -> None:
@@ -28,6 +29,7 @@ class SparkOperator(KubernetesPodOperator):
         self.spark_class = spark_class
         self.spark_jar = spark_jar
         self.spark_config = spark_config
+        self.namespace = namespace
 
     def execute(self, **kwargs):
 
@@ -52,6 +54,7 @@ class SparkOperator(KubernetesPodOperator):
                 value=self.spark_class,
             ),
         ]
+
         self.volumes = [
             k8s.V1Volume(
                 name='spark-defaults',
@@ -78,6 +81,24 @@ class SparkOperator(KubernetesPodOperator):
                 read_only=True,
             ),
         ]
+
+        if self.namespace == 'raw':
+            self.volumes.append(
+                k8s.V1Volume(
+                    name='spark-raw-integration-db',
+                    secret=k8s.V1SecretVolumeSource(
+                        secret_name='spark-raw-integration-db',
+                    ),
+                ),
+            )
+
+            self.volume_mounts.append(
+                k8s.V1VolumeMount(
+                    name='spark-raw-integration-db',
+                    mount_path='/opt/spark-configs/raw-integration-db',
+                    read_only=True,
+                ),
+            )
 
         if self.spark_config:
             self.volumes.append(
