@@ -273,8 +273,9 @@ def create_spark_job(destination: str,
     main_class = get_main_class(namespace, main_class)
     specs = get_cluster_specs(cluster_type, cluster_specs)
 
-    default_args = [config_file, run_type, destination]
-    args = default_args.append(version) if namespace == "released" else default_args
+    args = [config_file, run_type, destination]
+    if namespace == "released":
+        args.append(version)
 
     yml = generic_job(namespace, pod_name, args, jar, main_class, image, **specs)
 
