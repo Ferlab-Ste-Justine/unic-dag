@@ -83,6 +83,7 @@ class SparkOperator(KubernetesPodOperator):
         ]
 
         if self.namespace == 'raw':
+            print('namespace is raw')
             self.volumes.append(
                 k8s.V1Volume(
                     name='spark-raw-integration-db',
