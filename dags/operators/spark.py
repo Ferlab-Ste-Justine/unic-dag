@@ -33,6 +33,8 @@ class SparkOperator(KubernetesPodOperator):
 
     def execute(self, **kwargs):
 
+        print(f'IN POD OPERATOR: NS IS {self.namespace}')
+
         self.cmds = ['/opt/client-entrypoint.sh']
         self.image_pull_policy = 'IfNotPresent'
 
@@ -83,7 +85,6 @@ class SparkOperator(KubernetesPodOperator):
         ]
 
         if self.namespace == 'raw':
-            print('namespace is raw')
             self.volumes.append(
                 k8s.V1Volume(
                     name='spark-raw-integration-db',

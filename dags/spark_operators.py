@@ -145,6 +145,8 @@ def setup_dag(dag: DAG,
             else:
                 arguments = [etl_config_file, run_type, dataset_id]
 
+            print(f"NAMESPACE: {namespace}")
+
             job = SparkOperator(
                 task_id=sanitize_string(f"create_{dataset_id}", "_"),
                 name=sanitize_string(dataset_id[:40], '-'),
