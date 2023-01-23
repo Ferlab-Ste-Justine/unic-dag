@@ -33,8 +33,6 @@ class SparkOperator(KubernetesPodOperator):
 
     def execute(self, **kwargs):
 
-        print(f'IN POD OPERATOR: NS IS {self.namespace}')
-
         self.cmds = ['/opt/client-entrypoint.sh']
         self.image_pull_policy = 'IfNotPresent'
 
