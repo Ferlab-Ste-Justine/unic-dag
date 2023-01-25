@@ -9,7 +9,7 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "anonymized_coprema_patient_index", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "anonymized_coprema_patient_index_test", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
   }]
 }
