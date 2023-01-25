@@ -6,12 +6,12 @@
     {
       "namespace": "raw",
       "main_class": "bio.ferlab.ui.etl.red.raw.Main",
-      "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
+      "publish_class": "",
       "schemas": ["chartmaxx"],
       "datasets":
       [
-        {"dataset_id": "raw_chartmaxx_cmformcapture"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "raw_chartmaxx_cmformcapture_deletes" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "raw_chartmaxx_cmformcapture_test"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "raw_chartmaxx_cmformcapture_deletes_test" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ]
     },
     {
@@ -21,7 +21,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id": "curated_chartmaxx_cmformcapture", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "curated_chartmaxx_cmformcapture_test", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ]
     },
     {
@@ -32,7 +32,7 @@
       "datasets":
       [
         {"dataset_id": "anonymized_chartmaxx_cmformcapture_obstetric_record*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_chartmaxx_cmformcapture_deletes"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "anonymized_chartmaxx_cmformcapture_deletes_test"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ]
     }
   ]
