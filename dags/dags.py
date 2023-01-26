@@ -48,12 +48,18 @@ for (r, folders, files) in os.walk(ROOT):
                         is_paused_upon_creation=True
                     )
                     with dag:
+                        def version() -> str:
+                            return '{{ params.version }}'
+
+                        def jar() -> str:
+                            return '{{ params.jar }}'
+
                         setup_dag(
                             dag=dag,
                             dag_config=config,
                             config_file=CONFIG_FILE,
-                            jar='{{ params.jar }}',
+                            jar=jar(),
                             schema=schema,
-                            version='{{ params.version }}'
+                            version=version()
                         )
                     globals()[dagid] = dag
