@@ -32,8 +32,8 @@ for (r, folders, files) in os.walk(ROOT):
                         dag_id=dagid,
                         schedule_interval=config['schedule'],
                         params={
-                            'version': Param('UNIC-875', type='string'),
-                            'jar': Param('latest', type='string')
+                            "version": Param("UNIC-875", type="string"),
+                            "jar": Param("latest", type="string")
                         },
                         default_args=DEFAULT_ARGS,
                         start_date=datetime(2021, 1, 1),
@@ -45,10 +45,10 @@ for (r, folders, files) in os.walk(ROOT):
                     )
                     with dag:
                         def version() -> str:
-                            return '{{ params.version }}'
+                            return "{{ dag.params.version }}"
 
                         def jar() -> str:
-                            return '{{ params.jar }}'
+                            return "{{ dag.params.jar }}"
 
                         setup_dag(
                             dag=dag,
