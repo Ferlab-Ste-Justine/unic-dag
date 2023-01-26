@@ -45,10 +45,10 @@ for (r, folders, files) in os.walk(ROOT):
                     )
                     with dag:
                         def version() -> str:
-                            return "{{ dag.params.version }}"
+                            return "{{ params.version }}"
 
                         def jar() -> str:
-                            return "{{ dag.params.jar }}"
+                            return "{{ params.jar }}"
 
                         setup_dag(
                             dag=dag,
