@@ -3,9 +3,6 @@ Help class containing custom SparkKubernetesOperator
 """
 import json
 import re
-from datetime import datetime
-
-import yaml
 from airflow import DAG
 from airflow.operators.dummy import DummyOperator
 from operators.spark import SparkOperator

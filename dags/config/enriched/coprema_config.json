@@ -10,18 +10,18 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"enriched_coprema_participant_index_test"     , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"enriched_coprema_baby_test"                  , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index_test"]},
-        {"dataset_id":"enriched_coprema_delivery_test"              , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index_test"]},
-        {"dataset_id":"enriched_coprema_derived_results_test"       , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index_test", "enriched_coprema_growth_test", "enriched_coprema_laboratory_results_test"]},
-        {"dataset_id":"enriched_coprema_growth_test"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index_test"]},
-        {"dataset_id":"enriched_coprema_laboratory_results_test"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index_test"]},
-        {"dataset_id":"enriched_coprema_medications_test"           , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index_test"]},
-        {"dataset_id":"enriched_coprema_microbiology_results_test"  , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index_test"]},
-        {"dataset_id":"enriched_coprema_mother_test"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"enriched_coprema_mother_diagnosis_test"      , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"enriched_coprema_respiratory_care_test"      , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index_test"]},
-        {"dataset_id":"enriched_coprema_transfusions_test"          , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index_test"]}
+        {"dataset_id":"enriched_coprema_participant_index"     , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_coprema_baby"                  , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index"]},
+        {"dataset_id":"enriched_coprema_delivery"              , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index"]},
+        {"dataset_id":"enriched_coprema_derived_results"       , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index", "enriched_coprema_growth", "enriched_coprema_laboratory_results"]},
+        {"dataset_id":"enriched_coprema_growth"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index"]},
+        {"dataset_id":"enriched_coprema_laboratory_results"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index"]},
+        {"dataset_id":"enriched_coprema_medications"           , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index"]},
+        {"dataset_id":"enriched_coprema_microbiology_results"  , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index"]},
+        {"dataset_id":"enriched_coprema_mother"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_coprema_mother_diagnosis"      , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_coprema_respiratory_care"      , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index"]},
+        {"dataset_id":"enriched_coprema_transfusions"          , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coprema_participant_index"]}
       ]
     },
     {
@@ -31,16 +31,16 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"released_coprema_participant_index_test"   , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_coprema_baby_test"                , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_coprema_delivery_test"            , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_coprema_derived_results_test"     , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_coprema_growth_test"              , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_coprema_laboratory_results_test"  , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_coprema_medications_test"         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_coprema_microbiology_results_test", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_coprema_respiratory_care_test"    , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_coprema_transfusions_test"        , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"released_coprema_participant_index"   , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_coprema_baby"                , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_coprema_delivery"            , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_coprema_derived_results"     , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_coprema_growth"              , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_coprema_laboratory_results"  , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_coprema_medications"         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_coprema_microbiology_results", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_coprema_respiratory_care"    , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_coprema_transfusions"        , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
       ]
     },
     {
@@ -50,16 +50,16 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"published_coprema_participant_index_test"   , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_coprema_baby_test"                , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_coprema_delivery_test"            , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_coprema_derived_results_test"     , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_coprema_growth_test"              , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_coprema_laboratory_results_test"  , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_coprema_medications_test"         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_coprema_microbiology_results_test", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_coprema_respiratory_care_test"    , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_coprema_transfusions_test"        , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"published_coprema_participant_index"   , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_coprema_baby"                , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_coprema_delivery"            , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_coprema_derived_results"     , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_coprema_growth"              , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_coprema_laboratory_results"  , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_coprema_medications"         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_coprema_microbiology_results", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_coprema_respiratory_care"    , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_coprema_transfusions"        , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
       ]
     }
   ]

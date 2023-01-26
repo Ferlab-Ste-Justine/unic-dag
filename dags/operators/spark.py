@@ -7,7 +7,6 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import Kubernete
 
 
 class SparkOperator(KubernetesPodOperator):
-
     def __init__(
             self,
             spark_class: str,
@@ -81,24 +80,6 @@ class SparkOperator(KubernetesPodOperator):
                 read_only=True,
             ),
         ]
-
-        if self.namespace == 'raw':
-            self.volumes.append(
-                k8s.V1Volume(
-                    name='spark-raw-integration-db',
-                    secret=k8s.V1SecretVolumeSource(
-                        secret_name='spark-raw-integration-db',
-                    ),
-                ),
-            )
-
-            self.volume_mounts.append(
-                k8s.V1VolumeMount(
-                    name='spark-raw-integration-db',
-                    mount_path='/opt/spark-configs/raw-integration-db',
-                    read_only=True,
-                ),
-            )
 
         if self.spark_config:
             self.volumes.append(

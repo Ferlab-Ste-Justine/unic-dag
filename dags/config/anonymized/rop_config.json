@@ -9,8 +9,8 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "anonymized_rop_table_patient_test", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_rop_table_examen_test" , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "anonymized_rop_table_patient", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_rop_table_examen" , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
   }]
 }
