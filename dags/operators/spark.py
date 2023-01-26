@@ -1,7 +1,6 @@
 import kubernetes
 from kubernetes.client import models as k8s
 import logging
-from airflow import DAG
 from airflow.exceptions import AirflowFailException
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 
