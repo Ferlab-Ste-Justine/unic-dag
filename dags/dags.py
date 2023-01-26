@@ -3,8 +3,8 @@ Ingestion and anonymized dags
 """
 import os
 import re
-from datetime import datetime, timedelta
-
+from datetime import timedelta, datetime
+from airflow.models.param import Param
 from airflow import DAG
 
 from core.default_args import generate_default_args
@@ -17,8 +17,6 @@ DEFAULT_TIMEOUT_HOURS = 4
 ROOT = '/opt/airflow/dags/repo/dags/config'
 EXTRACT_SCHEMA = '(.*)_config.json'
 CONFIG_FILE = "config/prod.conf"
-JAR = 's3a://spark-prd/jars/unic-etl-UNIC-875.jar'
-VERSION = '{{ dag_run.conf.get("version", "latest") }}'
 
 for (r, folders, files) in os.walk(ROOT):
     if r == ROOT:
@@ -33,6 +31,14 @@ for (r, folders, files) in os.walk(ROOT):
                     dag = DAG(
                         dag_id=dagid,
                         schedule_interval=config['schedule'],
+                        params={
+                            'version':
+                                Param(
+                                    's3a://spark-prd/jars/unic-etl-{{ dag_run.conf.get("branch", "UNIC-875") }}.jar',
+                                    type='string'
+                                ),
+                            'jar': Param('{{ dag_run.conf.get("version", "latest") }}', type='string')
+                        },
                         default_args=DEFAULT_ARGS,
                         start_date=datetime(2021, 1, 1),
                         concurrency=config['concurrency'],
@@ -46,8 +52,8 @@ for (r, folders, files) in os.walk(ROOT):
                             dag=dag,
                             dag_config=config,
                             config_file=CONFIG_FILE,
-                            jar=JAR,
+                            jar='{{ params.jar }}',
                             schema=schema,
-                            version=VERSION
+                            version='{{ params.version }}'
                         )
                     globals()[dagid] = dag
