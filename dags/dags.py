@@ -32,12 +32,8 @@ for (r, folders, files) in os.walk(ROOT):
                         dag_id=dagid,
                         schedule_interval=config['schedule'],
                         params={
-                            'version':
-                                Param(
-                                    's3a://spark-prd/jars/unic-etl-{{ dag_run.conf.get("branch", "UNIC-875") }}.jar',
-                                    type='string'
-                                ),
-                            'jar': Param('{{ dag_run.conf.get("version", "latest") }}', type='string')
+                            'version': Param('UNIC-875', type='string'),
+                            'jar': Param('latest', type='string')
                         },
                         default_args=DEFAULT_ARGS,
                         start_date=datetime(2021, 1, 1),
