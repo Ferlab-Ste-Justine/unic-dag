@@ -120,7 +120,7 @@ def setup_dag(dag: DAG,
             run_type = conf['run_type']
 
             job = create_spark_job(dataset_id, namespace, run_type, config_type,
-                                    config_file, jar, dag, main_class, version)
+                                   config_file, jar, dag, main_class, version)
 
             all_dependencies = all_dependencies + conf['dependencies']
             jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
@@ -133,6 +133,7 @@ def setup_dag(dag: DAG,
             if dataset_id not in all_dependencies:
                 job['job'] >> publish
 
+
 def read_json(path: str):
     """
     read json file
@@ -140,6 +141,7 @@ def read_json(path: str):
     :return:
     """
     return json.load(open(path, encoding='UTF8'))
+
 
 def get_main_class(namespace: str, main_class: str):
     """

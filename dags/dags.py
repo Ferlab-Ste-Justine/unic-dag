@@ -17,7 +17,7 @@ DEFAULT_TIMEOUT_HOURS = 4
 ROOT = '/opt/airflow/dags/repo/dags/config'
 EXTRACT_SCHEMA = '(.*)_config.json'
 CONFIG_FILE = "config/prod.conf"
-JAR = 's3a://spark-prd/jars/unic-etl-{{ dag_run.conf.get("branch", "UNIC-875") }}.jar'
+JAR = 's3a://spark-prd/jars/unic-etl-UNIC-875.jar'
 VERSION = '{{ dag_run.conf.get("version", "latest") }}'
 
 for (r, folders, files) in os.walk(ROOT):
