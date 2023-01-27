@@ -6,6 +6,9 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import Kubernete
 
 
 class SparkOperator(KubernetesPodOperator):
+    template_fields = KubernetesPodOperator.template_fields + (
+        'spark_jar',
+    )
     def __init__(
             self,
             spark_class: str,
