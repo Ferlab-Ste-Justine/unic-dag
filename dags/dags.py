@@ -4,6 +4,8 @@ Ingestion and anonymized dags
 import os
 import re
 from datetime import timedelta, datetime
+
+from airflow.models import Variable
 from airflow.models.param import Param
 from airflow import DAG
 
@@ -14,7 +16,7 @@ from spark_operators import read_json, setup_dag
 DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=Slack.notify_task_failure)
 DEFAULT_TIMEOUT_HOURS = 4
 
-ROOT = '/opt/airflow/dags/repo/dags/config'
+ROOT = Variable.get('dags_config', '/opt/airflow/dags/repo/dags/config')
 EXTRACT_SCHEMA = '(.*)_config.json'
 CONFIG_FILE = "config/prod.conf"
 

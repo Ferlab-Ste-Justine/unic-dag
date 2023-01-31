@@ -1,0 +1,4 @@
+{
+  "base_url": "http://localhost:50080",
+  "dags_config": "/opt/airflow/dags/config"
+}
