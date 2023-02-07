@@ -14,7 +14,6 @@ pod_name = "raw-schema-diff-checker"
 
 main_class = "bio.ferlab.ui.etl.script.SchemaDiffLookup"
 
-
 jar = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 default_args = generate_default_args(owner="jamine", on_failure_callback=Slack.notify_task_failure)
 
@@ -25,7 +24,7 @@ dag = DAG(
     start_date=datetime(2022, 2, 8),
     default_args=default_args,
     schedule_interval=timedelta(days=7),
-    tags="dbschema",
+    tags=["dbschema"],
 )
 
 check_schema_difference = SparkOperator(
@@ -39,21 +38,9 @@ check_schema_difference = SparkOperator(
     dag=dag
 )
 
-def process_diff_result(**kwargs):
-    task_instance = kwargs["ti"]
-    diff_result = task_instance.xcom_pull(task_ids="check_schema_difference", key="return_value")
-    task_instance.xcom_push(key="diff_result_for_slack", value=diff_result)
-
-process_difference_result = PythonOperator(
-    task_id="process_difference_result",
-    python_callable=process_diff_result,
-    provide_context=True,
-    dag=dag,
-)
-
 def format_slack_message(**kwargs):
     task_instance = kwargs["ti"]
-    diff_result = task_instance.xcom_pull(task_ids="process_difference_result", key="diff_result_for_slack")
+    diff_result = task_instance.xcom_pull(task_ids="check_schema_difference", key="return_value")
     message = """
     :large_orange_circle: Missing Tables in Centro.\n
     """
@@ -67,4 +54,4 @@ send_to_slack = SlackWebhookOperator(
     dag=dag
 )
 
-check_schema_difference >> process_difference_result >> send_to_slack
+check_schema_difference >> send_to_slack
