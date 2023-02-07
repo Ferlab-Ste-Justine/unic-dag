@@ -25,7 +25,7 @@ dag = DAG(
     start_date=datetime(2022, 2, 8),
     default_args=default_args,
     schedule_interval=timedelta(days=7),
-    tags=[namespace],
+    tags="dbschema",
 )
 
 check_schema_difference = SparkOperator(
