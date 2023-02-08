@@ -12,7 +12,7 @@ args = ["config/prod.conf"]
 namespace = "raw"
 pod_name = "raw-schema-diff-checker"
 
-main_class = "bio.ferlab.ui.etl.script.SchemaDiffLookup"
+main_class = "bio.ferlab.ui.etl.script.SchemaDiffChecker"
 
 jar = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
