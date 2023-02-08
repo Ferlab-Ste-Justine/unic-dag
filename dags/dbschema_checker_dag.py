@@ -1,9 +1,9 @@
 from airflow import DAG
 from core.slack import Slack
 from datetime import datetime, timedelta
+from airflow.models.param import Param
 from operators.spark import SparkOperator
 from core.default_args import generate_default_args
-from airflow.operators.python import PythonOperator
 
 from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 
@@ -15,16 +15,24 @@ pod_name = "raw-schema-diff-checker"
 main_class = "bio.ferlab.ui.etl.script.SchemaDiffLookup"
 
 jar = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
+
 default_args = generate_default_args(owner="jamine", on_failure_callback=Slack.notify_task_failure)
 
 slack = Slack()
 
 dag = DAG(
-    "schema_diff_checker",
+    dag_id="schema_diff_checker",
     start_date=datetime(2022, 2, 8),
+    schedule_interval="@weekly",
+    params={
+        "branch":  Param("UNIC-875", type="string"),
+        "version": Param("latest", type="string")
+    },
+    dagrun_timeout=timedelta(hours=1),
     default_args=default_args,
-    schedule_interval=timedelta(days=7),
     tags=["dbschema"],
+    is_paused_upon_creation=True,
+    catchup=False,
 )
 
 check_schema_difference = SparkOperator(
