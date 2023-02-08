@@ -5,7 +5,7 @@
     "steps": [
       {
         "namespace": "enriched",
-        "main_class": "bio.ferlab.ui.etl.yellow.enriched.NeuroDev.ComparativeGenomicHybridizationETL",
+        "main_class": "bio.ferlab.ui.etl.yellow.enriched.NeuroDev.Main",
         "publish_class": "",
         "schemas": [],
         "datasets":
