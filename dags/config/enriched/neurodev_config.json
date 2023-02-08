@@ -1,0 +1,17 @@
+{
+    "concurrency": 3,
+    "schedule": null,
+    "timeout_hours": 8,
+    "steps": [
+      {
+        "namespace": "enriched",
+        "main_class": "bio.ferlab.ui.etl.yellow.enriched.NeuroDev.Main",
+        "publish_class": "",
+        "schemas": [],
+        "datasets":
+        [
+          {"dataset_id":"enriched_neurodev_ComparativeGenomicHybridization" , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+        ] 
+      }
+    ]
+}
