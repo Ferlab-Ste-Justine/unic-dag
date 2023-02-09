@@ -7,7 +7,7 @@ from core.default_args import generate_default_args
 
 from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 
-args = ["config/prod.conf"]
+args = ["config/prod.conf", "initial", "dbschema"]
 
 namespace = "raw"
 pod_name = "raw-schema-diff-checker"
