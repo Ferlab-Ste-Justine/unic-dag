@@ -3,7 +3,7 @@
   "schedule": null,
   "timeout_hours": 4,
   "steps": [{
-    "namespace": "ingestion",
+    "namespace": "raw",
     "main_class": "bio.ferlab.ui.etl.red.raw.neonat.MainNeoCathydb",
     "publish_class": "",
     "schemas": [],
