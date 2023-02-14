@@ -64,9 +64,11 @@ def format_slack_message(**kwargs):
     message = """
     :large_orange_circle: Missing Tables in Centro.\n
     """
+    print(type(diff_result))
     print(diff_result)
     return message + "\n".join(json.dumps(x) for x in diff_result)
 
+print(format_slack_message())
 
 send_to_slack = SlackWebhookOperator(
     task_id="send_to_slack",
