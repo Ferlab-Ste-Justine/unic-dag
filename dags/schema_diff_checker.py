@@ -64,6 +64,7 @@ def format_slack_message(**kwargs):
     message = """
     :large_orange_circle: Missing Tables in Centro.\n
     """
+    print(diff_result)
     return message + "\n".join(json.dumps(x) for x in diff_result)
 
 
