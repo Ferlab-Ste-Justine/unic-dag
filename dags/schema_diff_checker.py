@@ -1,6 +1,7 @@
 """
 DAG : checks if there are new tables available in the Centro schema in the integration db
 """
+import json
 from datetime import datetime, timedelta
 
 from airflow import DAG
@@ -63,7 +64,7 @@ def format_slack_message(**kwargs):
     message = """
     :large_orange_circle: Missing Tables in Centro.\n
     """
-    return message + "\n".join(str(x) for x in diff_result)
+    return message + "\n".join(json.dumps(x) for x in diff_result)
 
 
 send_to_slack = SlackWebhookOperator(
