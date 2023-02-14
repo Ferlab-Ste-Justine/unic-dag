@@ -49,7 +49,6 @@ check_schema_difference = SparkOperator(
     spark_jar=JAR,
     spark_config="xsmall-etl",
     dag=dag,
-    do_xcom_push=True
 )
 
 
