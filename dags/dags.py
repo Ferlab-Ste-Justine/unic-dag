@@ -13,7 +13,7 @@ from core.default_args import generate_default_args
 from core.slack import Slack
 from spark_operators import read_json, setup_dag
 
-DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=Slack.notify_task_failure)
+DEFAULT_ARGS = generate_default_args(owner="unic", on_failure_callback=Slack.notify_task_failure)
 DEFAULT_TIMEOUT_HOURS = 4
 
 ROOT = Variable.get('dags_config', '/opt/airflow/dags/repo/dags/config')
@@ -46,18 +46,12 @@ for (r, folders, files) in os.walk(ROOT):
                         is_paused_upon_creation=True
                     )
                     with dag:
-                        def version() -> str:
-                            return '{{ params.version }}'
-
-                        def jar() -> str:
-                            return 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
-
                         setup_dag(
                             dag=dag,
                             dag_config=config,
                             config_file=CONFIG_FILE,
-                            jar=jar(),
+                            jar='s3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar',
                             schema=schema,
-                            version=version()
+                            version='{{ params.version }}'
                         )
                     globals()[dagid] = dag
