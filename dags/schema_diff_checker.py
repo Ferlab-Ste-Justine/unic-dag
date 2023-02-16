@@ -1,12 +1,10 @@
 """
 DAG : checks if there are new tables available in the Centro schema in the integration db
 """
-import json
 from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.models.param import Param
-from airflow.providers.slack.operators.slack_webhook import SlackWebhookOperator
 
 from core.default_args import generate_default_args
 from core.slack import Slack
@@ -51,30 +49,4 @@ check_schema_difference = SparkOperator(
     dag=dag,
 )
 
-
-def format_slack_message(**kwargs):
-    """
-    Formats a Slack message to notify of missing tables.
-
-    :param kwargs:
-    :return: formatted message
-    """
-    task_instance = kwargs["ti"]
-    print(task_instance)
-    diff_result = task_instance.xcom_pull(task_ids="check_schema_difference", key="return_value")
-    message = """
-    :large_orange_circle: Missing Tables in Centro.\n
-    """
-    print(type(diff_result))
-    print(diff_result)
-    return message + "\n".join(json.dumps(x) for x in diff_result)
-
-send_to_slack = SlackWebhookOperator(
-    task_id="send_to_slack",
-    http_conn_id=slack.base_url,
-    webhook_token=slack.slack_hook_url,
-    message=format_slack_message,
-    dag=dag
-)
-
-check_schema_difference >> send_to_slack
+check_schema_difference
