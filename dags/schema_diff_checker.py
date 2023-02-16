@@ -28,7 +28,7 @@ dag = DAG(
     start_date=datetime(2022, 2, 8),
     schedule_interval="@weekly",
     params={
-        "branch":  Param("UNIC-875", type="string"),
+        "branch":  Param("master", type="string"),
         "version": Param("latest", type="string")
     },
     dagrun_timeout=timedelta(hours=1),
