@@ -34,7 +34,7 @@ for (r, folders, files) in os.walk(ROOT):
                         dag_id=dagid,
                         schedule_interval=config['schedule'],
                         params={
-                            "branch": Param("UNIC-875", type="string"),
+                            "branch": Param("master", type="string"),
                             "version": Param("latest", type="string")
                         },
                         default_args=DEFAULT_ARGS,
