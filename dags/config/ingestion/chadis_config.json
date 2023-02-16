@@ -3,7 +3,7 @@
   "schedule": null,
   "timeout_hours": 4,
   "steps": [{
-    "namespace": "ingestion",
+    "namespace": "raw",
     "main_class": "bio.ferlab.ui.etl.red.raw.Main",
     "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
     "schemas": ["chadis_conners_report", "chadis_diagnosis", "chadis_patient", "chadis_profile", "chadis_question", "chadis_questionnaire",

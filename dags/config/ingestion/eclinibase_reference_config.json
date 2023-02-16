@@ -3,7 +3,7 @@
   "schedule": "0 5 * * 3",
   "timeout_hours": 4,
   "steps": [{
-    "namespace": "ingestion",
+    "namespace": "raw",
     "main_class": "bio.ferlab.ui.etl.red.raw.Main",
     "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
     "schemas": ["tables_reference_index_patient", "tables_reference_rdv"],

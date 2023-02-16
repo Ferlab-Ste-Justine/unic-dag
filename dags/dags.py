@@ -3,23 +3,22 @@ Ingestion and anonymized dags
 """
 import os
 import re
-from datetime import datetime, timedelta
+from datetime import timedelta, datetime
 
+from airflow.models import Variable
+from airflow.models.param import Param
 from airflow import DAG
 
 from core.default_args import generate_default_args
-from core.slack_notification import task_fail_slack_alert
+from core.slack import Slack
 from spark_operators import read_json, setup_dag
 
-DEFAULT_ARGS = generate_default_args(owner="cbotek", on_failure_callback=task_fail_slack_alert)
+DEFAULT_ARGS = generate_default_args(owner="unic", on_failure_callback=Slack.notify_task_failure)
 DEFAULT_TIMEOUT_HOURS = 4
 
-ROOT = '/opt/airflow/dags/repo/dags/config'
+ROOT = Variable.get('dags_config', '/opt/airflow/dags/repo/dags/config')
 EXTRACT_SCHEMA = '(.*)_config.json'
 CONFIG_FILE = "config/prod.conf"
-JAR = "s3a://spark-prd/jars/unic-etl-{{ dag_run.conf.get('branch', 'master') }}.jar"
-IMAGE = "ferlabcrsj/spark-operator:{{ dag_run.conf.get('imageVersion', '3.0.0_1') }}"
-VERSION = '{{ dag_run.conf.get("version", "latest") }}'
 
 for (r, folders, files) in os.walk(ROOT):
     if r == ROOT:
@@ -34,21 +33,25 @@ for (r, folders, files) in os.walk(ROOT):
                     dag = DAG(
                         dag_id=dagid,
                         schedule_interval=config['schedule'],
+                        params={
+                            "branch": Param("UNIC-875", type="string"),
+                            "version": Param("latest", type="string")
+                        },
                         default_args=DEFAULT_ARGS,
                         start_date=datetime(2021, 1, 1),
                         concurrency=config['concurrency'],
                         catchup=False,
                         tags=[namespace],
-                        dagrun_timeout=timedelta(hours=timeout_hours)
+                        dagrun_timeout=timedelta(hours=timeout_hours),
+                        is_paused_upon_creation=True
                     )
                     with dag:
                         setup_dag(
                             dag=dag,
                             dag_config=config,
                             config_file=CONFIG_FILE,
-                            jar=JAR,
-                            image=IMAGE,
+                            jar='s3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar',
                             schema=schema,
-                            version=VERSION
+                            version='{{ params.version }}'
                         )
                     globals()[dagid] = dag
