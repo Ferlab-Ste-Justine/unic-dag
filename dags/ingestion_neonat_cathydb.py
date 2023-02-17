@@ -37,7 +37,7 @@ dag = DAG(
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=1,
-    max_active_tasks=3
+    max_active_tasks=2
 )
 
 with dag:
@@ -66,10 +66,11 @@ with dag:
         dag=dag
     )
 
+    # Initial run type for external_patient because we do a full load each time
     icca_external_patient = SparkOperator(
         task_id="raw_icca_external_patient",
         name=POD_NAME,
-        arguments=["config/prod.conf", "default", "raw_icca_external_patient", '{{ds}}'],
+        arguments=["config/prod.conf", "initial", "raw_icca_external_patient", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
