@@ -71,7 +71,7 @@ with dag:
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_config="medium-etl",
+        spark_config="small-etl",
         dag=dag)
 
     icca_external_wave = SparkOperator(
