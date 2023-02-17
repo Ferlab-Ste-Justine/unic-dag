@@ -24,7 +24,7 @@ default_args = {
                 }
 
 dag = DAG(
-    dag_id="ingestion_neonat_cathydb_temp",
+    dag_id="ingestion_neonat_cathydb",
     start_date=datetime(2019, 5, 1),
     end_date=datetime(2023, 2, 14),
     schedule_interval="@daily",
