@@ -40,7 +40,7 @@ dag = DAG(
 
 with dag:
 
-    start = EmptyOperator("start_ingestion_neonat_cathydb")
+    start = EmptyOperator(task_id="start_ingestion_neonat_cathydb")
 
     icca_external_numeric = SparkOperator(
         task_id="raw_icca_external_numeric",
@@ -118,7 +118,7 @@ with dag:
         dag=dag
     )
 
-    end = EmptyOperator("publish_ingestion_neonat_cathydb")
+    end = EmptyOperator(task_id="publish_ingestion_neonat_cathydb")
 
     start >> icca_external_patient >> [icca_piicix_num, icca_piicix_sig, icca_piicix_sig_calibre, icca_piicix_alertes] >> end
     start >> [icca_external_numeric, icca_external_wave, icca_external_patient] >> end
