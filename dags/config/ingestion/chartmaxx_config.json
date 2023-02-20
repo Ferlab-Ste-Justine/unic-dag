@@ -10,8 +10,10 @@
       "schemas": ["chartmaxx"],
       "datasets":
       [
-        {"dataset_id": "raw_chartmaxx_cmformcapture"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "raw_chartmaxx_cmformcapture_deletes" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "raw_chartmaxx_cmformcapture"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "raw_chartmaxx_cmformcapture_deletes" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "raw_chartmaxx_form_data_vw"          , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "raw_chartmaxx_form_name_vw"          , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ]
     },
     {
