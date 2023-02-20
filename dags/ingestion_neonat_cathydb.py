@@ -47,7 +47,7 @@ with dag:
     icca_external_numeric = SparkOperator(
         task_id="raw_icca_external_numeric",
         name=POD_NAME,
-        arguments=["config/prod.conf", "default", "raw_icca_external_numeric", '{{ds}}'],  # {{ds}} input date
+        arguments=["config/prod.conf", "skip", "raw_icca_external_numeric", '{{ds}}'],  # {{ds}} input date
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
@@ -80,7 +80,7 @@ with dag:
     icca_external_wave = SparkOperator(
         task_id="raw_icca_external_wave",
         name=POD_NAME,
-        arguments=["config/prod.conf", "default", "raw_icca_external_wave", '{{ds}}'],
+        arguments=["config/prod.conf", "skip", "raw_icca_external_wave", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
