@@ -19,13 +19,13 @@ JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
 default_args = {
                 'depends_on_past': False,
-                'start_date': datetime(2019, 5, 1),
+                'start_date': datetime(2019, 5, 24),
                 'provide_context': True  # to use date of ingested data as input in main
                 }
 
 dag = DAG(
     dag_id="ingestion_neonat_cathydb",
-    start_date=datetime(2019, 5, 1),
+    start_date=datetime(2019, 5, 24),
     end_date=datetime(2023, 2, 14),
     schedule_interval="@daily",
     params={
