@@ -51,7 +51,7 @@ with dag:
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_config="medium-etl",
+        spark_config="xsmall-etl",
         dag=dag
     )
 
@@ -70,11 +70,11 @@ with dag:
     icca_external_patient = SparkOperator(
         task_id="raw_icca_external_patient",
         name=POD_NAME,
-        arguments=["config/prod.conf", "initial", "raw_icca_external_patient", '{{ds}}'],
+        arguments=["config/prod.conf", "skip", "raw_icca_external_patient", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_config="small-etl",
+        spark_config="xsmall-etl",
         dag=dag)
 
     icca_external_wave = SparkOperator(
@@ -84,7 +84,7 @@ with dag:
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_config="medium-etl",
+        spark_config="xsmall-etl",
         dag=dag
     )
 
