@@ -43,7 +43,8 @@ for (r, folders, files) in os.walk(ROOT):
                         catchup=False,
                         tags=[namespace],
                         dagrun_timeout=timedelta(hours=timeout_hours),
-                        is_paused_upon_creation=True
+                        is_paused_upon_creation=True,
+                        on_failure_callback=Slack.notify_task_failure
                     )
                     with dag:
                         setup_dag(
