@@ -13,7 +13,13 @@ from core.default_args import generate_default_args
 from core.slack import Slack
 from spark_operators import read_json, setup_dag
 
-DEFAULT_ARGS = generate_default_args(owner="unic", on_failure_callback=Slack.notify_task_failure)
+DEFAULT_ARGS = generate_default_args(
+    owner="unic",
+    on_failure_callback=Slack.notify_task_failure,
+    on_success_callback=Slack.notify_dag_completion,
+    on_execute_callback=Slack.notify_dag_start
+)
+
 DEFAULT_TIMEOUT_HOURS = 4
 
 ROOT = Variable.get('dags_config', '/opt/airflow/dags/repo/dags/config')
@@ -43,8 +49,7 @@ for (r, folders, files) in os.walk(ROOT):
                         catchup=False,
                         tags=[namespace],
                         dagrun_timeout=timedelta(hours=timeout_hours),
-                        is_paused_upon_creation=True,
-                        on_failure_callback=Slack.notify_task_failure
+                        is_paused_upon_creation=True
                     )
                     with dag:
                         setup_dag(
