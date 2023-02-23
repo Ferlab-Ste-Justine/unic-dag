@@ -13,7 +13,7 @@ class Slack:
     base_url = Variable.get('base_url', None)
     slack_hook_url = Variable.get('slack_hook_url', None)
 
-    def notify(markdown: str, type=ERROR):
+    def notify(markdown: str, type=INFO):
         if Slack.slack_hook_url:
             airflow_link = f' *[*<{Slack.base_url}|Airflow>*]*' if Slack.base_url else ''
             Slack.http_post(Slack.slack_hook_url, {
