@@ -4,8 +4,10 @@ Help class containing custom SparkKubernetesOperator
 import json
 import re
 from airflow import DAG
-from airflow.operators.dummy import DummyOperator
+
+from core.slack import Slack
 from operators.spark import SparkOperator
+from operators.slack import SlackOperator
 
 def sanitize_string(string: str, replace_by: str):
     """
@@ -26,8 +28,10 @@ def get_start_operator(namespace: str,
     :param schema:
     :return:
     """
-    return DummyOperator(
+    return SlackOperator(
         task_id=f"start_{namespace}_{schema}",
+        markdown=f"{namespace}_{schema} started",
+        type=Slack.INFO,
         dag=dag
     )
 
@@ -51,6 +55,7 @@ def get_publish_operator(dag_config: dict,
     namespace = dag_config['namespace']
     schemas = dag_config['schemas']
     main_class = dag_config['publish_class']
+    on_success_callback = None  # define if last task in DAG
 
     if main_class == "bio.ferlab.ui.etl.red.raw.UpdateLog":
         job_id = f"log_update_{'_'.join(schemas)[:20].lower()}"
@@ -59,12 +64,16 @@ def get_publish_operator(dag_config: dict,
     elif main_class == "bio.ferlab.ui.etl.green.published.coda.PublishToAidbox":
         job_id = "publish_to_aidbox"
         args = [config_file, *schemas]
+        on_success_callback = Slack.notify_dag_completion
 
     else:
-        publish = DummyOperator(
-            task_id=f"publish_{dag_config['namespace']}_{schema}",
+        publish = SlackOperator(
+            task_id=f"publish_{namespace}_{schema}",
+            markdown=f'{namespace}_{schema} completed',
+            type=Slack.SUCCESS,
             dag=dag
         )
+
         return publish
 
     pod_name = sanitize_string(job_id, '-')
@@ -77,6 +86,7 @@ def get_publish_operator(dag_config: dict,
         spark_class=main_class,
         spark_jar=jar,
         spark_config="xsmall-etl",
+        on_success_callback=on_success_callback,
         dag=dag
     )
 
