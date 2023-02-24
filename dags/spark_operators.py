@@ -6,7 +6,6 @@ import re
 from airflow import DAG
 from airflow.operators.dummy import DummyOperator
 from operators.spark import SparkOperator
-from core.slack import Slack
 
 def sanitize_string(string: str, replace_by: str):
     """
