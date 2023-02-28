@@ -21,8 +21,6 @@ class SparkOperator(KubernetesPodOperator):
             is_delete_operator_pod=False,
             image='ferlabcrsj/spark:3.3.1',
             service_account_name='spark',
-            retries=1,
-            retry_delay=10,
             priority_weight=1,
             weight_rule="absolute",
             **kwargs
