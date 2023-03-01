@@ -3,17 +3,18 @@ DAG pour l'ingestion des data de neonat se trouvant dans cathydb
 """
 
 from datetime import datetime, timedelta
+
 from airflow import DAG
 from airflow.models.param import Param
 from airflow.operators.empty import EmptyOperator
 
+from core.slack import Slack
 from operators.spark import SparkOperator
-
 
 NAMESPACE = "raw"
 POD_NAME = "raw-ingestion-neonat-cathydb"
 
-MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.neonat.MainNeoCathydb"
+MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.neonat.MainCathyDb"
 
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
@@ -29,7 +30,7 @@ dag = DAG(
     end_date=datetime(2023, 2, 14),
     schedule_interval="@daily",
     params={
-        "branch":  Param("master", type="string"),
+        "branch":  Param("unic-951", type="string"),
         "version": Param("latest", type="string")
     },
     dagrun_timeout=timedelta(hours=2),
@@ -42,7 +43,10 @@ dag = DAG(
 
 with dag:
 
-    start = EmptyOperator(task_id="start_ingestion_neonat_cathydb")
+    start = EmptyOperator(
+        task_id="start_ingestion_neonat_cathydb",
+        on_execute_callback=Slack.notify_dag_start
+    )
 
     icca_external_numeric = SparkOperator(
         task_id="raw_icca_external_numeric",
@@ -55,18 +59,6 @@ with dag:
         dag=dag
     )
 
-    icca_piicix_num = SparkOperator(
-        task_id="raw_icca_piicix_num",
-        name=POD_NAME,
-        arguments=["config/prod.conf", "default", "raw_icca_piicix_num", '{{ds}}'],
-        namespace=NAMESPACE,
-        spark_class=MAIN_CLASS,
-        spark_jar=JAR,
-        spark_config="medium-etl",
-        dag=dag
-    )
-
-    # Initial run type for external_patient because we do a full load each time
     icca_external_patient = SparkOperator(
         task_id="raw_icca_external_patient",
         name=POD_NAME,
@@ -88,10 +80,21 @@ with dag:
         dag=dag
     )
 
+    icca_piicix_num = SparkOperator(
+        task_id="raw_icca_piicix_num",
+        name=POD_NAME,
+        arguments=["config/prod.conf", "initial", "raw_icca_piicix_num", '{{ds}}'],
+        namespace=NAMESPACE,
+        spark_class=MAIN_CLASS,
+        spark_jar=JAR,
+        spark_config="medium-etl",
+        dag=dag
+    )
+
     icca_piicix_sig = SparkOperator(
         task_id="raw_icca_piicix_sig",
         name=POD_NAME,
-        arguments=["config/prod.conf", "default", "raw_icca_piicix_sig", '{{ds}}'],
+        arguments=["config/prod.conf", "initial", "raw_icca_piicix_sig", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
@@ -102,7 +105,7 @@ with dag:
     icca_piicix_sig_calibre = SparkOperator(
         task_id="raw_icca_piicix_sig_calibre",
         name=POD_NAME,
-        arguments=["config/prod.conf", "default", "raw_icca_piicix_sig_calibre", '{{ds}}'],
+        arguments=["config/prod.conf", "initial", "raw_icca_piicix_sig_calibre", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
@@ -113,7 +116,7 @@ with dag:
     icca_piicix_alertes = SparkOperator(
         task_id="raw_icca_piicix_alertes",
         name=POD_NAME,
-        arguments=["config/prod.conf", "default", "raw_icca_piicix_alertes", '{{ds}}'],
+        arguments=["config/prod.conf", "initial", "raw_icca_piicix_alertes", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
@@ -121,7 +124,11 @@ with dag:
         dag=dag
     )
 
-    end = EmptyOperator(task_id="publish_ingestion_neonat_cathydb")
+    end = EmptyOperator(
+        task_id="publish_ingestion_neonat_cathydb",
+        on_success_callback=Slack.notify_dag_completion,
+        on_failure_callback=Slack.notify_task_failure
+    )
 
-    start >> icca_external_patient >> [icca_piicix_num, icca_piicix_sig, icca_piicix_sig_calibre, icca_piicix_alertes] >> end
-    start >> [icca_external_numeric, icca_external_wave, icca_external_patient] >> end
+    start >> [icca_external_numeric, icca_external_wave, icca_external_patient, icca_piicix_num, icca_piicix_sig,
+              icca_piicix_sig_calibre, icca_piicix_alertes] >> end
