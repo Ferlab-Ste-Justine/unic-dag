@@ -83,6 +83,10 @@ def get_publish_operator(dag_config: dict,
         name=pod_name,
         arguments=args,
         namespace=namespace,
+        executor_config={
+            "KubernetesExecutor":
+                {"namespace": namespace}
+        },
         spark_class=main_class,
         spark_jar=jar,
         spark_config="xsmall-etl",
@@ -210,6 +214,10 @@ def create_spark_job(destination: str,
         task_id=sanitize_string(destination, "_"),
         name=sanitize_string(destination[:40], '-'),
         namespace=namespace,
+        executor_config={
+            "KubernetesExecutor":
+                {"namespace": namespace}
+        },
         arguments=args,
         spark_class=main_class,
         spark_jar=jar,
