@@ -12,10 +12,7 @@ from core.slack import Slack
 from operators.spark import SparkOperator
 
 NAMESPACE = "raw"
-POD_NAME = "raw-ingestion-neonat-cathydb"
-
 MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.neonat.MainCathyDb"
-
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
 default_args = {
@@ -27,7 +24,7 @@ default_args = {
 dag = DAG(
     dag_id="ingestion_neonat_cathydb",
     start_date=datetime(2020, 5, 24),
-    end_date=datetime(2023, 2, 14),
+    end_date=datetime(2023, 3, 6),
     schedule_interval="@daily",
     params={
         "branch":  Param("master", type="string"),
@@ -51,40 +48,40 @@ with dag:
 
     icca_external_numeric = SparkOperator(
         task_id="raw_icca_external_numeric",
-        name=POD_NAME,
+        name="raw-icca-external-numeric",
         arguments=["config/prod.conf", "initial", "raw_icca_external_numeric", '{{ds}}'],  # {{ds}} input date
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_config="small-etl",
+        spark_config="medium-etl",
         dag=dag
     )
 
     icca_external_patient = SparkOperator(
         task_id="raw_icca_external_patient",
-        name=POD_NAME,
-        arguments=["config/prod.conf", "initial", "raw_icca_external_patient", '{{ds}}'],
+        name="raw-icca-external-patient",
+        arguments=["config/prod.conf", "skip", "raw_icca_external_patient", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_config="small-etl",
+        spark_config="xsmall-etl",
         dag=dag)
 
     icca_external_wave = SparkOperator(
         task_id="raw_icca_external_wave",
-        name=POD_NAME,
+        name="raw-icca-external-wave",
         arguments=["config/prod.conf", "initial", "raw_icca_external_wave", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_config="small-etl",
+        spark_config="medium-etl",
         dag=dag
     )
 
     icca_piicix_num = SparkOperator(
         task_id="raw_icca_piicix_num",
-        name=POD_NAME,
-        arguments=["config/prod.conf", "initial", "raw_icca_piicix_num", '{{ds}}'],
+        name="raw-icca-piicix-num",
+        arguments=["config/prod.conf", "default", "raw_icca_piicix_num", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
@@ -94,8 +91,8 @@ with dag:
 
     icca_piicix_sig = SparkOperator(
         task_id="raw_icca_piicix_sig",
-        name=POD_NAME,
-        arguments=["config/prod.conf", "initial", "raw_icca_piicix_sig", '{{ds}}'],
+        name="raw-icca-piicix-sig",
+        arguments=["config/prod.conf", "default", "raw_icca_piicix_sig", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
@@ -105,8 +102,8 @@ with dag:
 
     icca_piicix_sig_calibre = SparkOperator(
         task_id="raw_icca_piicix_sig_calibre",
-        name=POD_NAME,
-        arguments=["config/prod.conf", "initial", "raw_icca_piicix_sig_calibre", '{{ds}}'],
+        name="raw-icca-piicix-sig-calibre",
+        arguments=["config/prod.conf", "default", "raw_icca_piicix_sig_calibre", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
@@ -116,8 +113,8 @@ with dag:
 
     icca_piicix_alertes = SparkOperator(
         task_id="raw_icca_piicix_alertes",
-        name=POD_NAME,
-        arguments=["config/prod.conf", "initial", "raw_icca_piicix_alertes", '{{ds}}'],
+        name="raw-icca-piicix-alertes",
+        arguments=["config/prod.conf", "default", "raw_icca_piicix_alertes", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
