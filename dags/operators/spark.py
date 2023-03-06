@@ -104,6 +104,8 @@ class SparkOperator(KubernetesPodOperator):
 
         k8s_client = kubernetes.client.CoreV1Api()
 
+        grace_period_seconds = 30
+
         # Get driver pod log and delete driver pod
         driver_pod = k8s_client.list_namespaced_pod(
             namespace=self.pod.metadata.namespace,
@@ -120,6 +122,7 @@ class SparkOperator(KubernetesPodOperator):
             k8s_client.delete_namespaced_pod(
                 name=f'{self.pod.metadata.name}-driver',
                 namespace=self.pod.metadata.namespace,
+                grace_period_seconds=grace_period_seconds
             )
 
         # Delete pod
@@ -132,6 +135,7 @@ class SparkOperator(KubernetesPodOperator):
             k8s_client.delete_namespaced_pod(
                 name=self.pod.metadata.name,
                 namespace=self.pod.metadata.namespace,
+                grace_period_seconds=grace_period_seconds
             )
 
         # Fail task if driver pod failed
