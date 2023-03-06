@@ -102,17 +102,6 @@ with dag:
         dag=dag
     )
 
-    icca_piicix_sig_calibre = SparkOperator(
-        task_id="raw_icca_piicix_sig_calibre",
-        name="raw-icca-piicix-sig-calibre",
-        arguments=["config/prod.conf", "default", "raw_icca_piicix_sig_calibre", '{{ds}}'],
-        namespace=NAMESPACE,
-        spark_class=MAIN_CLASS,
-        spark_jar=JAR,
-        spark_config="medium-etl",
-        dag=dag
-    )
-
     icca_piicix_alertes = SparkOperator(
         task_id="raw_icca_piicix_alertes",
         name="raw-icca-piicix-alertes",
@@ -132,4 +121,4 @@ with dag:
 
     # start >> [icca_external_numeric, icca_external_wave, icca_external_patient, icca_piicix_num, icca_piicix_sig,
     #           icca_piicix_sig_calibre, icca_piicix_alertes] >> end
-    start >> [icca_piicix_num, icca_piicix_sig, icca_piicix_sig_calibre, icca_piicix_alertes] >> end
+    start >> [icca_piicix_num, icca_piicix_sig, icca_piicix_alertes] >> end
