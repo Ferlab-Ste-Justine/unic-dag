@@ -35,7 +35,7 @@ dag = DAG(
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=1,
-    max_active_tasks=2,
+    max_active_tasks=3,
     tags=["ingestion"]
 )
 
@@ -46,37 +46,39 @@ with dag:
         on_execute_callback=Slack.notify_dag_start
     )
 
-    icca_external_numeric = SparkOperator(
-        task_id="raw_icca_external_numeric",
-        name="raw-icca-external-numeric",
-        arguments=["config/prod.conf", "initial", "raw_icca_external_numeric", '{{ds}}'],  # {{ds}} input date
-        namespace=NAMESPACE,
-        spark_class=MAIN_CLASS,
-        spark_jar=JAR,
-        spark_config="medium-etl",
-        dag=dag
-    )
+    # UNCOMMENT EXTERNAL TABLES AFTER TIMESTAMP COLUMN ADDED IN CATHYDB
 
-    icca_external_patient = SparkOperator(
-        task_id="raw_icca_external_patient",
-        name="raw-icca-external-patient",
-        arguments=["config/prod.conf", "skip", "raw_icca_external_patient", '{{ds}}'],
-        namespace=NAMESPACE,
-        spark_class=MAIN_CLASS,
-        spark_jar=JAR,
-        spark_config="xsmall-etl",
-        dag=dag)
-
-    icca_external_wave = SparkOperator(
-        task_id="raw_icca_external_wave",
-        name="raw-icca-external-wave",
-        arguments=["config/prod.conf", "initial", "raw_icca_external_wave", '{{ds}}'],
-        namespace=NAMESPACE,
-        spark_class=MAIN_CLASS,
-        spark_jar=JAR,
-        spark_config="medium-etl",
-        dag=dag
-    )
+    # icca_external_numeric = SparkOperator(
+    #     task_id="raw_icca_external_numeric",
+    #     name="raw-icca-external-numeric",
+    #     arguments=["config/prod.conf", "skip", "raw_icca_external_numeric", '{{ds}}'],  # {{ds}} input date
+    #     namespace=NAMESPACE,
+    #     spark_class=MAIN_CLASS,
+    #     spark_jar=JAR,
+    #     spark_config="xsmall-etl",
+    #     dag=dag
+    # )
+    #
+    # icca_external_patient = SparkOperator(
+    #     task_id="raw_icca_external_patient",
+    #     name="raw-icca-external-patient",
+    #     arguments=["config/prod.conf", "skip", "raw_icca_external_patient", '{{ds}}'],
+    #     namespace=NAMESPACE,
+    #     spark_class=MAIN_CLASS,
+    #     spark_jar=JAR,
+    #     spark_config="xsmall-etl",
+    #     dag=dag)
+    #
+    # icca_external_wave = SparkOperator(
+    #     task_id="raw_icca_external_wave",
+    #     name="raw-icca-external-wave",
+    #     arguments=["config/prod.conf", "skip", "raw_icca_external_wave", '{{ds}}'],
+    #     namespace=NAMESPACE,
+    #     spark_class=MAIN_CLASS,
+    #     spark_jar=JAR,
+    #     spark_config="xsmall-etl",
+    #     dag=dag
+    # )
 
     icca_piicix_num = SparkOperator(
         task_id="raw_icca_piicix_num",
@@ -128,5 +130,6 @@ with dag:
         on_failure_callback=Slack.notify_task_failure
     )
 
-    start >> [icca_external_numeric, icca_external_wave, icca_external_patient, icca_piicix_num, icca_piicix_sig,
-              icca_piicix_sig_calibre, icca_piicix_alertes] >> end
+    # start >> [icca_external_numeric, icca_external_wave, icca_external_patient, icca_piicix_num, icca_piicix_sig,
+    #           icca_piicix_sig_calibre, icca_piicix_alertes] >> end
+    start >> [icca_piicix_num, icca_piicix_sig, icca_piicix_sig_calibre, icca_piicix_alertes] >> end
