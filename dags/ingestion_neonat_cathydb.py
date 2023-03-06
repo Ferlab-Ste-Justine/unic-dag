@@ -34,7 +34,7 @@ dag = DAG(
     default_args=default_args,
     is_paused_upon_creation=True,
     catchup=True,
-    max_active_runs=1,
+    max_active_runs=2,
     max_active_tasks=3,
     tags=["ingestion"]
 )
