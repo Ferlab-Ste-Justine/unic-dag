@@ -30,7 +30,7 @@ dag = DAG(
     end_date=datetime(2023, 2, 14),
     schedule_interval="@daily",
     params={
-        "branch":  Param("unic-951", type="string"),
+        "branch":  Param("master", type="string"),
         "version": Param("latest", type="string")
     },
     dagrun_timeout=timedelta(hours=2),
@@ -38,7 +38,8 @@ dag = DAG(
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=1,
-    max_active_tasks=2
+    max_active_tasks=2,
+    tags=["ingestion"]
 )
 
 with dag:
@@ -51,32 +52,32 @@ with dag:
     icca_external_numeric = SparkOperator(
         task_id="raw_icca_external_numeric",
         name=POD_NAME,
-        arguments=["config/prod.conf", "skip", "raw_icca_external_numeric", '{{ds}}'],  # {{ds}} input date
+        arguments=["config/prod.conf", "initial", "raw_icca_external_numeric", '{{ds}}'],  # {{ds}} input date
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_config="xsmall-etl",
+        spark_config="small-etl",
         dag=dag
     )
 
     icca_external_patient = SparkOperator(
         task_id="raw_icca_external_patient",
         name=POD_NAME,
-        arguments=["config/prod.conf", "skip", "raw_icca_external_patient", '{{ds}}'],
+        arguments=["config/prod.conf", "initial", "raw_icca_external_patient", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_config="xsmall-etl",
+        spark_config="small-etl",
         dag=dag)
 
     icca_external_wave = SparkOperator(
         task_id="raw_icca_external_wave",
         name=POD_NAME,
-        arguments=["config/prod.conf", "skip", "raw_icca_external_wave", '{{ds}}'],
+        arguments=["config/prod.conf", "initial", "raw_icca_external_wave", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_config="xsmall-etl",
+        spark_config="small-etl",
         dag=dag
     )
 
