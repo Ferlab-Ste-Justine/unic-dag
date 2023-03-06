@@ -123,7 +123,6 @@ class SparkOperator(KubernetesPodOperator):
             k8s_client.delete_namespaced_pod(
                 name=f'{self.pod.metadata.name}-driver',
                 namespace=self.pod.metadata.namespace,
-                grace_period_seconds=grace_period_seconds,
                 propagation_policy=propagation_policy
             )
 
@@ -137,7 +136,6 @@ class SparkOperator(KubernetesPodOperator):
             k8s_client.delete_namespaced_pod(
                 name=self.pod.metadata.name,
                 namespace=self.pod.metadata.namespace,
-                grace_period_seconds=grace_period_seconds,
                 propagation_policy=propagation_policy
             )
 
