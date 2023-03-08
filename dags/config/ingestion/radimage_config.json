@@ -29,7 +29,7 @@
       {"dataset_id":"anonymized_radimage_e*"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_radimage_i*"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_radimage_m*"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_radimage_p*"        , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"anonymized_radimage_p*"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_radimage_re*"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_radimage_s*"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
