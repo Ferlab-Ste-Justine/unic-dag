@@ -111,5 +111,3 @@ class SparkOperator(KubernetesPodOperator):
         Cleanup.cleanup_pods(self.pod.metadata.name, self.pod.metadata.namespace)
 
 
-
-
