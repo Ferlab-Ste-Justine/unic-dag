@@ -4,10 +4,11 @@ Help class containing custom SparkKubernetesOperator
 import json
 import re
 from airflow import DAG
+from airflow.operators.empty import EmptyOperator
 
 from core.slack import Slack
 from operators.spark import SparkOperator
-from airflow.operators.empty import EmptyOperator
+
 
 def sanitize_string(string: str, replace_by: str):
     """
@@ -20,7 +21,6 @@ def sanitize_string(string: str, replace_by: str):
 
 
 def get_start_operator(namespace: str,
-                       dag: DAG,
                        schema: str):
     """
     :param namespace:
@@ -108,7 +108,7 @@ def setup_dag(dag: DAG,
     previous_publish = None
 
     for step_config in dag_config['steps']:
-        start = get_start_operator(step_config['namespace'], dag, schema)
+        start = get_start_operator(step_config['namespace'], schema)
         publish = get_publish_operator(step_config, config_file, jar, dag, schema)
 
         if previous_publish:
@@ -202,7 +202,6 @@ def create_spark_job(destination: str,
     if namespace == "released":
         args.append(version)
 
-    task_id = sanitize_string(destination, "_")
     return SparkOperator(
         task_id=sanitize_string(destination, "_"),
         name=sanitize_string(destination[:40], '-'),
