@@ -14,7 +14,7 @@ from core.default_args import generate_default_args
 from core.slack import Slack
 from spark_operators import read_json, setup_dag
 
-DEFAULT_ARGS = generate_default_args(owner="unic", on_failure_callback=Slack.notify_task_failure())
+DEFAULT_ARGS = generate_default_args(owner="unic", on_failure_callback=Slack.notify_task_failure)
 DEFAULT_TIMEOUT_HOURS = 4
 
 ROOT = Variable.get('dags_config', '/opt/airflow/dags/repo/dags/config')
