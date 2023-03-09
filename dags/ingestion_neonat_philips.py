@@ -139,5 +139,6 @@ with dag:
         on_failure_callback=Slack.notify_task_failure
     )
 
-    start >> [neonat_external_numeric, neonat_external_wave, neonat_external_patient] >> [neonat_external_numericvalue, neonat_external_wavesample,
-               neonat_external_alert, neonat_external_patientdateattribute, neonat_external_patientstringattribute] >> end
+    start >> [neonat_external_numeric, neonat_external_wave, neonat_external_patient]
+    neonat_external_patient >> [neonat_external_numericvalue, neonat_external_wavesample, neonat_external_alert,
+                                neonat_external_patientdateattribute, neonat_external_patientstringattribute] >> end
