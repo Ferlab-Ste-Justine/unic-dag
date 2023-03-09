@@ -45,6 +45,7 @@ class Slack:
         Slack.notify(f'Task {dag_link} failed.{slack_msg}', type=Slack.ERROR)
 
     def notify_dag_start(context):
+        pass
         dag_id = context['dag'].dag_id
         dag_link = Slack._dag_link(dag_id, dag_id, context['run_id'])
         dag_exec_date = context['execution_date']

@@ -1,9 +1,8 @@
 import kubernetes
 from kubernetes.client import models as k8s
-import logging
-from airflow.exceptions import AirflowFailException
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
-
+from airflow import DAG
+from core.cleanup import Cleanup
 
 class SparkOperator(KubernetesPodOperator):
     template_fields = KubernetesPodOperator.template_fields + (
@@ -14,6 +13,7 @@ class SparkOperator(KubernetesPodOperator):
             spark_class: str,
             spark_jar: str,
             namespace: str,
+            dag: DAG,
             spark_config: str = '',
             **kwargs,
     ) -> None:
@@ -23,15 +23,16 @@ class SparkOperator(KubernetesPodOperator):
             service_account_name='spark',
             priority_weight=1,
             weight_rule="absolute",
+            depends_on_past=False,
             **kwargs
         )
         self.spark_class = spark_class
         self.spark_jar = spark_jar
         self.spark_config = spark_config
         self.namespace = namespace
+        self.dag = dag
 
     def execute(self, **kwargs):
-
         self.cmds = ['/opt/client-entrypoint.sh']
         self.image_pull_policy = 'IfNotPresent'
 
@@ -100,46 +101,13 @@ class SparkOperator(KubernetesPodOperator):
 
         super().execute(**kwargs)
 
-        kubernetes.config.load_incluster_config()
+        # kubernetes.config.load_incluster_config()
 
-        k8s_client = kubernetes.client.CoreV1Api()
-
-        propagation_policy = 'Background'
-        grace_period_seconds = 30
-
-        # Get driver pod log and delete driver pod
-        driver_pod = k8s_client.list_namespaced_pod(
-            namespace=self.pod.metadata.namespace,
-            field_selector=f'metadata.name={self.pod.metadata.name}-driver',
-            limit=1,
+        kubernetes.config.load_kube_config(
+            config_file='~/.kube/config',
+            context="unic-prod",
         )
 
-        if driver_pod.items:
-            log = k8s_client.read_namespaced_pod_log(
-                name=f'{self.pod.metadata.name}-driver',
-                namespace=self.pod.metadata.namespace,
-            )
-            logging.info(f'Spark job log:\n{log}')
-            k8s_client.delete_namespaced_pod(
-                name=f'{self.pod.metadata.name}-driver',
-                namespace=self.pod.metadata.namespace,
-                propagation_policy=propagation_policy
-            )
+        Cleanup.cleanup_pods(self.pod.metadata.name, self.pod.metadata.namespace)
 
-        # Delete pod
-        pod = k8s_client.list_namespaced_pod(
-            namespace=self.pod.metadata.namespace,
-            field_selector=f'metadata.name={self.pod.metadata.name}',
-            limit=1,
-        )
-        if pod.items:
-            k8s_client.delete_namespaced_pod(
-                name=self.pod.metadata.name,
-                namespace=self.pod.metadata.namespace,
-                propagation_policy=propagation_policy
-            )
-
-        # Fail task if driver pod failed
-        if driver_pod.items[0].status.phase != 'Succeeded':
-            raise AirflowFailException('Spark job failed')
 
