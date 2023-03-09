@@ -10,7 +10,6 @@ from airflow.models.param import Param
 from airflow import DAG
 
 from core.default_args import generate_default_args
-from core.slack import Slack
 from core.failure import Failure
 from spark_operators import read_json, setup_dag
 
