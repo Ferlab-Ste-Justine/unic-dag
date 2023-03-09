@@ -16,10 +16,10 @@ MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.neonat.MainCathyDb"
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
 default_args = {
-                'depends_on_past': False,
-                'start_date': datetime(2020, 5, 24),
-                'provide_context': True  # to use date of ingested data as input in main
-                }
+    'depends_on_past': False,
+    'start_date': datetime(2020, 5, 24),
+    'provide_context': True  # to use date of ingested data as input in main
+}
 
 dag = DAG(
     dag_id="ingestion_neonat_cathydb",

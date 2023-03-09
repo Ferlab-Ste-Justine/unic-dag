@@ -11,10 +11,10 @@ from airflow import DAG
 
 from core.default_args import generate_default_args
 from core.slack import Slack
+from core.failure import Failure
 from spark_operators import read_json, setup_dag
 
-DEFAULT_ARGS = generate_default_args(owner="unic", on_failure_callback=Slack.notify_task_failure)
-
+DEFAULT_ARGS = generate_default_args(owner="unic", on_failure_callback=Failure.on_failure_callback)
 DEFAULT_TIMEOUT_HOURS = 4
 
 ROOT = Variable.get('dags_config', '/opt/airflow/dags/repo/dags/config')
@@ -31,7 +31,7 @@ for (r, folders, files) in os.walk(ROOT):
                     config = read_json(f"{ROOT}/{namespace}/{schema}_config.json")
                     k = 'timeout_hours'
                     timeout_hours = config[k] if k in config else DEFAULT_TIMEOUT_HOURS
-                    exec_timeout_hours = 3/4 * timeout_hours
+                    exec_timeout_hours = 0.01
                     DEFAULT_ARGS["execution_timeout"] = timedelta(hours=exec_timeout_hours)
                     dag = DAG(
                         dag_id=dagid,

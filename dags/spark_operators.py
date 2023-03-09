@@ -7,7 +7,7 @@ from airflow import DAG
 
 from core.slack import Slack
 from operators.spark import SparkOperator
-from operators.slack import SlackOperator
+from airflow.operators.empty import EmptyOperator
 
 def sanitize_string(string: str, replace_by: str):
     """
@@ -28,11 +28,9 @@ def get_start_operator(namespace: str,
     :param schema:
     :return:
     """
-    return SlackOperator(
+    return EmptyOperator(
         task_id=f"start_{namespace}_{schema}",
-        markdown=f"{namespace}_{schema} started",
-        type=Slack.INFO,
-        dag=dag
+        on_execute_callback=Slack.notify_dag_start
     )
 
 
@@ -67,11 +65,9 @@ def get_publish_operator(dag_config: dict,
         on_success_callback = Slack.notify_dag_completion
 
     else:
-        publish = SlackOperator(
+        publish = EmptyOperator(
             task_id=f"publish_{namespace}_{schema}",
-            markdown=f'{namespace}_{schema} completed',
-            type=Slack.SUCCESS,
-            dag=dag
+            on_success_callback=Slack.notify_dag_completion
         )
 
         return publish
@@ -83,10 +79,6 @@ def get_publish_operator(dag_config: dict,
         name=pod_name,
         arguments=args,
         namespace=namespace,
-        executor_config={
-            "KubernetesExecutor":
-                {"namespace": namespace}
-        },
         spark_class=main_class,
         spark_jar=jar,
         spark_config="xsmall-etl",
@@ -210,14 +202,11 @@ def create_spark_job(destination: str,
     if namespace == "released":
         args.append(version)
 
+    task_id = sanitize_string(destination, "_")
     return SparkOperator(
         task_id=sanitize_string(destination, "_"),
         name=sanitize_string(destination[:40], '-'),
         namespace=namespace,
-        executor_config={
-            "KubernetesExecutor":
-                {"namespace": namespace}
-        },
         arguments=args,
         spark_class=main_class,
         spark_jar=jar,
