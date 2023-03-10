@@ -100,11 +100,6 @@ class SparkOperator(KubernetesPodOperator):
 
         super().execute(**kwargs)
 
-        # kubernetes.config.load_kube_config(
-        #     config_file='~/.kube/config',
-        #     context="unic-prod",
-        # )
-        #
         # Cleanup.cleanup_pods(self.pod.metadata.name, self.pod.metadata.namespace)
 
         kubernetes.config.load_incluster_config()

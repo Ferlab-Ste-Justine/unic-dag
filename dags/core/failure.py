@@ -5,14 +5,8 @@ import re
 class Failure:
     def on_failure_callback(context):
         namespace = context['task'].namespace
-        print(f"Operator Namespace: {namespace}")
-        # name = context['task'].name
         exception = context['exception']
-        # name = context['task'].pod.metadata.name
-        # print(f"Operator Name: {name}")
         name = context['task'].name
-        # name = context['task'].pod.metadata.name
-        print(f"Operator Name: {name}")
 
         #extract from exception
         regex = name + "-.{32}"
