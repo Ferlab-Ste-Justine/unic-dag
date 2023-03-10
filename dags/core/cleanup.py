@@ -12,6 +12,12 @@ class Cleanup:
         :param is_failure: True if cleanup after job failure.
         :return:
         """
+        # kubernetes.config.load_kube_config(
+        #     config_file='~/.kube/config',
+        #     context="unic-prod",
+        # )
+
+        kubernetes.config.load_incluster_config()
 
         k8s_client = kubernetes.client.CoreV1Api()
 
