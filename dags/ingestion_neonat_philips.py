@@ -1,7 +1,7 @@
 """
 DAG pour l'ingestion quotidienne des data de neonat a partir de Philips
 """
-
+# pylint: disable=duplicate-code
 from datetime import datetime, timedelta
 
 from airflow import DAG
