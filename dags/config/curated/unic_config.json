@@ -9,7 +9,7 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id":"curated_unic_patient_index", "cluster_type": "medium" , "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id":"curated_unic_patient_index", "cluster_type": "large", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
     ]
   }, {
     "namespace": "anonymized",
@@ -18,7 +18,7 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id":"anonymized_unic_patient_index", "cluster_type": "medium" , "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id":"anonymized_unic_patient_index", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
     ]
   }]
 
