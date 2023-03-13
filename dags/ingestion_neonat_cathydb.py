@@ -1,7 +1,7 @@
 """
 DAG pour l'ingestion des data de neonat se trouvant dans cathydb
 """
-
+# pylint: disable=duplicate-code
 from datetime import datetime, timedelta
 
 from airflow import DAG
