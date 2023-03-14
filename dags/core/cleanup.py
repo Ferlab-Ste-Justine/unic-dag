@@ -4,7 +4,7 @@ from airflow.exceptions import AirflowFailException
 
 class Cleanup:
 
-    def cleanup_pods(name, namespace, is_failure=False):
+    def cleanup_pods(name, namespace, spark_failure_msg, failed=False):
         """
         cleanup kubernetes pods
         :param name: pod name
@@ -12,11 +12,6 @@ class Cleanup:
         :param is_failure: True if cleanup after job failure.
         :return:
         """
-        # kubernetes.config.load_kube_config(
-        #     config_file='~/.kube/config',
-        #     context="unic-prod",
-        # )
-
         kubernetes.config.load_incluster_config()
 
         k8s_client = kubernetes.client.CoreV1Api()
@@ -50,6 +45,6 @@ class Cleanup:
                 namespace=namespace
             )
 
-        if not is_failure and driver_pod.items[0].status.phase != 'Succeeded':
-            raise AirflowFailException('Spark job failed')
+        if not failed and driver_pod.items[0].status.phase != 'Succeeded':
+            raise AirflowFailException(spark_failure_msg)
 

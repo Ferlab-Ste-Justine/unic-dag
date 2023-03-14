@@ -1,7 +1,7 @@
 {
   "concurrency": 4,
   "schedule": null,
-  "timeout_hours": 4,
+  "timeout_hours": 0.134,
   "steps": [{
     "namespace": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
@@ -9,8 +9,7 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "anonymized_rop_table_patient", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_rop_table_examen" , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "anonymized_rop_table_patient", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
   }]
 }
