@@ -1,5 +1,3 @@
-from functools import partial
-
 
 def generate_default_args(owner, on_failure_callback):
     return {
