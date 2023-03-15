@@ -1,18 +1,13 @@
-import kubernetes
 from kubernetes.client import models as k8s
-import logging
-from airflow.exceptions import AirflowFailException
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 
-from dags.core.cleanup import Cleanup
-
-
-# from core.cleanup import Cleanup
+from core.cleanup import Cleanup
 
 class SparkOperator(KubernetesPodOperator):
     template_fields = KubernetesPodOperator.template_fields + (
         'spark_jar',
     )
+
     def __init__(
             self,
             spark_class: str,
@@ -105,5 +100,4 @@ class SparkOperator(KubernetesPodOperator):
         super().execute(**kwargs)
 
         Cleanup.cleanup_pods(self.pod.metadata.name, self.pod.metadata.namespace, self.spark_failure_msg)
-
 
