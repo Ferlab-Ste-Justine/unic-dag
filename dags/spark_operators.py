@@ -39,7 +39,8 @@ def get_publish_operator(dag_config: dict,
                          config_file: str,
                          jar: str,
                          dag: DAG,
-                         schema: str):
+                         schema: str,
+                         spark_failure_msg: str):
     """
     Create a publish task based on the config publish_class
 
@@ -48,6 +49,7 @@ def get_publish_operator(dag_config: dict,
     :param jar:
     :param dag:
     :param schema:
+    :param spark_failure_msg:
     :return: both start and end to the publish operator if the operator contain multiple task
     """
     namespace = dag_config['namespace']
@@ -81,6 +83,7 @@ def get_publish_operator(dag_config: dict,
         namespace=namespace,
         spark_class=main_class,
         spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
         spark_config="xsmall-etl",
         on_success_callback=on_success_callback,
         dag=dag
@@ -93,7 +96,8 @@ def setup_dag(dag: DAG,
               config_file: str,
               jar: str,
               schema: str,
-              version: str):
+              version: str,
+              spark_failure_msg: str):
     """
     setup a dag
     :param dag:
@@ -102,6 +106,7 @@ def setup_dag(dag: DAG,
     :param jar:
     :param schema:
     :param version: Version to release, defaults to "latest"
+    :param spark_failure_msg:
     :return:
     """
 
@@ -109,7 +114,7 @@ def setup_dag(dag: DAG,
 
     for step_config in dag_config['steps']:
         start = get_start_operator(step_config['namespace'], schema)
-        publish = get_publish_operator(step_config, config_file, jar, dag, schema)
+        publish = get_publish_operator(step_config, config_file, jar, dag, schema, spark_failure_msg)
 
         if previous_publish:
             previous_publish >> start
@@ -126,7 +131,7 @@ def setup_dag(dag: DAG,
             run_type = conf['run_type']
 
             job = create_spark_job(dataset_id, namespace, run_type, config_type,
-                                   config_file, jar, dag, main_class, version)
+                                   config_file, jar, dag, main_class, version, spark_failure_msg)
 
             all_dependencies = all_dependencies + conf['dependencies']
             jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
@@ -182,7 +187,8 @@ def create_spark_job(destination: str,
                      jar: str,
                      dag: DAG,
                      main_class: str,
-                     version: str):
+                     version: str,
+                     spark_failure_msg: str):
     """
     create spark job operator
     :param destination:
@@ -194,6 +200,7 @@ def create_spark_job(destination: str,
     :param dag:
     :param main_class:
     :param version: Version to release, defaults to "latest"
+    :param spark_failure_msg:
     :return:
     """
     main_class = get_main_class(namespace, main_class)
@@ -209,6 +216,7 @@ def create_spark_job(destination: str,
         arguments=args,
         spark_class=main_class,
         spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
         spark_config=f"{cluster_type}-etl",
         dag=dag
     )

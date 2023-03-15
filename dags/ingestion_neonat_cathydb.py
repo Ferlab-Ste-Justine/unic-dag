@@ -14,6 +14,7 @@ from operators.spark import SparkOperator
 NAMESPACE = "raw"
 MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.neonat.MainCathyDb"
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
+SPARK_FAILURE_MSG = "Spark job failed"
 
 default_args = {
     'depends_on_past': False,
@@ -87,6 +88,7 @@ with dag:
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="medium-etl",
         dag=dag
     )
@@ -98,6 +100,7 @@ with dag:
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="medium-etl",
         dag=dag
     )
@@ -109,6 +112,7 @@ with dag:
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="medium-etl",
         dag=dag
     )
