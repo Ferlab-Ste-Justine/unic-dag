@@ -31,7 +31,7 @@ for (r, folders, files) in os.walk(ROOT):
                     config = read_json(f"{ROOT}/{namespace}/{schema}_config.json")
                     k = 'timeout_hours'
                     timeout_hours = config[k] if k in config else DEFAULT_TIMEOUT_HOURS
-                    exec_timeout_hours = 3/4 * timeout_hours
+                    exec_timeout_hours = 0.01
                     DEFAULT_ARGS["execution_timeout"] = timedelta(hours=exec_timeout_hours)
                     dag = DAG(
                         dag_id=dagid,

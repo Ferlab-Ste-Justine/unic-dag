@@ -45,6 +45,7 @@ class Cleanup:
                 namespace=namespace
             )
 
-        if not failed and driver_pod.items[0].status.phase != 'Succeeded':
-            raise AirflowFailException(spark_failure_msg)
+        if not failed and driver_pod.items:
+            if driver_pod.items[0].status.phase != 'Succeeded':
+                raise AirflowFailException(spark_failure_msg)
 
