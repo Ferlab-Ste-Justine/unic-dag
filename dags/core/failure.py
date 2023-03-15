@@ -10,13 +10,8 @@ class Failure:
         name = context['task'].name
         spark_failure_msg = context['task'].spark_failure_msg
 
-        print(exception)
-        print(str(exception))
-        print(spark_failure_msg)
-
         # check if it is a spark failure, as the cleanup has already been done if a spark job fails.
         if str(exception) != spark_failure_msg:
-            print("IN EXECUTION TIMEOUT FAILURE")
             try:
                 # extract pod_name from exception
                 regex = name + "-.{32}"
