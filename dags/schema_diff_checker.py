@@ -14,6 +14,7 @@ args = ["config/prod.conf", "initial", "dbschema"]
 
 NAMESPACE = "raw"
 POD_NAME = "raw-schema-diff-checker"
+SPARK_FAILURE_MSG = "Spark job failed"
 
 MAIN_CLASS = "bio.ferlab.ui.etl.script.SchemaDiffChecker"
 
@@ -45,6 +46,7 @@ check_schema_difference = SparkOperator(
     namespace=NAMESPACE,
     spark_class=MAIN_CLASS,
     spark_jar=JAR,
+    spark_failure_msg=SPARK_FAILURE_MSG,
     spark_config="xsmall-etl",
     dag=dag,
 )

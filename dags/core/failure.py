@@ -9,6 +9,8 @@ class Failure:
         name = context['task'].name
         spark_failure_msg = context['task'].spark_failure_msg
 
+        print(context['task'])
+
         # check if it is a spark failure, as the cleanup has already been done if a spark job fails.
         if str(exception) != spark_failure_msg:
             try:

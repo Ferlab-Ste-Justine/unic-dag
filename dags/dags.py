@@ -13,6 +13,7 @@ from core.default_args import generate_default_args
 from core.failure import Failure
 from spark_operators import read_json, setup_dag
 
+SPARK_FAILURE_MSG = "Spark job failed"
 DEFAULT_ARGS = generate_default_args(owner="unic", on_failure_callback=Failure.on_failure_callback)
 DEFAULT_TIMEOUT_HOURS = 4
 
@@ -54,6 +55,7 @@ for (r, folders, files) in os.walk(ROOT):
                             config_file=CONFIG_FILE,
                             jar='s3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar',
                             schema=schema,
-                            version='{{ params.version }}'
+                            version='{{ params.version }}',
+                            spark_failure_msg=SPARK_FAILURE_MSG
                         )
                     globals()[dagid] = dag
