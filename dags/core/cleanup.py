@@ -26,6 +26,7 @@ class Cleanup:
             limit=1,
         )
 
+        # Print spark logs and delete driver pod
         if driver_pod.items:
             log = k8s_client.read_namespaced_pod_log(
                 name=f'{name}-driver',
