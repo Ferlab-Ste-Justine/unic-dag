@@ -1,7 +1,7 @@
 {
   "concurrency": 4,
   "schedule": null,
-  "timeout_hours": 4,
+  "timeout_hours": 0.134,
   "steps": [{
     "namespace": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
