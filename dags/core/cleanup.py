@@ -4,6 +4,7 @@ from airflow.exceptions import AirflowFailException
 
 class Cleanup:
 
+    @staticmethod
     def cleanup_pods(name, namespace, spark_failure_msg, failed=False):
         """
         cleanup kubernetes pods
@@ -12,7 +13,10 @@ class Cleanup:
         :param is_failure: True if cleanup after job failure.
         :return:
         """
-        kubernetes.config.load_incluster_config()
+        try:
+            kubernetes.config.load_incluster_config()
+        except Exception as e:
+            logging.error(f'Failed to load in-cluster config: {e}')
 
         k8s_client = kubernetes.client.CoreV1Api()
 

@@ -1,5 +1,6 @@
 from core.slack import Slack
 from core.cleanup import Cleanup
+import logging
 import re
 
 class Failure:
@@ -23,6 +24,6 @@ class Failure:
 
                 Cleanup.cleanup_pods(pod_name, namespace, spark_failure_msg, failed=True)
             except IndexError:
-                print("Pod name not found. Unable to delete pods.")
+                logging.error("Pod name not found. Unable to delete pods.")
 
         Slack.notify_task_failure(context)
