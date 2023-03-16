@@ -1,0 +1,19 @@
+{
+  "concurrency": 2,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [
+    {
+      "namespace": "enriched",
+      "main_class": "bio.ferlab.ui.etl.yellow.enriched.sil.cardiopathie.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"enriched_cardiopathie_bebe"                 , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"enriched_cardiopathie_hospitalisation_bebe" , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_cardiopathie_bebe"]} ,
+        {"dataset_id":"enriched_cardiopathie_laboratoire"          , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []}
+      ]
+    }
+  ]
+}
