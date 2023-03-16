@@ -50,14 +50,16 @@ class Slack:
     @staticmethod
     def notify_dag_start(context):
         dag_id = context['dag'].dag_id
-        dag_link = Slack._dag_link(dag_id, dag_id, context['run_id'])
+        task_id = context['task'].task_id
+        dag_link = Slack._dag_link(f'{dag_id}.{task_id}', dag_id, context['run_id'])
         dag_exec_date = context['execution_date']
         Slack.notify(f'DAG {dag_link} started at {dag_exec_date}', Slack.INFO)
 
     @staticmethod
     def notify_dag_completion(context):
         dag_id = context['dag'].dag_id
-        dag_link = Slack._dag_link(dag_id, dag_id, context['run_id'])
+        task_id = context['task'].task_id
+        dag_link = Slack._dag_link(f'{dag_id}.{task_id}', dag_id, context['run_id'])
         Slack.notify(f'DAG {dag_link} completed.', Slack.SUCCESS)
 
     @staticmethod
