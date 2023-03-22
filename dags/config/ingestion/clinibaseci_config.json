@@ -1,6 +1,6 @@
 {
   "concurrency": 2,
-  "schedule": "0 8 * * 3",
+  "schedule": "0 9 * * 3",
   "timeout_hours": 4,
   "steps": [{
     "namespace": "raw",
