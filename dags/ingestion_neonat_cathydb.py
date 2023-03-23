@@ -9,6 +9,7 @@ from airflow.models.param import Param
 from airflow.operators.empty import EmptyOperator
 
 from core.slack import Slack
+from core.failure import Failure
 from operators.spark import SparkOperator
 
 NAMESPACE = "raw"
@@ -19,13 +20,14 @@ SPARK_FAILURE_MSG = "Spark job failed"
 default_args = {
     'depends_on_past': False,
     'start_date': datetime(2020, 5, 24),
-    'provide_context': True  # to use date of ingested data as input in main
+    'provide_context': True,  # to use date of ingested data as input in main
+    'on_failure_callback': Failure.on_failure_callback
 }
 
 dag = DAG(
     dag_id="ingestion_neonat_cathydb",
     start_date=datetime(2020, 5, 24),
-    end_date=datetime(2023, 3, 6),
+    end_date=datetime(2023, 1, 24),
     schedule_interval="@daily",
     params={
         "branch":  Param("master", type="string"),
@@ -119,8 +121,7 @@ with dag:
 
     end = EmptyOperator(
         task_id="publish_ingestion_neonat_cathydb",
-        on_success_callback=Slack.notify_dag_completion,
-        on_failure_callback=Slack.notify_task_failure
+        on_success_callback=Slack.notify_dag_completion
     )
 
     # start >> [icca_external_numeric, icca_external_wave, icca_external_patient, icca_piicix_num, icca_piicix_sig,
