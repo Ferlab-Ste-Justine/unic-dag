@@ -1,11 +1,14 @@
-from kubernetes.client import models as k8s
+from airflow.exceptions import AirflowSkipException
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
+from kubernetes.client import models as k8s
 
 from core.cleanup import Cleanup
+
 
 class SparkOperator(KubernetesPodOperator):
     template_fields = KubernetesPodOperator.template_fields + (
         'spark_jar',
+        'skip'
     )
 
     def __init__(
@@ -15,6 +18,7 @@ class SparkOperator(KubernetesPodOperator):
             spark_failure_msg: str,
             namespace: str,
             spark_config: str = '',
+            skip: bool = False,
             **kwargs,
     ) -> None:
         super().__init__(
@@ -31,8 +35,12 @@ class SparkOperator(KubernetesPodOperator):
         self.spark_failure_msg = spark_failure_msg
         self.namespace = namespace
         self.spark_config = spark_config
+        self.skip = skip
 
     def execute(self, **kwargs):
+        if self.skip:
+            raise AirflowSkipException()
+
         self.cmds = ['/opt/client-entrypoint.sh']
         self.image_pull_policy = 'IfNotPresent'
 

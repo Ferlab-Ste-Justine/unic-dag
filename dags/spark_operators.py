@@ -3,6 +3,8 @@ Help class containing custom SparkKubernetesOperator
 """
 import json
 import re
+from typing import Optional
+
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 
@@ -95,7 +97,8 @@ def setup_dag(dag: DAG,
               jar: str,
               schema: str,
               version: str,
-              spark_failure_msg: str):
+              spark_failure_msg: str,
+              skip_task: Optional[str] = None):
     """
     setup a dag
     :param dag:
@@ -105,6 +108,7 @@ def setup_dag(dag: DAG,
     :param schema:
     :param version: Version to release, defaults to "latest"
     :param spark_failure_msg:
+    :param skip_task: A function to evaluate whether a task should be skipped or not, defaults to None
     :return:
     """
 
@@ -129,7 +133,7 @@ def setup_dag(dag: DAG,
             run_type = conf['run_type']
 
             job = create_spark_job(dataset_id, namespace, run_type, config_type,
-                                   config_file, jar, dag, main_class, version, spark_failure_msg)
+                                   config_file, jar, dag, main_class, version, spark_failure_msg, skip_task)
 
             all_dependencies = all_dependencies + conf['dependencies']
             jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
@@ -186,7 +190,8 @@ def create_spark_job(destination: str,
                      dag: DAG,
                      main_class: str,
                      version: str,
-                     spark_failure_msg: str):
+                     spark_failure_msg: str,
+                     skip: Optional[str] = None):
     """
     create spark job operator
     :param destination:
@@ -199,6 +204,7 @@ def create_spark_job(destination: str,
     :param main_class:
     :param version: Version to release, defaults to "latest"
     :param spark_failure_msg:
+    :param skip:
     :return:
     """
     main_class = get_main_class(namespace, main_class)
@@ -216,5 +222,6 @@ def create_spark_job(destination: str,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config=f"{cluster_type}-etl",
-        dag=dag
+        dag=dag,
+        skip=False if skip is None else skip
     )
