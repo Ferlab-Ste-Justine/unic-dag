@@ -7,6 +7,7 @@ from typing import Optional
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
+from airflow.utils.trigger_rule import TriggerRule
 
 from core.slack import Slack
 from operators.spark import SparkOperator
@@ -32,7 +33,8 @@ def get_start_operator(namespace: str,
     """
     return EmptyOperator(
         task_id=f"start_{namespace}_{schema}",
-        on_execute_callback=Slack.notify_dag_start
+        on_execute_callback=Slack.notify_dag_start,
+        trigger_rule=TriggerRule.NONE_FAILED
     )
 
 
@@ -69,7 +71,8 @@ def get_publish_operator(dag_config: dict,
     else:
         publish = EmptyOperator(
             task_id=f"publish_{namespace}_{schema}",
-            on_success_callback=Slack.notify_dag_completion
+            on_success_callback=Slack.notify_dag_completion,
+            trigger_rule=TriggerRule.NONE_FAILED
         )
 
         return publish
@@ -86,7 +89,8 @@ def get_publish_operator(dag_config: dict,
         spark_failure_msg=spark_failure_msg,
         spark_config="xsmall-etl",
         on_success_callback=Slack.notify_dag_completion,
-        dag=dag
+        dag=dag,
+        trigger_rule=TriggerRule.NONE_FAILED
     )
 
     return job
