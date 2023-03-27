@@ -5,35 +5,25 @@ DAG pour l'ingestion quotidienne des data de neonat a partir de Philips
 from datetime import datetime, timedelta
 
 from airflow import DAG
-from airflow.models.param import Param
 from airflow.operators.empty import EmptyOperator
 
+from core.config import jar, spark_failure_msg, default_params, default_args
 from core.slack import Slack
-from core.failure import Failure
 from operators.spark import SparkOperator
 
 NAMESPACE = "raw"
 MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.neonat.MainPhilips"
-JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
-SPARK_FAILURE_MSG = "Spark job failed"
-
-default_args = {
-    'depends_on_past': False,
-    'start_date': datetime(2023, 1, 25),
-    'provide_context': True,  # to use date of ingested data as input in main
-    'on_failure_callback': Failure.on_failure_callback
-}
 
 dag = DAG(
     dag_id="ingestion_neonat_philips",
     start_date=datetime(2023, 1, 25),
     schedule_interval='0 7 * * *',  # everyday at 2am EST (-5:00), 3am EDT (-4:00)
-    params={
-        "branch":  Param("master", type="string"),
-        "version": Param("latest", type="string")
-    },
+    params=default_params,
     dagrun_timeout=timedelta(hours=2),
-    default_args=default_args,
+    default_args=default_args.update({
+        'start_date': datetime(2023, 1, 25),
+        'provide_context': True  # to use date of ingested data as input in main
+    }),
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=2,
@@ -54,8 +44,8 @@ with dag:
          arguments=["config/prod.conf", "default", "raw_neonat_external_numeric", '{{ds}}'],  # {{ds}} input date
          namespace=NAMESPACE,
          spark_class=MAIN_CLASS,
-         spark_jar=JAR,
-         spark_failure_msg=SPARK_FAILURE_MSG,
+         spark_jar=jar,
+         spark_failure_msg=spark_failure_msg,
          spark_config="medium-etl",
          dag=dag
     )
@@ -66,8 +56,8 @@ with dag:
          arguments=["config/prod.conf", "default", "raw_neonat_external_patient", '{{ds}}'],
          namespace=NAMESPACE,
          spark_class=MAIN_CLASS,
-         spark_jar=JAR,
-         spark_failure_msg=SPARK_FAILURE_MSG,
+         spark_jar=jar,
+         spark_failure_msg=spark_failure_msg,
          spark_config="xsmall-etl",
          dag=dag
     )
@@ -78,8 +68,8 @@ with dag:
         arguments=["config/prod.conf", "default", "raw_neonat_external_patientdateattribute", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
-        spark_failure_msg=SPARK_FAILURE_MSG,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
         spark_config="xsmall-etl",
         dag=dag
     )
@@ -90,8 +80,8 @@ with dag:
         arguments=["config/prod.conf", "default", "raw_neonat_external_patientstringattribute", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
-        spark_failure_msg=SPARK_FAILURE_MSG,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
         spark_config="xsmall-etl",
         dag=dag
     )
@@ -103,8 +93,8 @@ with dag:
          arguments=["config/prod.conf", "default", "raw_neonat_external_wave", '{{ds}}'],
          namespace=NAMESPACE,
          spark_class=MAIN_CLASS,
-         spark_jar=JAR,
-         spark_failure_msg=SPARK_FAILURE_MSG,
+         spark_jar=jar,
+         spark_failure_msg=spark_failure_msg,
          spark_config="medium-etl",
          dag=dag
     )
@@ -115,8 +105,8 @@ with dag:
          arguments=["config/prod.conf", "default", "raw_neonat_external_numericvalue", '{{ds}}'],
          namespace=NAMESPACE,
          spark_class=MAIN_CLASS,
-         spark_jar=JAR,
-         spark_failure_msg=SPARK_FAILURE_MSG,
+         spark_jar=jar,
+         spark_failure_msg=spark_failure_msg,
          spark_config="medium-etl",
          dag=dag
     )
@@ -127,8 +117,8 @@ with dag:
         arguments=["config/prod.conf", "default", "raw_neonat_external_wavesample", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
-        spark_failure_msg=SPARK_FAILURE_MSG,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
         spark_config="medium-etl",
         dag=dag
     )
@@ -139,8 +129,8 @@ with dag:
         arguments=["config/prod.conf", "default", "raw_neonat_external_alert", '{{ds}}'],
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
-        spark_failure_msg=SPARK_FAILURE_MSG,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
         spark_config="medium-etl",
         dag=dag
     )

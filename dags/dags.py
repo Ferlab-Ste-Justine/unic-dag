@@ -5,42 +5,29 @@ import os
 import re
 from datetime import timedelta, datetime
 
-from airflow.models import Variable
-from airflow.models.param import Param
 from airflow import DAG
 
-from core.default_args import generate_default_args
-from core.failure import Failure
+from core.config import root, extract_schema, default_timeout_hours, default_args, config_file, spark_failure_msg, jar, \
+    version, default_params
 from spark_operators import read_json, setup_dag
 
-SPARK_FAILURE_MSG = "Spark job failed"
-DEFAULT_ARGS = generate_default_args(owner="unic", on_failure_callback=Failure.on_failure_callback)
-DEFAULT_TIMEOUT_HOURS = 4
-
-ROOT = Variable.get('dags_config', '/opt/airflow/dags/repo/dags/config')
-EXTRACT_SCHEMA = '(.*)_config.json'
-CONFIG_FILE = "config/prod.conf"
-
-for (r, folders, files) in os.walk(ROOT):
-    if r == ROOT:
+for (r, folders, files) in os.walk(root):
+    if r == root:
         for namespace in folders:
-            for configs in os.walk(f'{ROOT}/{namespace}'):
+            for configs in os.walk(f'{root}/{namespace}'):
                 for f in configs[2]:
-                    schema = re.search(EXTRACT_SCHEMA, f).group(1)
+                    schema = re.search(extract_schema, f).group(1)
                     dagid = f"{namespace}_{schema}".lower()
-                    config = read_json(f"{ROOT}/{namespace}/{schema}_config.json")
+                    config = read_json(f"{root}/{namespace}/{schema}_config.json")
                     k = 'timeout_hours'
-                    timeout_hours = config[k] if k in config else DEFAULT_TIMEOUT_HOURS
+                    timeout_hours = config[k] if k in config else default_timeout_hours
                     exec_timeout_hours = 3/4 * timeout_hours
-                    DEFAULT_ARGS["execution_timeout"] = timedelta(hours=exec_timeout_hours)
+                    default_args["execution_timeout"] = timedelta(hours=exec_timeout_hours)
                     dag = DAG(
                         dag_id=dagid,
                         schedule_interval=config['schedule'],
-                        params={
-                            "branch": Param("master", type="string"),
-                            "version": Param("latest", type="string")
-                        },
-                        default_args=DEFAULT_ARGS,
+                        params=default_params,
+                        default_args=default_args,
                         start_date=datetime(2021, 1, 1),
                         concurrency=config['concurrency'],
                         catchup=False,
@@ -52,10 +39,10 @@ for (r, folders, files) in os.walk(ROOT):
                         setup_dag(
                             dag=dag,
                             dag_config=config,
-                            config_file=CONFIG_FILE,
-                            jar='s3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar',
+                            config_file=config_file,
+                            jar=jar,
                             schema=schema,
-                            version='{{ params.version }}',
-                            spark_failure_msg=SPARK_FAILURE_MSG
+                            version=version,
+                            spark_failure_msg=spark_failure_msg
                         )
                     globals()[dagid] = dag

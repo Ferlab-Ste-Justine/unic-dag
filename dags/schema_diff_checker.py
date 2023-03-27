@@ -6,21 +6,14 @@ from datetime import datetime, timedelta
 from airflow import DAG
 from airflow.models.param import Param
 
-from core.default_args import generate_default_args
+from core.config import default_args, jar, spark_failure_msg
 from core.slack import Slack
 from operators.spark import SparkOperator
 
-args = ["config/prod.conf", "initial", "dbschema"]
-
 NAMESPACE = "raw"
 POD_NAME = "raw-schema-diff-checker"
-SPARK_FAILURE_MSG = "Spark job failed"
-
 MAIN_CLASS = "bio.ferlab.ui.etl.script.SchemaDiffChecker"
-
-JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
-
-default_args = generate_default_args(owner="unic", on_failure_callback=Slack.notify_task_failure)
+ARGS = ["config/prod.conf", "initial", "dbschema"]
 
 slack = Slack()
 
@@ -42,11 +35,11 @@ dag = DAG(
 check_schema_difference = SparkOperator(
     task_id="check_schema_difference",
     name=POD_NAME,
-    arguments=args,
+    arguments=default_args,
     namespace=NAMESPACE,
     spark_class=MAIN_CLASS,
-    spark_jar=JAR,
-    spark_failure_msg=SPARK_FAILURE_MSG,
+    spark_jar=jar,
+    spark_failure_msg=spark_failure_msg,
     spark_config="xsmall-etl",
     dag=dag,
 )
