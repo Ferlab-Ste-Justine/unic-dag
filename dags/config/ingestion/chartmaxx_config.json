@@ -58,9 +58,9 @@
         {"dataset_id": "anonymized_chartmaxx_cmformcapture_obstetric_record*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "anonymized_chartmaxx_cmformcapture_deletes"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
 
-        {"dataset_id": "anonymized_chartmaxx_a*", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_chartmaxx_c*", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_chartmaxx_p*", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "anonymized_chartmaxx_a*"                                  , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_chartmaxx_childhood_asthma_test_4_11_years_old", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_chartmaxx_p*"                                  , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
       ]
     }
   ]
