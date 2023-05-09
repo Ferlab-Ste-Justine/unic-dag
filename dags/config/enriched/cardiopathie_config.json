@@ -10,7 +10,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"enriched_cardiopathie_bebe"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"enriched_cardiopathie_bebe"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"enriched_cardiopathie_hospitalisation_bebe", "cluster_type": "small" , "run_type": "default", "cluster_specs": {} , "dependencies": ["enriched_cardiopathie_bebe"]},
         {"dataset_id":"enriched_cardiopathie_laboratoire"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {} , "dependencies": []}
       ]
