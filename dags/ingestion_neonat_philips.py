@@ -17,7 +17,7 @@ MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.neonat.MainPhilips"
 dag = DAG(
     dag_id="ingestion_neonat_philips",
     start_date=datetime(2023, 1, 25),
-    schedule_interval='0 7 * * *',  # everyday at 2am EST (-5:00), 3am EDT (-4:00)
+    schedule_interval=None,  # everyday at 2am EST (-5:00), 3am EDT (-4:00)
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
     default_args=default_args.update({
@@ -34,7 +34,7 @@ dag = DAG(
 with dag:
 
     start = EmptyOperator(
-        task_id="start_ingestion_neonat_cathydb",
+        task_id="start_ingestion_neonat_philips",
         on_execute_callback=Slack.notify_dag_start
     )
 
