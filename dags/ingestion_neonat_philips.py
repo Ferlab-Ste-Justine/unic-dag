@@ -17,7 +17,6 @@ MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.neonat.MainPhilips"
 dag = DAG(
     dag_id="ingestion_neonat_philips",
     start_date=datetime(2023, 1, 25),
-    end_date=datetime(2023, 1, 26),
     schedule_interval=None,  # everyday at 2am EST (-5:00), 3am EDT (-4:00)
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
@@ -27,7 +26,7 @@ dag = DAG(
     }),
     is_paused_upon_creation=True,
     catchup=True,
-    max_active_runs=2,
+    max_active_runs=1,
     max_active_tasks=3,
     tags=["ingestion"]
 )
