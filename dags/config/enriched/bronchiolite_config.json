@@ -1,5 +1,5 @@
 {
-  "concurrency": 2,
+  "concurrency": 4,
   "schedule": null,
   "timeout_hours": 4,
   "steps": [
