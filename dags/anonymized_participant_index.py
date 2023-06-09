@@ -24,7 +24,7 @@ config = {
                 {"dataset_id": "anonymized_unic_participant_index_cardiopathie", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
                 {"dataset_id": "anonymized_unic_participant_index_coprema"     , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
                 {"dataset_id": "anonymized_unic_participant_index_monchemin"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-                {"dataset_id": "anonymized_unic_participant_index_signature"   , "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+                {"dataset_id": "anonymized_unic_participant_index_signature"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
                 {"dataset_id": "anonymized_unic_participant_index_simapp"      , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
             ]
     }]
