@@ -1,0 +1,16 @@
+{
+  "concurrency": 1,
+  "schedule": null,
+  "timeout_hours": 2,
+  "steps": [{
+    "namespace": "raw",
+    "main_class": "bio.ferlab.ui.etl.schema.UpdateSchema",
+    "publish_class": "",
+    "schemas": [],
+    "datasets":
+    [
+      {"dataset_id": "raw_staturgence_recherche_episode", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+    ]
+  }]
+
+}
