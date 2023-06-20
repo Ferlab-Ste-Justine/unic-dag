@@ -14,7 +14,7 @@ from core.config import default_params, default_timeout_hours, default_args, spa
 from core.slack import Slack
 from operators.spark import SparkOperator
 
-NAMESPACE = "raw"
+NAMESPACE = "enriched"
 MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.signature.Main"
 JAR = 's3a://spark-prd/jars/unic-etl-unic-1133.jar'
 
