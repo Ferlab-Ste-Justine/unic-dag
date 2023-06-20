@@ -10,12 +10,13 @@ from airflow import DAG
 from airflow.models import Param
 from airflow.operators.empty import EmptyOperator
 
-from core.config import default_params, default_timeout_hours, default_args, jar, spark_failure_msg
+from core.config import default_params, default_timeout_hours, default_args, spark_failure_msg
 from core.slack import Slack
 from operators.spark import SparkOperator
 
 NAMESPACE = "raw"
 MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.signature.Main"
+JAR = 's3a://spark-prd/jars/unic-etl-unic-1133.jar'
 
 DOC = """
 # Enriched Signature DAG
@@ -83,7 +84,7 @@ with dag:
         arguments=arguments("enriched_signature_participant_index"),
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
-        spark_jar=jar,
+        spark_jar=JAR,
         spark_failure_msg=spark_failure_msg,
         spark_config="small-etl",
         dag=dag
@@ -95,7 +96,7 @@ with dag:
         arguments=arguments("enriched_signature_last_visit_survey"),
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
-        spark_jar=jar,
+        spark_jar=JAR,
         spark_failure_msg=spark_failure_msg,
         spark_config="medium-etl",
         dag=dag,
@@ -108,7 +109,7 @@ with dag:
         arguments=arguments("enriched_signature_monthly_visit"),
         namespace=NAMESPACE,
         spark_class=MAIN_CLASS,
-        spark_jar=jar,
+        spark_jar=JAR,
         spark_failure_msg=spark_failure_msg,
         spark_config="medium-etl",
         dag=dag
