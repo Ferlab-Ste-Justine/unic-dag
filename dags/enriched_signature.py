@@ -69,7 +69,7 @@ dag = DAG(
 
 with dag:
     def arguments(destination: str) -> List[str]:
-        return ["config/prod.conf", "default", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
+        return ["config/prod.conf", "initial", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
 
 
     def skip_last_visit_survey() -> str:
