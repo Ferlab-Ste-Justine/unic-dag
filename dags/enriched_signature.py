@@ -73,8 +73,7 @@ with dag:
 
 
     def skip_last_visit_survey() -> str:
-        return "{{ params.skip_last_visit_survey }}"
-
+        return "{% if params.skip_last_visit_survey != 'True' %}{% else %}True{% endif %}"
 
     start = EmptyOperator(
         task_id="start_enriched_signature",
