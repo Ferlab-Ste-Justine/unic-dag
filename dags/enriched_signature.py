@@ -9,15 +9,14 @@ import pendulum
 from airflow import DAG
 from airflow.models import Param
 from airflow.operators.empty import EmptyOperator
+from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
 from core.config import default_params, default_timeout_hours, default_args, spark_failure_msg
 from core.slack import Slack
 from operators.spark import SparkOperator
 
-NAMESPACE = "enriched"
-MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.signature.Main"
-JAR = 's3a://spark-prd/jars/unic-etl-unic-1133.jar'
+JAR = 's3a://spark-prd/jars/unic-etl-master.jar'
 
 DOC = """
 # Enriched Signature DAG
@@ -26,8 +25,8 @@ ETL enriched pour le projet Signature.
 
 ### Description
 Cet ETL génère un rapport mensuel sur les patients de l'étude ayant eu une ordonnance pour un test de laboratoire
-depuis les quatre dernières semaines. ~~Par défaut, la task `enriched_signature_last_visit_survey`, qui génère un rapport
-depuis le début de l'étude, n'est pas exécutée.~~
+depuis les quatre dernières semaines. ~~Par défaut, les tâches liées à la table `last_visit_survey`, qui contient les
+données depuis le début de l'étude, ne sont pas exécutées.~~
 
 ### Horaire
 * __Date de début__ - 7 juillet 2023
@@ -36,14 +35,17 @@ depuis le début de l'étude, n'est pas exécutée.~~
 * __Intervalle__ - Chaque 4 semaine
 
 ### Configuration
-* Paramètre `skip_last_visit_survey` : booléen indiquant si la task `enriched_signature_last_visit_survey` doit être
+* Paramètre `skip_last_visit_survey` : booléen indiquant si la table `last_visit_survey` doit être
 skipped. ~~Par défaut à True.~~
 
 ### Fonctionnement
-Le début de l'intervalle et la fin de l'intervalle sont envoyés comme arguments à l'ETL. Seule la tâche 
+Le début de l'intervalle et la fin de l'intervalle sont envoyés comme arguments à l'ETL enriched. Seule la tâche 
 `enriched_signature_monthly_visit` a besoin de ces arguments pour filtrer les ordonnances de laboratoire. À noter que
 la fin de l'intervalle correspond au moment de génération du rapport. Donc pour le premier rapport du 7 juillet 2023, le
 début de l'intervalle est le 9 juin 2023. 
+
+La date de fin de l'intervalle (date logique du DAG) est envoyée comme argument à l'ETL released. Cette date est 
+utilisée comme version de la release.
 """
 
 # Update default params
@@ -68,58 +70,101 @@ dag = DAG(
 )
 
 with dag:
-    def arguments(destination: str) -> List[str]:
-        return ["config/prod.conf", "initial", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
-
-
     def skip_last_visit_survey() -> str:
         return "{% if params.skip_last_visit_survey != 'True' %}{% else %}True{% endif %}"
 
+
     start = EmptyOperator(
-        task_id="start_enriched_signature",
+        task_id="start",
         on_execute_callback=Slack.notify_dag_start
     )
 
-    participant_index = SparkOperator(
-        task_id="enriched_signature_participant_index",
-        name="enriched-signature-participant-index",
-        arguments=arguments("enriched_signature_participant_index"),
-        namespace=NAMESPACE,
-        spark_class=MAIN_CLASS,
-        spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
-        spark_config="small-etl",
-        dag=dag
-    )
+    with TaskGroup(group_id="enriched") as enriched:
+        ENRICHED_NAMESPACE = "enriched"
+        ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.signature.Main"
 
-    last_visit_survey = SparkOperator(
-        task_id="enriched_signature_last_visit_survey",
-        name="enriched-signature-last-visit-survey",
-        arguments=arguments("enriched_signature_last_visit_survey"),
-        namespace=NAMESPACE,
-        spark_class=MAIN_CLASS,
-        spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
-        spark_config="medium-etl",
-        dag=dag,
-        skip=skip_last_visit_survey()
-    )
 
-    monthly_visit = SparkOperator(
-        task_id="enriched_signature_monthly_visit",
-        name="enriched-signature-monthly-visit",
-        arguments=arguments("enriched_signature_monthly_visit"),
-        namespace=NAMESPACE,
-        spark_class=MAIN_CLASS,
-        spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
-        spark_config="medium-etl",
-        dag=dag
-    )
+        def enriched_arguments(destination: str) -> List[str]:
+            return ["config/prod.conf", "initial", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
+
+
+        participant_index = SparkOperator(
+            task_id="enriched_signature_participant_index",
+            name="enriched-signature-participant-index",
+            arguments=enriched_arguments("enriched_signature_participant_index"),
+            namespace=ENRICHED_NAMESPACE,
+            spark_class=ENRICHED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag
+        )
+
+        last_visit_survey = SparkOperator(
+            task_id="enriched_signature_last_visit_survey",
+            name="enriched-signature-last-visit-survey",
+            arguments=enriched_arguments("enriched_signature_last_visit_survey"),
+            namespace=ENRICHED_NAMESPACE,
+            spark_class=ENRICHED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="medium-etl",
+            dag=dag,
+            skip=skip_last_visit_survey()
+        )
+
+        monthly_visit = SparkOperator(
+            task_id="enriched_signature_monthly_visit",
+            name="enriched-signature-monthly-visit",
+            arguments=enriched_arguments("enriched_signature_monthly_visit"),
+            namespace=ENRICHED_NAMESPACE,
+            spark_class=ENRICHED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="medium-etl",
+            dag=dag
+        )
+
+        participant_index >> [last_visit_survey, monthly_visit]
+
+    with TaskGroup(group_id="released") as released:
+        RELEASED_NAMESPACE = "released"
+        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.Main"
+
+
+        def released_arguments(destination: str) -> List[str]:
+            # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
+            return ["config/prod.conf", "initial", destination, "{{ ds }}"]
+
+
+        last_visit_survey = SparkOperator(
+            task_id="released_signature_last_visit_survey",
+            name="released-signature-last-visit-survey",
+            arguments=released_arguments("released_signature_last_visit_survey"),
+            namespace=RELEASED_NAMESPACE,
+            spark_class=RELEASED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag,
+            skip=skip_last_visit_survey()
+        )
+
+        monthly_visit = SparkOperator(
+            task_id="released_signature_monthly_visit",
+            name="released-signature-monthly-visit",
+            arguments=released_arguments("released_signature_monthly_visit"),
+            namespace=RELEASED_NAMESPACE,
+            spark_class=RELEASED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag
+        )
 
     end = EmptyOperator(
-        task_id="publish_enriched_signature",
+        task_id="end",
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> participant_index >> [last_visit_survey, monthly_visit] >> end
+    start >> enriched >> released >> end
