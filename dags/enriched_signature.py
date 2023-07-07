@@ -85,7 +85,7 @@ with dag:
 
 
         def enriched_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "initial", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
+            return ["config/prod.conf", "default", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
 
 
         participant_index = SparkOperator(
@@ -134,7 +134,7 @@ with dag:
 
         def released_arguments(destination: str) -> List[str]:
             # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
-            return ["config/prod.conf", "initial", destination, "{{ data_interval_end | ds }}"]
+            return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
 
 
         last_visit_survey = SparkOperator(
