@@ -134,7 +134,7 @@ with dag:
 
         def released_arguments(destination: str) -> List[str]:
             # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
-            return ["config/prod.conf", "initial", destination, "{{ ds }}"]
+            return ["config/prod.conf", "initial", destination, "{{ data_interval_end | ds }}"]
 
 
         last_visit_survey = SparkOperator(
