@@ -28,7 +28,7 @@
         {"dataset_id":"enriched_mfm_laboratory_results_test"            , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_mfm_laboratory_results"]},
         {"dataset_id":"enriched_mfm_labour_and_birth_complications"     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_mfm_participant_index_test"]},
         {"dataset_id":"enriched_mfm_labour_and_birth_complications_test", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_mfm_labour_and_birth_complications"]},
-        {"dataset_id":"enriched_mfm_medications"                        , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_mfm_participant_index_test", "enriched_mfm_baby_test"]},
+        {"dataset_id":"enriched_mfm_medications"                        , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_mfm_participant_index_test", "enriched_mfm_baby_test"]},
         {"dataset_id":"enriched_mfm_medications_test"                   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_mfm_medications"]},
         {"dataset_id":"enriched_mfm_mother"                             , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_mfm_participant_index_test"]},
         {"dataset_id":"enriched_mfm_mother_test"                        , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_mfm_mother"]},
