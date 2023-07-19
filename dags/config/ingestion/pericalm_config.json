@@ -24,7 +24,18 @@
       {"dataset_id": "raw_pericalm_s*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_pericalm_v*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
-  },{
+  },
+  {
+    "namespace": "curated",
+    "main_class": "bio.ferlab.ui.etl.red.curated.Main",
+    "publish_class": "",
+    "schemas": [],
+    "datasets":
+    [
+      {"dataset_id": "curated_pericalm_patientcards", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+    ]
+  },
+  {
     "namespace": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
     "publish_class": "",
@@ -46,6 +57,6 @@
       {"dataset_id": "anonymized_pericalm_s*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_pericalm_v*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
-  }]
+}]
 
 }
