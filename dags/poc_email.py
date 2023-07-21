@@ -18,6 +18,9 @@ dag = DAG(
 with dag:
     email_destination = Variable.get("EMAIL_ENRICHED_SIGNATURE_MAIL_TO")
 
+    Variable.set("AIRFLOW__SMTP__SMTP_SSL", False)
+    Variable.set("AIRFLOW__SMTP__SMTP_STARTTLS", False)
+
     EmailOperator(
         task_id="send_email",
         to=email_destination,
