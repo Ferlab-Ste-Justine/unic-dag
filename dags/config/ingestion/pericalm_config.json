@@ -32,7 +32,7 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "curated_pericalm_patientcards", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "curated_pericalm_patientcards", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
   },
   {
