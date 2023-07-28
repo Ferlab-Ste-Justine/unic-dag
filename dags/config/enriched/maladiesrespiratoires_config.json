@@ -1,0 +1,39 @@
+{
+  "concurrency": 1,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [
+    {
+      "namespace": "enriched",
+      "main_class": "bio.ferlab.ui.etl.yellow.enriched.maladiesrespiratoires.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"enriched_maladiesrespiratoires_participant_index"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+      ]
+    },
+
+    {
+      "namespace": "released",
+      "main_class": "bio.ferlab.ui.etl.green.released.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"released_maladiesrespiratoires_participant_index"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+      ]
+    },
+
+    {
+      "namespace": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"published_maladiesrespiratoires_participant_index"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+      ]
+    }
+  ]
+}
