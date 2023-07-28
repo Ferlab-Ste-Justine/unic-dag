@@ -7,12 +7,13 @@ from typing import List
 
 import pendulum
 from airflow import DAG
-from airflow.models import Param
+from airflow.models import Param, Variable
+from airflow.operators.email import EmailOperator
 from airflow.operators.empty import EmptyOperator
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from core.config import default_params, default_timeout_hours, default_args, spark_failure_msg
+from core.config import default_params, default_timeout_hours, default_args, spark_failure_msg, mail_from
 from core.slack import Slack
 from operators.spark import SparkOperator
 
@@ -85,10 +86,11 @@ with dag:
 
 
         def enriched_arguments(destination: str) -> List[str]:
+            # !!! Do not set to initial, otherwise the participant index will be re-generated !!!
             return ["config/prod.conf", "default", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
 
 
-        participant_index = SparkOperator(
+        enriched_participant_index = SparkOperator(
             task_id="enriched_signature_participant_index",
             name="enriched-signature-participant-index",
             arguments=enriched_arguments("enriched_signature_participant_index"),
@@ -100,7 +102,7 @@ with dag:
             dag=dag
         )
 
-        last_visit_survey = SparkOperator(
+        enriched_last_visit_survey = SparkOperator(
             task_id="enriched_signature_last_visit_survey",
             name="enriched-signature-last-visit-survey",
             arguments=enriched_arguments("enriched_signature_last_visit_survey"),
@@ -113,7 +115,7 @@ with dag:
             skip=skip_last_visit_survey()
         )
 
-        monthly_visit = SparkOperator(
+        enriched_monthly_visit = SparkOperator(
             task_id="enriched_signature_monthly_visit",
             name="enriched-signature-monthly-visit",
             arguments=enriched_arguments("enriched_signature_monthly_visit"),
@@ -125,7 +127,7 @@ with dag:
             dag=dag
         )
 
-        participant_index >> [last_visit_survey, monthly_visit]
+        enriched_participant_index >> [enriched_last_visit_survey, enriched_monthly_visit]
 
     with TaskGroup(group_id="released") as released:
         RELEASED_NAMESPACE = "released"
@@ -137,7 +139,7 @@ with dag:
             return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
 
 
-        last_visit_survey = SparkOperator(
+        released_last_visit_survey = SparkOperator(
             task_id="released_signature_last_visit_survey",
             name="released-signature-last-visit-survey",
             arguments=released_arguments("released_signature_last_visit_survey"),
@@ -150,7 +152,7 @@ with dag:
             skip=skip_last_visit_survey()
         )
 
-        monthly_visit = SparkOperator(
+        released_monthly_visit = SparkOperator(
             task_id="released_signature_monthly_visit",
             name="released-signature-monthly-visit",
             arguments=released_arguments("released_signature_monthly_visit"),
@@ -162,9 +164,63 @@ with dag:
             dag=dag
         )
 
+    with TaskGroup(group_id="published") as published:
+        PUBLISHED_NAMESPACE = "published"
+        PUBLISHED_MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
+        mail_to = Variable.get("EMAIL_ENRICHED_SIGNATURE_MAIL_TO")
+
+
+        def published_arguments(destination: str) -> List[str]:
+            return ["config/prod.conf", "default", destination]
+
+
+        published_last_visit_survey = SparkOperator(
+            task_id="published_signature_last_visit_survey",
+            name="published-signature-last-visit-survey",
+            arguments=published_arguments("published_signature_last_visit_survey"),
+            namespace=PUBLISHED_NAMESPACE,
+            spark_class=PUBLISHED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="xsmall-etl",
+            dag=dag,
+            skip=skip_last_visit_survey()
+        )
+
+        published_monthly_visit = SparkOperator(
+            task_id="published_signature_monthly_visit",
+            name="published-signature-monthly-visit",
+            arguments=published_arguments("published_signature_monthly_visit"),
+            namespace=PUBLISHED_NAMESPACE,
+            spark_class=PUBLISHED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="xsmall-etl",
+            dag=dag
+        )
+
+        notify = EmailOperator(
+            task_id="notify",
+            to=mail_to,
+            bcc=mail_from,
+            subject="Nouveau rapport disponible dans l'UnIC",
+            html_content="""
+            Bonjour,
+            
+            Un nouveau rapport généré le {{ ds }} est disponible dans l'UniC. Le chemin vers le rapport est le suivant : green-prd/published/signature. 
+            Pour toute question, veuillez simplement répondre à ce courriel.
+            
+            Merci,
+            
+            L'équipe de l'UnIC
+            """
+        )
+
+        [published_last_visit_survey, published_monthly_visit] >> notify
+
     end = EmptyOperator(
         task_id="end",
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> enriched >> released >> end
+    start >> enriched >> released >> published >> end
