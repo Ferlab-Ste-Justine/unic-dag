@@ -18,7 +18,7 @@
       {"dataset_id":"raw_radimage_rv*"              , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"raw_radimage_s*"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
-  }, {
+  },{
     "namespace": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
     "publish_class": "",
