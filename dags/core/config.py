@@ -1,6 +1,9 @@
+import os
+
 from airflow.models import Variable, Param
 
 from core.failure import Failure
+
 
 def generate_default_args(owner, on_failure_callback):
     return {
@@ -26,5 +29,4 @@ default_timeout_hours = 4
 jar = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 version = '{{ params.version }}'
 
-mail_from = Variable.get("SMTP__SMTP_MAIL_FROM")
-
+mail_from = os.environ["AIRFLOW_SMTP__SMTP_MAIL_FROM"]
