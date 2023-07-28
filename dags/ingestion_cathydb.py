@@ -44,7 +44,7 @@ with dag:
     cathydb_external_numeric = SparkOperator(
          task_id="raw_cathydb_external_numeric",
          name="raw-cathydb-external-numeric",
-         arguments=["config/prod.conf", "skip", "raw_cathydb_external_numeric", '{{ds}}'],  # {{ds}} input date
+         arguments=["config/prod.conf", "default", "raw_cathydb_external_numeric", '{{ds}}'],  # {{ds}} input date
          namespace=NAMESPACE,
          spark_class=MAIN_CLASS,
          spark_jar=jar,
@@ -56,7 +56,7 @@ with dag:
     cathydb_external_patient = SparkOperator(
          task_id="raw_cathydb_external_patient",
          name="raw-cathydb-external-patient",
-         arguments=["config/prod.conf", "skip", "raw_cathydb_external_patient", '{{ds}}'],
+         arguments=["config/prod.conf", "default", "raw_cathydb_external_patient", '{{ds}}'],
          namespace=NAMESPACE,
          spark_class=MAIN_CLASS,
          spark_jar=jar,
@@ -68,7 +68,7 @@ with dag:
     cathydb_external_wave = SparkOperator(
          task_id="raw_cathydb_external_wave",
          name="raw-cathydb-external-wave",
-         arguments=["config/prod.conf", "skip", "raw_cathydb_external_wave", '{{ds}}'],
+         arguments=["config/prod.conf", "default", "raw_cathydb_external_wave", '{{ds}}'],
          namespace=NAMESPACE,
          spark_class=MAIN_CLASS,
          spark_jar=jar,
