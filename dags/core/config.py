@@ -29,4 +29,4 @@ default_timeout_hours = 4
 jar = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 version = '{{ params.version }}'
 
-mail_from = os.environ["AIRFLOW_SMTP__SMTP_MAIL_FROM"]
+mail_from = os.environ.get("AIRFLOW__SMTP__SMTP_MAIL_FROM")
