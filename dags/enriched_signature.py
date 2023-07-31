@@ -26,8 +26,8 @@ ETL enriched pour le projet Signature.
 
 ### Description
 Cet ETL génère un rapport mensuel sur les patients de l'étude ayant eu une ordonnance pour un test de laboratoire
-depuis les quatre dernières semaines. ~~Par défaut, les tâches liées à la table `last_visit_survey`, qui contient les
-données depuis le début de l'étude, ne sont pas exécutées.~~
+depuis les quatre dernières semaines. Par défaut, les tâches liées à la table `last_visit_survey`, qui contient les
+données depuis le début de l'étude, ne sont pas exécutées.
 
 ### Horaire
 * __Date de début__ - 7 juillet 2023
@@ -37,7 +37,7 @@ données depuis le début de l'étude, ne sont pas exécutées.~~
 
 ### Configuration
 * Paramètre `skip_last_visit_survey` : booléen indiquant si la table `last_visit_survey` doit être
-skipped. ~~Par défaut à True.~~
+skipped. Par défaut à True.
 
 ### Fonctionnement
 Le début de l'intervalle et la fin de l'intervalle sont envoyés comme arguments à l'ETL enriched. Seule la tâche 
@@ -51,14 +51,14 @@ utilisée comme version de la release.
 
 # Update default params
 params = default_params.copy()
-params.update({"skip_last_visit_survey": Param(False, type="boolean")})  # Set to False for first run
+params.update({"skip_last_visit_survey": Param(True, type="boolean")})
 args = default_args.copy()
 args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 
 dag = DAG(
     dag_id="enriched_signature",
     doc_md=DOC,
-    start_date=datetime(2023, 5, 12, 7, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2023, 6, 9, 7, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=4),
     params=params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
@@ -206,12 +206,15 @@ with dag:
             subject="Nouveau rapport disponible dans l'UnIC",
             html_content="""
             Bonjour,
-            
-            Un nouveau rapport généré le {{ ds }} est disponible dans l'UniC. Le chemin vers le rapport est le suivant : green-prd/published/signature. 
+            <br>
+            <br>
+            Un nouveau rapport généré le {{ data_interval_end | ds }} est disponible dans l'UniC. Le chemin vers le rapport est le suivant : green-prd/published/signature. <a href="{{ var.value.minio_console_url }}>Cliquez ici</a> pour accéder à Minio.
+            <br>
             Pour toute question, veuillez simplement répondre à ce courriel.
-            
+            <br>
+            <br>
             Merci,
-            
+            <br>
             L'équipe de l'UnIC
             """
         )
