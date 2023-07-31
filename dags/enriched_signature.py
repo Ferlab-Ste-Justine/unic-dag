@@ -199,24 +199,15 @@ with dag:
             dag=dag
         )
 
+        with open("email/enriched_signature.html", "r", encoding="utf-8") as f:
+            html_content = f.read()
+
         notify = EmailOperator(
             task_id="notify",
             to=mail_to,
             bcc=mail_from,
             subject="Nouveau rapport disponible dans l'UnIC",
-            html_content="""
-            Bonjour,
-            <br>
-            <br>
-            Un nouveau rapport généré le {{ data_interval_end | ds }} est disponible dans l'UniC. Le chemin vers le rapport est le suivant : green-prd/published/signature. <a href="{{ var.value.minio_console_url }}>Cliquez ici</a> pour accéder à Minio.
-            <br>
-            Pour toute question, veuillez simplement répondre à ce courriel.
-            <br>
-            <br>
-            Merci,
-            <br>
-            L'équipe de l'UnIC
-            """
+            html_content=html_content
         )
 
         [published_last_visit_survey, published_monthly_visit] >> notify
