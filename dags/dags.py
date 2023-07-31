@@ -7,18 +7,18 @@ from datetime import timedelta, datetime
 
 from airflow import DAG
 
-from core.config import root, extract_schema, default_timeout_hours, default_args, config_file, spark_failure_msg, jar, \
+from core.config import dags_config_path, extract_schema, default_timeout_hours, default_args, config_file, spark_failure_msg, jar, \
     version, default_params
 from spark_operators import read_json, setup_dag
 
-for (r, folders, files) in os.walk(root):
-    if r == root:
+for (r, folders, files) in os.walk(dags_config_path):
+    if r == dags_config_path:
         for namespace in folders:
-            for configs in os.walk(f'{root}/{namespace}'):
+            for configs in os.walk(f'{dags_config_path}/{namespace}'):
                 for f in configs[2]:
                     schema = re.search(extract_schema, f).group(1)
                     dagid = f"{namespace}_{schema}".lower()
-                    config = read_json(f"{root}/{namespace}/{schema}_config.json")
+                    config = read_json(f"{dags_config_path}/{namespace}/{schema}_config.json")
                     k = 'timeout_hours'
                     timeout_hours = config[k] if k in config else default_timeout_hours
                     exec_timeout_hours = 3/4 * timeout_hours

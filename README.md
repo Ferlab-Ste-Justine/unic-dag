@@ -55,7 +55,7 @@ Login to Airflow UI :
 
 Create Airflow variables (__Airflow UI__ => __Admin__ => __Variables__) :
 
-- dags_config : `/opt/airflow/dags/config`
+- dags_path : `/opt/airflow/dags`
 - base_url (optional) : `http://localhost:50080`
 
 _For faster variable creation, upload the `variables.json` file in the Variables page._
