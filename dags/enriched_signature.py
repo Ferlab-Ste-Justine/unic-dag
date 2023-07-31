@@ -199,7 +199,7 @@ with dag:
             dag=dag
         )
 
-        with open("email/enriched_signature.html", "r", encoding="utf-8") as f:
+        with open("dags/email/enriched_signature.html", "r", encoding="utf-8") as f:
             html_content = f.read()
 
         notify = EmailOperator(
