@@ -16,13 +16,13 @@ MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.cathydb.Main"
 
 dag = DAG(
     dag_id="ingestion_cathydb",
-    start_date=datetime(2020, 5, 24),
+    start_date=datetime(2015, 5, 21),
     end_date=datetime(2023, 4, 7),
     schedule_interval="@daily",
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
     default_args=default_args.update({
-        'start_date': datetime(2020, 5, 24),
+        'start_date': datetime(2015, 5, 21),
         'provide_context': True,  # to use date of ingested data as input in main
     }),
     is_paused_upon_creation=True,
