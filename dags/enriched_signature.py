@@ -13,7 +13,7 @@ from airflow.operators.empty import EmptyOperator
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from core.config import default_params, default_timeout_hours, default_args, spark_failure_msg, mail_from
+from core.config import default_params, default_timeout_hours, default_args, spark_failure_msg, mail_from, root
 from core.slack import Slack
 from operators.spark import SparkOperator
 
@@ -199,7 +199,7 @@ with dag:
             dag=dag
         )
 
-        with open("dags/email/enriched_signature.html", "r", encoding="utf-8") as f:
+        with open(f"{root}/email/enriched_signature.html", "r", encoding="utf-8") as f:
             html_content = f.read()
 
         notify = EmailOperator(

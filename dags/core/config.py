@@ -13,7 +13,8 @@ def generate_default_args(owner, on_failure_callback):
     }
 
 
-root = Variable.get('dags_config', '/opt/airflow/dags/repo/dags/config')
+root = Variable.get('dags_path', '/opt/airflow/dags/repo/dags')
+dags_config_path = f"{root}/config"
 extract_schema = '(.*)_config.json'
 config_file = "config/prod.conf"
 
