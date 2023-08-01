@@ -24,7 +24,7 @@ args.update({
 dag = DAG(
     dag_id="ingestion_philips",
     start_date=datetime(2023, 3, 29),
-    schedule_interval='* 3 * * *',  # everyday at 2am EST (-5:00), 3am EDT (-4:00)
+    schedule_interval='* 7 * * *',  # everyday at 2am EST (-5:00), 3am EDT (-4:00)
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
     default_args=args,
