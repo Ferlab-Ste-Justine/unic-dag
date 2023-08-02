@@ -8,12 +8,11 @@ from typing import List
 import pendulum
 from airflow import DAG
 from airflow.models import Param, Variable
-from airflow.operators.email import EmailOperator
 from airflow.operators.empty import EmptyOperator
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from core.config import default_params, default_timeout_hours, default_args, spark_failure_msg, mail_from, root
+from core.config import default_params, default_timeout_hours, default_args, spark_failure_msg
 from core.slack import Slack
 from operators.spark import SparkOperator
 
@@ -199,18 +198,18 @@ with dag:
             dag=dag
         )
 
-        with open(f"{root}/email/enriched_signature.html", "r", encoding="utf-8") as f:
-            html_content = f.read()
+        # with open(f"{root}/email/enriched_signature.html", "r", encoding="utf-8") as f:
+        #     html_content = f.read()
+        #
+        # notify = EmailOperator(
+        #     task_id="notify",
+        #     to=mail_to,
+        #     bcc=mail_from,
+        #     subject="Nouveau rapport disponible dans l'UnIC",
+        #     html_content=html_content
+        # )
 
-        notify = EmailOperator(
-            task_id="notify",
-            to=mail_to,
-            bcc=mail_from,
-            subject="Nouveau rapport disponible dans l'UnIC",
-            html_content=html_content
-        )
-
-        [published_last_visit_survey, published_monthly_visit] >> notify
+        # [published_last_visit_survey, published_monthly_visit] >> notify
 
     end = EmptyOperator(
         task_id="end",
