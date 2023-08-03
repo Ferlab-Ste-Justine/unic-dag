@@ -11,6 +11,17 @@ from core.config import default_params, default_args, spark_failure_msg, jar
 from core.slack import Slack
 from operators.spark import SparkOperator
 
+DOC = """
+# Ingestion CathyDB DAG
+
+ETL d'ingestion des données à haute résolution neonat et SIP à partir de CathyDB
+
+### Description
+Cet ETL roule pour ingérer les données à haute résolution neonat et SIP à partir de CathyDB depuis le 21 Janvier 2017.
+La date de l'ingestion correspond à la date d'enregistrement de la données dans la BDD Cathydb.
+"""
+
+
 NAMESPACE = "raw"
 MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.cathydb.Main"
 
