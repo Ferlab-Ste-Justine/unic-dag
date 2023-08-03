@@ -2,6 +2,7 @@
 DAG pour l'ingestion quotidienne des data de philips a partir de Philips
 """
 # pylint: disable=duplicate-code
+
 from datetime import datetime, timedelta
 import pendulum
 
