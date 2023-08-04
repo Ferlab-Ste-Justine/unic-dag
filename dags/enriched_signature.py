@@ -71,8 +71,9 @@ dag = DAG(
 )
 
 with dag:
-    def skip_last_visit_survey() -> bool:
-        return params.get('skip_last_visit_survey', True)
+    def skip_last_visit_survey() -> str:
+        # "{% if params.skip_last_visit_survey != True %}{% else %}True{% endif %}"
+        return "{{ params.skip_last_visit_survey }}"
 
 
     start = EmptyOperator(
