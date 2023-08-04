@@ -66,13 +66,13 @@ dag = DAG(
     catchup=True,
     max_active_runs=1,
     max_active_tasks=3,
-    tags=["enriched"],
-    render_template_as_native_obj=True
+    tags=["enriched"]
 )
 
 with dag:
     def skip_last_visit_survey() -> str:
-        return "{{ params.skip_last_visit_survey }}"
+        print("debug : {{ params.skip_last_visit_survey }}")
+        return "{% if params.skip_last_visit_survey != True %}{% else %}True{% endif %}"
 
 
     start = EmptyOperator(
