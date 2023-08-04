@@ -50,7 +50,7 @@ utilisée comme version de la release.
 
 # Update default params
 params = default_params.copy()
-params.update({"skip_last_visit_survey": Param(False, type="boolean")})
+params.update({"skip_last_visit_survey": Param(True, type="boolean")})
 args = default_args.copy()
 args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 
