@@ -22,10 +22,12 @@ ETL d'ingestion des données neonat de Philips
 ### Description
 Cet ETL roule quotidiennement à 3h le matin pour ingérer les données neonat enregistrées le jour précédent à partir de la BDD Philips.PatientData.
 Les tables external_patient, external_patientstringattribute et external_patientdateattribute contiennent toujours des données à partir du 23 Janvier 2023.
-La date de début des données dans les autres tables dépend de la date du fix des problèmes de performance pour que ça roule au quotidien.
+La date de la run dans Airflow ingère les données de la journée précédente, exemple:
+la run du 2 janvier 2020 ingère les données du 1 Janvier 2020 dans le lac.
+
 
 ### Horaire
-* __Date de début__ - 23 Janvier 2023
+* __Date de début__ - 29 Janvier 2023
 * __Date de fin__ - aucune
 * __Jour et heure__ - Chaque jour, 3h heure de Montréal
 """

@@ -17,8 +17,12 @@ DOC = """
 ETL d'ingestion des données à haute résolution neonat et SIP à partir de CathyDB
 
 ### Description
-Cet ETL roule pour ingérer les données à haute résolution neonat et SIP à partir de CathyDB depuis le 21 Janvier 2017.
-La date de l'ingestion correspond à la date d'enregistrement de la données dans la BDD Cathydb.
+Cet ETL roule pour ingérer les données à haute résolution neonat et SIP à partir de CathyDB depuis le 2 Decembre 2016.
+L'ingestion des données neonat va s'arrêter à un certain moment en utilisant ce dag(à préciser la date exacte),
+par la suite le dag philips sera exclusivement  utilisé pour neonat.
+La date de la run dans Airflow ingère les données de cette journée même, exemple:
+la run du 1 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
+
 """
 
 
