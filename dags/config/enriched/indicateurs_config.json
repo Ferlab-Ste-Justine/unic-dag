@@ -10,14 +10,42 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"enriched_indicateurs_admissions"       , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"]},
-        {"dataset_id":"enriched_indicateurs_baby"             , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"]},
+        {"dataset_id":"enriched_indicateurs_baby"             , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index", "enriched_indicateurs_init_baby"]},
         {"dataset_id":"enriched_indicateurs_complications"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"]},
-        {"dataset_id":"enriched_indicateurs_delivery"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"]},
-        {"dataset_id":"enriched_indicateurs_mother"           , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"]},
+        {"dataset_id":"enriched_indicateurs_delivery"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index", "enriched_indicateurs_init_baby"]},
         {"dataset_id":"enriched_indicateurs_participant_index", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"enriched_indicateurs_pregnancy"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"]},
-        {"dataset_id":"enriched_indicateurs_smm"              , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"]}
+        {"dataset_id":"enriched_indicateurs_init_baby"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"]}
+      ]
+    },
+    {
+      "namespace": "released",
+      "main_class": "bio.ferlab.ui.etl.green.released.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"released_indicateurs_baby"             , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_indicateurs_complications"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_indicateurs_delivery"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_indicateurs_participant_index", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_indicateurs_pregnancy"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_indicateurs_init_baby"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+      ]
+    },
+    {
+      "namespace": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"published_indicateurs_baby"             , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_indicateurs_complications"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_indicateurs_delivery"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_indicateurs_participant_index", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_indicateurs_pregnancy"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_indicateurs_init_baby"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
       ]
     }
   ]
