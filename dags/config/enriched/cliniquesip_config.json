@@ -1,0 +1,54 @@
+{
+  "concurrency": 4,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [
+    {
+      "namespace": "enriched",
+      "main_class": "bio.ferlab.ui.etl.yellow.enriched.cliniquesip.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"enriched_cliniquesip_chusj_visit_info"           , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"enriched_cliniquesip_part_two_info"              , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"enriched_cliniquesip_part_five_problem_list"     , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"enriched_cliniquesip_part_six_consultation_exam" , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"enriched_cliniquesip_part_seven_follow_up"       , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"enriched_cliniquesip_chusj_biometric_parameter"  , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []}
+      ]
+    },
+
+    {
+      "namespace": "released",
+      "main_class": "bio.ferlab.ui.etl.green.released.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"released_cliniquesip_chusj_visit_info"           , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_cliniquesip_part_two_info"              , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_cliniquesip_part_five_problem_list"     , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_cliniquesip_part_six_consultation_exam" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_cliniquesip_part_seven_follow_up"       , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_cliniquesip_chusj_biometric_parameter"  , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+      ]
+    },
+
+    {
+      "namespace": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"published_cliniquesip_chusj_visit_info"           , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_cliniquesip_part_two_info"              , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_cliniquesip_part_five_problem_list"     , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_cliniquesip_part_six_consultation_exam" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_cliniquesip_part_seven_follow_up"       , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_cliniquesip_chusj_biometric_parameter"  , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+      ]
+    }
+  ]
+}
