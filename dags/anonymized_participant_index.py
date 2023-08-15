@@ -26,6 +26,7 @@ config = {
                 {"dataset_id": "anonymized_unic_participant_index_monchemin"                  , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
                 {"dataset_id": "anonymized_unic_participant_index_registre_cardiopathie_bebe" , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
                 {"dataset_id": "anonymized_unic_participant_index_registre_cardiopathie_maman", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+                {"dataset_id": "anonymized_unic_participant_index_resppa"                     , "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
                 {"dataset_id": "anonymized_unic_participant_index_signature"                  , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
                 {"dataset_id": "anonymized_unic_participant_index_signature_triceps"          , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
                 {"dataset_id": "anonymized_unic_participant_index_simapp"                     , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
