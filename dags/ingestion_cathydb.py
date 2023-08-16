@@ -31,6 +31,7 @@ MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.cathydb.Main"
 
 dag = DAG(
     dag_id="ingestion_cathydb",
+    doc_md=DOC,
     start_date=datetime(2016, 12, 2),
     end_date=datetime(2023, 4, 7),
     schedule_interval="@daily",

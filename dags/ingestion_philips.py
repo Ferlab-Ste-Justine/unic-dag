@@ -21,13 +21,12 @@ ETL d'ingestion des données neonat de Philips
 
 ### Description
 Cet ETL roule quotidiennement à 3h le matin pour ingérer les données neonat enregistrées le jour précédent à partir de la BDD Philips.PatientData.
-Les tables external_patient, external_patientstringattribute et external_patientdateattribute contiennent toujours des données à partir du 23 Janvier 2023.
 La date de la run dans Airflow ingère les données de la journée précédente, exemple:
-la run du 2 janvier 2020 ingère les données du 1 Janvier 2020 dans le lac.
+la run du 15 Aout 2023 ingère les données du 14 Aout 2023  dans le lac.
 
 
 ### Horaire
-* __Date de début__ - 29 Janvier 2023
+* __Date de début__ - 15 Aout 2023 
 * __Date de fin__ - aucune
 * __Jour et heure__ - Chaque jour, 3h heure de Montréal
 """
@@ -36,14 +35,15 @@ NAMESPACE = "raw"
 MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.philips.Main"
 args = default_args.copy()
 args.update({
-    'start_date': datetime(2023, 3, 29, 3, tzinfo=pendulum.timezone("America/Montreal")),
+    'start_date': datetime(2023, 8, 15, 3, tzinfo=pendulum.timezone("America/Montreal")),
     'provide_context': True,  # to use date of ingested data as input in main
     'depends_on_past': True,
     'wait_for_downstream': True})
 
 dag = DAG(
     dag_id="ingestion_philips",
-    start_date=datetime(2023, 3, 29, 3, tzinfo=pendulum.timezone("America/Montreal")),
+    doc_md=DOC,
+    start_date=datetime(2023, 8, 15, 3, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),  # everyday at 3am timezone montreal
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
@@ -81,7 +81,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="xsmall-etl",
+        spark_config="medium-etl",
         dag=dag
     )
 
