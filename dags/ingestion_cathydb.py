@@ -25,7 +25,6 @@ la run du 1 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
 
 """
 
-
 NAMESPACE = "raw"
 MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.cathydb.Main"
 
@@ -49,7 +48,6 @@ dag = DAG(
 )
 
 with dag:
-
     start = EmptyOperator(
         task_id="start_ingestion_cathydb",
         on_execute_callback=Slack.notify_dag_start
@@ -58,39 +56,39 @@ with dag:
     # UNCOMMENT EXTERNAL TABLES AFTER TIMESTAMP COLUMN ADDED IN CATHYDB
 
     cathydb_external_numeric = SparkOperator(
-         task_id="raw_cathydb_external_numeric",
-         name="raw-cathydb-external-numeric",
-         arguments=["config/prod.conf", "default", "raw_cathydb_external_numeric", '{{ds}}'],  # {{ds}} input date
-         namespace=NAMESPACE,
-         spark_class=MAIN_CLASS,
-         spark_jar=jar,
-         spark_failure_msg=spark_failure_msg,
-         spark_config="medium-etl",
-         dag=dag
-     )
+        task_id="raw_cathydb_external_numeric",
+        name="raw-cathydb-external-numeric",
+        arguments=["config/prod.conf", "default", "raw_cathydb_external_numeric", '{{ds}}'],  # {{ds}} input date
+        namespace=NAMESPACE,
+        spark_class=MAIN_CLASS,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config="medium-etl",
+        dag=dag
+    )
 
     cathydb_external_patient = SparkOperator(
-         task_id="raw_cathydb_external_patient",
-         name="raw-cathydb-external-patient",
-         arguments=["config/prod.conf", "default", "raw_cathydb_external_patient", '{{ds}}'],
-         namespace=NAMESPACE,
-         spark_class=MAIN_CLASS,
-         spark_jar=jar,
-         spark_failure_msg=spark_failure_msg,
-         spark_config="xsmall-etl",
-         dag=dag
+        task_id="raw_cathydb_external_patient",
+        name="raw-cathydb-external-patient",
+        arguments=["config/prod.conf", "default", "raw_cathydb_external_patient", '{{ds}}'],
+        namespace=NAMESPACE,
+        spark_class=MAIN_CLASS,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config="xsmall-etl",
+        dag=dag
     )
 
     cathydb_external_wave = SparkOperator(
-         task_id="raw_cathydb_external_wave",
-         name="raw-cathydb-external-wave",
-         arguments=["config/prod.conf", "default", "raw_cathydb_external_wave", '{{ds}}'],
-         namespace=NAMESPACE,
-         spark_class=MAIN_CLASS,
-         spark_jar=jar,
-         spark_failure_msg=spark_failure_msg,
-         spark_config="medium-etl",
-         dag=dag
+        task_id="raw_cathydb_external_wave",
+        name="raw-cathydb-external-wave",
+        arguments=["config/prod.conf", "default", "raw_cathydb_external_wave", '{{ds}}'],
+        namespace=NAMESPACE,
+        spark_class=MAIN_CLASS,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config="medium-etl",
+        dag=dag
     )
 
     cathydb_piicix_num = SparkOperator(
@@ -117,18 +115,6 @@ with dag:
         dag=dag
     )
 
-    cathydb_piicix_sig_calibre = SparkOperator(
-        task_id="raw_cathydb_piicix_sig_calibre",
-        name="raw-cathydb-piicix-sig_calibre",
-        arguments=["config/prod.conf", "default", "raw_cathydb_piicix_sig_calibre", '{{ds}}'],
-        namespace=NAMESPACE,
-        spark_class=MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config="medium-etl",
-        dag=dag
-    )
-
     cathydb_piicix_alertes = SparkOperator(
         task_id="raw_cathydb_piicix_alertes",
         name="raw-cathydb-piicix-alertes",
@@ -147,6 +133,4 @@ with dag:
     )
 
     start >> [cathydb_external_numeric, cathydb_external_wave, cathydb_external_patient, cathydb_piicix_num,
-              cathydb_piicix_sig, cathydb_piicix_sig_calibre, cathydb_piicix_alertes] >> end
-
-    #start >> [cathydb_piicix_num, cathydb_piicix_sig, cathydb_piicix_alertes] >> end
+              cathydb_piicix_sig, cathydb_piicix_alertes] >> end
