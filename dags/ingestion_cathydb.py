@@ -34,7 +34,7 @@ dag = DAG(
     doc_md=DOC,
     start_date=datetime(2016, 12, 2),
     end_date=datetime(2023, 4, 7),
-    schedule_interval="@daily",
+    schedule_interval=None,
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
     default_args=default_args.update({
@@ -43,7 +43,7 @@ dag = DAG(
     }),
     is_paused_upon_creation=True,
     catchup=True,
-    max_active_runs=2,
+    max_active_runs=1,
     max_active_tasks=3,
     tags=["ingestion"]
 )
