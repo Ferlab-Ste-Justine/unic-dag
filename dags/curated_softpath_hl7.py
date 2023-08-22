@@ -34,6 +34,7 @@ dag = DAG(
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
     default_args=default_args.update({
+        'start_date': datetime(2023, 7, 14),
         'provide_context': True,  # to use date of ingested data as input in main
     }),
     is_paused_upon_creation=True,
