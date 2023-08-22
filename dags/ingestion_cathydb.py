@@ -27,6 +27,10 @@ la run du 1 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
 
 NAMESPACE = "raw"
 MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.cathydb.Main"
+args = default_args.copy()
+args.update({
+    'start_date': datetime(2016, 12, 2),
+    'provide_context': True})  # to use date of ingested data as input in main
 
 dag = DAG(
     dag_id="ingestion_cathydb",
@@ -36,10 +40,7 @@ dag = DAG(
     schedule_interval="@daily",
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
-    default_args=default_args.update({
-        'start_date': datetime(2016, 12, 2),
-        'provide_context': True,  # to use date of ingested data as input in main
-    }),
+    default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=2,
