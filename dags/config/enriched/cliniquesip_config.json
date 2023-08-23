@@ -15,7 +15,8 @@
         {"dataset_id":"enriched_cliniquesip_part_five_problem_list"     , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"enriched_cliniquesip_part_six_consultation_exam" , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"enriched_cliniquesip_part_seven_follow_up"       , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
-        {"dataset_id":"enriched_cliniquesip_chusj_biometric_parameter"  , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []}
+        {"dataset_id":"enriched_cliniquesip_chusj_biometric_parameter"  , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"enriched_cliniquesip_part_three_medical_history" , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []}
       ]
     },
 
@@ -31,7 +32,8 @@
         {"dataset_id":"released_cliniquesip_part_five_problem_list"     , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"released_cliniquesip_part_six_consultation_exam" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"released_cliniquesip_part_seven_follow_up"       , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
-        {"dataset_id":"released_cliniquesip_chusj_biometric_parameter"  , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+        {"dataset_id":"released_cliniquesip_chusj_biometric_parameter"  , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_cliniquesip_part_three_medical_history" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
       ]
     },
 
@@ -47,7 +49,8 @@
         {"dataset_id":"published_cliniquesip_part_five_problem_list"     , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"published_cliniquesip_part_six_consultation_exam" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"published_cliniquesip_part_seven_follow_up"       , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
-        {"dataset_id":"published_cliniquesip_chusj_biometric_parameter"  , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+        {"dataset_id":"published_cliniquesip_chusj_biometric_parameter"  , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_cliniquesip_part_three_medical_history" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
       ]
     }
   ]
