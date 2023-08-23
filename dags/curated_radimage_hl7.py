@@ -26,17 +26,18 @@ La run du 2 janvier 2020 parse les données du 1 janvier dans le lac.
 
 NAMESPACE = "curated"
 MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
+args = default_args.copy()
+args.update({
+    'start_date': datetime(2023, 4, 20),
+    'provide_context': True})
 
 dag = DAG(
     dag_id="curated_radimage_hl7",
     doc_md=DOC,
-    schedule_interval="@daily",
+    schedule_interval="0 1 * * *",
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
-    default_args=default_args.update({
-        'start_date': datetime(2023, 4, 20), # for testing purpouses, will update when start_date of historic data is known
-        'provide_context': True,  # to use date of ingested data as input in main
-    }),
+    default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=2,
