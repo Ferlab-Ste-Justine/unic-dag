@@ -4,30 +4,6 @@
   "timeout_hours": 4,
   "steps": [
     {
-    "namespace": "raw",
-    "main_class": "bio.ferlab.ui.etl.red.raw.Main",
-    "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
-    "schemas": ["Pharmacie"],
-    "datasets":
-    [
-      {"dataset_id":"raw_pharmacie_g*"                              , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_pharchive_*"                     , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_phfadmin*"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_phfchamb"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_phfchtir"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_phfhora1"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_phfm*"                           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_phfposol"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_phfprescript*"                   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_phfraisoncessation"              , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_phfsoreh"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_phftype_prep"                    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_phfvoiad"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_phlog_*"                         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_phunite_mesure"                  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_pharmacie_usager"                          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
-    ]},
-    {
       "namespace": "anonymized",
       "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
       "publish_class": "",
