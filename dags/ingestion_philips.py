@@ -164,6 +164,6 @@ with dag:
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> [philips_external_numeric, philips_external_wave, philips_external_patient]
-    philips_external_patient >> [philips_external_numericvalue, philips_external_wavesample, philips_external_alert,
-                                 philips_external_patientdateattribute, philips_external_patientstringattribute] >> end
+    start >> [philips_external_numeric, philips_external_wave, philips_external_patient,
+              philips_external_numericvalue, philips_external_wavesample, philips_external_alert,
+              philips_external_patientdateattribute, philips_external_patientstringattribute] >> end
