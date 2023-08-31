@@ -30,7 +30,7 @@ with DAG(
     dag_id="anonymized_cnn",
     schedule_interval=config['schedule'],
     default_args=default_args,
-    start_date=datetime(2023, 08, 31),
+    start_date=datetime(2023, 8, 30),
     concurrency=config['concurrency'],
     catchup=False,
     tags=["anonymized"],
