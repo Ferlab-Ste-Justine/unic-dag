@@ -34,6 +34,7 @@ with DAG(
     concurrency=config['concurrency'],
     catchup=False,
     tags=["anonymized"],
+    schema="cnn",
     dagrun_timeout=timedelta(hours=config['timeout_hours']),
     is_paused_upon_creation=True
 ) as dag:
