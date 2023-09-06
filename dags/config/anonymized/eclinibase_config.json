@@ -1,0 +1,15 @@
+{
+    "concurrency": 2,
+    "schedule": "0 13 * * 4",
+    "timeout_hours": 4,
+    "steps": [{
+      "namespace": "anonymized",
+      "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id": "anonymized_eclinibase_v_horaire*"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ]
+    }]
+  }

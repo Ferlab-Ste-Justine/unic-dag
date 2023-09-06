@@ -9,7 +9,6 @@
     "schemas": ["rdv_horaire", "rendez_vous", "vues_index_patient"],
     "datasets":
     [
-      {"dataset_id": "raw_eclinibase_v_horaire*"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_eclinibase_v_attente*"    , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_eclinibase_v_rendez_vous*", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_eclinibase_v_ident*"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
@@ -21,7 +20,6 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "anonymized_eclinibase_v_horaire*"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_eclinibase_v_attente*"    , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_eclinibase_v_rendez_vous*", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_eclinibase_v_ident*"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
