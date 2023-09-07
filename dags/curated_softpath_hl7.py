@@ -4,6 +4,7 @@ DAG pour le parsing des messages HL7 de Softpath
 # pylint: disable=duplicate-code
 from datetime import datetime, timedelta
 
+import pendulum
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 
@@ -28,7 +29,6 @@ NAMESPACE = "curated"
 MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
 args = default_args.copy()
 args.update({
-    'start_date': datetime(2023, 7, 14),
     'provide_context': True,
     'depends_on_past': True,
     'wait_for_downstream': True})
@@ -36,7 +36,8 @@ args.update({
 dag = DAG(
     dag_id="curated_softpath_hl7",
     doc_md=DOC,
-    schedule_interval="0 1 * * *",
+    start_date=datetime(2023, 7, 14, 1, tzinfo=pendulum.timezone("America/Montreal")),
+    schedule_interval=timedelta(days=1),
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
     default_args=args,
