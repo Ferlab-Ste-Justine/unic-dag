@@ -5,7 +5,7 @@
   "steps": [
     {
       "namespace": "enriched",
-      "main_class": "bio.ferlab.ui.etl.yellow.enriched.cliniquesip.Main",
+      "main_class": "bio.ferlab.ui.etl.yellow.enriched.resppa.Main",
       "publish_class": "",
       "schemas": [],
       "datasets":
