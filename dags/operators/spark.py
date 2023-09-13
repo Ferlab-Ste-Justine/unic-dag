@@ -23,7 +23,7 @@ class SparkOperator(KubernetesPodOperator):
     ) -> None:
         super().__init__(
             is_delete_operator_pod=False,
-            image='ferlabcrsj/spark:3.3.1',
+            image='ferlabcrsj/spark:10cc50d5f431244f9523ea76188300fac5173de1',
             service_account_name='spark',
             priority_weight=1,
             weight_rule="absolute",
