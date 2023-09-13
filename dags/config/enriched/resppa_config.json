@@ -1,0 +1,76 @@
+{
+  "concurrency": 4,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [
+    {
+      "namespace": "enriched",
+      "main_class": "bio.ferlab.ui.etl.yellow.enriched.resppa.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"enriched_resppa_accouchement"                     , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_resppa_participant_index"]},
+        {"dataset_id":"enriched_resppa_anthropometrie_mere"              , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_resppa_participant_index"]},
+        {"dataset_id":"enriched_resppa_bebe"                             , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_resppa_participant_index"]},
+        {"dataset_id":"enriched_resppa_complications_accouchement"       , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_resppa_participant_index"]},
+        {"dataset_id":"enriched_resppa_complications_foetales_neonatales", "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_resppa_participant_index"]},
+        {"dataset_id":"enriched_resppa_complications_maternelle"         , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_resppa_participant_index"]},
+        {"dataset_id":"enriched_resppa_covid"                            , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_resppa_participant_index"]},
+        {"dataset_id":"enriched_resppa_covid_hospitalisation"            , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_resppa_participant_index"]},
+        {"dataset_id":"enriched_resppa_macroscopie_cordon"               , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_resppa_participant_index"]},
+        {"dataset_id":"enriched_resppa_medication_hopital"               , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_resppa_participant_index"]},
+        {"dataset_id":"enriched_resppa_participant_index"                , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"enriched_resppa_patient"                          , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_resppa_participant_index"]},
+        {"dataset_id":"enriched_resppa_resultats_hb_acc"                 , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_resppa_participant_index"]},
+        {"dataset_id":"enriched_resppa_resultats_hb_trim"                , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_resppa_participant_index"]}
+      ]
+    },
+
+    {
+      "namespace": "released",
+      "main_class": "bio.ferlab.ui.etl.green.released.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"released_resppa_accouchement"                     , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_resppa_anthropometrie_mere"              , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_resppa_bebe"                             , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_resppa_complications_accouchement"       , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_resppa_complications_foetales_neonatales", "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_resppa_complications_maternelle"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_resppa_covid"                            , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_resppa_covid_hospitalisation"            , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_resppa_macroscopie_cordon"               , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_resppa_medication_hopital"               , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_resppa_patient"                          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_resppa_resultats_hb_acc"                 , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_resppa_resultats_hb_trim"                , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+      ]
+    },
+
+    {
+      "namespace": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"published_resppa_accouchement"                     , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_resppa_anthropometrie_mere"              , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_resppa_bebe"                             , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_resppa_complications_accouchement"       , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_resppa_complications_foetales_neonatales", "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_resppa_complications_maternelle"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_resppa_covid"                            , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_resppa_covid_hospitalisation"            , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_resppa_macroscopie_cordon"               , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_resppa_medication_hopital"               , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_resppa_patient"                          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_resppa_resultats_hb_acc"                 , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_resppa_resultats_hb_trim"                , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+      ]
+    }
+  ]
+}
