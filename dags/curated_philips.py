@@ -33,7 +33,7 @@ dag = DAG(
     doc_md=DOC,
     start_date=datetime(2023, 9, 25, tzinfo=pendulum.timezone("America/Montreal")), # put this date only to test
     schedule_interval='0 0 * * *',
-    params=default_params, 
+    params=default_params,
     dagrun_timeout=timedelta(hours=2),
     default_args=dag_args,
     is_paused_upon_creation=True,
