@@ -1,4 +1,5 @@
-from datetime import datetime, timedelta, pendulum
+import pendulum
+from datetime import datetime, timedelta
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
