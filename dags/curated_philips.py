@@ -1,3 +1,7 @@
+"""
+DAG that handles the ETL process for curated Philips.
+"""
+
 from datetime import datetime, timedelta
 import pendulum
 
@@ -13,9 +17,7 @@ NS = 'curated'
 TAGS = ['curated']
 DAG_ID = 'curated_philips'
 MAIN_CLASS = 'bio.ferlab.ui.etl.red.curated.philips.Main'
-DOC = """
-    DAG that handles the ETL process for curated Philips data.
-"""
+DOC = 'DAG that handles the ETL process for curated Philips data.'
 
 
 dag_args = default_args.copy()
