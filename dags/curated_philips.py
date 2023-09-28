@@ -50,10 +50,22 @@ with dag:
         on_execute_callback=Slack.notify_dag_start
     )
 
-    curated_philips_external_patient = SparkOperator(
-        task_id='curated_philips_external_patient',
-        name='curated_philips_external_patient',
-        arguments=['config/prod.conf', 'initial', 'curated_philips_external_patient', '{{ds}}'],
+    curated_philips_sip_external_patient = SparkOperator(
+        task_id='curated_philips_sip_external_patient',
+        name='curated_philips_sip_external_patient',
+        arguments=['config/prod.conf', 'initial', 'curated_philips_sip_external_patient', '{{ds}}'],
+        namespace=NS,
+        spark_class=MAIN_CLASS,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config='medium-etl',
+        dag=dag
+    )
+
+    curated_philips_neo_external_patient = SparkOperator(
+        task_id='curated_philips_neo_external_patient',
+        name='curated_philips_neo_external_patient',
+        arguments=['config/prod.conf', 'initial', 'curated_philips_neo_external_patient', '{{ds}}'],
         namespace=NS,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
@@ -67,4 +79,4 @@ with dag:
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> curated_philips_external_patient >> end
+    start >> [curated_philips_sip_external_patient, curated_philips_neo_external_patient] >> end
