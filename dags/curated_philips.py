@@ -22,7 +22,7 @@ DOC = 'DAG that handles the ETL process for curated Philips data.'
 
 dag_args = default_args.copy()
 dag_args.update({
-    'start_date': datetime(2023, 9, 25, tzinfo=pendulum.timezone("America/Montreal")), # put this date only to test
+    'start_date': datetime(2023, 9, 27, tzinfo=pendulum.timezone("America/Montreal")), # put this date only to test
     'provide_context': True,
     'depends_on_past': True,
     'wait_for_downstream': True
@@ -31,13 +31,13 @@ dag_args.update({
 dag = DAG(
     dag_id=DAG_ID,
     doc_md=DOC,
-    start_date=datetime(2023, 9, 25, tzinfo=pendulum.timezone("America/Montreal")), # put this date only to test
+    start_date=datetime(2023, 9, 27, tzinfo=pendulum.timezone("America/Montreal")), # put this date only to test
     schedule_interval='0 0 * * *',
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
     default_args=dag_args,
     is_paused_upon_creation=True,
-    catchup=True,
+    catchup=False,
     max_active_runs=1,
     max_active_tasks=1,
     tags=TAGS
