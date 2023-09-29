@@ -41,9 +41,7 @@ La date de fin de l'intervalle (date logique du DAG) est envoyée comme argument
 utilisée comme version de la release.
 """
 
-# Update default params
-params = default_params.copy()
-params.update({"skip_last_visit_survey": Param(True, type="boolean")})
+# Update default args
 args = default_args.copy()
 args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 
@@ -52,7 +50,7 @@ dag = DAG(
     doc_md=DOC,
     start_date=datetime(2023, 9, 1, 8, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=4),
-    params=params,
+    params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,
     is_paused_upon_creation=True,
