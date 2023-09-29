@@ -277,8 +277,8 @@ with dag:
             dag=dag
         )
 
-        enriched_participant_index >> enriched_consultation >> enriched_appointment_information >> enriched_general_information_consultation >>  [enriched_laboratory_results, enriched_pathology_results, enriched_general_information_consultation,
-                                                                                                                                                  enriched_family_history, enriched_family_history_consultation, enriched_medical_history_consultation, enriched_personal_history_consultation,
+        enriched_participant_index >> enriched_consultation >> enriched_appointment_information >> enriched_general_information_consultation >>  [enriched_laboratory_results, enriched_pathology_results, enriched_family_history, enriched_family_history_consultation,
+                                                                                                                                                  enriched_medical_history_consultation, enriched_personal_history_consultation,
                                                                                                                                                   enriched_discussion_and_plan_consultation, enriched_personal_history_consultation_table, enriched_genetic_counseling_note,
                                                                                                                                                   enriched_genetic_counseling_note_discussion_and_plan, enriched_genetic_counseling_follow_up_note, enriched_presence]
 
