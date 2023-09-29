@@ -681,4 +681,3 @@ with dag:
     )
 
     start >> enriched >> released >> published >> end
-
