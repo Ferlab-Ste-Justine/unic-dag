@@ -50,7 +50,7 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_triceps",
     doc_md=DOC,
-    start_date=datetime(2023, 6, 9, 7, tzinfo=pendulum.timezone("America/Montreal")), #update for triceps
+    start_date=datetime(2023, 9, 1, 8, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=4),
     params=params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
@@ -63,9 +63,8 @@ dag = DAG(
 )
 
 with dag:
-    def skip_last_visit_survey() -> str:
-        return "{% if params.skip_last_visit_survey != True %}{% else %}True{% endif %}"
-
+    # def skip_tab() -> str:
+    #     return "{% if params.skip_last_visit_survey != True %}{% else %}True{% endif %}"
 
     start = EmptyOperator(
         task_id="start",
