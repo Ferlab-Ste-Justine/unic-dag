@@ -24,7 +24,10 @@ DOC = """
 ETL enriched pour le projet Triceps. 
 
 ### Description
-TODO.
+Cet ETL génère un rapport mensuel sur les patients de l'étude ayant eu une visite en clinique génomique depuis les 
+quatre dernières semaines. Ce rapport inclut les rendez-vous, l'ensemble des données des formulaires de Centro ainsi que 
+les tests de laboratoire et de pathologie. La toute première exécution doit contenir toutes les données historiques, 
+après cette date, le rapport devient mensuel. Une mise à jour régulière de la liste de participants sera fournie par le chercheur.
 
 ### Horaire
 * __Date de début__ - 29 septembre 2023
@@ -37,6 +40,10 @@ TODO.
 skipped. Par défaut à True.
 
 ### Fonctionnement
+Le début de l'intervalle et la fin de l'intervalle sont envoyés comme arguments à l'ETL enriched. À noter que
+la fin de l'intervalle correspond au moment de génération du rapport. Donc pour le premier rapport du 29 Septembre 2023, le
+début de l'intervalle est le 1er Septembre 2023. 
+
 La date de fin de l'intervalle (date logique du DAG) est envoyée comme argument à l'ETL released. Cette date est 
 utilisée comme version de la release.
 """
