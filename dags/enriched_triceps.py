@@ -67,7 +67,7 @@ dag = DAG(
     tags=["enriched"]
 )
 
-with ((dag)):
+with dag:
     # def skip_tab() -> str:
     #     return "{% if params.skip_last_visit_survey != True %}{% else %}True{% endif %}"
 
