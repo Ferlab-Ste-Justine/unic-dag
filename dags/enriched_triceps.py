@@ -35,10 +35,6 @@ après cette date, le rapport devient mensuel. Une mise à jour régulière de l
 * __Jour et heure__ - Vendredi, 8h heure de Montréal
 * __Intervalle__ - Chaque 4 semaine
 
-### Configuration
-* Paramètre `skip_last_visit_survey` : booléen indiquant si la table `last_visit_survey` doit être
-skipped. Par défaut à True.
-
 ### Fonctionnement
 Le début de l'intervalle et la fin de l'intervalle sont envoyés comme arguments à l'ETL enriched. À noter que
 la fin de l'intervalle correspond au moment de génération du rapport. Donc pour le premier rapport du 29 Septembre 2023, le
@@ -277,11 +273,11 @@ with dag:
             dag=dag
         )
 
-        enriched_participant_index >> [enriched_appointment_information, enriched_consultation, enriched_laboratory_results,
-                                       enriched_pathology_results, enriched_general_information_consultation, enriched_family_history,
-                                       enriched_family_history_consultation, enriched_medical_history_consultation, enriched_personal_history_consultation,
-                                       enriched_discussion_and_plan_consultation, enriched_personal_history_consultation_table, enriched_genetic_counseling_note,
-                                       enriched_genetic_counseling_note_discussion_and_plan, enriched_genetic_counseling_follow_up_note, enriched_presence]
+        enriched_participant_index >> enriched_consultation >> [enriched_general_information_consultation,
+        enriched_appointment_information] >> [enriched_laboratory_results, enriched_pathology_results, enriched_general_information_consultation,
+        enriched_family_history, enriched_family_history_consultation, enriched_medical_history_consultation, enriched_personal_history_consultation,
+        enriched_discussion_and_plan_consultation, enriched_personal_history_consultation_table, enriched_genetic_counseling_note,
+        enriched_genetic_counseling_note_discussion_and_plan, enriched_genetic_counseling_follow_up_note, enriched_presence]
 
     with TaskGroup(group_id="released") as released:
         RELEASED_NAMESPACE = "released"
