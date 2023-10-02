@@ -56,11 +56,12 @@ dag = DAG(
     dag_id="enriched_triceps",
     doc_md=DOC,
     start_date=datetime(2012, 1, 1, 1, tzinfo=pendulum.timezone("America/Montreal")),
+    schedule_interval=None,
     params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,
     is_paused_upon_creation=True,
-    catchup=True,
+    catchup=False,
     max_active_runs=1,
     max_active_tasks=2,
     tags=["enriched"]
