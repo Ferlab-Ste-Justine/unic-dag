@@ -16,7 +16,7 @@ from core.config import default_params, default_timeout_hours, default_args, spa
 from core.slack import Slack
 from operators.spark import SparkOperator
 
-JAR = 's3a://spark-prd/jars/unic-etl-master.jar'
+JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
 DOC = """
 # Enriched Triceps DAG
