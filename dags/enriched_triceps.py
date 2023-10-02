@@ -56,6 +56,7 @@ dag = DAG(
     dag_id="enriched_triceps",
     doc_md=DOC,
     start_date=datetime(2012, 1, 1, 1, tzinfo=pendulum.timezone("America/Montreal")),
+    schedule_interval=timedelta(days=4293),
     params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,
