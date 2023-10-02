@@ -55,8 +55,8 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_triceps",
     doc_md=DOC,
-    start_date=datetime(2012, 1, 1, 1, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval=timedelta(days=4292),
+    start_date=datetime(2023, 9, 29, 8, tzinfo=pendulum.timezone("America/Montreal")),
+    schedule_interval=timedelta(weeks=4),
     params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,
@@ -93,7 +93,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -105,7 +105,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag,
         )
 
@@ -117,7 +117,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -129,7 +129,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -141,7 +141,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -153,7 +153,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -165,7 +165,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -177,7 +177,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -189,7 +189,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -201,7 +201,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -213,7 +213,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -225,7 +225,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -237,7 +237,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -249,7 +249,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -261,7 +261,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -273,7 +273,7 @@ with dag:
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -300,7 +300,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag,
         )
 
@@ -312,7 +312,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -324,7 +324,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -336,7 +336,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -348,7 +348,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -360,7 +360,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -372,7 +372,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -384,7 +384,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -396,7 +396,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -408,7 +408,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -420,7 +420,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -432,7 +432,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -444,7 +444,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -456,7 +456,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -468,7 +468,7 @@ with dag:
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -490,7 +490,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag,
         )
 
@@ -502,7 +502,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -514,7 +514,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -526,7 +526,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -538,7 +538,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -550,7 +550,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -562,7 +562,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -574,7 +574,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -586,7 +586,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -598,7 +598,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -610,7 +610,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -622,7 +622,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -634,7 +634,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -646,7 +646,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
@@ -658,7 +658,7 @@ with dag:
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
-            spark_config="large-etl",
+            spark_config="medium-etl",
             dag=dag
         )
 
