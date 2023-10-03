@@ -289,7 +289,7 @@ with dag:
 
         def released_arguments(destination: str) -> List[str]:
             # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
-            return ["config/prod.conf", "initial", destination, "{{ data_interval_end | ds }}"]
+            return ["config/prod.conf", "initial", destination, "2023-09-29"] # reset version to {{ data_interval_end | ds }} after initial run
 
 
         released_appointment_information = SparkOperator(
