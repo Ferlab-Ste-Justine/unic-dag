@@ -17,8 +17,6 @@ jobs:
           architecture: 'x64'
       - run: |
          pip install -r requirements.txt
-         pip install pylint
-         pip install pylint-airflow
          pylint --load-plugins=pylint_airflow --fail-under=10.0 */**.py
 
 
