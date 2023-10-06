@@ -1,5 +1,5 @@
 {
-  "concurrency": 1,
+  "concurrency": 4,
   "schedule": null,
   "timeout_hours": 4,
   "steps": [
@@ -10,6 +10,7 @@
       "schemas": [],
       "datasets":
       [
+        {"dataset_id":"enriched_diabetegestationnel_baby_post_delivery_care"    , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index"]},
         {"dataset_id":"enriched_diabetegestationnel_delivery"                   , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index"]},
         {"dataset_id":"enriched_diabetegestationnel_echography_third_trimester" , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index"]},
         {"dataset_id":"enriched_diabetegestationnel_episode_of_care"            , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index"]},
@@ -20,9 +21,9 @@
         {"dataset_id":"enriched_diabetegestationnel_medication"                 , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index"]},
         {"dataset_id":"enriched_diabetegestationnel_mother"                     , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index", "enriched_diabetegestationnel_mother_complication"]},
         {"dataset_id":"enriched_diabetegestationnel_mother_complication"        , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index"]},
+        {"dataset_id":"enriched_diabetegestationnel_mother_post_delivery_care"  , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index"]},
         {"dataset_id":"enriched_diabetegestationnel_neonatal_birth_complication", "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index"]},
-        {"dataset_id":"enriched_diabetegestationnel_participant_index"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
-        {"dataset_id":"enriched_diabetegestationnel_post_delivery_care"         , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index"]},
+        {"dataset_id":"enriched_diabetegestationnel_participant_index"          , "cluster_type": "medium", "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"enriched_diabetegestationnel_transfer_to_doctor"         , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index"]}
       ]
     },
@@ -34,6 +35,7 @@
       "schemas": [],
       "datasets":
       [
+        {"dataset_id":"released_diabetegestationnel_baby_post_delivery_care"    , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"released_diabetegestationnel_delivery"                   , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"released_diabetegestationnel_echography_third_trimester" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"released_diabetegestationnel_episode_of_care"            , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
@@ -44,8 +46,8 @@
         {"dataset_id":"released_diabetegestationnel_medication"                 , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"released_diabetegestationnel_mother"                     , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"released_diabetegestationnel_mother_complication"        , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"released_diabetegestationnel_mother_post_delivery_care"  , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"released_diabetegestationnel_neonatal_birth_complication", "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
-        {"dataset_id":"released_diabetegestationnel_post_delivery_care"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"released_diabetegestationnel_transfer_to_doctor"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
       ]
     },
@@ -57,6 +59,7 @@
       "schemas": [],
       "datasets":
       [
+        {"dataset_id":"published_diabetegestationnel_baby_post_delivery_care"    , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"published_diabetegestationnel_delivery"                   , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"published_diabetegestationnel_echography_third_trimester" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"published_diabetegestationnel_episode_of_care"            , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
@@ -67,8 +70,8 @@
         {"dataset_id":"published_diabetegestationnel_medication"                 , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"published_diabetegestationnel_mother"                     , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"published_diabetegestationnel_mother_complication"        , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"published_diabetegestationnel_mother_post_delivery_care"  , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"published_diabetegestationnel_neonatal_birth_complication", "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
-        {"dataset_id":"published_diabetegestationnel_post_delivery_care"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"published_diabetegestationnel_transfer_to_doctor"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
       ]
     }
