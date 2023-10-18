@@ -3,7 +3,6 @@ Update Softlab Partition
 """
 # pylint: disable=missing-function-docstring
 from datetime import datetime, timedelta
-from typing import List
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
