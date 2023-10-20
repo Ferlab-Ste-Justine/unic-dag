@@ -24,7 +24,7 @@ DOC = """
 ETL enriched pour le projet Moka. 
 
 ### Description
-** TODO **
+Cet ETL génère un rapport mensuel pour la santé mobile chez les enfants atteints d'asthme.
 
 ### Horaire
 * __Date de début__ - 20 octobre 2023
@@ -39,6 +39,8 @@ début de l'intervalle est le 22 Septembre 2023.
 
 La date de fin de l'intervalle (date logique du DAG) est envoyée comme argument à l'ETL released. Cette date est 
 utilisée comme version de la release.
+
+Le CSV doit être généré manuellement via un notebook de la zone rouge. 
 """
 
 # Update default args
@@ -104,52 +106,9 @@ with dag:
 
         enriched_participant_index >> enriched_screening
 
-    with TaskGroup(group_id="released") as released:
-        RELEASED_NAMESPACE = "released"
-        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.Main"
-
-        def released_arguments(destination: str) -> List[str]:
-            # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
-            return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
-
-
-        released_screening = SparkOperator(
-            task_id="released_moka_screening",
-            name="released-moka-screening",
-            arguments=released_arguments("released_moka_screening"),
-            namespace=RELEASED_NAMESPACE,
-            spark_class=RELEASED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-
-
-    with TaskGroup(group_id="published") as published:
-        PUBLISHED_NAMESPACE = "published"
-        PUBLISHED_MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
-
-        def published_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination]
-
-
-        published_screening = SparkOperator(
-            task_id="published_moka_screening",
-            name="published-moka-screening",
-            arguments=published_arguments("published_moka_screening"),
-            namespace=PUBLISHED_NAMESPACE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
     end = EmptyOperator(
         task_id="end",
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> enriched >> released >> published >> end
+    start >> enriched >> end
