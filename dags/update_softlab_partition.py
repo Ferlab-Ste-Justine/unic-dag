@@ -11,7 +11,7 @@ from core.config import default_args, default_timeout_hours, spark_failure_msg
 from core.slack import Slack
 from operators.spark import SparkOperator
 
-JAR = 's3a://spark-prd/jars/unic-etl-master.jar'
+JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 NAMESPACE = 'raw'
 MAIN_CLASS = 'bio.ferlab.ui.etl.schema.UpdateSchema'
 DOC = """
