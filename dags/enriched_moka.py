@@ -70,7 +70,7 @@ with dag:
         on_execute_callback=Slack.notify_dag_start
     )
 
-    with TaskGroup(group_id="enriched") as enriched:
+    with TaskGroup(group_id="red-enriched") as enriched:
         ENRICHED_NAMESPACE = "raw"
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.red.enriched.moka.Main"
 
