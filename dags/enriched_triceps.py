@@ -7,7 +7,6 @@ from typing import List
 
 import pendulum
 from airflow import DAG
-from airflow.models import Variable
 from airflow.operators.empty import EmptyOperator
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule

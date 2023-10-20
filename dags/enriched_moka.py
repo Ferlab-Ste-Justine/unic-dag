@@ -39,7 +39,7 @@ début de l'intervalle est le 22 Septembre 2023.
 La date de fin de l'intervalle (date logique du DAG) est envoyée comme argument à l'ETL released. Cette date est 
 utilisée comme version de la release.
 
-Le CSV doit être généré manuellement via un notebook de la zone rouge. 
+Le fichier Excel doit être généré manuellement via un notebook de la zone rouge. 
 """
 
 # Update default args
