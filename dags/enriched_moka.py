@@ -70,8 +70,8 @@ with dag:
         on_execute_callback=Slack.notify_dag_start
     )
 
-    with TaskGroup(group_id="red-enriched") as enriched:
-        ENRICHED_NAMESPACE = "raw"
+    with TaskGroup(group_id="enriched") as enriched:
+        ENRICHED_NAMESPACE = "red-enriched"
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.red.enriched.moka.Main"
 
         def enriched_arguments(destination: str) -> List[str]:
