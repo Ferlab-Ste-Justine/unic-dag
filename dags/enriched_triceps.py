@@ -82,7 +82,7 @@ with dag:
 
         def enriched_arguments(destination: str) -> List[str]:
             # !!! Do not set to initial, otherwise the participant index will be re-generated !!!
-            return ["config/prod.conf", "initial", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
+            return ["config/prod.conf", "default", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
 
 
         enriched_participant_index = SparkOperator(
@@ -289,7 +289,7 @@ with dag:
 
         def released_arguments(destination: str) -> List[str]:
             # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
-            return ["config/prod.conf", "initial", destination, "2023-09-29"] # reset version to {{ data_interval_end | ds }} after initial run
+            return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
 
 
         released_appointment_information = SparkOperator(
@@ -475,11 +475,9 @@ with dag:
     with TaskGroup(group_id="published") as published:
         PUBLISHED_NAMESPACE = "published"
         PUBLISHED_MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
-        mail_to = Variable.get("EMAIL_ENRICHED_SIGNATURE_MAIL_TO")
-
 
         def published_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "initial", destination]
+            return ["config/prod.conf", "default", destination]
 
 
         published_appointment_information = SparkOperator(
@@ -661,23 +659,6 @@ with dag:
             spark_config="medium-etl",
             dag=dag
         )
-
-        # with open(f"{root}/email/enriched_triceps.html", "r", encoding="utf-8") as f:
-        #     html_content = f.read()
-        #
-        # notify = EmailOperator(
-        #     task_id="notify",
-        #     to=mail_to,
-        #     bcc=mail_from,
-        #     subject="Nouveau rapport disponible dans l'UnIC",
-        #     html_content=html_content
-        # )
-
-        # [enriched_appointment_information, enriched_consultation, enriched_laboratory_results,
-        #  enriched_pathology_results, enriched_general_information_consultation, enriched_family_history,
-        #  enriched_family_history_consultation, enriched_medical_history_consultation, enriched_personal_history_consultation,
-        #  enriched_discussion_and_plan_consultation, enriched_personal_history_consultation_table, enriched_genetic_counseling_note,
-        #  enriched_genetic_counseling_note_discussion_and_plan, enriched_genetic_counseling_follow_up_note, enriched_presence] >> notify
 
     end = EmptyOperator(
         task_id="end",
