@@ -13,7 +13,7 @@ from core.slack import Slack
 from operators.spark import SparkOperator
 
 
-NS = 'curated'
+ZONE = 'red'
 TAGS = ['curated']
 DAG_ID = 'curated_philips'
 MAIN_CLASS = 'bio.ferlab.ui.etl.red.curated.philips.Main'
@@ -54,7 +54,7 @@ with dag:
         task_id='curated_philips_sip_external_patient',
         name='curated_philips_sip_external_patient',
         arguments=['config/prod.conf', 'initial', 'curated_philips_sip_external_patient', '{{ds}}'],
-        namespace=NS,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
@@ -66,7 +66,7 @@ with dag:
         task_id='curated_philips_neo_external_patient',
         name='curated_philips_neo_external_patient',
         arguments=['config/prod.conf', 'initial', 'curated_philips_neo_external_patient', '{{ds}}'],
-        namespace=NS,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,

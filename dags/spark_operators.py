@@ -23,16 +23,15 @@ def sanitize_string(string: str, replace_by: str):
     return re.sub("[^a-zA-Z0-9 ]", replace_by, string)
 
 
-def get_start_operator(namespace: str,
-                       schema: str):
+def get_start_operator(subzone: str, schema: str):
     """
-    :param namespace:
+    :param subzone:
     :param dag:
     :param schema:
     :return:
     """
     return EmptyOperator(
-        task_id=f"start_{namespace}_{schema}",
+        task_id=f"start_{subzone}_{schema}",
         on_execute_callback=Slack.notify_dag_start,
         trigger_rule=TriggerRule.NONE_FAILED
     )
@@ -56,7 +55,8 @@ def get_publish_operator(dag_config: dict,
     :param spark_failure_msg:
     :return: both start and end to the publish operator if the operator contain multiple task
     """
-    namespace = dag_config['namespace']
+    zone = dag_config['destination_zone']
+    subzone = dag_config['destination_subzone']
     schemas = dag_config['schemas']
     main_class = dag_config['publish_class']
 
@@ -70,7 +70,7 @@ def get_publish_operator(dag_config: dict,
 
     else:
         publish = EmptyOperator(
-            task_id=f"publish_{namespace}_{schema}",
+            task_id=f"publish_{subzone}_{schema}",
             on_success_callback=Slack.notify_dag_completion,
             trigger_rule=TriggerRule.NONE_FAILED
         )
@@ -83,7 +83,7 @@ def get_publish_operator(dag_config: dict,
         task_id=job_id,
         name=pod_name,
         arguments=args,
-        namespace=namespace,
+        zone=zone,
         spark_class=main_class,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
@@ -119,7 +119,11 @@ def setup_dag(dag: DAG,
     previous_publish = None
 
     for step_config in dag_config['steps']:
-        start = get_start_operator(step_config['namespace'], schema)
+        zone = step_config['destination_zone']
+        subzone = step_config['destination_subzone']
+        main_class = step_config['main_class']
+
+        start = get_start_operator(subzone, schema)
         publish = get_publish_operator(step_config, config_file, jar, dag, schema, spark_failure_msg)
 
         if previous_publish:
@@ -131,12 +135,10 @@ def setup_dag(dag: DAG,
 
         for conf in step_config['datasets']:
             dataset_id = conf['dataset_id']
-            namespace = step_config['namespace']
-            main_class = step_config['main_class']
             config_type = conf['cluster_type']
             run_type = conf['run_type']
 
-            job = create_spark_job(dataset_id, namespace, run_type, config_type,
+            job = create_spark_job(dataset_id, zone, subzone, run_type, config_type,
                                    config_file, jar, dag, main_class, version, spark_failure_msg, skip_task)
 
             all_dependencies = all_dependencies + conf['dependencies']
@@ -160,16 +162,16 @@ def read_json(path: str):
     return json.load(open(path, encoding='UTF8'))
 
 
-def get_main_class(namespace: str, main_class: str):
+def get_main_class(subzone: str, main_class: str):
     """
-    Return the default main class for the namespace if no main class is provided
+    Return the default main class for the subzone if no main class is provided
 
-    :param namespace: Kubernetes namespace
+    :param subzone: Desination subzone of the task
     :param main_class: main class provided in config file
     :return: main class
     """
     main_classes = {
-        "ingestion": "bio.ferlab.ui.etl.red.raw.Main",
+        "raw": "bio.ferlab.ui.etl.red.raw.Main",
         "curated": "bio.ferlab.ui.etl.red.curated.Main",
         "anonymized": "bio.ferlab.ui.etl.yellow.anonymized.Main",
         "released": "bio.ferlab.ui.etl.green.released.Main",
@@ -179,14 +181,15 @@ def get_main_class(namespace: str, main_class: str):
         return main_class
     else:
         try:
-            return main_classes[namespace]
+            return main_classes[subzone]
         except KeyError as err:
-            raise KeyError(f"No default main class for namespace: {namespace}. "
+            raise KeyError(f"No default main class for subzone: {subzone}. "
                            f"Please provide a main class in config file.") from err
 
 
 def create_spark_job(destination: str,
-                     namespace: str,
+                     zone: str,
+                     subzone: str,
                      run_type: str,
                      cluster_type: str,
                      config_file: str,
@@ -199,7 +202,8 @@ def create_spark_job(destination: str,
     """
     create spark job operator
     :param destination:
-    :param namespace:
+    :param zone:
+    :param subzone:
     :param run_type:
     :param cluster_type:
     :param config_file:
@@ -211,16 +215,16 @@ def create_spark_job(destination: str,
     :param skip:
     :return:
     """
-    main_class = get_main_class(namespace, main_class)
+    main_class = get_main_class(subzone, main_class)
 
     args = [config_file, run_type, destination]
-    if namespace == "released":
+    if subzone == "released":
         args.append(version)
 
     return SparkOperator(
         task_id=sanitize_string(destination, "_"),
         name=sanitize_string(destination[:40], '-'),
-        namespace=namespace,
+        zone=zone,
         arguments=args,
         spark_class=main_class,
         spark_jar=jar,

@@ -25,7 +25,7 @@ la run du 1 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
 
 """
 
-NAMESPACE = "raw"
+ZONE = "red"
 MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.cathydb.Main"
 args = default_args.copy()
 args.update({
@@ -45,7 +45,7 @@ dag = DAG(
     catchup=True,
     max_active_runs=2,
     max_active_tasks=4,
-    tags=["ingestion"]
+    tags=["raw"]
 )
 
 with dag:
@@ -60,7 +60,7 @@ with dag:
         task_id="raw_cathydb_external_numeric",
         name="raw-cathydb-external-numeric",
         arguments=["config/prod.conf", "default", "raw_cathydb_external_numeric", '{{ds}}'],  # {{ds}} input date
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
@@ -72,7 +72,7 @@ with dag:
         task_id="raw_cathydb_external_patient",
         name="raw-cathydb-external-patient",
         arguments=["config/prod.conf", "default", "raw_cathydb_external_patient", '{{ds}}'],
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
@@ -84,7 +84,7 @@ with dag:
         task_id="raw_cathydb_external_wave",
         name="raw-cathydb-external-wave",
         arguments=["config/prod.conf", "default", "raw_cathydb_external_wave", '{{ds}}'],
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
@@ -96,7 +96,7 @@ with dag:
         task_id="raw_cathydb_piicix_num",
         name="raw-cathydb-piicix-num",
         arguments=["config/prod.conf", "default", "raw_cathydb_piicix_num", '{{ds}}'],
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
@@ -108,7 +108,7 @@ with dag:
         task_id="raw_cathydb_piicix_sig",
         name="raw-cathydb-piicix-sig",
         arguments=["config/prod.conf", "default", "raw_cathydb_piicix_sig", '{{ds}}'],
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
@@ -120,7 +120,7 @@ with dag:
         task_id="raw_cathydb_piicix_alertes",
         name="raw-cathydb-piicix-alertes",
         arguments=["config/prod.conf", "default", "raw_cathydb_piicix_alertes", '{{ds}}'],
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,

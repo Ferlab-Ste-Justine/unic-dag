@@ -71,7 +71,7 @@ with dag:
     )
 
     with TaskGroup(group_id="enriched") as enriched:
-        ENRICHED_NAMESPACE = "red-enriched"
+        ENRICHED_ZONE = "red"
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.red.enriched.moka.Main"
 
         def enriched_arguments(destination: str) -> List[str]:
@@ -83,7 +83,7 @@ with dag:
             task_id="enriched_moka_participant_index",
             name="enriched-moka-participant-index",
             arguments=enriched_arguments("enriched_moka_participant_index"),
-            namespace=ENRICHED_NAMESPACE,
+            zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
@@ -95,7 +95,7 @@ with dag:
             task_id="enriched_moka_screening",
             name="enriched-moka-screening",
             arguments=enriched_arguments("enriched_moka_screening"),
-            namespace=ENRICHED_NAMESPACE,
+            zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,

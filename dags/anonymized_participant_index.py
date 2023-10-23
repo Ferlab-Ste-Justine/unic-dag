@@ -15,7 +15,8 @@ config = {
     "schedule": None,
     "timeout_hours": 1,
     "steps": [{
-        "namespace": "anonymized",
+        "destination_zone": "yellow",
+        "destination_subzone": "anonymized",
         "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
         "publish_class": "",
         "schemas": [],

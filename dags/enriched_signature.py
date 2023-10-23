@@ -80,7 +80,7 @@ with dag:
     )
 
     with TaskGroup(group_id="enriched") as enriched:
-        ENRICHED_NAMESPACE = "enriched"
+        ENRICHED_ZONE = "yellow"
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.signature.Main"
 
 
@@ -93,7 +93,7 @@ with dag:
             task_id="enriched_signature_participant_index",
             name="enriched-signature-participant-index",
             arguments=enriched_arguments("enriched_signature_participant_index"),
-            namespace=ENRICHED_NAMESPACE,
+            zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
@@ -105,7 +105,7 @@ with dag:
             task_id="enriched_signature_last_visit_survey",
             name="enriched-signature-last-visit-survey",
             arguments=enriched_arguments("enriched_signature_last_visit_survey"),
-            namespace=ENRICHED_NAMESPACE,
+            zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
@@ -118,7 +118,7 @@ with dag:
             task_id="enriched_signature_monthly_visit",
             name="enriched-signature-monthly-visit",
             arguments=enriched_arguments("enriched_signature_monthly_visit"),
-            namespace=ENRICHED_NAMESPACE,
+            zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
@@ -129,7 +129,7 @@ with dag:
         enriched_participant_index >> [enriched_last_visit_survey, enriched_monthly_visit]
 
     with TaskGroup(group_id="released") as released:
-        RELEASED_NAMESPACE = "released"
+        RELEASED_ZONE = "green"
         RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.Main"
 
 
@@ -142,7 +142,7 @@ with dag:
             task_id="released_signature_last_visit_survey",
             name="released-signature-last-visit-survey",
             arguments=released_arguments("released_signature_last_visit_survey"),
-            namespace=RELEASED_NAMESPACE,
+            zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
@@ -155,7 +155,7 @@ with dag:
             task_id="released_signature_monthly_visit",
             name="released-signature-monthly-visit",
             arguments=released_arguments("released_signature_monthly_visit"),
-            namespace=RELEASED_NAMESPACE,
+            zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
@@ -164,7 +164,7 @@ with dag:
         )
 
     with TaskGroup(group_id="published") as published:
-        PUBLISHED_NAMESPACE = "published"
+        PUBLISHED_ZONE = "green"
         PUBLISHED_MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
         mail_to = Variable.get("EMAIL_ENRICHED_SIGNATURE_MAIL_TO")
 
@@ -177,7 +177,7 @@ with dag:
             task_id="published_signature_last_visit_survey",
             name="published-signature-last-visit-survey",
             arguments=published_arguments("published_signature_last_visit_survey"),
-            namespace=PUBLISHED_NAMESPACE,
+            zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
@@ -190,7 +190,7 @@ with dag:
             task_id="published_signature_monthly_visit",
             name="published-signature-monthly-visit",
             arguments=published_arguments("published_signature_monthly_visit"),
-            namespace=PUBLISHED_NAMESPACE,
+            zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,

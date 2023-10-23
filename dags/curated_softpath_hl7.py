@@ -25,7 +25,7 @@ La run du 2 janvier 2020 parse les données du 1 janvier dans le lac.
 
 """
 
-NAMESPACE = "curated"
+ZONE = "red"
 MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
 args = default_args.copy()
 args.update({
@@ -58,7 +58,7 @@ with dag:
         task_id="curated_softpath_hl7_oru_r01",
         name="curated-softpath-hl7-oru-r01",
         arguments=["config/prod.conf", "initial", "curated_softpath_hl7_oru_r01", '{{ds}}'],  # {{ds}} input date
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,

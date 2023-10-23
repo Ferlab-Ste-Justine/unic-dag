@@ -10,7 +10,7 @@ from core.config import default_args, jar, spark_failure_msg
 from core.slack import Slack
 from operators.spark import SparkOperator
 
-NAMESPACE = "raw"
+ZONE = "red"
 POD_NAME = "raw-schema-diff-checker"
 MAIN_CLASS = "bio.ferlab.ui.etl.script.SchemaDiffChecker"
 ARGS = ["config/prod.conf", "initial", "dbschema"]
@@ -36,7 +36,7 @@ check_schema_difference = SparkOperator(
     task_id="check_schema_difference",
     name=POD_NAME,
     arguments=default_args,
-    namespace=NAMESPACE,
+    zone=ZONE,
     spark_class=MAIN_CLASS,
     spark_jar=jar,
     spark_failure_msg=spark_failure_msg,

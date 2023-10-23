@@ -16,7 +16,7 @@ class SparkOperator(KubernetesPodOperator):
             spark_class: str,
             spark_jar: str,
             spark_failure_msg: str,
-            namespace: str,
+            zone: str,
             spark_config: str = '',
             skip: bool = False,
             **kwargs,
@@ -33,7 +33,7 @@ class SparkOperator(KubernetesPodOperator):
         self.spark_class = spark_class
         self.spark_jar = spark_jar
         self.spark_failure_msg = spark_failure_msg
-        self.namespace = namespace
+        self.namespace = f'unic-{zone}'
         self.spark_config = spark_config
         self.skip = skip
 
