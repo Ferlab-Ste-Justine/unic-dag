@@ -1,0 +1,19 @@
+{
+  "concurrency": 3,
+  "schedule": "0 13 * * 1",
+  "timeout_hours": 4,
+  "steps": [{
+    "destination_zone": "yellow",
+    "destination_subzone": "anonymized",
+    "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+    "publish_class": "",
+    "schemas": [],
+    "datasets":
+    [
+      {"dataset_id": "anonymized_laboratoire_systeme_v_s_lab_*", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_laboratoire_systeme_v_s_mic_*", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_laboratoire_systeme_v_s_pat_*", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
+    ]
+  }]
+
+}

@@ -31,7 +31,7 @@ la run du 15 Aout 2023 ingère les données du 14 Aout 2023  dans le lac.
 * __Jour et heure__ - Chaque jour, 3h heure de Montréal
 """
 
-NAMESPACE = "raw"
+ZONE = "red"
 MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.philips.Main"
 args = default_args.copy()
 args.update({
@@ -52,7 +52,7 @@ dag = DAG(
     catchup=True,
     max_active_runs=1,
     max_active_tasks=2,
-    tags=["ingestion"]
+    tags=["raw"]
 )
 
 with dag:
@@ -65,7 +65,7 @@ with dag:
         task_id="raw_philips_external_numeric",
         name="raw-philips-external-numeric",
         arguments=["config/prod.conf", "default", "raw_philips_external_numeric", '{{ data_interval_end | ds }}'],  # {{ds}} input date
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
@@ -77,7 +77,7 @@ with dag:
         task_id="raw_philips_external_patient",
         name="raw-philips-external-patient",
         arguments=["config/prod.conf", "default", "raw_philips_external_patient", '{{ data_interval_end | ds }}'],
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
@@ -90,7 +90,7 @@ with dag:
         name="raw-philips-external-patientdateattribute",
         arguments=["config/prod.conf", "default", "raw_philips_external_patientdateattribute",
                    '{{ data_interval_end | ds }}'],
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
@@ -103,7 +103,7 @@ with dag:
         name="raw-philips-external-patientstringattribute",
         arguments=["config/prod.conf", "default", "raw_philips_external_patientstringattribute",
                    '{{ data_interval_end | ds }}'],
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
@@ -115,7 +115,7 @@ with dag:
         task_id="raw_philips_external_wave",
         name="raw-philips-external-wave",
         arguments=["config/prod.conf", "default", "raw_philips_external_wave", '{{ data_interval_end | ds }}'],
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
@@ -127,7 +127,7 @@ with dag:
         task_id="raw_philips_external_numericvalue",
         name="raw-philips-external-numericvalue",
         arguments=["config/prod.conf", "default", "raw_philips_external_numericvalue", '{{ data_interval_end | ds }}'],
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
@@ -139,7 +139,7 @@ with dag:
         task_id="raw_philips_external_wavesample",
         name="raw-philips-external-wavvesample",
         arguments=["config/prod.conf", "default", "raw_philips_external_wavesample", '{{ data_interval_end | ds }}'],
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
@@ -151,7 +151,7 @@ with dag:
         task_id="raw_philips_external_alert",
         name="raw-philips-external-alert",
         arguments=["config/prod.conf", "default", "raw_philips_external_alert", '{{ data_interval_end | ds }}'],
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,

@@ -12,7 +12,7 @@ from core.slack import Slack
 from operators.spark import SparkOperator
 
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
-NAMESPACE = 'raw'
+ZONE = 'red'
 MAIN_CLASS = 'bio.ferlab.ui.etl.schema.UpdateSchema'
 DOC = """
 # Update Softlab Partition DAG
@@ -47,7 +47,7 @@ with dag:
         task_id="update_v_p_lab_message_partition",
         name="update-v-p-lab-message-partition",
         arguments=["config/prod.conf", "default", "raw_softlab_v_p_lab_message"],
-        namespace=NAMESPACE,
+        zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
         spark_failure_msg=spark_failure_msg,

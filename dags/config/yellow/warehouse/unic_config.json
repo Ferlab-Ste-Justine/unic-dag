@@ -1,0 +1,28 @@
+{
+  "concurrency": 2,
+  "schedule": "0 18 * * 4",
+  "timeout_hours": 6,
+  "steps": [{
+    "destination_zone": "yellow",
+    "destination_subzone": "warehouse",
+    "main_class": "bio.ferlab.ui.etl.yellow.warehouse.Main",
+    "publish_class": "",
+    "schemas": [],
+    "datasets":
+    [
+      {"dataset_id":"warehouse_diagnostic_reference"      , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+      {"dataset_id":"warehouse_fetal_ultrasound"          , "cluster_type": "medium" , "run_type": "initial", "cluster_specs": {} , "dependencies": []} ,
+      {"dataset_id":"warehouse_intervention_reference"    , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+      {"dataset_id":"warehouse_lab_results"               , "cluster_type": "medium" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+      {"dataset_id":"warehouse_lab_test_reference"        , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+      {"dataset_id":"warehouse_medical_imaging"           , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+      {"dataset_id":"warehouse_medications"               , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+      {"dataset_id":"warehouse_medications_manual"        , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+      {"dataset_id":"warehouse_medication_administration" , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+      {"dataset_id":"warehouse_medication_service"        , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+      {"dataset_id":"warehouse_microbiology"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+      {"dataset_id":"warehouse_pathology"                 , "cluster_type": "medium" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+      {"dataset_id":"warehouse_transfusions"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []}
+    ]
+  }]
+}

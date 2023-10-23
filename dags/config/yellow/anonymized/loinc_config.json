@@ -1,0 +1,20 @@
+{
+  "concurrency": 3,
+  "schedule": null,
+  "timeout_hours": 2,
+  "steps": [{
+    "destination_zone": "yellow",
+    "destination_subzone": "anonymized",
+    "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+    "publish_class": "",
+    "schemas": [],
+    "datasets":
+    [
+      {"dataset_id":"anonymized_loinc_code_mapping"   , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"anonymized_loinc_dsq_table_codes", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"anonymized_loinc_organization"   , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"anonymized_loinc_terminology"    , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+    ]
+  }]
+
+}
