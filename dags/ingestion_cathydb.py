@@ -44,7 +44,7 @@ dag = DAG(
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=2,
-    max_active_tasks=2,
+    max_active_tasks=1,
     tags=["raw"]
 )
 
@@ -64,7 +64,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="medium-etl",
+        spark_config="large-etl",
         dag=dag
     )
 
@@ -88,7 +88,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="medium-etl",
+        spark_config="large-etl",
         dag=dag
     )
 
@@ -100,7 +100,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="medium-etl",
+        spark_config="large-etl",
         dag=dag
     )
 
@@ -112,7 +112,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="medium-etl",
+        spark_config="large-etl",
         dag=dag
     )
 
@@ -124,7 +124,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="medium-etl",
+        spark_config="large-etl",
         dag=dag
     )
 
