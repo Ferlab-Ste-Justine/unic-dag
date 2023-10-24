@@ -44,7 +44,7 @@ dag = DAG(
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=2,
-    max_active_tasks=4,
+    max_active_tasks=2,
     tags=["raw"]
 )
 
