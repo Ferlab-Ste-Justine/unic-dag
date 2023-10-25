@@ -24,7 +24,7 @@
         {"dataset_id":"enriched_diabetegestationnel_mother_complication"        , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index"]},
         {"dataset_id":"enriched_diabetegestationnel_mother_post_delivery_care"  , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index"]},
         {"dataset_id":"enriched_diabetegestationnel_neonatal_birth_complication", "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index"]},
-        {"dataset_id":"enriched_diabetegestationnel_participant_index"          , "cluster_type": "medium", "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"enriched_diabetegestationnel_participant_index"          , "cluster_type": "medium", "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"enriched_diabetegestationnel_transfer_to_doctor"         , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_diabetegestationnel_participant_index"]}
       ]
     },
