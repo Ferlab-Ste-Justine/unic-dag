@@ -64,7 +64,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="xlarge-etl",
+        spark_config="large-etl",
         dag=dag
     )
 
