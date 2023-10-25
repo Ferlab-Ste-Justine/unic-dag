@@ -64,7 +64,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="large-etl",
+        spark_config="xsmall-etl",
         dag=dag
     )
 
@@ -76,7 +76,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="xsmall-etl",
+        spark_config="small-etl",
         dag=dag
     )
 
@@ -88,7 +88,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="large-etl",
+        spark_config="xsmall-etl",
         dag=dag
     )
 
@@ -100,7 +100,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="large-etl",
+        spark_config="medium-etl",
         dag=dag
     )
 
@@ -112,7 +112,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="large-etl",
+        spark_config="xlarge-etl",
         dag=dag
     )
 
@@ -124,7 +124,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="large-etl",
+        spark_config="small-etl",
         dag=dag
     )
 
