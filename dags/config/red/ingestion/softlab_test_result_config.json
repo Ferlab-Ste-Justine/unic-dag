@@ -1,0 +1,26 @@
+{
+    "concurrency": 2,
+    "schedule": "0 4 * * 3",
+    "timeout_hours": 5,
+    "steps": [{
+      "destination_zone": "red",
+      "destination_subzone": "raw",
+      "main_class": "bio.ferlab.ui.etl.red.raw.softlab.Main",
+      "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
+      "schemas": ["softlab"],
+      "datasets":
+      [
+        {"dataset_id": "raw_softlab_v_p_lab_test_result", "cluster_type": "large",  "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ]
+    },{
+      "destination_zone": "yellow",
+      "destination_subzone": "anonymized",
+      "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id": "anonymized_softlab_v_p_lab_test_result", "cluster_type": "large",  "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ]
+    }]
+  }
