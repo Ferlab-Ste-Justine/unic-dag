@@ -76,7 +76,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="small-etl",
+        spark_config="large-etl",
         dag=dag
     )
 
@@ -88,7 +88,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="xsmall-etl",
+        spark_config="large-etl",
         dag=dag
     )
 
