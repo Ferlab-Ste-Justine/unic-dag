@@ -1,0 +1,17 @@
+{
+    "concurrency": 2,
+    "schedule": null,
+    "timeout_hours": 1,
+    "steps": [
+      {
+        "destination_zone": "yellow",
+        "destination_subzone": "anonymized",
+        "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+        "publish_class": "",
+        "schemas": [],
+        "datasets":
+        [
+          {"dataset_id": "anonymized_registre_naissance"    , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        ]
+      }]
+  }
