@@ -22,8 +22,8 @@
       {"dataset_id": "raw_icca_ptmedication"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_icca_ptorder"           , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_icca_ptrespiratoryorder", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_ptsitecare"        , "cluster_type": "large" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_pttreatment"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "raw_icca_ptsitecare"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "raw_icca_pttreatment"       , "cluster_type": "large" , "run_type": "initial", "cluster_specs": {}, "dependencies": []}
     ]
   }, {
     "destination_zone": "yellow",
@@ -45,7 +45,7 @@
       {"dataset_id": "anonymized_icca_ptmedication"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_icca_ptorder"           , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_icca_ptrespiratoryorder", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_ptsitecare"        , "cluster_type": "large" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_icca_ptsitecare"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_icca_pttreatment"       , "cluster_type": "large" , "run_type": "initial", "cluster_specs": {}, "dependencies": []}
 
 
