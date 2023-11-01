@@ -25,10 +25,13 @@ La run du 2 janvier 2020 parse les données du 1 janvier dans le lac.
 
 """
 
-ZONE = "red"
-MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
+ANONYMIZED_ZONE = "yellow"
+CURATED_ZONE = "red"
+ANONYMIZED_CLASS = "bio.ferlab.ui.etl.yellow.anonymized"
+CURATED_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
 args = default_args.copy()
 args.update({
+    'start_date': datetime(2023, 4, 20),
     'provide_context': True,
     'depends_on_past': True,
     'wait_for_downstream': True})
@@ -36,13 +39,12 @@ args.update({
 dag = DAG(
     dag_id="curated_softpath_hl7",
     doc_md=DOC,
-    start_date=datetime(2023, 7, 13, 1, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
     default_args=args,
     is_paused_upon_creation=True,
-    catchup=True,
+    catchup=False,
     max_active_runs=1,
     max_active_tasks=1,
     tags=["curated"]
@@ -58,8 +60,20 @@ with dag:
         task_id="curated_softpath_hl7_oru_r01",
         name="curated-softpath-hl7-oru-r01",
         arguments=["config/prod.conf", "initial", "curated_softpath_hl7_oru_r01", '{{ds}}'],  # {{ds}} input date
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
+        zone=CURATED_ZONE,
+        spark_class=CURATED_CLASS,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config="small-etl",
+        dag=dag
+    )
+
+    anonymized_softpath_hl7_oru_r01 = SparkOperator(
+        task_id="anonymized_softpath_hl7_oru_r01",
+        name="anonymized-softpath-hl7-oru-r01",
+        arguments=["config/prod.conf", "initial", "anonymized_softpath_hl7_oru_r01"],
+        zone=ANONYMIZED_ZONE,
+        spark_class=ANONYMIZED_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config="small-etl",
@@ -71,4 +85,4 @@ with dag:
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> curated_softpath_hl7_oru_r01 >> end
+    start >> curated_softpath_hl7_oru_r01 >> anonymized_softpath_hl7_oru_r01 >> end
