@@ -4,7 +4,6 @@ DAG pour le parsing des messages HL7 de Softpath
 # pylint: disable=duplicate-code
 from datetime import datetime, timedelta
 
-import pendulum
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 
