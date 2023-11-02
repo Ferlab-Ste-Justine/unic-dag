@@ -4,6 +4,8 @@ DAG pour le parsing des messages HL7 de Radimage
 # pylint: disable=duplicate-code
 from datetime import datetime, timedelta
 
+import pendulum
+
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 
@@ -14,7 +16,7 @@ from operators.spark import SparkOperator
 DOC = """
 # Curated Radimage HL7 DAG
 
-ETL curated pour parser les messages HL&7 radimage déposé en zone rouge
+ETL curated pour parser les messages HL7 radimage déposé en zone rouge
 
 ### Description
 Cet ETL roule pour parser les messages HL7 et les convertir de messages .hl7 au format Delta. 
@@ -30,7 +32,6 @@ ANONYMIZED_CLASS = "bio.ferlab.ui.etl.yellow.anonymized"
 CURATED_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
 args = default_args.copy()
 args.update({
-    'start_date': datetime(2023, 4, 20),
     'provide_context': True,
     'depends_on_past': True,
     'wait_for_downstream': True})
@@ -38,14 +39,15 @@ args.update({
 dag = DAG(
     dag_id="curated_radimage_hl7",
     doc_md=DOC,
+    start_date=datetime(2023, 10, 5, 7, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
     default_args=args,
     is_paused_upon_creation=True,
-    catchup=False,
+    catchup=False, # change back to True after initial tests
     max_active_runs=1,
-    max_active_tasks=1,
+    max_active_tasks=2,
     tags=["curated"]
 )
 
