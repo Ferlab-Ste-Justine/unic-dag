@@ -28,8 +28,8 @@ La run du 2 janvier 2020 parse les données du 1 janvier dans le lac.
 
 ANONYMIZED_ZONE = "yellow"
 CURATED_ZONE = "red"
-ANONYMIZED_CLASS = "bio.ferlab.ui.etl.yellow.anonymized"
-CURATED_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
+ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized"
+CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
 args = default_args.copy()
 args.update({
     'provide_context': True,
@@ -62,7 +62,7 @@ with dag:
         name="curated-radimage-hl7-oru-r01",
         arguments=["config/prod.conf", "initial", "curated_radimage_hl7_oru_r01", '{{ds}}'],  # {{ds}} input date
         zone=CURATED_ZONE,
-        spark_class=CURATED_CLASS,
+        spark_class=CURATED_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config="small-etl",
@@ -74,7 +74,7 @@ with dag:
         name="anonymized-radimage-hl7-oru-r01",
         arguments=["config/prod.conf", "initial", "anonymized_radimage_hl7_oru_r01"],
         zone=ANONYMIZED_ZONE,
-        spark_class=ANONYMIZED_CLASS,
+        spark_class=ANONYMIZED_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config="small-etl",
