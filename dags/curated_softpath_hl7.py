@@ -28,7 +28,7 @@ La run du 2 janvier 2020 parse les données du 1 janvier dans le lac.
 
 ANONYMIZED_ZONE = "yellow"
 CURATED_ZONE = "red"
-ANONYMIZED_CLASS = "bio.ferlab.ui.etl.yellow.anonymized"
+ANONYMIZED_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
 CURATED_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
 args = default_args.copy()
 args.update({
