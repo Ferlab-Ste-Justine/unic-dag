@@ -28,7 +28,7 @@ La run du 2 janvier 2020 parse les données du 1 janvier dans le lac.
 
 ANONYMIZED_ZONE = "yellow"
 CURATED_ZONE = "red"
-ANONYMIZED_CLASS = "bio.ferlab.ui.etl.yellow.anonymized"
+ANONYMIZED_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
 CURATED_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
 args = default_args.copy()
 args.update({
@@ -45,7 +45,7 @@ dag = DAG(
     dagrun_timeout=timedelta(hours=2),
     default_args=args,
     is_paused_upon_creation=True,
-    catchup=False, # change back to True after initial tests
+    catchup=True,
     max_active_runs=1,
     max_active_tasks=2,
     tags=["curated"]
