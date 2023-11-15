@@ -39,7 +39,7 @@ args.update({
 dag = DAG(
     dag_id="curated_radimage_hl7",
     doc_md=DOC,
-    start_date=datetime(2023, 10, 5, 7, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2023, 10, 4, 7, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
