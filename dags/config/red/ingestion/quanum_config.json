@@ -5,18 +5,6 @@
     "steps": [
       {
         "destination_zone": "red",
-        "destination_subzone": "raw",
-        "main_class": "bio.ferlab.ui.etl.red.raw.Main",
-        "publish_class": "",
-        "schemas": ["quanum"],
-        "datasets":
-        [
-          {"dataset_id": "raw_quanum_form_data_vw"          , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-          {"dataset_id": "raw_quanum_form_name_vw"          , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
-        ]
-      },
-      {
-        "destination_zone": "red",
         "destination_subzone": "curated",
         "main_class": "bio.ferlab.ui.etl.red.curated.quanum.Main",
         "publish_class": "",
