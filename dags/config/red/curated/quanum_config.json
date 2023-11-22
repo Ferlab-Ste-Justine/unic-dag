@@ -1,0 +1,58 @@
+{
+    "concurrency": 4,
+    "schedule": "0 2 * * 5",
+    "timeout_hours": 4,
+    "steps": [
+      {
+        "destination_zone": "red",
+        "destination_subzone": "curated",
+        "main_class": "bio.ferlab.ui.etl.red.curated.quanum.Main",
+        "multiple_main_methods": false,
+        "publish_class": "",
+        "schemas": [],
+        "datasets":
+        [
+          {"dataset_id": "curated_quanum_form_metadata_vw", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+          {"dataset_id": "curated_quanum_form_name_vw"    , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+  
+          {"dataset_id": "curated_quanum_a*"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_b*"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_c*"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_dossier*"        , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_e*"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_f*"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_g*"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_i*"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_l*"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_maladie*"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_n*"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_o*"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_p*"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_q*"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_r*"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_s*"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_t*"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_urogynecologie*" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]},
+          {"dataset_id": "curated_quanum_v*"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_quanum_form_name_vw"]}
+        ]
+      },
+      {
+        "destination_zone": "yellow",
+        "destination_subzone": "anonymized",
+        "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+        "multiple_main_methods": false,
+        "publish_class": "",
+        "schemas": [],
+        "datasets":
+        [
+          {"dataset_id": "anonymized_quanum_a*"                                  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+          {"dataset_id": "anonymized_quanum_childhood_asthma_test_4_11_years_old", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+          {"dataset_id": "anonymized_quanum_dossier*"                            , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+          {"dataset_id": "anonymized_quanum_p*"                                  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+          {"dataset_id": "anonymized_quanum_clinique_*"                          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+  
+        ]
+      }
+    ]
+  }
+  
