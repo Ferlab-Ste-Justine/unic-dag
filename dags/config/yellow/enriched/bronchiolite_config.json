@@ -7,6 +7,7 @@
       "destination_zone": "yellow",
       "destination_subzone": "enriched",
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.bronchiolite.Main",
+      "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
       "datasets":
@@ -33,6 +34,7 @@
       "destination_zone": "green",
       "destination_subzone": "released",
       "main_class": "bio.ferlab.ui.etl.green.released.Main",
+      "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
       "datasets":
@@ -57,6 +59,7 @@
       "destination_zone": "green",
       "destination_subzone": "published",
       "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
       "datasets":

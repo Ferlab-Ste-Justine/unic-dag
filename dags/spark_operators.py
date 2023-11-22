@@ -122,6 +122,7 @@ def setup_dag(dag: DAG,
         zone = step_config['destination_zone']
         subzone = step_config['destination_subzone']
         main_class = step_config['main_class']
+        multiple_main_methods = step_config['multiple_main_methods']
 
         start = get_start_operator(subzone, schema)
         publish = get_publish_operator(step_config, config_file, jar, dag, schema, spark_failure_msg)
@@ -138,8 +139,8 @@ def setup_dag(dag: DAG,
             config_type = conf['cluster_type']
             run_type = conf['run_type']
 
-            job = create_spark_job(dataset_id, zone, subzone, run_type, config_type,
-                                   config_file, jar, dag, main_class, version, spark_failure_msg, skip_task)
+            job = create_spark_job(dataset_id, zone, subzone, run_type, config_type, config_file, jar, dag, main_class,
+                                   multiple_main_methods, version, spark_failure_msg, skip_task)
 
             all_dependencies = all_dependencies + conf['dependencies']
             jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
@@ -196,6 +197,7 @@ def create_spark_job(destination: str,
                      jar: str,
                      dag: DAG,
                      main_class: str,
+                     multiple_main_methods: bool,
                      version: str,
                      spark_failure_msg: str,
                      skip: Optional[str] = None):
@@ -210,15 +212,31 @@ def create_spark_job(destination: str,
     :param jar:
     :param dag:
     :param main_class:
+    :param multiple_main_methods: True if the main class contains multiple methods instead of a single run() method
     :param version: Version to release, defaults to "latest"
     :param spark_failure_msg:
     :param skip:
     :return:
     """
     main_class = get_main_class(subzone, main_class)
-
     args = [config_file, run_type, destination]
-    if subzone == "released":
+
+    if subzone == "raw":
+        if multiple_main_methods:
+            args = [
+                destination,
+                "--config", config_file,
+                "--steps", run_type,
+                "--app-name", destination
+            ]
+        else:
+            args = [
+                "--config", config_file,
+                "--steps", run_type,
+                "--app-name", destination,
+                "--destination", destination
+            ]
+    elif subzone == "released":
         args.append(version)
 
     return SparkOperator(

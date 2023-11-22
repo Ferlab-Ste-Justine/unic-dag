@@ -1,9 +1,11 @@
 """
 DAG pour l'ingestion quotidienne des data de philips a partir de Philips
 """
-# pylint: disable=duplicate-code
+# pylint: disable=missing-function-docstring, duplicate-code
 
 from datetime import datetime, timedelta
+from typing import List
+
 import pendulum
 
 from airflow import DAG
@@ -61,10 +63,19 @@ with dag:
         on_execute_callback=Slack.notify_dag_start
     )
 
+    def arguments(destination: str) -> List[str]:
+        return [
+            "--config", "config/prod.conf",
+            "--steps", "default",
+            "--app-name", destination,
+            "--destination", destination,
+            "--date", "{{ data_interval_end | ds }}"
+        ]
+
     philips_external_numeric = SparkOperator(
         task_id="raw_philips_external_numeric",
         name="raw-philips-external-numeric",
-        arguments=["config/prod.conf", "default", "raw_philips_external_numeric", '{{ data_interval_end | ds }}'],  # {{ds}} input date
+        arguments=arguments("raw_philips_external_numeric"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
@@ -76,7 +87,7 @@ with dag:
     philips_external_patient = SparkOperator(
         task_id="raw_philips_external_patient",
         name="raw-philips-external-patient",
-        arguments=["config/prod.conf", "default", "raw_philips_external_patient", '{{ data_interval_end | ds }}'],
+        arguments=arguments("raw_philips_external_patient"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
@@ -88,8 +99,7 @@ with dag:
     philips_external_patientdateattribute = SparkOperator(
         task_id="raw_philips_external_patientdateattribute",
         name="raw-philips-external-patientdateattribute",
-        arguments=["config/prod.conf", "default", "raw_philips_external_patientdateattribute",
-                   '{{ data_interval_end | ds }}'],
+        arguments=arguments("raw_philips_external_patientdateattribute"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
@@ -101,8 +111,7 @@ with dag:
     philips_external_patientstringattribute = SparkOperator(
         task_id="raw_philips_external_patientstringattribute",
         name="raw-philips-external-patientstringattribute",
-        arguments=["config/prod.conf", "default", "raw_philips_external_patientstringattribute",
-                   '{{ data_interval_end | ds }}'],
+        arguments=arguments("raw_philips_external_patientstringattribute"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
@@ -114,7 +123,7 @@ with dag:
     philips_external_wave = SparkOperator(
         task_id="raw_philips_external_wave",
         name="raw-philips-external-wave",
-        arguments=["config/prod.conf", "default", "raw_philips_external_wave", '{{ data_interval_end | ds }}'],
+        arguments=arguments("raw_philips_external_wave"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
@@ -126,7 +135,7 @@ with dag:
     philips_external_numericvalue = SparkOperator(
         task_id="raw_philips_external_numericvalue",
         name="raw-philips-external-numericvalue",
-        arguments=["config/prod.conf", "default", "raw_philips_external_numericvalue", '{{ data_interval_end | ds }}'],
+        arguments=arguments("raw_philips_external_numericvalue"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
@@ -138,7 +147,7 @@ with dag:
     philips_external_wavesample = SparkOperator(
         task_id="raw_philips_external_wavesample",
         name="raw-philips-external-wavvesample",
-        arguments=["config/prod.conf", "default", "raw_philips_external_wavesample", '{{ data_interval_end | ds }}'],
+        arguments=arguments("raw_philips_external_wavesample"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
@@ -150,7 +159,7 @@ with dag:
     philips_external_alert = SparkOperator(
         task_id="raw_philips_external_alert",
         name="raw-philips-external-alert",
-        arguments=["config/prod.conf", "default", "raw_philips_external_alert", '{{ data_interval_end | ds }}'],
+        arguments=arguments("raw_philips_external_alert"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,

@@ -6,6 +6,7 @@
     "destination_zone": "yellow",
     "destination_subzone": "warehouse",
     "main_class": "bio.ferlab.ui.etl.yellow.warehouse.Main",
+    "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
     "datasets":

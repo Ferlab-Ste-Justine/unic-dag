@@ -7,6 +7,7 @@
       "destination_zone": "yellow",
       "destination_subzone": "enriched",
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.indicateurssip.Main",
+      "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
       "datasets":

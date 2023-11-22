@@ -1,8 +1,9 @@
 """
 DAG pour l'ingestion des data de neonat se trouvant dans cathydb
 """
-# pylint: disable=duplicate-code
+# pylint: disable=missing-function-docstring, duplicate-code
 from datetime import datetime, timedelta
+from typing import List
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
@@ -54,12 +55,19 @@ with dag:
         on_execute_callback=Slack.notify_dag_start
     )
 
-    # UNCOMMENT EXTERNAL TABLES AFTER TIMESTAMP COLUMN ADDED IN CATHYDB
+    def arguments(destination: str) -> List[str]:
+        return [
+            "--config", "config/prod.conf",
+            "--steps", "default",
+            "--app-name", destination,
+            "--destination", destination,
+            "--date", "{{ds}}"
+        ]
 
     cathydb_external_numeric = SparkOperator(
         task_id="raw_cathydb_external_numeric",
         name="raw-cathydb-external-numeric",
-        arguments=["config/prod.conf", "default", "raw_cathydb_external_numeric", '{{ds}}'],  # {{ds}} input date
+        arguments=arguments("raw_cathydb_external_numeric"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
@@ -71,7 +79,7 @@ with dag:
     cathydb_external_patient = SparkOperator(
         task_id="raw_cathydb_external_patient",
         name="raw-cathydb-external-patient",
-        arguments=["config/prod.conf", "default", "raw_cathydb_external_patient", '{{ds}}'],
+        arguments=arguments("raw_cathydb_external_patient"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
@@ -83,7 +91,7 @@ with dag:
     cathydb_external_wave = SparkOperator(
         task_id="raw_cathydb_external_wave",
         name="raw-cathydb-external-wave",
-        arguments=["config/prod.conf", "default", "raw_cathydb_external_wave", '{{ds}}'],
+        arguments=arguments("raw_cathydb_external_wave"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
@@ -95,7 +103,7 @@ with dag:
     cathydb_piicix_num = SparkOperator(
         task_id="raw_cathydb_piicix_num",
         name="raw-cathydb-piicix-num",
-        arguments=["config/prod.conf", "default", "raw_cathydb_piicix_num", '{{ds}}'],
+        arguments=arguments("raw_cathydb_piicix_num"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
@@ -107,7 +115,7 @@ with dag:
     cathydb_piicix_sig = SparkOperator(
         task_id="raw_cathydb_piicix_sig",
         name="raw-cathydb-piicix-sig",
-        arguments=["config/prod.conf", "default", "raw_cathydb_piicix_sig", '{{ds}}'],
+        arguments=arguments("raw_cathydb_piicix_sig"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
@@ -119,7 +127,7 @@ with dag:
     cathydb_piicix_alertes = SparkOperator(
         task_id="raw_cathydb_piicix_alertes",
         name="raw-cathydb-piicix-alertes",
-        arguments=["config/prod.conf", "default", "raw_cathydb_piicix_alertes", '{{ds}}'],
+        arguments=arguments("raw_cathydb_piicix_alertes"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
