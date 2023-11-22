@@ -6,6 +6,7 @@
     "destination_zone": "red",
     "destination_subzone": "raw",
     "main_class": "bio.ferlab.ui.etl.red.raw.Main",
+    "multiple_main_methods": false,
     "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
     "schemas": ["pericalm"],
     "datasets":
@@ -30,6 +31,7 @@
     "destination_zone": "red",
     "destination_subzone": "curated",
     "main_class": "bio.ferlab.ui.etl.red.curated.Main",
+    "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
     "datasets":
@@ -41,6 +43,7 @@
     "destination_zone": "yellow",
     "destination_subzone": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+    "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
     "datasets":
