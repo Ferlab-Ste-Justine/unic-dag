@@ -1,0 +1,24 @@
+{
+    "concurrency": 1,
+    "schedule": null,
+    "timeout_hours": 4,
+    "steps": [
+        {
+            "destination_zone": "red",
+            "destination_subzone": "curated",
+            "main_class": "bio.ferlab.ui.etl.red.curated.chartmaxxquanum.Main",
+            "multiple_main_methods": false,
+            "publish_class": "",
+            "schemas": [],
+            "datasets": [
+                {
+                    "dataset_id": "curated_qc_combined",
+                    "cluster_type": "large",
+                    "run_type": "initial",
+                    "cluster_specs": {},
+                    "dependencies": []
+                }
+            ]
+        }
+    ]
+}
