@@ -6,6 +6,7 @@
     "destination_zone": "red",
     "destination_subzone": "raw",
     "main_class": "bio.ferlab.ui.etl.red.raw.Main",
+    "multiple_main_methods": false,
     "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
     "schemas": ["chadis_conners_report", "chadis_diagnosis", "chadis_patient", "chadis_profile", "chadis_question", "chadis_questionnaire",
       "chadis_refusal", "chadis_report", "chadis_response", "chadis_response_response", "chadis_visit"],
@@ -26,6 +27,7 @@
     "destination_zone": "yellow",
     "destination_subzone": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+    "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
     "datasets":

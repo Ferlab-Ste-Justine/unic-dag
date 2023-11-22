@@ -6,6 +6,7 @@
     "destination_zone": "red",
     "destination_subzone": "raw",
     "main_class": "bio.ferlab.ui.etl.schema.UpdateSchema",
+    "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
     "datasets":

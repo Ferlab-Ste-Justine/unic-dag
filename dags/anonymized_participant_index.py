@@ -18,6 +18,7 @@ config = {
         "destination_zone": "yellow",
         "destination_subzone": "anonymized",
         "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+        "multiple_main_methods": False,
         "publish_class": "",
         "schemas": [],
         "datasets":
