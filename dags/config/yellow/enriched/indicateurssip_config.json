@@ -12,11 +12,44 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"enriched_indicateurssip_sejour"     , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"enriched_indicateurssip_catheter"   , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"enriched_indicateurssip_ventilation", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"enriched_indicateurssip_extubation" , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"enriched_indicateurssip_sejour"           , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurssip_participant_index"]},
+        {"dataset_id":"enriched_indicateurssip_catheter"         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_indicateurssip_ventilation"      , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_indicateurssip_extubation"       , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_indicateurssip_participant_index", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
 
+      ]
+    },
+
+    {
+      "destination_zone": "green",
+      "destination_subzone": "released",
+      "main_class": "bio.ferlab.ui.etl.green.released.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"released_indicateurssip_sejour"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_indicateurssip_catheter"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_indicateurssip_ventilation"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_indicateurssip_extubation"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ]
+    },
+
+    {
+      "destination_zone": "green",
+      "destination_subzone": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"published_indicateurssip_sejour"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_indicateurssip_catheter"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_indicateurssip_ventilation"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_indicateurssip_extubation"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ]
     }
   ]
