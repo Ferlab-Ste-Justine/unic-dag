@@ -25,7 +25,7 @@ ETL enriched pour le projet Surveillance Germes.
 ### Description
 Cet ETL génère un rapport hebdomadaire sur les patients ayant eu un test positif pour une liste de pathogènes dans la 
 dernière semaine, du dimanche au samedi. Le rapport sera livré tous les vendredis. La toute première exécution doit contenir 
-les données historiques par semaine à partir du 1er novembre 2023, après cette date, le rapport devient hebdomadaire. 
+les données historiques, avec un rapport par semaine, à partir du 1er novembre 2023. Après cette date, le rapport devient hebdomadaire. 
 Une mise à jour sera faite et d'autres rapports s'ajouteront lorsque le chercheur aura reçu les autorisations éthiques.
 
 ### Horaire
