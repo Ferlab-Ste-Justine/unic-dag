@@ -115,7 +115,7 @@ with dag:
 
         released_weekly_summary = SparkOperator(
             task_id="released_surveillancegermes_weekly_summary",
-            name="released_surveillancegermes_weekly_summary",
+            name="released-surveillancegermes-weekly-summary",
             arguments=released_arguments("released_surveillancegermes_weekly_summary"),
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
