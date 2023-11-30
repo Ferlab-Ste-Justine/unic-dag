@@ -23,7 +23,7 @@ DOC = """
 ETL enriched pour le projet Surveillance Germes. 
 
 ### Description
-Cet ETL génère un rapport hebdomadaire sur les patients ayant eu un test positif pour une liste pathogène dans la 
+Cet ETL génère un rapport hebdomadaire sur les patients ayant eu un test positif pour une liste de pathogènes dans la 
 dernière semaine, du dimanche au samedi. Le rapport sera livré tous les vendredis. La toute première exécution doit contenir 
 les données historiques par semaine à partir du 1er novembre 2023, après cette date, le rapport devient hebdomadaire. 
 Une mise à jour sera faite et d'autres rapports s'ajouteront lorsque le chercheur aura reçu les autorisations éthiques.
@@ -35,9 +35,9 @@ Une mise à jour sera faite et d'autres rapports s'ajouteront lorsque le cherche
 * __Intervalle__ - Chaque semaine
 
 ### Fonctionnement
-Le début de l'intervalle et la fin de l'intervalle sont envoyés comme arguments à l'ETL enriched. L'intervalle correspond 
-à la période du Dimanche au Samedi pécédent. Donc pour le premier rapport du 10 Novembre 2023, l'intervalle est du 
-29 Octobre au 4 Novembre 2023. 
+la date logique du DAG est envoyé comme argument à l'ETL enriched. L'intervalle est calculé à partir de cette date et 
+correspond à la période du Dimanche au Samedi pécédent. Donc pour le premier rapport du 10 Novembre 2023, l'intervalle 
+est du 29 Octobre au 4 Novembre 2023. 
 
 La date de livraison (la date logique du DAG) est envoyée comme argument à l'ETL released. Cette date est 
 utilisée comme version de la release.
@@ -75,7 +75,7 @@ with dag:
 
         def enriched_arguments(destination: str) -> List[str]:
             # !!! Do not set to initial, otherwise the participant index will be re-generated !!!
-            return ["config/prod.conf", "default", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
+            return ["config/prod.conf", "default", destination, "{{ ds }}"]
 
 
         enriched_patient = SparkOperator(
@@ -110,7 +110,7 @@ with dag:
 
         def released_arguments(destination: str) -> List[str]:
             # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
-            return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
+            return ["config/prod.conf", "default", destination, "{{ ds }}"]
 
 
         released_weekly_summary = SparkOperator(
