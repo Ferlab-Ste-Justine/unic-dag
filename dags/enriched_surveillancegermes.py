@@ -48,7 +48,7 @@ args = default_args.copy()
 args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 
 dag = DAG(
-    dag_id="enriched_surveillance_germes",
+    dag_id="enriched_surveillancegermes",
     doc_md=DOC,
     start_date=datetime(2023, 11, 10, 6, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=1),
@@ -71,7 +71,7 @@ with dag:
 
     with TaskGroup(group_id="enriched") as enriched:
         ENRICHED_ZONE = "yellow"
-        ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.sil.surveillancegermes"
+        ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.sil.surveillancegermes.Main"
 
         def enriched_arguments(destination: str) -> List[str]:
             # !!! Do not set to initial, otherwise the participant index will be re-generated !!!
