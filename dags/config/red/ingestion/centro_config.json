@@ -7,20 +7,11 @@
     "destination_subzone": "raw",
     "main_class": "bio.ferlab.ui.etl.red.raw.centro.Main",
     "multiple_main_methods": false,
-    "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
+    "publish_class": "",
     "schemas": ["centro"],
     "datasets":
     [
-      {"dataset_id": "raw_centro_chusj_*"  , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_centro_fkp_*"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_centro_gen_*"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_centro_inh_*"    , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_centro_min_*"    , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_centro_neu_*"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_centro_ped_*"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_centro_pul_*"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_centro_scol_*"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_centro_tel_*"    , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "raw_centro_scol_*"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ]
   }, {
     "destination_zone": "yellow",
