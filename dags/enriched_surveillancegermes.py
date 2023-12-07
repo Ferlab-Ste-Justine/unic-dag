@@ -37,7 +37,9 @@ Une mise à jour sera faite et d'autres rapports s'ajouteront lorsque le cherche
 ### Fonctionnement
 la date logique du DAG est envoyé comme argument à l'ETL enriched. L'intervalle est calculé à partir de cette date et 
 correspond à la période du Dimanche au Samedi pécédent. Donc pour le premier rapport du 10 Novembre 2023, l'intervalle 
-est du 29 Octobre au 4 Novembre 2023. 
+est du 29 Octobre au 4 Novembre 2023 et est calculer dans l'ETL.  À noter que dans airflow, le DAG est céduler a la semaine. 
+Dans ce cas le 10 Novembre 2023 est le end_date et correspond au moment de génération du rapport.
+Donc pour le premier rapport du 10 Novembre 2023, le start_date du DAG est le 3 Novembre 2023. 
 
 La date de livraison (la date logique du DAG) est envoyée comme argument à l'ETL released. Cette date est 
 utilisée comme version de la release.
@@ -50,7 +52,7 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_surveillancegermes",
     doc_md=DOC,
-    start_date=datetime(2023, 11, 10, 6, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2023, 11, 3, 6, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=1),
     params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
@@ -75,7 +77,7 @@ with dag:
 
         def enriched_arguments(destination: str) -> List[str]:
             # !!! Do not set to initial, otherwise the participant index will be re-generated !!!
-            return ["config/prod.conf", "default", destination, "{{ ds }}"]
+            return ["config/prod.conf", "default", destination, "{{ data_interval_end }}"]
 
 
         enriched_patient = SparkOperator(
@@ -110,7 +112,7 @@ with dag:
 
         def released_arguments(destination: str) -> List[str]:
             # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
-            return ["config/prod.conf", "default", destination, "{{ ds }}"]
+            return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
 
 
         released_weekly_summary = SparkOperator(
