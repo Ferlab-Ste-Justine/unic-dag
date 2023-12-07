@@ -37,7 +37,7 @@ dag = DAG(
     dag_id="ingestion_cathydb",
     doc_md=DOC,
     start_date=datetime(2016, 12, 2),
-    end_date=datetime(2023, 4, 7),
+    end_date=datetime(2023, 8, 14),
     schedule_interval="@daily",
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
@@ -45,7 +45,7 @@ dag = DAG(
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=2,
-    max_active_tasks=1,
+    max_active_tasks=3,
     tags=["raw"]
 )
 
@@ -72,7 +72,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="xlarge-etl",
+        spark_config="medium-etl",
         dag=dag
     )
 
@@ -84,7 +84,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="large-etl",
+        spark_config="medium-etl",
         dag=dag
     )
 
@@ -96,7 +96,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="xlarge-etl",
+        spark_config="medium-etl",
         dag=dag
     )
 
@@ -120,7 +120,7 @@ with dag:
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="xlarge-etl",
+        spark_config="medium-etl",
         dag=dag
     )
 
