@@ -77,7 +77,7 @@ with dag:
 
     spark_task_configs = [
         ('curated_philips_sip_numeric_data', ['config/prod.conf', 'initial', 'curated_philips_sip_numeric_data', '{{ds}}'], 'large-etl'),
-        ('curated_philips_neo_numeric_data', ['config/prod.conf', 'initial', 'curated_philips_nneo_numeric_data', '{{ds}}'], 'large-etl'),
+        ('curated_philips_neo_numeric_data', ['config/prod.conf', 'initial', 'curated_philips_neo_numeric_data', '{{ds}}'], 'large-etl'),
         ('curated_philips_sip_external_patient', ['config/prod.conf', 'initial', 'curated_philips_sip_external_patient', '{{ds}}'], 'medium-etl'),
         ('curated_philips_neo_external_patient', ['config/prod.conf', 'initial', 'curated_philips_neo_external_patient', '{{ds}}'], 'medium-etl'),
     ]
