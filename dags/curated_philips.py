@@ -45,6 +45,17 @@ dag = DAG(
 )
 
 def create_spark_task(task_id, arguments, spark_config):
+    """
+    Create a SparkOperator task for the ETL process
+
+    Args:
+        task_id (str): task_id name
+        arguments (list): list of args
+        spark_config (str): required conf
+
+    Returns:
+        SparkOperator
+    """
     return SparkOperator(
         task_id=task_id,
         name=task_id,
