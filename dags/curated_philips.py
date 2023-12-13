@@ -44,7 +44,7 @@ dag = DAG(
     tags=TAGS
 )
 
-def create_spark_task(task_id, arguments, cluster_size):
+def create_spark_task(destination, cluster_size):
     """
     Create a SparkOperator task for the ETL process
 
@@ -56,10 +56,19 @@ def create_spark_task(task_id, arguments, cluster_size):
     Returns:
         SparkOperator
     """
+
+    args = [
+        "--config", "config/prod.conf",
+        "--steps", "initial",
+        "--app-name", destination,
+        "--destination", destination,
+        "--date", "{{ds}}"
+    ]
+
     return SparkOperator(
-        task_id=task_id,
-        name=task_id,
-        arguments=arguments,
+        task_id=destination,
+        name=destination,
+        arguments=args,
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=jar,
@@ -76,13 +85,13 @@ with dag:
     )
 
     spark_task_configs = [
-        ('curated_philips_sip_numeric_data', ['config/prod.conf', 'initial', 'curated_philips_sip_numeric_data', '{{ds}}'], 'large-etl'),
-        ('curated_philips_neo_numeric_data', ['config/prod.conf', 'initial', 'curated_philips_neo_numeric_data', '{{ds}}'], 'large-etl'),
-        ('curated_philips_sip_external_patient', ['config/prod.conf', 'initial', 'curated_philips_sip_external_patient', '{{ds}}'], 'medium-etl'),
-        ('curated_philips_neo_external_patient', ['config/prod.conf', 'initial', 'curated_philips_neo_external_patient', '{{ds}}'], 'medium-etl'),
+        ('curated_philips_sip_numeric_data', 'large-etl'),
+        ('curated_philips_neo_numeric_data', 'large-etl'),
+        ('curated_philips_sip_external_patient', 'medium-etl'),
+        ('curated_philips_neo_external_patient', 'medium-etl'),
     ]
 
-    spark_tasks = [create_spark_task(task_id, arguments, cluster_size) for task_id, arguments, cluster_size in spark_task_configs]
+    spark_tasks = [create_spark_task(destination, cluster_size) for destination, cluster_size in spark_task_configs]
 
     end = EmptyOperator(
         task_id='publish_curated_philips',
