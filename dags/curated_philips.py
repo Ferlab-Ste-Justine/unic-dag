@@ -44,14 +44,14 @@ dag = DAG(
     tags=TAGS
 )
 
-def create_spark_task(task_id, arguments, spark_config):
+def create_spark_task(task_id, arguments, cluster_size):
     """
     Create a SparkOperator task for the ETL process
 
     Args:
         task_id (str): task_id name
         arguments (list): list of args
-        spark_config (str): required conf
+        cluster_size (str): required conf
 
     Returns:
         SparkOperator
@@ -64,7 +64,7 @@ def create_spark_task(task_id, arguments, spark_config):
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config=spark_config,
+        cluster_size=cluster_size,
         dag=dag
     )
 
@@ -82,7 +82,7 @@ with dag:
         ('curated_philips_neo_external_patient', ['config/prod.conf', 'initial', 'curated_philips_neo_external_patient', '{{ds}}'], 'medium-etl'),
     ]
 
-    spark_tasks = [create_spark_task(task_id, arguments, spark_config) for task_id, arguments, spark_config in spark_task_configs]
+    spark_tasks = [create_spark_task(task_id, arguments, cluster_size) for task_id, arguments, cluster_size in spark_task_configs]
 
     end = EmptyOperator(
         task_id='publish_curated_philips',
