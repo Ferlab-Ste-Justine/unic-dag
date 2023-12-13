@@ -28,11 +28,12 @@ dag_args.update({
     'wait_for_downstream': True
 })
 
+
 dag = DAG(
     dag_id=DAG_ID,
     doc_md=DOC,
     start_date=datetime(2023, 9, 27, tzinfo=pendulum.timezone("America/Montreal")), # put this date only to test
-    schedule_interval='0 0 * * *',
+    schedule_interval=None,
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
     default_args=dag_args,
@@ -43,6 +44,38 @@ dag = DAG(
     tags=TAGS
 )
 
+def create_spark_task(destination, cluster_size):
+    """
+    Create a SparkOperator task for the ETL process
+
+    Args:
+        destination (str): name of the destination data to be processed
+        cluster_size (str): size of cluster used
+
+    Returns:
+        SparkOperator
+    """
+
+    args = [
+        "--config", "config/prod.conf",
+        "--steps", "initial",
+        "--app-name", destination,
+        "--destination", destination,
+        "--date", "{{ds}}"
+    ]
+
+    return SparkOperator(
+        task_id=destination,
+        name=destination,
+        arguments=args,
+        zone=ZONE,
+        spark_class=MAIN_CLASS,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config=cluster_size,
+        dag=dag
+    )
+
 with dag:
 
     start = EmptyOperator(
@@ -50,33 +83,18 @@ with dag:
         on_execute_callback=Slack.notify_dag_start
     )
 
-    curated_philips_sip_external_patient = SparkOperator(
-        task_id='curated_philips_sip_external_patient',
-        name='curated_philips_sip_external_patient',
-        arguments=['config/prod.conf', 'initial', 'curated_philips_sip_external_patient', '{{ds}}'],
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config='medium-etl',
-        dag=dag
-    )
+    spark_task_configs = [
+        ('curated_philips_sip_numeric_data', 'large-etl'),
+        ('curated_philips_neo_numeric_data', 'large-etl'),
+        ('curated_philips_sip_external_patient', 'medium-etl'),
+        ('curated_philips_neo_external_patient', 'medium-etl'),
+    ]
 
-    curated_philips_neo_external_patient = SparkOperator(
-        task_id='curated_philips_neo_external_patient',
-        name='curated_philips_neo_external_patient',
-        arguments=['config/prod.conf', 'initial', 'curated_philips_neo_external_patient', '{{ds}}'],
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config='medium-etl',
-        dag=dag
-    )
+    spark_tasks = [create_spark_task(destination, cluster_size) for destination, cluster_size in spark_task_configs]
 
     end = EmptyOperator(
         task_id='publish_curated_philips',
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> [curated_philips_sip_external_patient, curated_philips_neo_external_patient] >> end
+    start >> spark_tasks >> end
