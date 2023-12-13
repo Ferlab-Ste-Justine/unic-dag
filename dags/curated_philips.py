@@ -49,9 +49,8 @@ def create_spark_task(destination, cluster_size):
     Create a SparkOperator task for the ETL process
 
     Args:
-        task_id (str): task_id name
-        arguments (list): list of args
-        cluster_size (str): required conf
+        destination (str): name of the destination data to be processed
+        cluster_size (str): size of cluster used
 
     Returns:
         SparkOperator
