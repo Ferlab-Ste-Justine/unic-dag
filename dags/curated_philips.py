@@ -64,7 +64,7 @@ def create_spark_task(task_id, arguments, cluster_size):
         spark_class=MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        cluster_size=cluster_size,
+        spark_config=cluster_size,
         dag=dag
     )
 
