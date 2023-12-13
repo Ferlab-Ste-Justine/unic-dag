@@ -30,7 +30,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"released_indicateurssip_sejour"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_indicateurssip_sejour"           , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"released_indicateurssip_catheter"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"released_indicateurssip_ventilation"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"released_indicateurssip_extubation"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
@@ -46,7 +46,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"published_indicateurssip_sejour"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_indicateurssip_sejour"           , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_indicateurssip_catheter"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_indicateurssip_ventilation"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_indicateurssip_extubation"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
