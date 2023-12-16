@@ -35,7 +35,7 @@ dag = DAG(
     start_date=datetime(2023, 9, 27, tzinfo=pendulum.timezone("America/Montreal")), # put this date only to test
     schedule_interval=None,
     params=default_params,
-    dagrun_timeout=timedelta(hours=2),
+    dagrun_timeout=timedelta(hours=8),
     default_args=dag_args,
     is_paused_upon_creation=True,
     catchup=False,
