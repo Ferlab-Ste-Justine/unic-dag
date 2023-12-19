@@ -26,8 +26,11 @@ la run du 1 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
 
 """
 
-ZONE = "red"
-MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.cathydb.Main"
+INGESTION_ZONE = "red"
+ANONYMIZED_ZONE = "yellow"
+INGESTION_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.cathydb.Main"
+ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.philips.Main"
+
 args = default_args.copy()
 args.update({
     'start_date': datetime(2016, 12, 2),
@@ -44,10 +47,22 @@ dag = DAG(
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
-    max_active_runs=2,
-    max_active_tasks=3,
+    max_active_runs=1, # test with 1 active dag run & 1 task can scale later
+    max_active_tasks=1,
     tags=["raw"]
 )
+
+def arguments(destination: str, steps: str = "default") -> List[str]:
+    """
+    Generate Spark task arguments for the ETL process
+    """
+    return [
+        "--config", "config/prod.conf",
+        "--steps", steps,
+        "--app-name", destination,
+        "--destination", destination,
+        "--date", "{{ds}}"
+    ]
 
 with dag:
     start = EmptyOperator(
@@ -55,91 +70,48 @@ with dag:
         on_execute_callback=Slack.notify_dag_start
     )
 
-    def arguments(destination: str) -> List[str]:
-        return [
-            "--config", "config/prod.conf",
-            "--steps", "default",
-            "--app-name", destination,
-            "--destination", destination,
-            "--date", "{{ds}}"
-        ]
+    cathydb_raw_tasks = [
+        ("raw_cathydb_external_numeric", "medium-etl"),
+        ("raw_cathydb_external_wave", "medium-etl"),
+        ("raw_cathydb_external_patient", "medium-etl"),
+        ("raw_cathydb_piicix_num", "medium-etl"),
+        ("raw_cathydb_piicix_sig", "medium-etl"),
+        ("raw_cathydb_piicix_alertes", "small-etl"),
+    ]
 
-    cathydb_external_numeric = SparkOperator(
-        task_id="raw_cathydb_external_numeric",
-        name="raw-cathydb-external-numeric",
-        arguments=arguments("raw_cathydb_external_numeric"),
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
+    philips_anonymized_tasks = [
+        ("anonymized_philips_neo_numeric_data", "large-etl"),
+        ("anonymized_philips_sip_numeric_data", "large-etl"),
+    ]
+
+    raw_spark_tasks = [SparkOperator(
+        task_id=task_name,
+        name=task_name.replace("_","-"), # added because I don't want to change name we have before this might impact something in postgres db not sure
+        arguments=arguments(task_name),
+        zone=INGESTION_ZONE,
+        spark_class=INGESTION_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="medium-etl",
+        spark_config=cluster_size,
         dag=dag
-    )
+    ) for task_name, cluster_size in cathydb_raw_tasks]
 
-    cathydb_external_patient = SparkOperator(
-        task_id="raw_cathydb_external_patient",
-        name="raw-cathydb-external-patient",
-        arguments=arguments("raw_cathydb_external_patient"),
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
+    anonymized_spark_tasks = [SparkOperator(
+        task_id=task_name,
+        name=task_name.replace("_","-"), # will do same here to make them coherent
+        arguments=arguments(task_name, "initial"),
+        zone=ANONYMIZED_ZONE,
+        spark_class=ANONYMIZED_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="medium-etl",
+        spark_config=cluster_size,
         dag=dag
-    )
+    ) for task_name, cluster_size in philips_anonymized_tasks]
 
-    cathydb_external_wave = SparkOperator(
-        task_id="raw_cathydb_external_wave",
-        name="raw-cathydb-external-wave",
-        arguments=arguments("raw_cathydb_external_wave"),
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config="medium-etl",
-        dag=dag
-    )
-
-    cathydb_piicix_num = SparkOperator(
-        task_id="raw_cathydb_piicix_num",
-        name="raw-cathydb-piicix-num",
-        arguments=arguments("raw_cathydb_piicix_num"),
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config="medium-etl",
-        dag=dag
-    )
-
-    cathydb_piicix_sig = SparkOperator(
-        task_id="raw_cathydb_piicix_sig",
-        name="raw-cathydb-piicix-sig",
-        arguments=arguments("raw_cathydb_piicix_sig"),
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config="medium-etl",
-        dag=dag
-    )
-
-    cathydb_piicix_alertes = SparkOperator(
-        task_id="raw_cathydb_piicix_alertes",
-        name="raw-cathydb-piicix-alertes",
-        arguments=arguments("raw_cathydb_piicix_alertes"),
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config="small-etl",
-        dag=dag
-    )
 
     end = EmptyOperator(
         task_id="publish_ingestion_cathydb",
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> [cathydb_external_numeric, cathydb_external_wave, cathydb_external_patient, cathydb_piicix_num,
-              cathydb_piicix_sig, cathydb_piicix_alertes] >> end
+    start >> raw_spark_tasks >> anonymized_spark_tasks >> end
