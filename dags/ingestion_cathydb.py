@@ -99,7 +99,7 @@ with dag:
     anonymized_spark_tasks = [SparkOperator(
         task_id=task_name,
         name=task_name.replace("_","-"), # will do same here to make them coherent
-        arguments=arguments(task_name.replace("cathydb", "philips"), "initial"),
+        arguments=arguments(task_name.replace("cathydb", "philips"), "default"), # set destination to philips
         zone=ANONYMIZED_ZONE,
         spark_class=ANONYMIZED_MAIN_CLASS,
         spark_jar=jar,
