@@ -79,9 +79,9 @@ with dag:
         ("raw_cathydb_piicix_alertes", "small-etl"),
     ]
 
-    philips_anonymized_tasks = [
-        ("anonymized_philips_neo_numeric_data", "large-etl"),
-        ("anonymized_philips_sip_numeric_data", "large-etl"),
+    cathydb_anonymized_tasks = [
+        ("anonymized_cathydb_neo_numeric_data", "large-etl"),
+        ("anonymized_cathydb_sip_numeric_data", "large-etl"),
     ]
 
     raw_spark_tasks = [SparkOperator(
@@ -99,14 +99,14 @@ with dag:
     anonymized_spark_tasks = [SparkOperator(
         task_id=task_name,
         name=task_name.replace("_","-"), # will do same here to make them coherent
-        arguments=arguments(task_name, "initial"),
+        arguments=arguments(task_name.replace("cathydb", "philips"), "initial"),
         zone=ANONYMIZED_ZONE,
         spark_class=ANONYMIZED_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config=cluster_size,
         dag=dag
-    ) for task_name, cluster_size in philips_anonymized_tasks]
+    ) for task_name, cluster_size in cathydb_anonymized_tasks]
 
 
     end = EmptyOperator(
