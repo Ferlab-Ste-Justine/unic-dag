@@ -29,7 +29,7 @@ la run du 1 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
 INGESTION_ZONE = "red"
 ANONYMIZED_ZONE = "yellow"
 INGESTION_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.cathydb.Main"
-ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.philips.Main"
+ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.cathydb.Main"
 
 args = default_args.copy()
 args.update({
@@ -99,7 +99,7 @@ with dag:
     anonymized_spark_tasks = [SparkOperator(
         task_id=task_name,
         name=task_name.replace("_","-"), # will do same here to make them coherent
-        arguments=arguments(task_name.replace("cathydb", "philips"), "default"), # set destination to philips
+        arguments=arguments(task_name.replace("cathydb", "philips")), # set destination to philips
         zone=ANONYMIZED_ZONE,
         spark_class=ANONYMIZED_MAIN_CLASS,
         spark_jar=jar,
