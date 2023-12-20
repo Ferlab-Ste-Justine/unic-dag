@@ -65,8 +65,13 @@ def arguments(destination: str, steps: str = "default") -> List[str]:
     ]
 
 with dag:
-    start = EmptyOperator(
+    start_ingestion_cathydb = EmptyOperator(
         task_id="start_ingestion_cathydb",
+        on_execute_callback=Slack.notify_dag_start
+    )
+
+    start_anonymization_cathydb = EmptyOperator(
+        task_id="start_anonymization_cathydb",
         on_execute_callback=Slack.notify_dag_start
     )
 
@@ -108,10 +113,9 @@ with dag:
         dag=dag
     ) for task_name, cluster_size in cathydb_anonymized_tasks]
 
-
-    end = EmptyOperator(
+    publish_ingestion_cathydb = EmptyOperator(
         task_id="publish_ingestion_cathydb",
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> raw_spark_tasks >> anonymized_spark_tasks >> end
+    start_ingestion_cathydb >> raw_spark_tasks >> start_anonymization_cathydb >> anonymized_spark_tasks >> publish_ingestion_cathydb
