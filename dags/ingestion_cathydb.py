@@ -47,7 +47,7 @@ dag = DAG(
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
-    max_active_runs=1, # test with 1 active dag run & 1 task can scale later
+    max_active_runs=10, # test with 1 active dag run & 1 task can scale later
     max_active_tasks=1,
     tags=["raw"]
 )
