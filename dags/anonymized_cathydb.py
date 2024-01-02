@@ -5,8 +5,9 @@ DAG pour l'ingestion des data de neonat se trouvant dans cathydb
 
 
 from datetime import datetime, timedelta
-import pendulum
 from typing import List
+import pendulum
+
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
