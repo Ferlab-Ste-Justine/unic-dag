@@ -33,7 +33,6 @@ args = default_args.copy()
 LOCAL_TZ = pendulum.timezone("America/Montreal")
 
 args.update({
-    'start_date': datetime(2017, 1, 21, tzinfo=LOCAL_TZ),
     'depends_on_past': True,
     'wait_for_downstream': True,
     'provide_context': True})  # to use date of ingested data as input in main
@@ -41,8 +40,8 @@ args.update({
 dag = DAG(
     dag_id="anonymized_cathydb",
     doc_md=DOC,
-    start_date=datetime(2017, 1, 21),
-    end_date=datetime(2023, 8, 14),
+    start_date=datetime(2017, 1, 21, tzinfo=LOCAL_TZ),
+    end_date=datetime(2023, 8, 14, tzinfo=LOCAL_TZ),
     schedule_interval="@daily",
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
