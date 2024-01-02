@@ -27,9 +27,7 @@ la run du 1 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
 """
 
 INGESTION_ZONE = "red"
-ANONYMIZED_ZONE = "yellow"
 INGESTION_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.cathydb.Main"
-ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.cathydb.Main"
 
 args = default_args.copy()
 args.update({
@@ -70,11 +68,6 @@ with dag:
         on_execute_callback=Slack.notify_dag_start
     )
 
-    start_anonymization_cathydb = EmptyOperator(
-        task_id="start_anonymization_cathydb",
-        on_execute_callback=Slack.notify_dag_start
-    )
-
     cathydb_raw_tasks = [
         ("raw_cathydb_external_numeric", "medium-etl"),
         ("raw_cathydb_external_wave", "medium-etl"),
@@ -82,11 +75,6 @@ with dag:
         ("raw_cathydb_piicix_num", "medium-etl"),
         ("raw_cathydb_piicix_sig", "medium-etl"),
         ("raw_cathydb_piicix_alertes", "small-etl"),
-    ]
-
-    cathydb_anonymized_tasks = [
-        ("anonymized_cathydb_neo_numeric_data", "large-etl"),
-        ("anonymized_cathydb_sip_numeric_data", "large-etl"),
     ]
 
     raw_spark_tasks = [SparkOperator(
@@ -101,21 +89,10 @@ with dag:
         dag=dag
     ) for task_name, cluster_size in cathydb_raw_tasks]
 
-    anonymized_spark_tasks = [SparkOperator(
-        task_id=task_name,
-        name=task_name.replace("_","-"), # will do same here to make them coherent
-        arguments=arguments(task_name.replace("cathydb", "philips")), # set destination to philips
-        zone=ANONYMIZED_ZONE,
-        spark_class=ANONYMIZED_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config=cluster_size,
-        dag=dag
-    ) for task_name, cluster_size in cathydb_anonymized_tasks]
 
     publish_ingestion_cathydb = EmptyOperator(
         task_id="publish_ingestion_cathydb",
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start_ingestion_cathydb >> raw_spark_tasks >> start_anonymization_cathydb >> anonymized_spark_tasks >> publish_ingestion_cathydb
+    start_ingestion_cathydb >> raw_spark_tasks >> publish_ingestion_cathydb
