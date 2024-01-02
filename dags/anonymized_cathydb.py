@@ -3,8 +3,9 @@ DAG pour l'ingestion des data de neonat se trouvant dans cathydb
 """
 # pylint: disable=missing-function-docstring, duplicate-code
 
-import pendulum
+
 from datetime import datetime, timedelta
+import pendulum
 from typing import List
 
 from airflow import DAG
