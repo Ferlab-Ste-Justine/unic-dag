@@ -2,8 +2,12 @@
 DAG pour l'ingestion des data de neonat se trouvant dans cathydb
 """
 # pylint: disable=missing-function-docstring, duplicate-code
+
+
 from datetime import datetime, timedelta
 from typing import List
+import pendulum
+
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
@@ -21,19 +25,23 @@ ETL d'anonymisation' des données à haute résolution neonat et SIP à partir d
 Cet ETL roule pour anonymiser les données à haute résolution neonat et SIP à partir de CathyDB.
 """
 
+
 ANONYMIZED_ZONE = "yellow"
 ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.cathydb.Main"
 
 args = default_args.copy()
+LOCAL_TZ = pendulum.timezone("America/Montreal")
+
 args.update({
-    'start_date': datetime(2017, 1, 21),
+    'depends_on_past': True,
+    'wait_for_downstream': True,
     'provide_context': True})  # to use date of ingested data as input in main
 
 dag = DAG(
     dag_id="anonymized_cathydb",
     doc_md=DOC,
-    start_date=datetime(2017, 1, 21),
-    end_date=datetime(2023, 8, 14),
+    start_date=datetime(2017, 1, 21, tzinfo=LOCAL_TZ),
+    end_date=datetime(2023, 8, 14, tzinfo=LOCAL_TZ),
     schedule_interval="@daily",
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
