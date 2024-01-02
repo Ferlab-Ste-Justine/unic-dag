@@ -84,8 +84,6 @@ with dag:
     )
 
     spark_task_configs = [
-        ('curated_philips_sip_numeric_data', 'large-etl'),
-        ('curated_philips_neo_numeric_data', 'large-etl'),
         ('curated_philips_sip_external_patient', 'medium-etl'),
         ('curated_philips_neo_external_patient', 'medium-etl'),
     ]
