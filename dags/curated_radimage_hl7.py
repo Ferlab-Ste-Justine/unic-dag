@@ -47,7 +47,7 @@ dag = DAG(
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=1,
-    max_active_tasks=2,
+    max_active_tasks=1,
     tags=["curated"]
 )
 
@@ -57,33 +57,61 @@ with dag:
         on_execute_callback=Slack.notify_dag_start
     )
 
-    curated_radimage_hl7_oru_r01 = SparkOperator(
-        task_id="curated_radimage_hl7_oru_r01",
-        name="curated-radimage-hl7-oru-r01",
-        arguments=["config/prod.conf", "initial", "curated_radimage_hl7_oru_r01", '{{ds}}'],  # {{ds}} input date
+    radimage_hl7_curated_tasks = [
+        ("curated_radimage_hl7_oru_r01_al1", "small-etl"),
+        ("curated_radimage_hl7_oru_r01_nte", "small-etl"),
+        ("curated_radimage_hl7_oru_r01_obr", "small-etl"),
+        ("curated_radimage_hl7_oru_r01_obx", "small-etl"),
+        ("curated_radimage_hl7_oru_r01_orc", "small-etl"),
+        ("curated_radimage_hl7_oru_r01_pid", "small-etl"),
+        ("curated_radimage_hl7_oru_r01_pv1", "small-etl"),
+        ("curated_radimage_hl7_oru_r01_zal", "small-etl"),
+        ("curated_radimage_hl7_oru_r01_zbr", "small-etl"),
+        ("curated_radimage_hl7_oru_r01_zdc", "small-etl"),
+        ("curated_radimage_hl7_oru_r01_zrc", "small-etl"),
+    ]
+
+    radimage_hl7_curated = [SparkOperator(
+        task_id=task_name,
+        name=task_name.replace("_","-"),
+        arguments=["config/prod.conf", "default", task_name, '{{ds}}'],
         zone=CURATED_ZONE,
         spark_class=CURATED_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="small-etl",
+        spark_config=cluster_size,
         dag=dag
-    )
+    ) for task_name, cluster_size in radimage_hl7_curated_tasks]
 
-    anonymized_radimage_hl7_oru_r01 = SparkOperator(
-        task_id="anonymized_radimage_hl7_oru_r01",
-        name="anonymized-radimage-hl7-oru-r01",
-        arguments=["config/prod.conf", "initial", "anonymized_radimage_hl7_oru_r01"],
-        zone=ANONYMIZED_ZONE,
-        spark_class=ANONYMIZED_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config="small-etl",
-        dag=dag
-    )
+    # radimage_hl7_anonymized_tasks = [
+    #     ("anonymized_radimage_hl7_oru_r01_al1", "small-etl"),
+    #     ("anonymized_radimage_hl7_oru_r01_nte", "small-etl"),
+    #     ("anonymized_radimage_hl7_oru_r01_obr", "small-etl"),
+    #     ("anonymized_radimage_hl7_oru_r01_obx", "small-etl"),
+    #     ("anonymized_radimage_hl7_oru_r01_orc", "small-etl"),
+    #     ("anonymized_radimage_hl7_oru_r01_pid", "small-etl"),
+    #     ("anonymized_radimage_hl7_oru_r01_pv1", "small-etl"),
+    #     ("anonymized_radimage_hl7_oru_r01_zal", "small-etl"),
+    #     ("anonymized_radimage_hl7_oru_r01_zbr", "small-etl"),
+    #     ("anonymized_radimage_hl7_oru_r01_zdc", "small-etl"),
+    #     ("anonymized_radimage_hl7_oru_r01_zrc", "small-etl"),
+    # ]
+    #
+    # radimage_hl7_anonymized = [SparkOperator(
+    #     task_id=task_name,
+    #     name=task_name.replace("_","-"),
+    #     arguments=["config/prod.conf", "default", task_name, '{{ds}}'],
+    #     zone=ANONYMIZED_ZONE,
+    #     spark_class=ANONYMIZED_MAIN_CLASS,
+    #     spark_jar=jar,
+    #     spark_failure_msg=spark_failure_msg,
+    #     spark_config=cluster_size,
+    #     dag=dag
+    # ) for task_name, cluster_size in radimage_hl7_anonymized_tasks]
 
     end = EmptyOperator(
         task_id="publish_curated_radimage_hl7",
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> curated_radimage_hl7_oru_r01 >> anonymized_radimage_hl7_oru_r01 >> end
+    start >> radimage_hl7_curated >> end
