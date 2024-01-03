@@ -72,6 +72,7 @@ with dag:
         ("raw_cathydb_external_numeric", "medium-etl"),
         ("raw_cathydb_external_wave", "medium-etl"),
         ("raw_cathydb_external_patient", "medium-etl"),
+        ("raw_cathydb_icca_htr", "medium-etl"),
         ("raw_cathydb_piicix_num", "medium-etl"),
         ("raw_cathydb_piicix_sig", "medium-etl"),
         ("raw_cathydb_piicix_alertes", "small-etl"),
