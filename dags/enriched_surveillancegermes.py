@@ -53,7 +53,7 @@ dag = DAG(
     dag_id="enriched_surveillancegermes",
     doc_md=DOC,
     start_date=datetime(2023, 11, 3, 6, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval=timedelta(weeks=1),
+    schedule_interval="0 9 * * 4", # chaque jeudi à 9h
     params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,
