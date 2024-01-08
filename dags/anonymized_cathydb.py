@@ -45,7 +45,7 @@ dag = DAG(
     schedule_interval="@daily",
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
-    default_args=args,
+    default_args=args,git st
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=1, # test with 1 active dag run & 1 task can scale later
@@ -73,6 +73,8 @@ with dag:
     )
 
     cathydb_anonymized_tasks = [
+        ("anonymized_cathydb_sip_alert", "small-etl"),
+        ("anonymized_cathydb_neo_alert", "small-etl"),
         ("anonymized_cathydb_neo_numeric_data", "large-etl"),
         ("anonymized_cathydb_sip_numeric_data", "large-etl"),
     ]
