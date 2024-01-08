@@ -45,7 +45,7 @@ dag = DAG(
     schedule_interval="@daily",
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
-    default_args=args,git st
+    default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=1, # test with 1 active dag run & 1 task can scale later
