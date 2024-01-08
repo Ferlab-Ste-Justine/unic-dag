@@ -73,6 +73,8 @@ with dag:
     )
 
     cathydb_anonymized_tasks = [
+        ("anonymized_cathydb_sip_alert", "small-etl"),
+        ("anonymized_cathydb_neo_alert", "small-etl"),
         ("anonymized_cathydb_neo_numeric_data", "large-etl"),
         ("anonymized_cathydb_sip_numeric_data", "large-etl"),
     ]
