@@ -28,8 +28,8 @@ La run du 2 janvier 2020 parse les données du 1 janvier dans le lac.
 
 ANONYMIZED_ZONE = "yellow"
 CURATED_ZONE = "red"
-ANONYMIZED_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
-CURATED_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
+ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
+CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
 args = default_args.copy()
 args.update({
     'provide_context': True,
@@ -47,7 +47,7 @@ dag = DAG(
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=1,
-    max_active_tasks=2,
+    max_active_tasks=1,
     tags=["curated"]
 )
 
@@ -57,33 +57,49 @@ with dag:
         on_execute_callback=Slack.notify_dag_start
     )
 
-    curated_softpath_hl7_oru_r01 = SparkOperator(
-        task_id="curated_softpath_hl7_oru_r01",
-        name="curated-softpath-hl7-oru-r01",
-        arguments=["config/prod.conf", "initial", "curated_softpath_hl7_oru_r01", '{{ds}}'],  # {{ds}} input date
-        zone=CURATED_ZONE,
-        spark_class=CURATED_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config="small-etl",
-        dag=dag
-    )
+    softpath_hl7_curated_tasks = [
+        ("curated_softpath_hl7_oru_r01_pid", "small-etl"),
+        ("curated_softpath_hl7_oru_r01_pv1", "small-etl"),
+        ("curated_softpath_hl7_oru_r01_orc", "small-etl"),
+        ("curated_softpath_hl7_oru_r01_obr", "small-etl"),
+        ("curated_softpath_hl7_oru_r01_obx", "small-etl")
+    ]
 
-    anonymized_softpath_hl7_oru_r01 = SparkOperator(
-        task_id="anonymized_softpath_hl7_oru_r01",
-        name="anonymized-softpath-hl7-oru-r01",
-        arguments=["config/prod.conf", "initial", "anonymized_softpath_hl7_oru_r01"],
-        zone=ANONYMIZED_ZONE,
-        spark_class=ANONYMIZED_CLASS,
+    softpath_hl7_curated = [SparkOperator(
+        task_id=task_name,
+        name=task_name.replace("_","-"),
+        arguments=["config/prod.conf", "default", task_name, '{{ds}}'],
+        zone=CURATED_ZONE,
+        spark_class=CURATED_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="small-etl",
+        spark_config=cluster_size,
         dag=dag
-    )
+    ) for task_name, cluster_size in softpath_hl7_curated_tasks]
+
+    # softpath_hl7_anonymized_tasks = [
+    #     ("anonymized_softpath_hl7_oru_r01_pid", "small-etl"),
+    #     ("anonymized_softpath_hl7_oru_r01_pv1", "small-etl"),
+    #     ("anonymized_softpath_hl7_oru_r01_orc", "small-etl"),
+    #     ("anonymized_softpath_hl7_oru_r01_obr", "small-etl"),
+    #     ("anonymized_softpath_hl7_oru_r01_obx", "small-etl")
+    # ]
+    #
+    # softpath_hl7_anonymized = [SparkOperator(
+    #     task_id=task_name,
+    #     name=task_name.replace("_","-"),
+    #     arguments=["config/prod.conf", "default", task_name, '{{ds}}'],
+    #     zone=ANONYMIZED_ZONE,
+    #     spark_class=ANONYMIZED_MAIN_CLASS,
+    #     spark_jar=jar,
+    #     spark_failure_msg=spark_failure_msg,
+    #     spark_config=cluster_size,
+    #     dag=dag
+    # ) for task_name, cluster_size in softpath_hl7_anonymized_tasks]
 
     end = EmptyOperator(
         task_id="publish_curated_softpath_hl7",
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> curated_softpath_hl7_oru_r01 >> anonymized_softpath_hl7_oru_r01 >> end
+    start >> softpath_hl7_curated >> end
