@@ -8,6 +8,8 @@ from typing import List
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 
+import pendulum
+
 from core.config import default_params, default_args, spark_failure_msg, jar
 from core.slack import Slack
 from operators.spark import SparkOperator
@@ -18,9 +20,7 @@ DOC = """
 ETL d'ingestion des données à haute résolution de la table ICCA htr à partir de CathyDB
 
 ### Description
-Cet ETL roule pour ingérer les données à haute résolution de la table ICCA htr à partir de CathyDB depuis le 2 Decembre 2016.
-L'ingestion des données va s'arrêter à un certain moment en utilisant ce dag(à préciser la date exacte),
-par la suite le dag philips sera exclusivement  utilisé.
+Cet ETL roule pour ingérer les données à haute résolution de la table ICCA htr à partir de CathyDB depuis le 21 Mai 2015.
 La date de la run dans Airflow ingère les données de cette journée même, exemple:
 la run du 1 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
 
@@ -31,14 +31,15 @@ INGESTION_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.cathydb.Main"
 
 args = default_args.copy()
 args.update({
-    'start_date': datetime(2016, 12, 2),
-    'provide_context': True})  # to use date of ingested data as input in main
+    'start_date': datetime(2015, 5, 21, tzinfo=pendulum.timezone("America/Montreal")),
+    'provide_context': True,
+    'depends_on_past': True,
+    'wait_for_downstream': True})
 
 dag = DAG(
     dag_id="ingestion_icca_htr_cathydb",
     doc_md=DOC,
-    start_date=datetime(2016, 12, 2),
-    end_date=datetime(2023, 8, 14),
+    start_date=datetime(2015, 5, 21, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval="@daily",
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
