@@ -1,5 +1,5 @@
 """
-DAG pour l'ingestion des data de neonat se trouvant dans cathydb
+DAG pour l'ingestion des data de ICCA htr se trouvant dans cathydb
 """
 # pylint: disable=missing-function-docstring, duplicate-code
 from datetime import datetime, timedelta
@@ -15,12 +15,12 @@ from operators.spark import SparkOperator
 DOC = """
 # Ingestion CathyDB DAG
 
-ETL d'ingestion des données à haute résolution neonat et SIP à partir de CathyDB
+ETL d'ingestion des données à haute résolution de la table ICCA htr à partir de CathyDB
 
 ### Description
-Cet ETL roule pour ingérer les données à haute résolution neonat et SIP à partir de CathyDB depuis le 2 Decembre 2016.
-L'ingestion des données neonat va s'arrêter à un certain moment en utilisant ce dag(à préciser la date exacte),
-par la suite le dag philips sera exclusivement  utilisé pour neonat.
+Cet ETL roule pour ingérer les données à haute résolution de la table ICCA htr à partir de CathyDB depuis le 2 Decembre 2016.
+L'ingestion des données va s'arrêter à un certain moment en utilisant ce dag(à préciser la date exacte),
+par la suite le dag philips sera exclusivement  utilisé.
 La date de la run dans Airflow ingère les données de cette journée même, exemple:
 la run du 1 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
 
@@ -35,7 +35,7 @@ args.update({
     'provide_context': True})  # to use date of ingested data as input in main
 
 dag = DAG(
-    dag_id="ingestion_cathydb",
+    dag_id="ingestion_icca_htr_cathydb",
     doc_md=DOC,
     start_date=datetime(2016, 12, 2),
     end_date=datetime(2023, 8, 14),
