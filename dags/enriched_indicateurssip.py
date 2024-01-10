@@ -85,7 +85,7 @@ with dag:
         enriched_sejour = SparkOperator(
             task_id="enriched_indicateurssip_sejour",
             name="enriched-indicateurssip-sejour",
-            arguments=enriched_arguments("enriched_indicateurssip_sejour"),
+            arguments=["config/prod.conf", "initial", "enriched_indicateurssip_sejour"],
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
