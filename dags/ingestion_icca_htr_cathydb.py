@@ -45,7 +45,7 @@ dag = DAG(
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
-    max_active_runs=1, # test with 1 active dag run & 1 task can scale later
+    max_active_runs=1,
     max_active_tasks=1,
     tags=["raw"]
 )
@@ -63,36 +63,27 @@ def arguments(destination: str, steps: str = "default") -> List[str]:
     ]
 
 with dag:
-    start_ingestion_cathydb = EmptyOperator(
-        task_id="start_ingestion_cathydb",
+    start_ingestion_icca_htr = EmptyOperator(
+        task_id="start_ingestion_icca_htr_cathydb",
         on_execute_callback=Slack.notify_dag_start
     )
 
-    cathydb_raw_tasks = [
-        ("raw_cathydb_external_numeric", "medium-etl"),
-        ("raw_cathydb_external_wave", "medium-etl"),
-        ("raw_cathydb_external_patient", "medium-etl"),
-        ("raw_cathydb_piicix_num", "medium-etl"),
-        ("raw_cathydb_piicix_sig", "medium-etl"),
-        ("raw_cathydb_piicix_alertes", "small-etl"),
-    ]
-
-    raw_spark_tasks = [SparkOperator(
-        task_id=task_name,
-        name=task_name.replace("_","-"), # added because I don't want to change name we have before this might impact something in postgres db not sure
-        arguments=arguments(task_name),
+    icca_htr = SparkOperator(
+        task_id="raw_cathydb_icca_htr",
+        name="raw-cathydb-icca-htr",
+        arguments=arguments("raw_cathydb_icca_htr"),
         zone=INGESTION_ZONE,
         spark_class=INGESTION_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config=cluster_size,
+        spark_config="medium-etl",
         dag=dag
-    ) for task_name, cluster_size in cathydb_raw_tasks]
+    )
 
 
-    publish_ingestion_cathydb = EmptyOperator(
-        task_id="publish_ingestion_cathydb",
+    publish_ingestion_icca_htr = EmptyOperator(
+        task_id="publish_ingestion_icca_htr_cathydb",
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start_ingestion_cathydb >> raw_spark_tasks >> publish_ingestion_cathydb
+    start_ingestion_icca_htr >> icca_htr >> publish_ingestion_icca_htr
