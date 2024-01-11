@@ -27,7 +27,7 @@ la run du 1 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
 """
 
 INGESTION_ZONE = "red"
-INGESTION_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.icca.Main"
+INGESTION_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.icca.iccaHtr.Main"
 
 args = default_args.copy()
 args.update({
