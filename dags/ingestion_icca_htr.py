@@ -27,7 +27,7 @@ la run du 1 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
 """
 
 INGESTION_ZONE = "red"
-INGESTION_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.cathydb.Main"
+INGESTION_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.icca.Main"
 
 args = default_args.copy()
 args.update({
@@ -37,7 +37,7 @@ args.update({
     'wait_for_downstream': True})
 
 dag = DAG(
-    dag_id="ingestion_icca_htr_cathydb",
+    dag_id="ingestion_icca_htr",
     doc_md=DOC,
     start_date=datetime(2015, 5, 21, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval="@daily",
@@ -65,14 +65,14 @@ def arguments(destination: str, steps: str = "default") -> List[str]:
 
 with dag:
     start_ingestion_icca_htr = EmptyOperator(
-        task_id="start_ingestion_icca_htr_cathydb",
+        task_id="start_ingestion_icca_htr",
         on_execute_callback=Slack.notify_dag_start
     )
 
     icca_htr = SparkOperator(
-        task_id="raw_cathydb_icca_htr",
-        name="raw-cathydb-icca-htr",
-        arguments=arguments("raw_cathydb_icca_htr"),
+        task_id="raw_icca_icca_htr",
+        name="raw-icca-icca-htr",
+        arguments=arguments("raw_icca_icca_htr"),
         zone=INGESTION_ZONE,
         spark_class=INGESTION_MAIN_CLASS,
         spark_jar=jar,
@@ -83,7 +83,7 @@ with dag:
 
 
     publish_ingestion_icca_htr = EmptyOperator(
-        task_id="publish_ingestion_icca_htr_cathydb",
+        task_id="publish_ingestion_icca_htr",
         on_success_callback=Slack.notify_dag_completion
     )
 
