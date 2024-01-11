@@ -195,7 +195,7 @@ with dag:
         PUBLISHED_MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
 
         def published_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "initial", destination]
+            return ["config/prod.conf", "default", destination]
 
         published_sejour = SparkOperator(
             task_id="published_indicateurssip_sejour",
