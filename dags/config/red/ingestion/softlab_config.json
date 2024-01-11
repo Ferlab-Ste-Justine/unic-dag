@@ -6,7 +6,7 @@
     "destination_zone": "red",
     "destination_subzone": "raw",
     "main_class": "bio.ferlab.ui.etl.red.raw.softlab.Main",
-    "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
+    "publish_class": "",
     "schemas": ["softlab", "softmic"],
     "multiple_main_methods": true,
     "datasets":
