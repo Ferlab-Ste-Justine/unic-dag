@@ -11,7 +11,7 @@ from airflow.operators.empty import EmptyOperator
 import pendulum
 
 from core.config import default_params, default_args, spark_failure_msg, jar
-from core.slack import Slack
+# from core.slack import Slack
 from operators.spark import SparkOperator
 
 DOC = """
@@ -64,7 +64,7 @@ def arguments(destination: str, steps: str = "default") -> List[str]:
 with dag:
     start_ingestion_icca_htr = EmptyOperator(
         task_id="start_ingestion_icca_htr",
-        on_execute_callback=Slack.notify_dag_start
+        # on_execute_callback=Slack.notify_dag_start
     )
 
     icca_htr = SparkOperator(
@@ -82,7 +82,7 @@ with dag:
 
     publish_ingestion_icca_htr = EmptyOperator(
         task_id="publish_ingestion_icca_htr",
-        on_success_callback=Slack.notify_dag_completion
+        # on_success_callback=Slack.notify_dag_completion
     )
 
     start_ingestion_icca_htr >> icca_htr >> publish_ingestion_icca_htr

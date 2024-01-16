@@ -13,7 +13,7 @@ from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 
 from core.config import default_params, default_args, spark_failure_msg, jar
-from core.slack import Slack
+# from core.slack import Slack
 from operators.spark import SparkOperator
 
 DOC = """
@@ -69,7 +69,7 @@ with dag:
 
     start_anonymization_cathydb = EmptyOperator(
         task_id="start_anonymization_cathydb",
-        on_execute_callback=Slack.notify_dag_start
+        # on_execute_callback=Slack.notify_dag_start
     )
 
     cathydb_anonymized_tasks = [
@@ -93,7 +93,7 @@ with dag:
 
     publish_anonymized_cathydb = EmptyOperator(
         task_id="publish_ingestion_cathydb",
-        on_success_callback=Slack.notify_dag_completion
+        # on_success_callback=Slack.notify_dag_completion
     )
 
     start_anonymization_cathydb >> anonymized_spark_tasks >> publish_anonymized_cathydb
