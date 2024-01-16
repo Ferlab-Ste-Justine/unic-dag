@@ -11,7 +11,7 @@ from airflow.operators.empty import EmptyOperator
 import pendulum
 
 from core.config import default_params, default_args, spark_failure_msg, jar
-from core.slack import Slack
+# from core.slack import Slack
 from operators.spark import SparkOperator
 
 DOC = """
