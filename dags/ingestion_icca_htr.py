@@ -32,7 +32,9 @@ INGESTION_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.icca.iccaHtr.Main"
 args = default_args.copy()
 args.update({
     'start_date': datetime(2015, 5, 21, tzinfo=pendulum.timezone("America/Montreal")),
-    'provide_context': True})
+    'provide_context': True,
+    'depends_on_past': True,
+    'wait_for_downstream': True})
 
 dag = DAG(
     dag_id="ingestion_icca_htr",
@@ -44,8 +46,8 @@ dag = DAG(
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
-    max_active_runs=2,
-    max_active_tasks=2,
+    max_active_runs=1,
+    max_active_tasks=1,
     tags=["raw"]
 )
 
