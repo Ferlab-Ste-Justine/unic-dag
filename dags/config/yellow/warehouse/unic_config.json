@@ -14,7 +14,7 @@
       {"dataset_id":"warehouse_diagnostic_reference"      , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
       {"dataset_id":"warehouse_fetal_ultrasound"          , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
       {"dataset_id":"warehouse_intervention_reference"    , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-      {"dataset_id":"warehouse_lab_results"               , "cluster_type": "large"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+      {"dataset_id":"warehouse_lab_results"               , "cluster_type": "medium" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
       {"dataset_id":"warehouse_lab_test_reference"        , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
       {"dataset_id":"warehouse_maternal_ultrasound"       , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
       {"dataset_id":"warehouse_medical_imaging"           , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
