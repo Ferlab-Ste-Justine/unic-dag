@@ -12,7 +12,8 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"enriched_predisepsis_culture", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_predisepsis_culture"]}
+        {"dataset_id":"enriched_predisepsis_culture", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_predisepsis_culture"]},
+        {"dataset_id":"enriched_predisepsis_participant_index", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_predisepsis_participant_index"]}
       ]
     },
 
