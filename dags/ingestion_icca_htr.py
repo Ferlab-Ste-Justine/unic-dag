@@ -21,8 +21,8 @@ ETL d'ingestion des données à haute résolution de la table ICCA htr à partir
 
 ### Description
 Cet ETL roule pour ingérer les données à haute résolution de la table ICCA htr à partir de CathyDB depuis le 21 Mai 2015.
-La date de la run dans Airflow ingère les données de cette journée même, exemple:
-la run du 1 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
+La date de la run dans Airflow ingère les données de la journée précédente, exemple:
+la run du 2 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
 
 """
 
