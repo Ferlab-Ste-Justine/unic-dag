@@ -28,7 +28,7 @@
       {"dataset_id": "anonymized_medecho_mep_vue_consultation"   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_medecho_mep_vue_destination"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_medecho_mep_vue_diagnostic"     , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_medecho_mep_vue_episode"        , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_medecho_mep_vue_episode"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_medecho_mep_vue_etude"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_medecho_mep_vue_intervention"   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_medecho_mep_vue_merenouveaune"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
