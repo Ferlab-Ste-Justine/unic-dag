@@ -12,7 +12,7 @@
             "schemas": [],
             "datasets": [
                 {
-                    "dataset_id": "curated_qc_combined",
+                    "dataset_id": "curated_quanum_chartmaxx",
                     "cluster_type": "large",
                     "run_type": "initial",
                     "cluster_specs": {},
