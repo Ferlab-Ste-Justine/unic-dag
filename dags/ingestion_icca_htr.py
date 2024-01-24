@@ -26,8 +26,10 @@ la run du 2 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
 
 """
 
-INGESTION_ZONE = "red"
-INGESTION_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.icca.iccaHtr.Main"
+RAW_ZONE = "red"
+RAW_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.icca.iccaHtr.Main"
+ANONYMIZED_ZONE = "yellow"
+ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
 
 args = default_args.copy()
 args.update({
@@ -69,22 +71,33 @@ with dag:
         # on_execute_callback=Slack.notify_dag_start
     )
 
-    icca_htr = SparkOperator(
+    raw_icca_htr = SparkOperator(
         task_id="raw_icca_icca_htr",
         name="raw-icca-icca-htr",
         arguments=arguments("raw_icca_icca_htr"),
-        zone=INGESTION_ZONE,
-        spark_class=INGESTION_MAIN_CLASS,
+        zone=RAW_ZONE,
+        spark_class=RAW_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config="medium-etl",
         dag=dag
     )
 
+    anonymized_icca_htr = SparkOperator(
+        task_id="anonymized_icca_icca_htr",
+        name="anonymized-icca-icca-htr",
+        arguments=arguments("anonymized_icca_icca_htr"),
+        zone=ANONYMIZED_ZONE,
+        spark_class=ANONYMIZED_MAIN_CLASS,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config="medium-etl",
+        dag=dag
+    )
 
     publish_ingestion_icca_htr = EmptyOperator(
         task_id="publish_ingestion_icca_htr",
         # on_success_callback=Slack.notify_dag_completion
     )
 
-    start_ingestion_icca_htr >> icca_htr >> publish_ingestion_icca_htr
+    start_ingestion_icca_htr >> raw_icca_htr >> anonymized_icca_htr >> publish_ingestion_icca_htr
