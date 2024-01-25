@@ -33,7 +33,6 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id": "released_pedicss_participant_index"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "released_pedicss_patient"                         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "released_pedicss_hospitalisation"                 , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "released_pedicss_hospitalisation_diagnostics"     , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -53,7 +52,6 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id": "published_pedicss_participant_index"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "published_pedicss_patient"                         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "published_pedicss_hospitalisation"                 , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "published_pedicss_hospitalisation_diagnostics"     , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
