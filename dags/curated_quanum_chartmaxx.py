@@ -2,14 +2,13 @@
 DAG that handles the ETL process for curated Philips.
 """
 
-from datetime import datetime, timedelta
-import pendulum
+from datetime import timedelta
+
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 
 from core.config import default_args, spark_failure_msg, jar, default_params
-from core.slack import Slack
 from operators.spark import SparkOperator
 
 
