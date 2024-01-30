@@ -38,25 +38,5 @@
         {"dataset_id": "curated_chartmaxx_v*"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_chartmaxx_form_name_vw"]}
       ]
     }
-    // {
-    //   "destination_zone": "yellow",
-    //   "destination_subzone": "anonymized",
-    //   "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
-    // "multiple_main_methods": false,
-    //   "publish_class": "",
-    //   "schemas": [],
-    //   "datasets":
-    //   [
-    //     {"dataset_id": "anonymized_chartmaxx_cmformcapture_obstetric_record*"     , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-    //     {"dataset_id": "anonymized_chartmaxx_cmformcapture_deletes"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-
-    //     {"dataset_id": "anonymized_chartmaxx_a*"                                  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-    //     {"dataset_id": "anonymized_chartmaxx_childhood_asthma_test_4_11_years_old", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-    //     {"dataset_id": "anonymized_chartmaxx_dossier*"                            , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-    //     {"dataset_id": "anonymized_chartmaxx_p*"                                  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-    //     {"dataset_id": "anonymized_chartmaxx_clinique_*"                          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
-
-    //   ]
-    // }
   ]
 }
