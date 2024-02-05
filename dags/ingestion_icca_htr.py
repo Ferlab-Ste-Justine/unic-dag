@@ -29,7 +29,7 @@ la run du 2 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
 RAW_ZONE = "red"
 RAW_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.icca.iccaHtr.Main"
 ANONYMIZED_ZONE = "yellow"
-ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
+ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.highresolution.Main"
 
 args = default_args.copy()
 args.update({
