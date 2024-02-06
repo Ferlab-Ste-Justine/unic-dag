@@ -54,7 +54,7 @@ dag = DAG(
 with dag:
     start = EmptyOperator(
         task_id="start_curated_radimage_hl7",
-        on_execute_callback=Slack.notify_dag_start
+        # on_execute_callback=Slack.notify_dag_start
     )
 
     radimage_hl7_curated_tasks = [
@@ -111,7 +111,7 @@ with dag:
 
     end = EmptyOperator(
         task_id="publish_curated_radimage_hl7",
-        on_success_callback=Slack.notify_dag_completion
+        # on_success_callback=Slack.notify_dag_completion
     )
 
     start >> radimage_hl7_curated >> end
