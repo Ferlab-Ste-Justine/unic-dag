@@ -32,9 +32,7 @@ ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
 CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
 args = default_args.copy()
 args.update({
-    'provide_context': True,
-    'depends_on_past': True,
-    'wait_for_downstream': True})
+    'provide_context': True})
 
 dag = DAG(
     dag_id="curated_radimage_hl7",
