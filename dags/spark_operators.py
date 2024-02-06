@@ -238,10 +238,10 @@ def create_spark_job(destination: str,
             ]
     elif subzone == "curated" and main_class == "bio.ferlab.ui.etl.red.curated.quanumchartmaxx.Main":
         args = [
-                destination,
                 "--config", config_file,
                 "--steps", run_type,
-                "--app-name", destination
+                "--app-name", destination,
+                "--destination", destination
             ]
     elif subzone == "released":
         args.append(version)
