@@ -13,8 +13,8 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id": "curated_chartmaxx_clinique_migo"          , "cluster_type": "small"  , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
-        {"dataset_id": "curated_quanum_plan_daction_pour_lasthme" , "cluster_type": "small"  , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+        {"dataset_id": "curated_chartmaxx_clinique_migo"             , "cluster_type": "small"  , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id": "curated_chartmaxx_plan_daction_pour_lasthme" , "cluster_type": "small"  , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
       ]
     }
   ]
