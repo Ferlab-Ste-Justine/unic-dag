@@ -48,7 +48,7 @@ dag = DAG(
     catchup=True,
     max_active_runs=1,
     max_active_tasks=1,
-    tags=["raw"]
+    tags=["anonymized"]
 )
 
 def arguments(destination: str, steps: str = "default") -> List[str]:
