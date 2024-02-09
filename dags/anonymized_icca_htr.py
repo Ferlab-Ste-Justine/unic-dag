@@ -82,7 +82,7 @@ with dag:
     )
 
     publish_anonymized_icca_htr = EmptyOperator(
-        task_id="publish_ingestion_icca_htr",
+        task_id="publish_anonymized_icca_htr",
         # on_success_callback=Slack.notify_dag_completion
     )
 
