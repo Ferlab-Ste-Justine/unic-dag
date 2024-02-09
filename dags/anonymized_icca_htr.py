@@ -36,7 +36,7 @@ args.update({
     'wait_for_downstream': True})
 
 dag = DAG(
-    dag_id="ingestion_icca_htr",
+    dag_id="anonymized_icca_htr",
     doc_md=DOC,
     start_date=datetime(2015, 5, 20, tzinfo=pendulum.timezone("America/Montreal")),
     end_date=datetime(2024, 1, 25, tzinfo=pendulum.timezone("America/Montreal")),
