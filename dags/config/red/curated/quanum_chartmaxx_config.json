@@ -32,6 +32,20 @@
             {"dataset_id": "curated_quanum_chartmaxx_urogynecologie*" , "cluster_type": "large"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
             {"dataset_id": "curated_quanum_chartmaxx_v*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []}
         ]
+      },
+      {
+        "destination_zone": "yellow",
+        "destination_subzone": "anonymized",
+        "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+        "multiple_main_methods": false,
+        "publish_class": "",
+        "schemas": [],
+        "datasets":
+        [
+          {"dataset_id": "anonymized_quanum_chartmaxx_clinique_migo"              , "cluster_type": "medium" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "anonymized_quanum_dossier*"                             , "cluster_type": "medium" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "anonymized_quanum_chartmaxx_plan_daction_pour_lasthme*" , "cluster_type": "small"  , "run_type": "default" , "cluster_specs": {} , "dependencies": []}          
+        ]
       }
     ]
   }
