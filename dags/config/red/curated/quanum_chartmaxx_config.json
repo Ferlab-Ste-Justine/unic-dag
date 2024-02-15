@@ -43,7 +43,7 @@
         "datasets":
         [
           {"dataset_id": "anonymized_quanum_chartmaxx_clinique_migo"              , "cluster_type": "medium" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
-          {"dataset_id": "anonymized_quanum_dossier*"                             , "cluster_type": "medium" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "anonymized_quanum_chartmaxx_dossier*"                   , "cluster_type": "medium" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
           {"dataset_id": "anonymized_quanum_chartmaxx_plan_daction_pour_lasthme*" , "cluster_type": "small"  , "run_type": "default" , "cluster_specs": {} , "dependencies": []}          
         ]
       }
