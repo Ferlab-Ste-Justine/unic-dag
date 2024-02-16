@@ -1,9 +1,12 @@
 """
 DAG pour la création des table dans la bd unic_datamart pour indicteursSip
 """
+from datetime import datetime
+
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 from airflow.providers.postgres.operators.postgres import PostgresOperator
+
 from core.slack import Slack
 
 DOC = """
@@ -15,6 +18,7 @@ ETL pour la creation de tables dans unic_datamart pour indicateursSip
 with DAG(
         dag_id="postgres_indicateurs_sip",
         doc_md=DOC,
+        start_date=datetime(2024, 2, 16),
         is_paused_upon_creation=True,
         max_active_tasks=1,
         tags=["postgresql"]
