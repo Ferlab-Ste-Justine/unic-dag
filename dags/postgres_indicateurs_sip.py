@@ -53,3 +53,8 @@ with DAG(
         task_id="publish_postgres_indicateurs_sip",
         on_success_callback=Slack.notify_dag_completion
     )
+
+    start_postgres_indicateurs_sip >> [create_sejour_table,
+                                       create_catheter_table,
+                                       create_extubation_table,
+                                       create_ventilation_table] >> publish_postgres_indicateurs_sip
