@@ -27,19 +27,19 @@ with DAG(
 
     create_sejour_table = PostgresOperator(
         task_id="create_sejour_table",
-        postgres_conn_id="postgresql",
+        postgres_conn_id="unic-prod-postgresql-bi-rw-conn-airflow",
         sql="sql/sejour_schema.sql"
     )
 
     create_catheter_table = PostgresOperator(
         task_id="create_catheter_table",
-        postgres_conn_id="postgresql",
+        postgres_conn_id="unic-prod-postgresql-bi-rw-conn-airflow",
         sql="sql/catheter_schema.sql"
     )
 
     create_extubation_table = PostgresOperator(
         task_id="create_extubation_table",
-        postgres_conn_id="postgresql",
+        postgres_conn_id="unic-prod-postgresql-bi-rw-conn-airflow",
         sql="sql/extubation_schema.sql"
     )
 
