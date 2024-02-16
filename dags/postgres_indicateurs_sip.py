@@ -3,9 +3,8 @@ DAG pour la création des table dans la bd unic_datamart pour indicteursSip
 """
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
-
-from core.slack import Slack
 from airflow.providers.postgres.operators.postgres import PostgresOperator
+from core.slack import Slack
 
 DOC = """
 # Creation de tables dans le bd postgreSQL 
