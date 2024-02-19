@@ -48,7 +48,7 @@ with DAG(
 
     create_ventilation_table = PostgresOperator(
         task_id="create_ventilation_table",
-        postgres_conn_id="postgresql",
+        postgres_conn_id="unic-prod-postgresql-bi-rw-conn-airflow",
         sql="sql/ventilation_schema.sql"
     )
 
