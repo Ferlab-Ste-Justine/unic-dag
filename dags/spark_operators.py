@@ -175,7 +175,7 @@ def get_main_class(subzone: str, main_class: str):
         "raw": "bio.ferlab.ui.etl.red.raw.Main",
         "curated": "bio.ferlab.ui.etl.red.curated.Main",
         "anonymized": "bio.ferlab.ui.etl.yellow.anonymized.Main",
-        "released": "bio.ferlab.ui.etl.green.released.Main",
+        "released": "bio.ferlab.ui.etl.green.released.versioned.Main",
         "published": "bio.ferlab.ui.etl.green.published.Main",
     }
     if main_class != "":

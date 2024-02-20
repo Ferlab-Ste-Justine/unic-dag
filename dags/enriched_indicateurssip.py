@@ -134,11 +134,11 @@ with dag:
 
     with TaskGroup(group_id="released") as released:
         RELEASED_ZONE = "green"
-        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.Main"
+        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.unversioned.Main"
 
         def released_arguments(destination: str) -> List[str]:
             # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
-            return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
+            return ["config/prod.conf", "default", destination]
 
 
         released_sejour = SparkOperator(
@@ -189,65 +189,9 @@ with dag:
             dag=dag,
         )
 
-
-    with TaskGroup(group_id="published") as published:
-        PUBLISHED_ZONE = "green"
-        PUBLISHED_MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
-
-        def published_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination]
-
-        published_sejour = SparkOperator(
-            task_id="published_indicateurssip_sejour",
-            name="published-indicateurssip-sejour",
-            arguments=published_arguments("published_indicateurssip_sejour"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        published_catheter = SparkOperator(
-            task_id="published_indicateurssip_catheter",
-            name="published-indicateurssip-catheter",
-            arguments=published_arguments("published_indicateurssip_catheter"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        published_ventilation = SparkOperator(
-            task_id="published_indicateurssip_ventilation",
-            name="published-indicateurssip-ventilation",
-            arguments=published_arguments("published_indicateurssip_ventilation"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        published_extubation = SparkOperator(
-            task_id="published_indicateurssip_extubation",
-            name="published-indicateurssip-extubation",
-            arguments=published_arguments("published_indicateurssip_extubation"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
     end = EmptyOperator(
         task_id="end",
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> enriched >> released >> published >> end
+    start >> enriched >> released >> end
