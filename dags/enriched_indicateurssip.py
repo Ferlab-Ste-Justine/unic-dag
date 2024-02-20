@@ -136,9 +136,16 @@ with dag:
         RELEASED_ZONE = "green"
         RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.unversioned.Main"
 
-        def released_arguments(destination: str) -> List[str]:
-            # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
-            return ["config/prod.conf", "default", destination]
+        def released_arguments(destination: str, steps: str = "default") -> List[str]:
+            """
+            Generate Spark task arguments for the released ETL process
+            """
+            return [
+                "--config", "config/prod.conf",
+                "--steps", steps,
+                "--app-name", destination,
+                "--destination", destination
+            ]
 
 
         released_sejour = SparkOperator(
