@@ -24,7 +24,7 @@
     {
       "destination_zone": "green",
       "destination_subzone": "released",
-      "main_class": "bio.ferlab.ui.etl.green.released.Main",
+      "main_class": "bio.ferlab.ui.etl.green.released.versioned.Main",
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],

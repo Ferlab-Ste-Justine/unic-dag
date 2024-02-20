@@ -283,7 +283,7 @@ with dag:
 
     with TaskGroup(group_id="released") as released:
         RELEASED_ZONE = "green"
-        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.Main"
+        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.versioned.Main"
 
 
         def released_arguments(destination: str) -> List[str]:
