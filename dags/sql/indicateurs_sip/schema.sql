@@ -1,3 +1,3 @@
 -- noinspection SqlNoDataSourceInspectionForFile
 
-CREATE SCHEMA indicateurs_sip;
+CREATE SCHEMA IF NOT EXISTS indicateurs_sip;
