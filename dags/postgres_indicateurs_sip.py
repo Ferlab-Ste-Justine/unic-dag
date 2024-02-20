@@ -31,31 +31,31 @@ with DAG(
 
     create_schema = PostgresOperator(
         task_id="create_schema",
-        postgres_conn_id="postgresql-bi-rw",
+        postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/schema.sql"
     )
 
     create_sejour_table = PostgresOperator(
         task_id="create_sejour_table",
-        postgres_conn_id="postgresql-bi-rw",
+        postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/sejour_schema.sql"
     )
 
     create_catheter_table = PostgresOperator(
         task_id="create_catheter_table",
-        postgres_conn_id="postgresql-bi-rw",
+        postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/catheter_schema.sql"
     )
 
     create_extubation_table = PostgresOperator(
         task_id="create_extubation_table",
-        postgres_conn_id="postgresql-bi-rw",
+        postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/extubation_schema.sql"
     )
 
     create_ventilation_table = PostgresOperator(
         task_id="create_ventilation_table",
-        postgres_conn_id="postgresql-bi-rw",
+        postgres_conn_id= "postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/ventilation_schema.sql"
     )
 
