@@ -5,7 +5,9 @@ from datetime import datetime
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
-from airflow.providers.postgres.operators.postgres import PostgresOperator
+# from airflow.providers.postgres.operators.postgres import PostgresOperator
+
+from operators.postgresca import PostgresCaOperator
 
 from core.slack import Slack
 
@@ -29,31 +31,31 @@ with DAG(
         on_execute_callback=Slack.notify_dag_start
     )
 
-    create_schema = PostgresOperator(
+    create_schema = PostgresCaOperator(
         task_id="create_schema",
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/schema.sql"
     )
 
-    create_sejour_table = PostgresOperator(
+    create_sejour_table = PostgresCaOperator(
         task_id="create_sejour_table",
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/sejour_schema.sql"
     )
 
-    create_catheter_table = PostgresOperator(
+    create_catheter_table = PostgresCaOperator(
         task_id="create_catheter_table",
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/catheter_schema.sql"
     )
 
-    create_extubation_table = PostgresOperator(
+    create_extubation_table = PostgresCaOperator(
         task_id="create_extubation_table",
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/extubation_schema.sql"
     )
 
-    create_ventilation_table = PostgresOperator(
+    create_ventilation_table = PostgresCaOperator(
         task_id="create_ventilation_table",
         postgres_conn_id= "postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/ventilation_schema.sql"
