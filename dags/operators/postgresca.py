@@ -6,7 +6,7 @@ from kubernetes.client import models as k8s
 
 class PostgresCaOperator(PostgresOperator, KubernetesPodOperator):
     def __init__(self, **kwargs) -> None:
-        super(PostgresOperator, self).__init__(**kwargs)
+        super(PostgresCaOperator, self).__init__(**kwargs)
 
     def execute(self, **kwargs):
         self.volumes = [
@@ -25,5 +25,5 @@ class PostgresCaOperator(PostgresOperator, KubernetesPodOperator):
             ),
         ]
 
-        super(PostgresOperator, self).execute(**kwargs)
+        super(PostgresCaOperator, self).execute(**kwargs)
         
