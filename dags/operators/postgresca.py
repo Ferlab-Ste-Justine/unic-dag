@@ -24,5 +24,5 @@ class PostgresCaOperator(PostgresOperator, KubernetesPodOperator):
             ),
         ]
 
-        KubernetesPodOperator.execute(**kwargs)
-        PostgresOperator.execute(**kwargs)
+        KubernetesPodOperator.execute(self, **kwargs)
+        PostgresOperator.execute(self, **kwargs)
