@@ -4,10 +4,9 @@ DAG pour la création des table dans la bd unic_datamart pour indicteursSip
 from datetime import datetime
 
 from airflow import DAG
+from airflow.operators.bash import BashOperator
 from airflow.operators.empty import EmptyOperator
-# from airflow.providers.postgres.operators.postgres import PostgresOperator
-
-from operators.postgresca import PostgresCaOperator
+from airflow.providers.postgres.operators.postgres import PostgresOperator
 
 from core.slack import Slack
 
@@ -26,36 +25,42 @@ with DAG(
         max_active_tasks=1,
         tags=["postgresql"]
 ) as dag:
+
     start = EmptyOperator(
         task_id="start_postgres_indicateurs_sip",
         on_execute_callback=Slack.notify_dag_start
     )
 
-    create_schema = PostgresCaOperator(
+    load_ca = BashOperator(
+        task_id="load_ca_certificate",
+        bash_command='mkdir -p /tmp/ca/bi | echo $AIRFLOW_VAR_POSTGRES_CA_CERTIFICATE > /tmp/ca/bi/ca.crt'
+    )
+
+    create_schema = PostgresOperator(
         task_id="create_schema",
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/schema.sql"
     )
 
-    create_sejour_table = PostgresCaOperator(
+    create_sejour_table = PostgresOperator(
         task_id="create_sejour_table",
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/sejour_schema.sql"
     )
 
-    create_catheter_table = PostgresCaOperator(
+    create_catheter_table = PostgresOperator(
         task_id="create_catheter_table",
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/catheter_schema.sql"
     )
 
-    create_extubation_table = PostgresCaOperator(
+    create_extubation_table = PostgresOperator(
         task_id="create_extubation_table",
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/extubation_schema.sql"
     )
 
-    create_ventilation_table = PostgresCaOperator(
+    create_ventilation_table = PostgresOperator(
         task_id="create_ventilation_table",
         postgres_conn_id= "postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/ventilation_schema.sql"
@@ -66,7 +71,7 @@ with DAG(
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> create_schema >> [create_sejour_table,
-                               create_catheter_table,
-                               create_extubation_table,
-                               create_ventilation_table] >> end
+    start >> load_ca >> create_schema >> [create_sejour_table,
+                                          create_catheter_table,
+                                          create_extubation_table,
+                                          create_ventilation_table] >> end
