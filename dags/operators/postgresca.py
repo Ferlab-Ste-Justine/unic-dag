@@ -3,10 +3,9 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import Kubernete
 
 from kubernetes.client import models as k8s
 
-
 class PostgresCaOperator(PostgresOperator, KubernetesPodOperator):
     def __init__(self, **kwargs) -> None:
-        super(PostgresCaOperator, self).__init__(**kwargs)
+        super().__init__(is_delete_operator_pod=False, **kwargs)
 
     def execute(self, **kwargs):
         self.volumes = [
@@ -25,5 +24,5 @@ class PostgresCaOperator(PostgresOperator, KubernetesPodOperator):
             ),
         ]
 
-        super(PostgresCaOperator, self).execute(**kwargs)
-        
+        KubernetesPodOperator.execute(**kwargs)
+        PostgresOperator.execute(**kwargs)
