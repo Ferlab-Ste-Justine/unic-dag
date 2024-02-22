@@ -1,3 +1,5 @@
+import time
+
 from airflow.providers.postgres.operators.postgres import PostgresOperator
 import subprocess
 import os
@@ -14,5 +16,7 @@ class PostgresCaOperator(PostgresOperator):
 
         with open('/tmp/ca/bi/ca.crt', "w") as outfile:
             subprocess.run(["echo", echo_arg], stdout=outfile)
+
+        time.sleep(90)
 
         super().execute(**kwargs)
