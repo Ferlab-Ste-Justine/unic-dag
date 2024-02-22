@@ -1,5 +1,4 @@
 from airflow.providers.postgres.operators.postgres import PostgresOperator
-import subprocess
 import os
 
 
@@ -20,9 +19,9 @@ class PostgresCaOperator(PostgresOperator):
         self.ca_var = ca_var
 
     def execute(self, **kwargs):
-        echo_arg = os.environ[self.ca_var]
+        ca = os.environ.get(self.ca_var)
 
         with open(self.ca_path, "w") as outfile:
-            subprocess.run(["echo", echo_arg], stdout=outfile)
+            outfile.write(ca)
 
         super().execute(**kwargs)
