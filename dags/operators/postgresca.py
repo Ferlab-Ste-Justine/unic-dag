@@ -2,6 +2,7 @@ from airflow.providers.postgres.operators.postgres import PostgresOperator
 import subprocess
 import os
 
+
 class PostgresCaOperator(PostgresOperator):
     def __init__(self, **kwargs) -> None:
         super().__init__(**kwargs)

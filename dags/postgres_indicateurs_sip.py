@@ -7,7 +7,7 @@ from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 
 from core.slack import Slack
-from dags.operators.postgresca import PostgresCaOperator
+from operators.postgresca import PostgresCaOperator
 
 DOC = """
 # Creation de tables dans le bd postgreSQL 
@@ -66,6 +66,6 @@ with DAG(
     )
 
     start >> create_schema >> [create_sejour_table,
-                              create_catheter_table,
-                              create_extubation_table,
-                              create_ventilation_table] >> end
+                               create_catheter_table,
+                               create_extubation_table,
+                               create_ventilation_table] >> end
