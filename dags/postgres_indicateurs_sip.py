@@ -15,6 +15,9 @@ DOC = """
 ETL pour la creation de tables dans unic_datamart pour indicateursSip
 """
 
+CA_PATH = '/tmp/ca/bi/ca.crt'
+CA_VAR = 'AIRFLOW_VAR_POSTGRES_CA_CERTIFICATE'
+
 with DAG(
         dag_id="postgres_indicateurs_sip",
         doc_md=DOC,
@@ -33,31 +36,41 @@ with DAG(
     create_schema = PostgresCaOperator(
         task_id="create_schema",
         postgres_conn_id="postgresql_bi_rw",
-        sql="sql/indicateurs_sip/schema.sql"
+        sql="sql/indicateurs_sip/schema.sql",
+        ca_path=CA_PATH,
+        ca_var=CA_VAR,
     )
 
     create_sejour_table = PostgresCaOperator(
         task_id="create_sejour_table",
         postgres_conn_id="postgresql_bi_rw",
-        sql="sql/indicateurs_sip/tables/sejour_schema.sql"
+        sql="sql/indicateurs_sip/tables/sejour_schema.sql",
+        ca_path=CA_PATH,
+        ca_var=CA_VAR,
     )
 
     create_catheter_table = PostgresCaOperator(
         task_id="create_catheter_table",
         postgres_conn_id="postgresql_bi_rw",
-        sql="sql/indicateurs_sip/tables/catheter_schema.sql"
+        sql="sql/indicateurs_sip/tables/catheter_schema.sql",
+        ca_path=CA_PATH,
+        ca_var=CA_VAR,
     )
 
     create_extubation_table = PostgresCaOperator(
         task_id="create_extubation_table",
         postgres_conn_id="postgresql_bi_rw",
-        sql="sql/indicateurs_sip/tables/extubation_schema.sql"
+        sql="sql/indicateurs_sip/tables/extubation_schema.sql",
+        ca_path=CA_PATH,
+        ca_var=CA_VAR,
     )
 
     create_ventilation_table = PostgresCaOperator(
         task_id="create_ventilation_table",
         postgres_conn_id= "postgresql_bi_rw",
-        sql="sql/indicateurs_sip/tables/ventilation_schema.sql"
+        sql="sql/indicateurs_sip/tables/ventilation_schema.sql",
+        ca_path=CA_PATH,
+        ca_var=CA_VAR,
     )
 
     end = EmptyOperator(

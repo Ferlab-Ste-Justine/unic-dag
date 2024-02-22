@@ -1,22 +1,27 @@
-import time
-
 from airflow.providers.postgres.operators.postgres import PostgresOperator
-import subprocess
 import os
 
 
 class PostgresCaOperator(PostgresOperator):
-    def __init__(self, **kwargs) -> None:
+    """
+    Execute SQL in Postgres with CA certificate
+
+    :param ca_path: Filepath where ca certificate file will be written (.crt)
+    :param ca_var: Name of environment variable in cluster containing ca certificate
+    """
+    def __init__(
+            self,
+            ca_path: str,
+            ca_var: str,
+            **kwargs) -> None:
         super().__init__(**kwargs)
+        self.ca_path = ca_path
+        self.ca_var = ca_var
 
     def execute(self, **kwargs):
-        subprocess.run(["mkdir", "-p", "/tmp/ca/bi"])
+        ca = os.environ.get(self.ca_var)
 
-        echo_arg = os.environ['AIRFLOW_VAR_POSTGRES_CA_CERTIFICATE']
-
-        with open('/tmp/ca/bi/ca.crt', "w") as outfile:
-            subprocess.run(["echo", echo_arg], stdout=outfile)
-
-        time.sleep(90)
+        with open(self.ca_path, "w") as outfile:
+            outfile.write(ca)
 
         super().execute(**kwargs)
