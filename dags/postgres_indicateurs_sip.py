@@ -15,7 +15,8 @@ DOC = """
 ETL pour la creation de tables dans unic_datamart pour indicateursSip
 """
 
-CA_PATH = '/tmp/ca/bi/ca.crt'
+CA_PATH = '/tmp/ca/bi/'
+CA_FILENAME = 'ca.crt'
 CA_VAR = 'AIRFLOW_VAR_POSTGRES_CA_CERTIFICATE'
 
 with DAG(
@@ -38,6 +39,7 @@ with DAG(
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/schema.sql",
         ca_path=CA_PATH,
+        ca_filename=CA_FILENAME,
         ca_var=CA_VAR,
     )
 
@@ -46,6 +48,7 @@ with DAG(
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/sejour_schema.sql",
         ca_path=CA_PATH,
+        ca_filename=CA_FILENAME,
         ca_var=CA_VAR,
     )
 
@@ -54,6 +57,7 @@ with DAG(
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/catheter_schema.sql",
         ca_path=CA_PATH,
+        ca_filename=CA_FILENAME,
         ca_var=CA_VAR,
     )
 
@@ -62,6 +66,7 @@ with DAG(
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/extubation_schema.sql",
         ca_path=CA_PATH,
+        ca_filename=CA_FILENAME,
         ca_var=CA_VAR,
     )
 
@@ -70,6 +75,7 @@ with DAG(
         postgres_conn_id= "postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/ventilation_schema.sql",
         ca_path=CA_PATH,
+        ca_filename=CA_FILENAME,
         ca_var=CA_VAR,
     )
 
