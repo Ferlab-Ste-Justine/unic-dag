@@ -22,7 +22,7 @@
       {"dataset_id":"raw_softpath_v_p_pat_patientdemographic"  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_stay"]},
       {"dataset_id":"raw_softpath_v_p_pat_report"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
       {"dataset_id":"raw_softpath_v_p_pat_slide"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
-      {"dataset_id":"raw_softpath_v_p_pat_specimen"            , "cluster_type": "large", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
+      {"dataset_id":"raw_softpath_v_p_pat_specimen"            , "cluster_type": "large" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
       {"dataset_id":"raw_softpath_v_p_pat_specimenblock"       , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
       {"dataset_id":"raw_softpath_v_p_pat_specimendxadeq"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"raw_softpath_v_p_pat_stay"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -52,7 +52,7 @@
       {"dataset_id":"anonymized_softpath_v_p_pat_specimenblock"       , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_softpath_v_p_pat_specimendxadeq"      , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_softpath_v_p_pat_stay"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_softpath_v_p_pat_test"                , "cluster_type": "large" , "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id":"anonymized_softpath_v_p_pat_test"                , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
     ]
   }]
 }
