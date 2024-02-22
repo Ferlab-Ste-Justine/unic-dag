@@ -33,7 +33,7 @@ with DAG(
 
     load_ca = BashOperator(
         task_id="load_ca_certificate",
-        bash_command='mkdir -p /tmp/ca/bi | echo $AIRFLOW_VAR_POSTGRES_CA_CERTIFICATE > /tmp/ca/bi/ca.crt'
+        bash_command='mkdir -p /tmp/ca/bi && echo $AIRFLOW_VAR_POSTGRES_CA_CERTIFICATE > /tmp/ca/bi/ca.crt'
     )
 
     create_schema = PostgresOperator(
