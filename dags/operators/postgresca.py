@@ -1,30 +1,18 @@
 from airflow.providers.postgres.operators.postgres import PostgresOperator
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
+import subprocess
+import os
 
-from kubernetes.client import models as k8s
 
-
-class PostgresCaOperator(KubernetesPodOperator, PostgresOperator):
+class PostgresCaOperator(PostgresOperator):
     def __init__(self, **kwargs) -> None:
-        super().__init__(
-            is_delete_operator_pod=False,
-            **kwargs)
+        super().__init__(**kwargs)
 
     def execute(self, **kwargs):
-        self.volumes = [
-            k8s.V1Volume(
-                name='ca-certificate',
-                config_map=k8s.V1ConfigMapVolumeSource(
-                    name='unic-prod-bi-postgres-ca-cert',
-                ),
-            ),
-        ]
-        self.volume_mounts = [
-            k8s.V1VolumeMount(
-                name='ca-certificate',
-                mount_path='/opt/ca/bi',
-                read_only=True,
-            ),
-        ]
+        subprocess.run(["mkdir", "-p", "/tmp/ca/bi"])
+
+        echo_arg = os.environ['AIRFLOW_VAR_POSTGRES_CA_CERTIFICATE']
+
+        with open('/tmp/ca/bi/ca.crt', "w") as outfile:
+            subprocess.run(["echo", echo_arg], stdout=outfile)
 
         super().execute(**kwargs)

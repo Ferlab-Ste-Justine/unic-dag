@@ -4,11 +4,10 @@ DAG pour la création des table dans la bd unic_datamart pour indicteursSip
 from datetime import datetime
 
 from airflow import DAG
-from airflow.operators.bash import BashOperator
 from airflow.operators.empty import EmptyOperator
-from airflow.providers.postgres.operators.postgres import PostgresOperator
 
 from core.slack import Slack
+from operators.postgresca import PostgresCaOperator
 
 DOC = """
 # Creation de tables dans le bd postgreSQL 
@@ -31,36 +30,31 @@ with DAG(
         on_execute_callback=Slack.notify_dag_start
     )
 
-    load_ca = BashOperator(
-        task_id="load_ca_certificate",
-        bash_command='mkdir -p /tmp/ca/bi && echo $AIRFLOW_VAR_POSTGRES_CA_CERTIFICATE > /tmp/ca/bi/ca.crt'
-    )
-
-    create_schema = PostgresOperator(
+    create_schema = PostgresCaOperator(
         task_id="create_schema",
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/schema.sql"
     )
 
-    create_sejour_table = PostgresOperator(
+    create_sejour_table = PostgresCaOperator(
         task_id="create_sejour_table",
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/sejour_schema.sql"
     )
 
-    create_catheter_table = PostgresOperator(
+    create_catheter_table = PostgresCaOperator(
         task_id="create_catheter_table",
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/catheter_schema.sql"
     )
 
-    create_extubation_table = PostgresOperator(
+    create_extubation_table = PostgresCaOperator(
         task_id="create_extubation_table",
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/extubation_schema.sql"
     )
 
-    create_ventilation_table = PostgresOperator(
+    create_ventilation_table = PostgresCaOperator(
         task_id="create_ventilation_table",
         postgres_conn_id= "postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/ventilation_schema.sql"
@@ -71,7 +65,7 @@ with DAG(
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> load_ca >> create_schema >> [create_sejour_table,
-                                          create_catheter_table,
-                                          create_extubation_table,
-                                          create_ventilation_table] >> end
+    start >> create_schema >> [create_sejour_table,
+                               create_catheter_table,
+                               create_extubation_table,
+                               create_ventilation_table] >> end
