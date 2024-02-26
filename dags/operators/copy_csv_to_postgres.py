@@ -37,7 +37,7 @@ class CopyCsvToPostgres(PostgresCaOperator):
             postgres_tablename = table['dts_postgres_tablename']
             local_file = NamedTemporaryFile(suffix='.csv')
 
-            s3_obj = s3_hook.get_key(key=s3_bucket, bucket_name=s3_key)
+            s3_obj = s3_hook.get_key(key=s3_key, bucket_name=s3_bucket)
             s3_obj.download_fileobj(local_file)
             local_file.flush()
             local_file.seek(0)
