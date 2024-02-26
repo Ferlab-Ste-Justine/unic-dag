@@ -7,46 +7,60 @@ from tempfile import NamedTemporaryFile
 
 class CopyCsvToPostgres(PostgresCaOperator):
     """
-    Copy CSV Files from Minio to Potgesql
+    Copy CSV Files from Minio to Postgresql
 
-    :param _: _
+    :param table_copy_conf: List of dicts containing configuration values for each table to copy from minio to postgres
+    in a single transaction. dictionary should contain the following values: src_s3_bucket, src_s3_key and dts_postgres_tablename.
+    :param minio_conn_id: s3 conn URI
+    :param schema: (Optional) Name of Postgres schema
     """
-    def __init__(self,**kwargs) -> None:
+    def __init__(
+            self,
+            table_copy_conf: list[dict],
+            minio_conn_id: str,
+            schema: str = "default",
+            **kwargs) -> None:
         super().__init__(**kwargs)
+        self.table_copy_conf = table_copy_conf
+        self.minio_conn_id = minio_conn_id
+        self.schema = schema
+        self.sql = None
 
     def execute(self, **kwargs):
+        s3_hook = S3Hook(aws_conn_id=self.minio_conn_id)
 
-        tables = ['t1', 't2', 't3']
-        schema = "indicateurs_sip"
-        filedata = {t: NamedTemporaryFile(suffix='.csv') for t in tables}
+        filedata = {}
 
-        s3_hook = S3Hook(aws_conn_id=self.aws_conn_id)
-        s3_obj = s3_hook.get_key(key=self.s3_key, bucket_name=self.s3_bucket)
+        for table in self.table_copy_conf:
+            s3_bucket = table['src_s3_bucket']
+            s3_key = table['src_s3_key']
+            postgres_tablename = table['dts_postgres_tablename']
+            local_file = NamedTemporaryFile(suffix='.csv')
 
-        for file in filedata.values():
-            s3_obj.download_fileobj(file)
-            file.flush()
-            file.seek(0)
+            s3_obj = s3_hook.get_key(key=s3_bucket, bucket_name=s3_key)
+            s3_obj.download_fileobj(local_file)
+            local_file.flush()
+            local_file.seek(0)
+
+            filedata[postgres_tablename] = local_file
 
         with NamedTemporaryFile("w+") as sql:
             subprocess.run(["echo", "BEGIN;"], stdout=sql)
 
-            for k, f in filedata.items():
-                subprocess.run(["echo", f"TRUNCATE {schema}.{k};"], stdout=sql)
-                subprocess.run(["echo", f"COPY {schema}.{k} FROM '{f.name}' DELIMITER ',' CSV HEADER;"], stdout=sql)
+            for tablename, file in filedata.items():
+                subprocess.run(["echo", f"TRUNCATE {self.schema}.{tablename};"], stdout=sql)
+                subprocess.run(["echo", f"COPY {self.schema}.{tablename} FROM '{file.name}' DELIMITER ',' CSV HEADER;"], stdout=sql)
 
-                subprocess.run(["echo", "COMMIT;"], stdout=sql)
+            subprocess.run(["echo", "COMMIT;"], stdout=sql)
+            sql.flush()
+            sql.seek(0)
 
-                # command has finished running, let's check the file
-                sql.flush()
-                sql.seek(0)
-                print(sql.read())
-                # hello world
+            self.sql = sql.name
+
+            super().execute(**kwargs)
 
         for file in filedata.values():
             file.close()
-
-        super().execute(**kwargs)
 
 
 
