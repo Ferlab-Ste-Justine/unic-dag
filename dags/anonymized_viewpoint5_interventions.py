@@ -33,6 +33,6 @@ with DAG(
         spark_class="bio.ferlab.ui.etl.yellow.anonymized.Main",
         spark_jar=f"--packages com.crealytics:spark-excel_2.12:3.3.1_0.18.7 {jar}",
         spark_failure_msg=spark_failure_msg,
-        spark_config="small",
+        spark_config="small-etl",
         dag=dag
     )
