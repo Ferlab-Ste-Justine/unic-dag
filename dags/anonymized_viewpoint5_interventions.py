@@ -23,12 +23,7 @@ with DAG(
     SparkOperator(
         task_id="anonymized_viewpoint_interventions_2006_2019",
         name="anonymized-viewpoint-interventions-2006-2019",
-        arguments=[
-            "--config", "config/prod.conf",
-            "--steps", "initial",
-            "--app-name", "anonymized_viewpoint_interventions_2006_2019",
-            "--destination", "anonymized_viewpoint_interventions_2006_2019",
-        ],
+        arguments=["config/prod.conf", "initial", "anonymized_viewpoint_interventions_2006_2019"],
         zone="yellow",
         spark_class="bio.ferlab.ui.etl.yellow.anonymized.Main",
         spark_jar=f"--packages com.crealytics:spark-excel_2.12:3.3.1_0.18.7 {jar}",
