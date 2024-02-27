@@ -19,7 +19,7 @@ ETL pour copier les csv released de indicateurs sip dans la bd PostgreSQL de Pow
 CA_PATH = '/tmp/ca/bi/'  # must correspond to path in postgres connection string
 CA_FILENAME = 'ca.crt'  # must correspond to filename in postgres connection string
 CA_CERT = Variable.get('postgres_ca_certificate', None)
-MINIO_CONN = Variable.get('conn_minio', None)
+# MINIO_CONN = Variable.get('conn_minio', None)
 
 with DAG(
         dag_id="published_indicateurs_sip",
@@ -50,7 +50,7 @@ with DAG(
         ca_filename=CA_FILENAME,
         ca_cert=CA_CERT,
         table_copy_conf=copy_conf,
-        minio_conn_id=MINIO_CONN
+        minio_conn_id="conn_minio"
     )
 
     end = EmptyOperator(
