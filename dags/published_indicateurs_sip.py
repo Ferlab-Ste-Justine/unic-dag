@@ -1,7 +1,6 @@
 """
 DAG pour la publication de tables dans la bd unic_datamart pour indicteursSip
 """
-import json
 from datetime import datetime
 
 from airflow import DAG
