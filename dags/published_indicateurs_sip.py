@@ -32,27 +32,31 @@ with DAG(
         tags=["published"]
 ) as dag:
 
-    with json.load(open('dags/config/green/indicateurs_sip_onfig.json', encoding='UTF8')) as config:
+    copy_conf = [
+        {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/catheter/catheter.csv"      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "catheter"   },
+        {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/extubation/extubation.csv"  , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "extubation" },
+        {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/sejour/sejour.csv"          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "sejour"     },
+        {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ventilation/ventilation.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ventilation"}
+    ]
 
-        start = EmptyOperator(
-            task_id="start_published_indicateurs_sip",
-            on_execute_callback=Slack.notify_dag_start
-        )
+    start = EmptyOperator(
+        task_id="start_published_indicateurs_sip",
+        on_execute_callback=Slack.notify_dag_start
+    )
 
-        copy_csv = CopyCsvToPostgres(
-            task_id="published_indicateurs_sip",
-            postgres_conn_id="postgresql_bi_rw",
-            ca_path=CA_PATH,
-            ca_filename=CA_FILENAME,
-            ca_cert=CA_CERT,
-            table_copy_conf=[table['copy_conf'] for table in config['tables']],
-            minio_conn_id=MINIO_CONN,
-            schema=config['schema']['name']
-        )
+    copy_csv = CopyCsvToPostgres(
+        task_id="published_indicateurs_sip",
+        postgres_conn_id="postgresql_bi_rw",
+        ca_path=CA_PATH,
+        ca_filename=CA_FILENAME,
+        ca_cert=CA_CERT,
+        table_copy_conf=copy_conf,
+        minio_conn_id=MINIO_CONN
+    )
 
-        end = EmptyOperator(
-            task_id="publish_published_indicateurs_sip",
-            on_success_callback=Slack.notify_dag_completion
-        )
+    end = EmptyOperator(
+        task_id="publish_published_indicateurs_sip",
+        on_success_callback=Slack.notify_dag_completion
+    )
 
-        start >> copy_csv >> end
+    start >> copy_csv >> end
