@@ -7,7 +7,7 @@
     "destination_subzone": "raw",
     "main_class": "bio.ferlab.ui.etl.red.raw.softpath.Main",
     "multiple_main_methods": true,
-    "publish_class": "",
+    "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
     "schemas": ["softpath"],
     "datasets":
     [
