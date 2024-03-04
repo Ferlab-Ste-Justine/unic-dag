@@ -6,6 +6,7 @@ from operators.postgresca import PostgresCaOperator
 from typing import List, Dict
 import subprocess
 from tempfile import NamedTemporaryFile
+import os
 
 
 class CopyCsvToPostgres(PostgresCaOperator):
@@ -48,7 +49,12 @@ class CopyCsvToPostgres(PostgresCaOperator):
 
             filedata[f"{postgres_schema}.{postgres_tablename}"] = local_file
 
-        with NamedTemporaryFile("w+", suffix=".sql", dir="sql") as sql:
+        temp_file_dir = os.getcwd() + "/sql"
+        print(temp_file_dir)
+
+        time.sleep(180)
+
+        with NamedTemporaryFile("w+", suffix=".sql", dir=temp_file_dir) as sql:
             subprocess.run(["echo", "BEGIN;"], stdout=sql)
 
             for tablename, file in filedata.items():
