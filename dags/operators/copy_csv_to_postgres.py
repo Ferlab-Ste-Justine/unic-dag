@@ -1,13 +1,8 @@
-import time
-
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 from operators.postgresca import PostgresCaOperator
 from typing import List, Dict
-import subprocess
 from tempfile import NamedTemporaryFile
-import os
-
 
 class CopyCsvToPostgres(PostgresCaOperator):
     """
