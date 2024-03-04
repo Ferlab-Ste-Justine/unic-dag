@@ -49,12 +49,7 @@ class CopyCsvToPostgres(PostgresCaOperator):
 
             filedata[f"{postgres_schema}.{postgres_tablename}"] = local_file
 
-        temp_file_dir = os.getcwd() + "/sql"
-        print(temp_file_dir)
-
-        time.sleep(180)
-
-        with NamedTemporaryFile("w+", suffix=".sql", dir=temp_file_dir) as sql:
+        with NamedTemporaryFile("w+", suffix=".sql", dir="/opt/airflow/dags/repo/dags/sql") as sql:
             subprocess.run(["echo", "BEGIN;"], stdout=sql)
 
             for tablename, file in filedata.items():
