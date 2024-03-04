@@ -48,11 +48,7 @@ class CopyCsvToPostgres(PostgresCaOperator):
 
             filedata[f"{postgres_schema}.{postgres_tablename}"] = local_file
 
-        tmp_path = "sql/tmp.sql"
-
-        time.sleep(180)
-
-        with open(tmp_path) as sql:
+        with NamedTemporaryFile("w+", suffix=".sql", dir="sql") as sql:
             subprocess.run(["echo", "BEGIN;"], stdout=sql)
 
             for tablename, file in filedata.items():
@@ -63,7 +59,7 @@ class CopyCsvToPostgres(PostgresCaOperator):
             sql.flush()
             sql.seek(0)
 
-            self.sql = tmp_path
+            self.sql = sql.name
 
             time.sleep(180)
 
