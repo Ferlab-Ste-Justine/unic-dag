@@ -50,6 +50,8 @@ class CopyCsvToPostgres(PostgresCaOperator):
 
         tmp_path = "sql/tmp.sql"
 
+        time.sleep(180)
+
         with open(tmp_path) as sql:
             subprocess.run(["echo", "BEGIN;"], stdout=sql)
 
