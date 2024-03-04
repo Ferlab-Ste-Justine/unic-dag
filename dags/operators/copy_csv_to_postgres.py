@@ -57,7 +57,7 @@ class CopyCsvToPostgres(PostgresCaOperator):
             sql.flush()
             sql.seek(0)
 
-            self.sql = sql.name
+            self.sql = sql.name[1:]
 
             super().execute(**kwargs)
 
