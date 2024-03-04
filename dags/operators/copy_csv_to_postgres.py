@@ -1,13 +1,8 @@
-import time
-
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 from operators.postgresca import PostgresCaOperator
 from typing import List, Dict
-import subprocess
 from tempfile import NamedTemporaryFile
-import os
-
 
 class CopyCsvToPostgres(PostgresCaOperator):
     """
@@ -49,22 +44,23 @@ class CopyCsvToPostgres(PostgresCaOperator):
 
             filedata[f"{postgres_schema}.{postgres_tablename}"] = local_file
 
-        with NamedTemporaryFile("w+", suffix=".sql", dir="/opt/airflow/dags/repo/dags/sql") as sql:
-            subprocess.run(["echo", "BEGIN;"], stdout=sql)
+        query = list()
 
-            for tablename, file in filedata.items():
-                subprocess.run(["echo", f"TRUNCATE {tablename};"], stdout=sql)
-                subprocess.run(["echo", f"COPY {tablename} FROM '{file.name}' DELIMITER ',' CSV HEADER;"], stdout=sql)
+        query.append("BEGIN;")
 
-            subprocess.run(["echo", "COMMIT;"], stdout=sql)
-            sql.flush()
-            sql.seek(0)
+        for tablename, file in filedata.items():
+            query.append(f"TRUNCATE {tablename};")
+            query.append(f"COPY {tablename} FROM '{file.name}' DELIMITER ',' CSV HEADER;")
 
-            self.sql = sql.name
+        query.append("COMMIT;")
 
-            time.sleep(180)
+        sql_string = '\n'.join(query)
 
-            super().execute(**kwargs)
+        print(sql_string)
+
+        self.sql = sql_string
+
+        super().execute(**kwargs)
 
         for file in filedata.values():
             file.close()
