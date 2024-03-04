@@ -49,27 +49,23 @@ class CopyCsvToPostgres(PostgresCaOperator):
 
             filedata[f"{postgres_schema}.{postgres_tablename}"] = local_file
 
-        temp_file_dir = os.getcwd() + "/sql"
-        print(temp_file_dir)
+        query = list()
 
-        time.sleep(180)
+        query.append("BEGIN;")
 
-        with NamedTemporaryFile("w+", suffix=".sql", dir=temp_file_dir) as sql:
-            subprocess.run(["echo", "BEGIN;"], stdout=sql)
+        for tablename, file in filedata.items():
+            query.append(f"TRUNCATE {tablename};")
+            query.append(f"COPY {tablename} FROM '{file.name}' DELIMITER ',' CSV HEADER;")
 
-            for tablename, file in filedata.items():
-                subprocess.run(["echo", f"TRUNCATE {tablename};"], stdout=sql)
-                subprocess.run(["echo", f"COPY {tablename} FROM '{file.name}' DELIMITER ',' CSV HEADER;"], stdout=sql)
+        query.append("COMMIT;")
 
-            subprocess.run(["echo", "COMMIT;"], stdout=sql)
-            sql.flush()
-            sql.seek(0)
+        sql_string = '\n'.join(query)
 
-            self.sql = sql.name
+        print(sql_string)
 
-            time.sleep(180)
+        self.sql = sql_string
 
-            super().execute(**kwargs)
+        super().execute(**kwargs)
 
         for file in filedata.values():
             file.close()
