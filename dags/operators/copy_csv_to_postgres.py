@@ -23,7 +23,7 @@ class CopyCsvToPostgres(PostgresCaOperator):
             minio_conn_id: str,
             **kwargs) -> None:
         super().__init__(
-            sql="sql/tmp.sql",
+            sql=None,
             **kwargs
         )
         self.table_copy_conf = table_copy_conf
@@ -48,7 +48,9 @@ class CopyCsvToPostgres(PostgresCaOperator):
 
             filedata[f"{postgres_schema}.{postgres_tablename}"] = local_file
 
-        with open(self.sql) as sql:
+        tmp_path = "sql/tmp.sql"
+
+        with open(tmp_path) as sql:
             subprocess.run(["echo", "BEGIN;"], stdout=sql)
 
             for tablename, file in filedata.items():
@@ -59,9 +61,11 @@ class CopyCsvToPostgres(PostgresCaOperator):
             sql.flush()
             sql.seek(0)
 
+            self.sql = tmp_path
+
             time.sleep(180)
 
-        super().execute(**kwargs)
+            super().execute(**kwargs)
 
         for file in filedata.values():
             file.close()
