@@ -1,3 +1,5 @@
+import time
+
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 from operators.postgresca import PostgresCaOperator
@@ -57,7 +59,9 @@ class CopyCsvToPostgres(PostgresCaOperator):
             sql.flush()
             sql.seek(0)
 
-            super().execute(**kwargs)
+            time.sleep(180)
+
+        super().execute(**kwargs)
 
         for file in filedata.values():
             file.close()
