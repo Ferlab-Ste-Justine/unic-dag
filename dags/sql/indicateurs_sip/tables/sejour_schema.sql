@@ -8,6 +8,6 @@ CREATE TABLE IF NOT EXISTS indicateurs_sip.sejour (
     inTime Timestamp,
     dischargeDestination VARCHAR,
     outTime Timestamp,
-    studyId Int
+    studyId Int,
     admissionType VARCHAR,
 );
