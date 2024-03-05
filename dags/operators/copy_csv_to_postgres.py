@@ -56,9 +56,11 @@ class CopyCsvToPostgres(PostgresCaOperator):
         with pg_conn.cursor() as cur:
             for tablename, file in filedata.items():
                 cur.execute(f"TRUNCATE {tablename};")
-                cur.copy_expert(f"COPY {tablename} FROM '{file.name}' DELIMITER ',' CSV HEADER;", sys.stdin)
+                cur.copy_expert(f"COPY {tablename} FROM stdin DELIMITER ',' CSV HEADER;", file.name)
 
-            cur.connection.commit()
+            pg_conn.commit()
+
+        pg_conn.close()
 
         for file in filedata.values():
             file.close()
