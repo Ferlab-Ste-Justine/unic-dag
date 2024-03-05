@@ -2,5 +2,5 @@
 
 -- create ventilation table
 CREATE TABLE IF NOT EXISTS indicateurs_sip.ventilation (
-    encounterId Int PRIMARY KEY,
+    encounterId Int,
     invasiveVentilationDate Date);
