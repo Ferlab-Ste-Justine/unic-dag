@@ -22,9 +22,12 @@ class PostgresCaOperator(PostgresOperator):
         self.ca_cert = ca_cert
 
     def execute(self, **kwargs):
+        self.load_cert()
+
+        super().execute(**kwargs)
+
+    def load_cert(self):
         subprocess.run(["mkdir", "-p", self.ca_path])
 
         with open(self.ca_path + self.ca_filename, "w") as outfile:
             outfile.write(self.ca_cert)
-
-        super().execute(**kwargs)
