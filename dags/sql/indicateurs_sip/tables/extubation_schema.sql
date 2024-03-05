@@ -2,6 +2,6 @@
 
 -- create extubation table
 CREATE TABLE IF NOT EXISTS indicateurs_sip.extubation (
-    encounterId Int PRIMARY KEY,
+    encounterId Int,
     nonPlannedExtubation VARCHAR,
     nonPlannedExtubationTime Timestamp);
