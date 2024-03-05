@@ -50,7 +50,7 @@ class CopyCsvToPostgres(PostgresCaOperator):
 
         for tablename, file in filedata.items():
             query.append(f"TRUNCATE {tablename};")
-            query.append(f"COPY {tablename} FROM '{file.name}' DELIMITER ',' CSV HEADER;")
+            query.append(f"\COPY {tablename} FROM '{file.name}' DELIMITER ',' CSV HEADER;")
 
         query.append("COMMIT;")
 
