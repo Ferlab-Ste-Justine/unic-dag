@@ -16,9 +16,7 @@ class PostgresCaOperator(PostgresOperator):
             ca_filename: str,
             ca_cert: str,
             **kwargs) -> None:
-        super().__init__(
-            sql = None,
-            **kwargs)
+        super().__init__(**kwargs)
         self.ca_path = ca_path
         self.ca_filename = ca_filename
         self.ca_cert = ca_cert
