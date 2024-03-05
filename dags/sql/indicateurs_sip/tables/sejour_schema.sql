@@ -2,11 +2,12 @@
 
 -- create sejour table
 CREATE TABLE IF NOT EXISTS indicateurs_sip.sejour (
-    encounterId Int PRIMARY KEY,
     lifetimenumber VARCHAR,
+    encounterId Int PRIMARY KEY,
     admissionTypeOriginal VARCHAR,
-    admissionType VARCHAR,
-    dischargeDestination VARCHAR,
     inTime Timestamp,
+    dischargeDestination VARCHAR,
     outTime Timestamp,
-    studyId Int);
+    studyId Int
+    admissionType VARCHAR,
+);
