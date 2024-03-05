@@ -21,12 +21,10 @@ class CopyCsvToPostgres(PostgresCaOperator):
             table_copy_conf: List[Dict[str, str]],
             minio_conn_id: str,
             **kwargs) -> None:
-        super().__init__(
-            sql=None,
-            **kwargs
-        )
+        super().__init__(**kwargs)
         self.table_copy_conf = table_copy_conf
         self.minio_conn_id = minio_conn_id
+        self.postgres_conn_id = kwargs.get("postgres_conn_id")
 
     def execute(self, **kwargs):
         super().load_cert()
