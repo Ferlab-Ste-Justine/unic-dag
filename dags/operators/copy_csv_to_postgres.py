@@ -1,4 +1,7 @@
+import sys
+
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+from airflow.providers.postgres.hooks.postgres import PostgresHook
 
 from operators.postgresca import PostgresCaOperator
 from typing import List, Dict
@@ -26,7 +29,10 @@ class CopyCsvToPostgres(PostgresCaOperator):
         self.minio_conn_id = minio_conn_id
 
     def execute(self, **kwargs):
+        super().load_cert()
+
         s3_hook = S3Hook(aws_conn_id=self.minio_conn_id)
+        pg_hook = PostgresHook(postgres_conn_id=self.postgres_conn_id)
 
         filedata = {}
 
@@ -37,30 +43,21 @@ class CopyCsvToPostgres(PostgresCaOperator):
             postgres_tablename = table['dts_postgres_tablename']
             local_file = NamedTemporaryFile(suffix='.csv')
 
-            s3_obj = s3_hook.get_key(key=s3_key, bucket_name=s3_bucket)
-            s3_obj.download_fileobj(local_file)
+            s3_conn = s3_hook.get_key(key=s3_key, bucket_name=s3_bucket)
+            s3_conn.download_fileobj(local_file)
             local_file.flush()
             local_file.seek(0)
 
             filedata[f"{postgres_schema}.{postgres_tablename}"] = local_file
 
-        query = list()
+        pg_conn = pg_hook.get_conn()
 
-        query.append("BEGIN;")
+        with pg_conn.cursor() as cur:
+            for tablename, file in filedata.items():
+                cur.execute(f"TRUNCATE {tablename};")
+                cur.copy_expert(f"COPY {tablename} FROM '{file.name}' DELIMITER ',' CSV HEADER;", sys.stdin)
 
-        for tablename, file in filedata.items():
-            query.append(f"TRUNCATE {tablename};")
-            query.append(f"\COPY {tablename} FROM '{file.name}' DELIMITER ',' CSV HEADER;")
-
-        query.append("COMMIT;")
-
-        sql_string = '\n'.join(query)
-
-        print(sql_string)
-
-        self.sql = sql_string
-
-        super().execute(**kwargs)
+            cur.connection.commit()
 
         for file in filedata.values():
             file.close()
