@@ -61,6 +61,8 @@ class CopyCsvToPostgres(PostgresCaOperator):
                     cols = csv.DictReader(temp_file, delimiter=',').fieldnames
                     format_cols = ', '.join(cols)
 
+                    print(format_cols)
+
                 cur.copy_expert(f"COPY {tablename} ({format_cols}) FROM stdin DELIMITER ',' CSV HEADER;", file)
 
             pg_conn.commit()
