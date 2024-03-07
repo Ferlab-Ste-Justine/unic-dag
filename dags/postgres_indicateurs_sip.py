@@ -55,15 +55,15 @@ with DAG(
         ca_cert=CA_CERT,
     )
 
-    # WARNING: this will drop all tables in indicateurs_sip
-    drop_tables = PostgresCaOperator(
-        task_id="drop_tables",
-        postgres_conn_id="postgresql_bi_rw",
-        sql="sql/indicateurs_sip/tables/drop_tables.sql",
-        ca_path=CA_PATH,
-        ca_filename=CA_FILENAME,
-        ca_cert=CA_CERT,
-    )
+    # # WARNING: this will drop all tables in indicateurs_sip
+    # drop_tables = PostgresCaOperator(
+    #     task_id="drop_tables",
+    #     postgres_conn_id="postgresql_bi_rw",
+    #     sql="sql/indicateurs_sip/tables/drop_tables.sql",
+    #     ca_path=CA_PATH,
+    #     ca_filename=CA_FILENAME,
+    #     ca_cert=CA_CERT,
+    # )
 
     create_table_tasks = [PostgresCaOperator(
         task_id=f"create_{table_config['name']}_table",
@@ -79,4 +79,4 @@ with DAG(
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> create_schema >> drop_tables >> create_table_tasks >> end
+    start >> create_schema >> create_table_tasks >> end
