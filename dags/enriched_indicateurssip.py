@@ -7,12 +7,14 @@ from typing import List
 
 import pendulum
 from airflow import DAG
+from airflow.models import Variable
 from airflow.operators.empty import EmptyOperator
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
 from core.config import default_params, default_timeout_hours, default_args, spark_failure_msg
 from core.slack import Slack
+from operators.copy_csv_to_postgres import CopyCsvToPostgres
 from operators.spark import SparkOperator
 
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
@@ -196,9 +198,31 @@ with dag:
             dag=dag,
         )
 
+    with TaskGroup(group_id="published") as published:
+        CA_PATH = '/tmp/ca/bi/'  # must correspond to path in postgres connection string
+        CA_FILENAME = 'ca.crt'  # must correspond to filename in postgres connection string
+        CA_CERT = Variable.get('postgres_ca_certificate', None)
+
+        copy_conf = [
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/catheter/catheter.csv"      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "catheter"   },
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/extubation/extubation.csv"  , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "extubation" },
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/sejour/sejour.csv"          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "sejour"     },
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ventilation/ventilation.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ventilation"}
+        ]
+
+        published_indicateurs_sip = CopyCsvToPostgres(
+            task_id="published_indicateurs_sip",
+            postgres_conn_id="postgresql_bi_rw",
+            ca_path=CA_PATH,
+            ca_filename=CA_FILENAME,
+            ca_cert=CA_CERT,
+            table_copy_conf=copy_conf,
+            minio_conn_id="green_minio"
+        )
+
     end = EmptyOperator(
         task_id="end",
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> enriched >> released >> end
+    start >> enriched >> released >> published >> end
