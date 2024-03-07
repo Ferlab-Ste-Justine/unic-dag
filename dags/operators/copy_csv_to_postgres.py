@@ -1,4 +1,4 @@
-import sys
+import csv
 
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.providers.postgres.hooks.postgres import PostgresHook
@@ -56,7 +56,11 @@ class CopyCsvToPostgres(PostgresCaOperator):
         with pg_conn.cursor() as cur:
             for tablename, file in filedata.items():
                 cur.execute(f"TRUNCATE {tablename};")
-                cur.copy_expert(f"COPY {tablename} FROM stdin DELIMITER ',' CSV HEADER;", file)
+
+                cols = csv.DictReader(file, delimiter=',').fieldnames
+                format_cols = ', '.join(cols)
+
+                cur.copy_expert(f"COPY {tablename} ({format_cols}) FROM stdin DELIMITER ',' CSV HEADER;", file)
 
             pg_conn.commit()
 
