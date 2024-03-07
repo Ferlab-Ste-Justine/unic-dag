@@ -57,8 +57,9 @@ class CopyCsvToPostgres(PostgresCaOperator):
             for tablename, file in filedata.items():
                 cur.execute(f"TRUNCATE {tablename};")
 
-                cols = csv.DictReader(file, delimiter=',').fieldnames
-                format_cols = ', '.join(cols)
+                with open(file.name, 'rt') as temp_file:
+                    cols = csv.DictReader(temp_file, delimiter=',').fieldnames
+                    format_cols = ', '.join(cols)
 
                 cur.copy_expert(f"COPY {tablename} ({format_cols}) FROM stdin DELIMITER ',' CSV HEADER;", file)
 
