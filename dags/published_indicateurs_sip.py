@@ -50,7 +50,7 @@ with DAG(
         ca_filename=CA_FILENAME,
         ca_cert=CA_CERT,
         table_copy_conf=copy_conf,
-        minio_conn_id="minio"
+        minio_conn_id="green_minio"
     )
 
     end = EmptyOperator(
