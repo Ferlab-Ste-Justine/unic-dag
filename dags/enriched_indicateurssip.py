@@ -135,7 +135,7 @@ with dag:
 
         enriched_participant_index >> enriched_sejour >> [enriched_catheter, enriched_ventilation, enriched_extubation]
 
-    enriched_group = enriched()
+    ENRICHED_GROUP = enriched()
 
     @task_group()
     def released():
@@ -204,7 +204,7 @@ with dag:
 
         [released_sejour, released_catheter, released_ventilation, released_extubation]
 
-    released_group = released()
+    RELEASED_GROUP = released()
 
     @task_group()
     def published():
@@ -229,11 +229,13 @@ with dag:
             minio_conn_id="green_minio"
         )
 
-    published_group = published()
+        published_indicateurs_sip
+
+    PUBLISHED_GROUP = published()
 
     end = EmptyOperator(
         task_id="end",
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> enriched_group >> released_group >> published_group >> end
+    start >> ENRICHED_GROUP >> RELEASED_GROUP >> PUBLISHED_GROUP >> end
