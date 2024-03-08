@@ -65,8 +65,8 @@ with dag:
 
     @task_group()
     def enriched():
-        ENRICHED_ZONE = "yellow"
-        ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.indicateurssip.Main"
+        enriched_zone = "yellow"
+        enriched_main_class = "bio.ferlab.ui.etl.yellow.enriched.indicateurssip.Main"
 
         def enriched_arguments(destination: str) -> List[str]:
             # !!! Do not set to initial, otherwise the participant index will be re-generated !!!
@@ -77,8 +77,8 @@ with dag:
             task_id="enriched_indicateurssip_participant_index",
             name="enriched-indicateurssip-participant-index",
             arguments=enriched_arguments("enriched_indicateurssip_participant_index"),
-            zone=ENRICHED_ZONE,
-            spark_class=ENRICHED_MAIN_CLASS,
+            zone=enriched_zone,
+            spark_class=enriched_main_class,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
             spark_config="small-etl",
@@ -89,8 +89,8 @@ with dag:
             task_id="enriched_indicateurssip_sejour",
             name="enriched-indicateurssip-sejour",
             arguments=enriched_arguments("enriched_indicateurssip_sejour"),
-            zone=ENRICHED_ZONE,
-            spark_class=ENRICHED_MAIN_CLASS,
+            zone=enriched_zone,
+            spark_class=enriched_main_class,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
             spark_config="small-etl",
@@ -101,8 +101,8 @@ with dag:
             task_id="enriched_indicateurssip_catheter",
             name="enriched-indicateurssip-catheter",
             arguments=enriched_arguments("enriched_indicateurssip_catheter"),
-            zone=ENRICHED_ZONE,
-            spark_class=ENRICHED_MAIN_CLASS,
+            zone=enriched_zone,
+            spark_class=enriched_main_class,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
             spark_config="small-etl",
@@ -113,8 +113,8 @@ with dag:
             task_id="enriched_indicateurssip_ventilation",
             name="enriched-indicateurssip-ventilation",
             arguments=enriched_arguments("enriched_indicateurssip_ventilation"),
-            zone=ENRICHED_ZONE,
-            spark_class=ENRICHED_MAIN_CLASS,
+            zone=enriched_zone,
+            spark_class=enriched_main_class,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
             spark_config="small-etl",
@@ -125,8 +125,8 @@ with dag:
             task_id="enriched_indicateurssip_extubation",
             name="enriched-indicateurssip-extubation",
             arguments=enriched_arguments("enriched_indicateurssip_extubation"),
-            zone=ENRICHED_ZONE,
-            spark_class=ENRICHED_MAIN_CLASS,
+            zone=enriched_zone,
+            spark_class=enriched_main_class,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
             spark_config="small-etl",
@@ -202,9 +202,9 @@ with dag:
 
     @task_group()
     def published():
-        CA_PATH = '/tmp/ca/bi/'  # must correspond to path in postgres connection string
-        CA_FILENAME = 'ca.crt'  # must correspond to filename in postgres connection string
-        CA_CERT = Variable.get('postgres_ca_certificate', None)
+        ca_path = '/tmp/ca/bi/'  # must correspond to path in postgres connection string
+        ca_filename = 'ca.crt'  # must correspond to filename in postgres connection string
+        ca_cert = Variable.get('postgres_ca_certificate', None)
 
         copy_conf = [
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/catheter/catheter.csv"      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "catheter"   },
@@ -216,9 +216,9 @@ with dag:
         published_indicateurs_sip = CopyCsvToPostgres(
             task_id="published_indicateurs_sip",
             postgres_conn_id="postgresql_bi_rw",
-            ca_path=CA_PATH,
-            ca_filename=CA_FILENAME,
-            ca_cert=CA_CERT,
+            ca_path=ca_path,
+            ca_filename=ca_filename,
+            ca_cert=ca_cert,
             table_copy_conf=copy_conf,
             minio_conn_id="green_minio"
         )
