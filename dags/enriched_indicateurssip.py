@@ -9,8 +9,8 @@ import pendulum
 from airflow import DAG
 from airflow.models import Variable
 from airflow.operators.empty import EmptyOperator
-from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
+from airflow.decorators import task_group
 
 from core.config import default_params, default_timeout_hours, default_args, spark_failure_msg
 from core.slack import Slack
@@ -63,7 +63,8 @@ with dag:
         on_execute_callback=Slack.notify_dag_start
     )
 
-    with TaskGroup(group_id="enriched") as enriched:
+    @task_group()
+    def enriched():
         ENRICHED_ZONE = "yellow"
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.indicateurssip.Main"
 
@@ -134,7 +135,8 @@ with dag:
 
         enriched_participant_index >> enriched_sejour >> [enriched_catheter, enriched_ventilation, enriched_extubation]
 
-    with TaskGroup(group_id="released") as released:
+    @task_group()
+    def released():
         RELEASED_ZONE = "green"
         RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.unversioned.Main"
 
@@ -198,7 +200,8 @@ with dag:
             dag=dag,
         )
 
-    with TaskGroup(group_id="published") as published:
+    @task_group()
+    def published():
         CA_PATH = '/tmp/ca/bi/'  # must correspond to path in postgres connection string
         CA_FILENAME = 'ca.crt'  # must correspond to filename in postgres connection string
         CA_CERT = Variable.get('postgres_ca_certificate', None)
@@ -225,4 +228,4 @@ with dag:
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> enriched >> released >> published >> end
+    start >> enriched() >> released() >> published() >> end
