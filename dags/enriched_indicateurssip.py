@@ -135,10 +135,12 @@ with dag:
 
         enriched_participant_index >> enriched_sejour >> [enriched_catheter, enriched_ventilation, enriched_extubation]
 
+    enriched_group = enriched()
+
     @task_group()
     def released():
-        RELEASED_ZONE = "green"
-        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.unversioned.Main"
+        released_zone = "green"
+        released_main_class = "bio.ferlab.ui.etl.green.released.unversioned.Main"
 
         def released_arguments(destination: str, steps: str = "default") -> List[str]:
             """
@@ -156,8 +158,8 @@ with dag:
             task_id="released_indicateurssip_sejour",
             name="released-indicateurssip-sejour",
             arguments=released_arguments("released_indicateurssip_sejour"),
-            zone=RELEASED_ZONE,
-            spark_class=RELEASED_MAIN_CLASS,
+            zone=released_zone,
+            spark_class=released_main_class,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
             spark_config="small-etl",
@@ -168,8 +170,8 @@ with dag:
             task_id="released_indicateurssip_catheter",
             name="released-indicateurssip-catheter",
             arguments=released_arguments("released_indicateurssip_catheter"),
-            zone=RELEASED_ZONE,
-            spark_class=RELEASED_MAIN_CLASS,
+            zone=released_zone,
+            spark_class=released_main_class,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
             spark_config="small-etl",
@@ -180,8 +182,8 @@ with dag:
             task_id="released_indicateurssip_ventilation",
             name="released-indicateurssip-ventilation",
             arguments=released_arguments("released_indicateurssip_ventilation"),
-            zone=RELEASED_ZONE,
-            spark_class=RELEASED_MAIN_CLASS,
+            zone=released_zone,
+            spark_class=released_main_class,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
             spark_config="small-etl",
@@ -192,13 +194,17 @@ with dag:
             task_id="released_indicateurssip_extubation",
             name="released-indicateurssip-extubation",
             arguments=released_arguments("released_indicateurssip_extubation"),
-            zone=RELEASED_ZONE,
-            spark_class=RELEASED_MAIN_CLASS,
+            zone=released_zone,
+            spark_class=released_main_class,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
             spark_config="small-etl",
             dag=dag,
         )
+
+        [released_sejour, released_catheter, released_ventilation, released_extubation]
+
+    released_group = released()
 
     @task_group()
     def published():
@@ -223,9 +229,11 @@ with dag:
             minio_conn_id="green_minio"
         )
 
+    published_group = published()
+
     end = EmptyOperator(
         task_id="end",
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> enriched() >> released() >> published() >> end
+    start >> enriched_group >> released_group >> published_group >> end
