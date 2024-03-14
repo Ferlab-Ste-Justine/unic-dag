@@ -1,7 +1,7 @@
 {
-    "concurrency": 6,
+    "concurrency": 4,
     "schedule": "0 0 * * *",
-    "timeout_hours": 12,
+    "timeout_hours": 20,
     "steps": [
       {
         "destination_zone": "red",
@@ -73,25 +73,25 @@
         "schemas": [],
         "datasets":
         [
-            {"dataset_id": "curated_quanum_chartmaxx_a*"              , "cluster_type": "large"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_b*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_c*"              , "cluster_type": "large"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_dossier*"        , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_e*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_f*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_g*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_i*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_l*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_maladie*"        , "cluster_type": "large"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_n*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_o*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_p*"              , "cluster_type": "large"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_q*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_r*"              , "cluster_type": "large"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_s*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_t*"              , "cluster_type": "large"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_urogynecologie*" , "cluster_type": "large"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
-            {"dataset_id": "curated_quanum_chartmaxx_v*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []}
+          {"dataset_id": "curated_quanum_chartmaxx_a*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_b*"              , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_c*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_dossier*"        , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_e*"              , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_f*"              , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_g*"              , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_i*"              , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_l*"              , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_maladie*"        , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_n*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_o*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_p*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_q*"              , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_r*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_s*"              , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_t*"              , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_urogynecologie*" , "cluster_type": "medium" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
+          {"dataset_id": "curated_quanum_chartmaxx_v*"              , "cluster_type": "small"  , "run_type": "initial" , "cluster_specs": {} , "dependencies": []}          
         ]
       },
       {
