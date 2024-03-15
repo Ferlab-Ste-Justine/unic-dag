@@ -63,8 +63,18 @@ def generate_spark_arguments(destination: str, steps: str = "default", etl_versi
 
 with dag:
 
-    start_ingestion_quanumchartmaxx = EmptyOperator(
-        task_id="start_ingestion_quanumchartmaxx",
+    start_curated_quanum_task = EmptyOperator(
+        task_id="start_curated_quanum_task",
+        on_execute_callback=Slack.notify_dag_start
+    )
+
+    start_curated_quanumchartmaxx_task = EmptyOperator(
+        task_id="start_curated_quanumchartmaxx_task",
+        on_execute_callback=Slack.notify_dag_start
+    )
+
+    start_anonymized_quanumchartmaxx_task = EmptyOperator(
+        task_id="start_anonymized_quanumchartmaxx_task",
         on_execute_callback=Slack.notify_dag_start
     )
 
@@ -191,4 +201,4 @@ with dag:
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start_ingestion_quanumchartmaxx >> start_curated_quanum >> start_curated_quanumchartmaxx >> start_anonymized_quanumchartmaxx >> publish_anonymized_quanumchartmaxx
+    start_curated_quanum_task >> start_curated_quanum >> start_curated_quanumchartmaxx_task >> start_curated_quanumchartmaxx >> start_anonymized_quanumchartmaxx_task >> start_anonymized_quanumchartmaxx >> publish_anonymized_quanumchartmaxx
