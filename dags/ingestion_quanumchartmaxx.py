@@ -4,7 +4,7 @@ DAG to ingest data from quanum
 # pylint: disable=missing-function-docstring, duplicate-code
 
 
-from datetime import timedelta
+from datetime import timedelta, datetime
 from typing import List
 import pendulum
 
@@ -35,6 +35,7 @@ dag = DAG(
     dag_id="ingestion_quanumchartmaxx",
     doc_md=DOC,
     schedule_interval="0 19 * * *",
+    start_date=datetime(2024, 3, 15, tzinfo=LOCAL_TZ),
     params=default_params,
     dagrun_timeout=timedelta(hours=20),
     default_args=args,
