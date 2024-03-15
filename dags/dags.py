@@ -5,6 +5,7 @@ import os
 import re
 from datetime import timedelta, datetime
 
+import pendulum
 from airflow import DAG
 
 from core.config import dags_config_path, extract_schema, default_timeout_hours, default_args, config_file, spark_failure_msg, jar, \
@@ -30,7 +31,7 @@ for (r, zones, _) in os.walk(dags_config_path):
                                 schedule_interval=config['schedule'],
                                 params=default_params,
                                 default_args=default_args,
-                                start_date=datetime(2021, 1, 1),
+                                start_date=datetime(2021, 1, 1, tzinfo=pendulum.timezone("America/Montreal")),
                                 concurrency=config['concurrency'],
                                 catchup=False,
                                 tags=[subzone],
