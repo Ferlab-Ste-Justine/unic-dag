@@ -16,6 +16,8 @@ from core.config import default_params, default_args, spark_failure_msg, jar
 
 from operators.spark import SparkOperator
 
+from spark_operators import sanitize_string
+
 DOC = """
     DAG to ingest data from Quanum -> perform data union with Chartmaxx system data -> anonymize the result.
     Dag scheduled to run daily at 19:00.
@@ -149,8 +151,8 @@ with dag:
     ]
 
     start_curated_quanum = [SparkOperator(
-        task_id=task_name,
-        name=task_name,
+        task_id=sanitize_string(task_name, "_"),
+        name=sanitize_string(task_name[:40], '-'),
         arguments=generate_spark_arguments(task_name),
         zone=QUANUM_CURATED_ZONE,
         spark_class=QUANUM_CURATED_MAIN_CLASS,
@@ -161,8 +163,8 @@ with dag:
     ) for task_name, cluster_size in quanum_curated_tasks]
 
     start_curated_quanumchartmaxx = [SparkOperator(
-        task_id=task_name,
-        name=task_name,
+        task_id=sanitize_string(task_name, "_"),
+        name=sanitize_string(task_name[:40], '-'),
         arguments=generate_spark_arguments(task_name, "initial", "v4"),
         zone=QUANUMCHARTMAXX_CURATED_ZONE,
         spark_class=QUANUMCHARTMAXX_CURATED_MAIN_CLASS,
@@ -173,8 +175,8 @@ with dag:
     ) for task_name, cluster_size in quanumchartmaxx_curated_tasks]
 
     start_anonymized_quanumchartmaxx = [SparkOperator(
-        task_id=task_name,
-        name=task_name,
+        task_id=sanitize_string(task_name, "_"),
+        name=sanitize_string(task_name[:40], '-'),
         arguments=generate_spark_arguments(task_name, "initial"),
         zone=QUANUMCHARTMAXX_ANONYMIZED_ZONE,
         spark_class=QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS,
