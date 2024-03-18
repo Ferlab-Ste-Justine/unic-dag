@@ -63,6 +63,11 @@ def generate_spark_arguments(destination: str, steps: str = "default", etl_versi
 
 with dag:
 
+    start_curated_quanum_dependencies_task = EmptyOperator(
+        task_id="start_curated_quanum_dependencies_task",
+        on_execute_callback=Slack.notify_dag_start
+    )
+
     start_curated_quanum_task = EmptyOperator(
         task_id="start_curated_quanum_task",
         on_execute_callback=Slack.notify_dag_start
@@ -78,9 +83,31 @@ with dag:
         on_execute_callback=Slack.notify_dag_start
     )
 
+    curated_quanum_form_metadata_vw_task = SparkOperator(
+        task_id="curated_quanum_form_metadata_vw",
+        name="curated_quanum_form_name_vw".replace("_", "-"),
+        arguments=generate_spark_arguments("curated_quanum_form_metadata_vw"),
+        zone=QUANUM_CURATED_ZONE,
+        spark_class=QUANUM_CURATED_MAIN_CLASS,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config="small-etl",
+        dag=dag
+    )
+
+    curated_quanum_form_name_vw_task = SparkOperator(
+        task_id="curated_quanum_form_name_vw",
+        name="curated_quanum_form_name_vw".replace("_", "-"),
+        arguments=generate_spark_arguments("curated_quanum_form_name_vw"),
+        zone=QUANUM_CURATED_ZONE,
+        spark_class=QUANUM_CURATED_MAIN_CLASS,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config="small-etl",
+        dag=dag
+    )
+
     quanum_curated_tasks = [
-        ("curated_quanum_form_metadata_vw"                                   , "small-etl")  ,
-        ("curated_quanum_form_name_vw"                                       , "small-etl")  ,
         ("curated_quanum_a*"                                                 , "medium-etl") ,
         ("curated_quanum_b*"                                                 , "small-etl")  ,
         ("curated_quanum_c*"                                                 , "medium-etl") ,
@@ -201,4 +228,4 @@ with dag:
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start_curated_quanum_task >> start_curated_quanum >> start_curated_quanumchartmaxx_task >> start_curated_quanumchartmaxx >> start_anonymized_quanumchartmaxx_task >> start_anonymized_quanumchartmaxx >> publish_anonymized_quanumchartmaxx
+    start_curated_quanum_dependencies_task >> [curated_quanum_form_metadata_vw_task, curated_quanum_form_name_vw_task] >> start_curated_quanum_task >> start_curated_quanum >> start_curated_quanumchartmaxx_task >> start_curated_quanumchartmaxx >> start_anonymized_quanumchartmaxx_task >> start_anonymized_quanumchartmaxx >> publish_anonymized_quanumchartmaxx
