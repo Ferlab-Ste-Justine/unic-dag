@@ -52,7 +52,7 @@ def generate_spark_arguments(destination: str, steps: str = "default", etl_versi
     Generate Spark task arguments for the ETL process.
     """
     if etl_version == "v2":
-        return ["config/prod.cond", steps, destination]
+        return ["config/prod.conf", steps, destination]
     return [
         "--config", "config/prod.conf",
         "--steps", steps,
