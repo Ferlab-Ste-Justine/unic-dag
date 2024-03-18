@@ -91,7 +91,7 @@ with dag:
         spark_class=QUANUM_CURATED_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="small-etl", 
+        spark_config="small-etl",
         dag=dag
     )
 
@@ -103,7 +103,7 @@ with dag:
         spark_class=QUANUM_CURATED_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
-        spark_config="small-etl", 
+        spark_config="small-etl",
         dag=dag
     )
 
