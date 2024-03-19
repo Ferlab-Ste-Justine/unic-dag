@@ -36,7 +36,7 @@ args = default_args.copy()
 args.update({
     'start_date': datetime(2024, 3, 19),
     'provide_context': True}
-)  
+)
 
 dag = DAG(
     dag_id="ingestion_quanumchartmaxx",
