@@ -34,7 +34,7 @@ LOCAL_TZ = pendulum.timezone("America/Montreal")
 
 args = default_args.copy()
 args.update({
-    'start_date': datetime(2024, 3, 19),
+    'start_date': datetime(2024, 3, 18),
     'provide_context': True}
 )
 
@@ -42,7 +42,7 @@ dag = DAG(
     dag_id="ingestion_quanumchartmaxx",
     doc_md=DOC,
     schedule_interval="0 19 * * *",
-    start_date=datetime(2024, 3, 19, tzinfo=LOCAL_TZ),
+    start_date=datetime(2024, 3, 18, tzinfo=LOCAL_TZ),
     params=default_params,
     dagrun_timeout=timedelta(hours=20),
     default_args=args,
