@@ -30,21 +30,27 @@ QUANUM_CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.quanum.Main"
 QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
 QUANUMCHARTMAXX_CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.quanumchartmaxx.Main"
 
-args = default_args.copy()
 LOCAL_TZ = pendulum.timezone("America/Montreal")
+
+args = default_args.copy()
+args.update({
+    'start_date': datetime(2024, 3, 19),
+    'provide_context': True}
+)  
 
 dag = DAG(
     dag_id="ingestion_quanumchartmaxx",
     doc_md=DOC,
     schedule_interval="0 19 * * *",
-    start_date=datetime(2024, 3, 15, tzinfo=LOCAL_TZ),
+    start_date=datetime(2024, 3, 19, tzinfo=LOCAL_TZ),
     params=default_params,
     dagrun_timeout=timedelta(hours=20),
     default_args=args,
     is_paused_upon_creation=True,
-    catchup=False,
+    catchup=True,
+    max_active_runs=1,
     concurrency=4,
-    tags=["curated"]
+    tags=["curated", "anonymized"]
 )
 
 def generate_spark_arguments(destination: str, steps: str = "default", etl_version: str= "v2") -> List[str]:
@@ -52,7 +58,7 @@ def generate_spark_arguments(destination: str, steps: str = "default", etl_versi
     Generate Spark task arguments for the ETL process.
     """
     if etl_version == "v2":
-        return ["config/prod.conf", steps, destination]
+        return ["config/prod.conf", steps, destination, '{{ds}}']
     return [
         "--config", "config/prod.conf",
         "--steps", steps,
@@ -119,7 +125,7 @@ with dag:
         ("curated_quanum_maladie*"                                           , "medium-etl") ,
         ("curated_quanum_n*"                                                 , "small-etl")  ,
         ("curated_quanum_o*"                                                 , "small-etl")  ,
-        ("curated_quanum_p*"                                                 , "small-etl")  ,
+        ("curated_quanum_p*"                                                 , "medium-etl")  ,
         ("curated_quanum_q*"                                                 , "small-etl")  ,
         ("curated_quanum_r*"                                                 , "medium-etl") ,
         ("curated_quanum_s*"                                                 , "small-etl")  ,
