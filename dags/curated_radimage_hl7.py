@@ -10,7 +10,7 @@ from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 
 from core.config import default_params, default_args, spark_failure_msg, jar
-# from core.slack import Slack
+from core.slack import Slack
 from operators.spark import SparkOperator
 
 DOC = """
@@ -52,7 +52,7 @@ dag = DAG(
 with dag:
     start = EmptyOperator(
         task_id="start_curated_radimage_hl7",
-        # on_execute_callback=Slack.notify_dag_start
+        on_execute_callback=Slack.notify_dag_start
     )
 
     radimage_hl7_curated_tasks = [
@@ -109,7 +109,7 @@ with dag:
 
     end = EmptyOperator(
         task_id="publish_curated_radimage_hl7",
-        # on_success_callback=Slack.notify_dag_completion
+        on_success_callback=Slack.notify_dag_completion
     )
 
     start >> radimage_hl7_curated >> end
