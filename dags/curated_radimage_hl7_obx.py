@@ -1,0 +1,72 @@
+"""
+DAG pour le parsing le segment OBX des messages HL7 de Radimage
+"""
+# pylint: disable=duplicate-code
+from datetime import datetime, timedelta
+
+import pendulum
+
+from airflow import DAG
+from airflow.operators.empty import EmptyOperator
+
+from core.config import default_params, default_args, spark_failure_msg, jar
+# from core.slack import Slack
+from operators.spark import SparkOperator
+
+DOC = """
+# Curated Radimage HL7 DAG
+
+ETL temporaire curated pour le parsing le segment OBX des messages HL7 de Radimage
+
+### Description
+Cet ETL roule pour re-ingérer l'historique du segment OBX et de les convertir en format delta.
+Une fois que l'ingestion de l'historique est complété, cet ETL ne va plus être utilisé.
+Elle parse des données de la date précédante de la date de la run dans airflow, par exemple:
+La run du 2 janvier 2020 parse les données du 1 janvier dans le lac.
+
+"""
+
+CURATED_ZONE = "red"
+CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
+args = default_args.copy()
+args.update({
+    'provide_context': True})
+
+dag = DAG(
+    dag_id="curated_radimage_hl7_obx",
+    doc_md=DOC,
+    start_date=datetime(2013, 10, 5, 7, tzinfo=pendulum.timezone("America/Montreal")),
+    end_date=datetime(2024, 3, 20, tzinfo=pendulum.timezone("America/Montreal")),
+    schedule_interval=timedelta(days=1),
+    params=default_params,
+    dagrun_timeout=timedelta(hours=2),
+    default_args=args,
+    is_paused_upon_creation=True,
+    catchup=True,
+    max_active_runs=1,
+    max_active_tasks=3,
+    tags=["curated"]
+)
+
+with dag:
+    start = EmptyOperator(
+        task_id="start_curated_radimage_hl7_obx"
+    )
+
+    radimage_hl7_curated = SparkOperator(
+        task_id="curated_radimage_hl7_oru_r01_obx",
+        name="curated-radimage-hl7-oru-r01-obx",
+        arguments=["config/prod.conf", "default", "curated_radimage_hl7_oru_r01_obx", '{{ds}}'],
+        zone=CURATED_ZONE,
+        spark_class=CURATED_MAIN_CLASS,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config="small-etl",
+        dag=dag
+    )
+
+    end = EmptyOperator(
+        task_id="publish_curated_radimage_hl7_obx"
+    )
+
+    start >> radimage_hl7_curated >> end
