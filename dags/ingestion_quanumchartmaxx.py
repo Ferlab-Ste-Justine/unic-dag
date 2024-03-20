@@ -60,8 +60,7 @@ def generate_spark_arguments(destination: str, steps: str = "default", etl_versi
     if etl_version == "v2":
         if subzone == "curated":
             return ["config/prod.conf", steps, destination, '{{ds}}']
-        else:
-            return ["config/prod.conf", steps, destination]
+        return ["config/prod.conf", steps, destination]
     return [
         "--config", "config/prod.conf",
         "--steps", steps,
