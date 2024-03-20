@@ -53,12 +53,15 @@ dag = DAG(
     tags=["curated", "anonymized"]
 )
 
-def generate_spark_arguments(destination: str, steps: str = "default", etl_version: str= "v2") -> List[str]:
+def generate_spark_arguments(destination: str, steps: str = "default", etl_version: str= "v2", subzone: str = "curated") -> List[str]:
     """
     Generate Spark task arguments for the ETL process.
     """
     if etl_version == "v2":
-        return ["config/prod.conf", steps, destination, '{{ds}}']
+        if subzone == "curated":
+            return ["config/prod.conf", steps, destination, '{{ds}}']
+        else:
+            return ["config/prod.conf", steps, destination]
     return [
         "--config", "config/prod.conf",
         "--steps", steps,
@@ -191,7 +194,7 @@ with dag:
     start_anonymized_quanumchartmaxx = [SparkOperator(
         task_id=sanitize_string(task_name, "_"),
         name=sanitize_string(task_name[:40], '-'),
-        arguments=generate_spark_arguments(task_name, "initial"),
+        arguments=generate_spark_arguments(task_name, "initial", "v2", "anonymized"),
         zone=QUANUMCHARTMAXX_ANONYMIZED_ZONE,
         spark_class=QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS,
         spark_jar=jar,
