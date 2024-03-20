@@ -127,7 +127,7 @@ with dag:
         ("curated_quanum_o*"                                                 , "small-etl")  ,
         ("curated_quanum_p*"                                                 , "medium-etl")  ,
         ("curated_quanum_q*"                                                 , "small-etl")  ,
-        ("curated_quanum_r*"                                                 , "medium-etl") ,
+        ("curated_quanum_r*"                                                 , "small-etl") ,
         ("curated_quanum_s*"                                                 , "small-etl")  ,
         ("curated_quanum_t*"                                                 , "medium-etl") ,
         ("curated_quanum_urogynecologie*"                                    , "medium-etl") ,
