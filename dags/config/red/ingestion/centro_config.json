@@ -80,5 +80,21 @@
       {"dataset_id": "raw_centro_urg_*"     , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_centro_uro_*"     , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
     ]
+  },{
+    "destination_zone": "yellow",
+    "destination_subzone": "anonymized",
+    "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+    "multiple_main_methods": false,
+    "publish_class": "",
+    "schemas": [],
+    "datasets":
+    [
+      {"dataset_id": "anonymized_centro_chusj_*" ,   "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_centro_der_*"   ,   "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_centro_dia_*"   ,   "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_centro_gen_*"   ,   "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_centro_pul_*"   ,   "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_centro_scol_*"   ,   "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+    ]
   }]
 }
