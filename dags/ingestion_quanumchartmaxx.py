@@ -193,7 +193,7 @@ with dag:
     start_anonymized_quanumchartmaxx = [SparkOperator(
         task_id=sanitize_string(task_name, "_"),
         name=sanitize_string(task_name[:40], '-'),
-        arguments=generate_spark_arguments(task_name, "initial", "v2", "anonymized"),
+        arguments=generate_spark_arguments(task_name, "default", "v2", "anonymized"),
         zone=QUANUMCHARTMAXX_ANONYMIZED_ZONE,
         spark_class=QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS,
         spark_jar=jar,
