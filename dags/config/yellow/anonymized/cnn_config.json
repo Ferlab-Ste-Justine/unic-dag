@@ -16,7 +16,6 @@
         {"dataset_id": "anonymized_cnn_admissionchart"           , "cluster_type": "xsmall" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []} ,
         {"dataset_id": "anonymized_cnn_antenatalintervention"    , "cluster_type": "xsmall" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
         {"dataset_id": "anonymized_cnn_antimicrobialuse"         , "cluster_type": "xsmall" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
-        {"dataset_id": "anonymized_cnn_antimicrobialuse"         , "cluster_type": "xsmall" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
         {"dataset_id": "anonymized_cnn_baby"                     , "cluster_type": "xsmall" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
         {"dataset_id": "anonymized_cnn_culturestransfusions"     , "cluster_type": "xsmall" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
         {"dataset_id": "anonymized_cnn_diagnosisofinfection"     , "cluster_type": "xsmall" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
