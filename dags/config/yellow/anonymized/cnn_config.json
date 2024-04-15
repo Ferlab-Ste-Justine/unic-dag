@@ -43,6 +43,7 @@
         {"dataset_id": "anonymized_cnn_respiratoryc"             , "cluster_type": "xsmall" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
         {"dataset_id": "anonymized_cnn_resuscitation"            , "cluster_type": "xsmall" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
         {"dataset_id": "anonymized_cnn_rop"                      , "cluster_type": "xsmall" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id": "anonymized_cnn_roptreatment"             , "cluster_type": "xsmall" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} 
       ]
     }]
 }
