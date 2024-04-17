@@ -12,7 +12,7 @@
         "schemas": [],
         "datasets":
         [
-          {"dataset_id": "anonymized_unite_des_naissances_registre"    , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+          {"dataset_id": "anonymized_unite_des_naissances_registre"    , "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
         ]
       }]
   }
