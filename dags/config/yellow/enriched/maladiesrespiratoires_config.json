@@ -12,7 +12,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"enriched_maladiesrespiratoires_participant_index"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+        {"dataset_id":"enriched_maladiesrespiratoires_participant_index"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
       ]
     },
 
@@ -25,7 +25,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"released_maladiesrespiratoires_participant_index"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+        {"dataset_id":"released_maladiesrespiratoires_participant_index"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
       ]
     },
 
@@ -38,7 +38,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"published_maladiesrespiratoires_participant_index"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+        {"dataset_id":"published_maladiesrespiratoires_participant_index"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
       ]
     }
   ]

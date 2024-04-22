@@ -11,10 +11,10 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "anonymized_pharmacie_pharchive_phfadministration"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_pharmacie_pharchive_phfadministration_manuelle", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_pharmacie_phfadministration"                   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_pharmacie_phfadministration_manuelle"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "anonymized_pharmacie_pharchive_phfadministration"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_pharmacie_pharchive_phfadministration_manuelle", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_pharmacie_phfadministration"                   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_pharmacie_phfadministration_manuelle"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
     ]
   }]
 }

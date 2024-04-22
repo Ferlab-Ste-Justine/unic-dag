@@ -10,6 +10,7 @@ from airflow.operators.empty import EmptyOperator
 from airflow.utils.trigger_rule import TriggerRule
 
 from core.slack import Slack
+from core.config import spark_test_failure_msg
 from operators.spark import SparkOperator
 
 
@@ -133,6 +134,8 @@ def setup_dag(dag: DAG,
 
         jobs = {}
         all_dependencies = []
+        pre_test_jobs = []
+        post_test_jobs = []
 
         for conf in step_config['datasets']:
             dataset_id = conf['dataset_id']
@@ -142,12 +145,27 @@ def setup_dag(dag: DAG,
             job = create_spark_job(dataset_id, zone, subzone, run_type, config_type, config_file, jar, dag, main_class,
                                    multiple_main_methods, version, spark_failure_msg, skip_task)
 
+            for pre_test in conf['pre_tests']:
+                pre_test_job = create_spark_test(dataset_id, pre_test, zone, config_type, config_file, jar, dag,
+                                                 spark_test_failure_msg)
+                pre_test_jobs.append(pre_test_job)
+
+            for post_test in conf['post_tests']:
+                post_test_job = create_spark_test(dataset_id, post_test, zone, config_type, config_file, jar, dag,
+                                                  spark_test_failure_msg)
+                post_test_jobs.append(post_test_job)
+
             all_dependencies = all_dependencies + conf['dependencies']
-            jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
+            jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies'], "pre_test_jobs": pre_test_jobs,
+                                "post_test_jobs": post_test_jobs}
 
         for dataset_id, job in jobs.items():
             for dependency in job['dependencies']:
                 jobs[dependency]['job'] >> job['job']
+            for pre_test_job in job['pre_test_jobs']:
+                pre_test_job >> job['job']
+            for post_test_job in job['post_test_jobs']:
+                job['job'] >> post_test_job
             if len(job['dependencies']) == 0:
                 start >> job['job']
             if dataset_id not in all_dependencies:
@@ -257,4 +275,48 @@ def create_spark_job(destination: str,
         spark_config=f"{cluster_type}-etl",
         dag=dag,
         skip=False if skip is None else skip
+    )
+
+def create_spark_test(destination: str,
+                      test: str,
+                      zone: str,
+                      cluster_type: str,
+                      config_file: str,
+                      jar: str,
+                      dag: DAG,
+                      spark_failure_msg: str):
+    """
+    create spark job operator
+    :param destination:
+    :param zone:
+    :param cluster_type:
+    :param config_file:
+    :param jar:
+    :param dag:
+    :param spark_failure_msg:
+    :return:
+    """
+    main_class = "bio.ferlab.ui.etl.qa.Main"
+    app_name = test + "_" + destination
+
+    args = [
+        test,
+        "--config", config_file,
+        "--app-name", app_name,
+        "--destination", destination
+    ]
+
+    task_id = test + "_" + sanitize_string(destination, "_")
+    name = test + "-" + sanitize_string(destination[:40], '-')
+
+    return SparkOperator(
+        task_id=task_id,
+        name=name,
+        zone=zone,
+        arguments=args,
+        spark_class=main_class,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config=f"{cluster_type}-etl",
+        dag=dag
     )

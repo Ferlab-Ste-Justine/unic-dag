@@ -11,9 +11,9 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id":"anonymized_growthxp_patient", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_growthxp_event"  , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_growthxp_visit"  , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id":"anonymized_growthxp_patient", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"anonymized_growthxp_event"  , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"anonymized_growthxp_visit"  , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
     ]
   }]
 }

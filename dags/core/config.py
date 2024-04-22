@@ -25,6 +25,7 @@ default_params = {
 }
 
 spark_failure_msg = "Spark job failed"
+spark_test_failure_msg = "Spark Test job failed"
 default_timeout_hours = 4
 
 jar = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
