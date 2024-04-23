@@ -134,10 +134,10 @@ def setup_dag(dag: DAG,
 
         jobs = {}
         all_dependencies = []
-        pre_test_jobs = []
-        post_test_jobs = []
 
         for conf in step_config['datasets']:
+            pre_test_jobs = []
+            post_test_jobs = []
             dataset_id = conf['dataset_id']
             config_type = conf['cluster_type']
             run_type = conf['run_type']
@@ -159,17 +159,23 @@ def setup_dag(dag: DAG,
             jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies'], "pre_test_jobs": pre_test_jobs,
                                 "post_test_jobs": post_test_jobs}
 
-        for dataset_id, job in jobs.items():
-            for dependency in job['dependencies']:
-                jobs[dependency]['job'] >> job['job']
-            for pre_test_job in job['pre_test_jobs']:
-                pre_test_job >> job['job']
-            for post_test_job in job['post_test_jobs']:
-                job['job'] >> post_test_job
-            if len(job['dependencies']) == 0:
-                start >> job['job']
-            if dataset_id not in all_dependencies:
-                job['job'] >> publish
+            for dataset_id, job in jobs.items():
+                for dependency in job['dependencies']:
+                    if len(job['post_test_jobs']) == 0:
+                        jobs[dependency]['job'] >> job['job']
+                    else:
+                        jobs[dependency]['job'] >> job['post_test_jobs'] >> job['job']
+                if len(job['dependencies']) == 0:
+                    if len(job['pre_test_jobs']) == 0:
+                        start >> job['job']
+                    else:
+                        start >> job['pre_test_jobs'] >> job['job']
+                if dataset_id not in all_dependencies:
+                    if len(job['post_test_jobs']) == 0:
+                        job['job'] >> publish
+                    else:
+                        job['job'] >> job['post_test_jobs'] >> publish
+
 
 
 def read_json(path: str):

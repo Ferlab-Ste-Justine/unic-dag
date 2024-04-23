@@ -11,7 +11,7 @@
     "schemas": ["centro"],
     "datasets":
     [
-      {"dataset_id": "raw_centro_ado_*"     , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["equal_counts"]},
+      {"dataset_id": "raw_centro_ado_*"     , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "raw_centro_aid_*"     , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "raw_centro_all_*"     , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "raw_centro_anes_*"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},

@@ -11,8 +11,8 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id":"anonymized_staturgence_recherche_activity"                               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"anonymized_staturgence_recherche_d*"                                     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"anonymized_staturgence_recherche_activity"                               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["equal_counts"]},
+      {"dataset_id":"anonymized_staturgence_recherche_d*"                                     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["equal_counts"]},
       {"dataset_id":"anonymized_staturgence_recherche_episode*"                               , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id":"anonymized_staturgence_recherche_generic"                                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id":"anonymized_staturgence_recherche_location*"                              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
