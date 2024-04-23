@@ -34,7 +34,9 @@
         {"dataset_id": "curated_chartmaxx_s*"              , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["curated_chartmaxx_form_name_vw", "curated_chartmaxx_form_data_vw"]},
         {"dataset_id": "curated_chartmaxx_t*"              , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["curated_chartmaxx_form_name_vw", "curated_chartmaxx_form_data_vw"]},
         {"dataset_id": "curated_chartmaxx_urogynecologie*" , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["curated_chartmaxx_form_name_vw", "curated_chartmaxx_form_data_vw"]},
-        {"dataset_id": "curated_chartmaxx_v*"              , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["curated_chartmaxx_form_name_vw", "curated_chartmaxx_form_data_vw"]}
+        {"dataset_id": "curated_chartmaxx_v*"              , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["curated_chartmaxx_form_name_vw", "curated_chartmaxx_form_data_vw"]},
+
+        {"dataset_id": "curated_chartmaxx_cmformcapture_dossier_obstetrical", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["curated_chartmaxx_cmformcapture", "curated_chartmaxx_dossier*"]}
       ]
     },
     {
