@@ -10,7 +10,6 @@ from airflow.operators.empty import EmptyOperator
 from airflow.utils.trigger_rule import TriggerRule
 
 from core.slack import Slack
-from core.config import spark_test_failure_msg
 from operators.spark import SparkOperator
 
 
