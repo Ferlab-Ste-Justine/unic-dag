@@ -10,7 +10,6 @@ from airflow.operators.empty import EmptyOperator
 from airflow.utils.trigger_rule import TriggerRule
 
 from core.slack import Slack
-from core.config import spark_test_failure_msg
 from operators.spark import SparkOperator
 
 
@@ -136,8 +135,6 @@ def setup_dag(dag: DAG,
         all_dependencies = []
 
         for conf in step_config['datasets']:
-            pre_test_jobs = []
-            post_test_jobs = []
             dataset_id = conf['dataset_id']
             config_type = conf['cluster_type']
             run_type = conf['run_type']
@@ -145,36 +142,16 @@ def setup_dag(dag: DAG,
             job = create_spark_job(dataset_id, zone, subzone, run_type, config_type, config_file, jar, dag, main_class,
                                    multiple_main_methods, version, spark_failure_msg, skip_task)
 
-            for pre_test in conf['pre_tests']:
-                pre_test_job = create_spark_test(dataset_id, pre_test, zone, config_type, config_file, jar, dag,
-                                                 spark_test_failure_msg)
-                pre_test_jobs.append(pre_test_job)
-
-            for post_test in conf['post_tests']:
-                post_test_job = create_spark_test(dataset_id, post_test, zone, config_type, config_file, jar, dag,
-                                                  spark_test_failure_msg)
-                post_test_jobs.append(post_test_job)
-
             all_dependencies = all_dependencies + conf['dependencies']
-            jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies'], "pre_test_jobs": pre_test_jobs,
-                                "post_test_jobs": post_test_jobs}
+            jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
 
-            for dataset_id, job in jobs.items():
-                for dependency in job['dependencies']:
-                    if len(job['post_test_jobs']) == 0:
-                        jobs[dependency]['job'] >> job['job']
-                    else:
-                        jobs[dependency]['job'] >> job['post_test_jobs'] >> job['job']
-                if len(job['dependencies']) == 0:
-                    if len(job['pre_test_jobs']) == 0:
-                        start >> job['job']
-                    else:
-                        start >> job['pre_test_jobs'] >> job['job']
-                if dataset_id not in all_dependencies:
-                    if len(job['post_test_jobs']) == 0:
-                        job['job'] >> publish
-                    else:
-                        job['job'] >> job['post_test_jobs'] >> publish
+        for dataset_id, job in jobs.items():
+            for dependency in job['dependencies']:
+                jobs[dependency]['job'] >> job['job']
+            if len(job['dependencies']) == 0:
+                start >> job['job']
+            if dataset_id not in all_dependencies:
+                job['job'] >> publish
 
 
 
