@@ -23,19 +23,19 @@ config = {
         "schemas": [],
         "datasets":
             [
-                {"dataset_id": "anonymized_unic_participant_index_cardiopathie"                 , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-                {"dataset_id": "anonymized_unic_participant_index_coprema"                      , "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-                {"dataset_id": "anonymized_unic_participant_index_ivado_prf3_biopsie_foie_2023" , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-                {"dataset_id": "anonymized_unic_participant_index_ivado_prf3_steatose_hepatique", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-                {"dataset_id": "anonymized_unic_participant_index_monchemin"                    , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-                {"dataset_id": "anonymized_unic_participant_index_pedicss"                      , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-                {"dataset_id": "anonymized_unic_participant_index_predisepsis"                  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-                {"dataset_id": "anonymized_unic_participant_index_registre_cardiopathie_bebe"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-                {"dataset_id": "anonymized_unic_participant_index_registre_cardiopathie_maman"  , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-                {"dataset_id": "anonymized_unic_participant_index_resppa"                       , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-                {"dataset_id": "anonymized_unic_participant_index_signature"                    , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-                {"dataset_id": "anonymized_unic_participant_index_signature_triceps"            , "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-                {"dataset_id": "anonymized_unic_participant_index_simapp"                       , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+                {"dataset_id": "anonymized_unic_participant_index_cardiopathie"                 , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+                {"dataset_id": "anonymized_unic_participant_index_coprema"                      , "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+                {"dataset_id": "anonymized_unic_participant_index_ivado_prf3_biopsie_foie_2023" , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+                {"dataset_id": "anonymized_unic_participant_index_ivado_prf3_steatose_hepatique", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+                {"dataset_id": "anonymized_unic_participant_index_monchemin"                    , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+                {"dataset_id": "anonymized_unic_participant_index_pedicss"                      , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+                {"dataset_id": "anonymized_unic_participant_index_predisepsis"                  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+                {"dataset_id": "anonymized_unic_participant_index_registre_cardiopathie_bebe"   , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+                {"dataset_id": "anonymized_unic_participant_index_registre_cardiopathie_maman"  , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+                {"dataset_id": "anonymized_unic_participant_index_resppa"                       , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+                {"dataset_id": "anonymized_unic_participant_index_signature"                    , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+                {"dataset_id": "anonymized_unic_participant_index_signature_triceps"            , "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+                {"dataset_id": "anonymized_unic_participant_index_simapp"                       , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
 
             ]
     }]

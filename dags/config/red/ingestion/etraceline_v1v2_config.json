@@ -11,8 +11,8 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "raw_etraceline_patient"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_etraceline_test_request_l", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "raw_etraceline_patient"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_etraceline_test_request_l", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
     ]
   }]
 

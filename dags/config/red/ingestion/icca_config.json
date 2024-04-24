@@ -11,21 +11,21 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "raw_icca_blood_gas"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_d_*"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_lits"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_ptassessment"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_ptbedstay"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_ptcensus"          , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_ptdemographic"     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_ptintake"          , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_ptintervention"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_ptlabresult"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_ptmedication"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_ptorder"           , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_ptrespiratoryorder", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_ptsitecare"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_icca_pttreatment"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "raw_icca_blood_gas"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_icca_d_*"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_icca_lits"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_icca_ptassessment"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_icca_ptbedstay"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_icca_ptcensus"          , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_icca_ptdemographic"     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_icca_ptintake"          , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_icca_ptintervention"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_icca_ptlabresult"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_icca_ptmedication"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_icca_ptorder"           , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_icca_ptrespiratoryorder", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_icca_ptsitecare"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_icca_pttreatment"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
     ]
   }, {
     "destination_zone": "yellow",
@@ -36,21 +36,21 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "anonymized_icca_blood_gas"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_d_*"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_lits"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_ptassessment"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_ptbedstay"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_ptcensus"          , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_ptdemographic"     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_ptintake"          , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_ptintervention"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_ptlabresult"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_ptmedication"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_ptorder"           , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_ptrespiratoryorder", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_ptsitecare"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_icca_pttreatment"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "anonymized_icca_blood_gas"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_d_*"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_lits"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_ptassessment"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_ptbedstay"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_ptcensus"          , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_ptdemographic"     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_ptintake"          , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_ptintervention"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_ptlabresult"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_ptmedication"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_ptorder"           , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_ptrespiratoryorder", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_ptsitecare"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_pttreatment"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
     ]
   }]
 }

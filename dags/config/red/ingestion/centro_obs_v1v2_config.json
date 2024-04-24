@@ -11,7 +11,7 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "raw_centro_obs_grossesses_ant_rieures_d_tails_view", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "raw_centro_obs_grossesses_ant_rieures_d_tails_view", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
     ]
   }]
 
