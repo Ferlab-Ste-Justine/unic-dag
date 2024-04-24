@@ -309,8 +309,8 @@ def create_spark_test(destination: str,
     args = [
         test,
         "--config", config_file,
-        "--app-name", app_name,
         "--steps", steps,
+        "--app-name", app_name,
         "--destination", destination
     ]
 
