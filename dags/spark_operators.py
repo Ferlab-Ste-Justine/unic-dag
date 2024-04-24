@@ -303,12 +303,14 @@ def create_spark_test(destination: str,
     :return:
     """
     main_class = "bio.ferlab.ui.etl.qa.Main"
+    steps = "skip"
     app_name = test + "_" + destination
 
     args = [
         test,
         "--config", config_file,
         "--app-name", app_name,
+        "--steps", steps,
         "--destination", destination
     ]
 
