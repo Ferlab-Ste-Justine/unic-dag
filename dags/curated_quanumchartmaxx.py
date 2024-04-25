@@ -144,6 +144,7 @@ with dag:
 
         curated_quanum_config = [
             ("curated_quanum_a*", "medium-etl"),
+            ("curated_quanum_abcdaire_suivi_enfant_de_5_ans", "medium-etl"),
             ("curated_quanum_b*", "small-etl"),
             ("curated_quanum_c*", "medium-etl"),
             ("curated_quanum_dossier*", "small-etl"),
