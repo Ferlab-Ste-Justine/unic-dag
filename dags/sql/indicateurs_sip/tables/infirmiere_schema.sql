@@ -7,5 +7,5 @@ CREATE TABLE IF NOT EXISTS indicateurs_sip.infirmiere (
     dayPatientCount Int,
     eveningNurseCount Int,
     eveningPatientCount Int,
-    nightNurseCount Timestamp,
+    nightNurseCount Int,
     nightPatientCount Int);
