@@ -34,10 +34,12 @@ with DAG(
     sql_config = {
         "schema": {"name" : "indicateurs_sip", "postgres_schema_creation_sql_path" : "sql/indicateurs_sip/schema.sql"},
         "tables": [
-            {"name": "catheter"   , "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/catheter_schema.sql"   },
-            {"name": "extubation" , "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/extubation_schema.sql" },
-            {"name": "sejour"     , "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/sejour_schema.sql"     },
-            {"name": "ventilation", "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/ventilation_schema.sql"}
+            # {"name": "catheter"   , "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/catheter_schema.sql"   },
+            # {"name": "extubation" , "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/extubation_schema.sql" },
+            # {"name": "sejour"     , "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/sejour_schema.sql"     },
+            # {"name": "ventilation", "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/ventilation_schema.sql"},
+            {"name": "lits"       , "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/lits_schema.sql"},
+            {"name": "infirmiere" , "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/infirmiere_schema.sql"},
         ]
     }
 
@@ -45,25 +47,6 @@ with DAG(
         task_id="start_postgres_indicateurs_sip",
         on_execute_callback=Slack.notify_dag_start
     )
-
-    create_schema = PostgresCaOperator(
-        task_id="create_schema",
-        postgres_conn_id="postgresql_bi_rw",
-        sql=sql_config['schema']['postgres_schema_creation_sql_path'],
-        ca_path=CA_PATH,
-        ca_filename=CA_FILENAME,
-        ca_cert=CA_CERT,
-    )
-
-    # # WARNING: this will drop all tables in indicateurs_sip
-    # drop_tables = PostgresCaOperator(
-    #     task_id="drop_tables",
-    #     postgres_conn_id="postgresql_bi_rw",
-    #     sql="sql/indicateurs_sip/tables/drop_tables.sql",
-    #     ca_path=CA_PATH,
-    #     ca_filename=CA_FILENAME,
-    #     ca_cert=CA_CERT,
-    # )
 
     create_table_tasks = [PostgresCaOperator(
         task_id=f"create_{table_config['name']}_table",
@@ -79,4 +62,4 @@ with DAG(
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> create_schema >> create_table_tasks >> end
+    start >> create_table_tasks >> end
