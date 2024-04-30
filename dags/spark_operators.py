@@ -7,6 +7,7 @@ from typing import Optional
 
 from airflow import DAG
 from airflow.operators.empty import EmptyOperator
+from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
 from core.slack import Slack
@@ -118,64 +119,71 @@ def setup_dag(dag: DAG,
     """
 
     previous_publish = None
-
+    groups = []
     for step_config in dag_config['steps']:
-        zone = step_config['destination_zone']
-        subzone = step_config['destination_subzone']
-        main_class = step_config['main_class']
-        multiple_main_methods = step_config['multiple_main_methods']
+        with TaskGroup(group_id=step_config['destination_subzone']) as subzone_group:
+            zone = step_config['destination_zone']
+            subzone = step_config['destination_subzone']
+            main_class = step_config['main_class']
+            multiple_main_methods = step_config['multiple_main_methods']
 
-        start = get_start_operator(subzone, schema)
-        publish = get_publish_operator(step_config, config_file, jar, dag, schema, spark_failure_msg)
+            start = get_start_operator(subzone, schema)
+            publish = get_publish_operator(step_config, config_file, jar, dag, schema, spark_failure_msg)
 
-        if previous_publish:
-            previous_publish >> start
-        previous_publish = publish
+            if previous_publish:
+                previous_publish >> start
+            previous_publish = publish
 
-        jobs = {}
-        all_dependencies = []
-
-        for conf in step_config['datasets']:
+            jobs = {}
+            all_dependencies = []
             pre_test_jobs = []
             post_test_jobs = []
-            dataset_id = conf['dataset_id']
-            config_type = conf['cluster_type']
-            run_type = conf['run_type']
+            subgroups = []
 
-            job = create_spark_job(dataset_id, zone, subzone, run_type, config_type, config_file, jar, dag, main_class,
-                                   multiple_main_methods, version, spark_failure_msg, skip_task)
+            for conf in step_config['datasets']:
+                dataset_id = conf['dataset_id']
+                config_type = conf['cluster_type']
+                run_type = conf['run_type']
 
-            for pre_test in conf['pre_tests']:
-                pre_test_job = create_spark_test(dataset_id, pre_test, zone, config_type, config_file, jar, dag,
-                                                 spark_test_failure_msg)
-                pre_test_jobs.append(pre_test_job)
+                job = create_spark_job(dataset_id, zone, subzone, run_type, config_type, config_file, jar, dag, main_class,
+                                       multiple_main_methods, version, spark_failure_msg, skip_task)
 
-            for post_test in conf['post_tests']:
-                post_test_job = create_spark_test(dataset_id, post_test, zone, config_type, config_file, jar, dag,
-                                                  spark_test_failure_msg)
-                post_test_jobs.append(post_test_job)
+                for pre_test in conf['pre_tests']:
+                    pre_test_job = create_spark_test(dataset_id, pre_test, zone, config_type, config_file, jar, dag,
+                                                     spark_test_failure_msg)
+                    pre_test_jobs.append(pre_test_job)
 
-            all_dependencies = all_dependencies + conf['dependencies']
-            jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies'], "pre_test_jobs": pre_test_jobs,
-                                "post_test_jobs": post_test_jobs}
+                for post_test in conf['post_tests']:
+                    post_test_job = create_spark_test(dataset_id, post_test, zone, config_type, config_file, jar, dag,
+                                                      spark_test_failure_msg)
+                    post_test_jobs.append(post_test_job)
 
-        for dataset_id, job in jobs.items():
-            for dependency in job['dependencies']:
-                if len(job['post_test_jobs']) == 0:
-                    jobs[dependency]['job'] >> job['job']
-                else:
-                    jobs[dependency]['job'] >> job['post_test_jobs'] >> job['job']
-            if len(job['dependencies']) == 0:
-                if len(job['pre_test_jobs']) == 0:
-                    start >> job['job']
-                else:
-                    start >> job['pre_test_jobs'] >> job['job']
-            if dataset_id not in all_dependencies:
-                if len(job['post_test_jobs']) == 0:
-                    job['job'] >> publish
-                else:
-                    job['job'] >> job['post_test_jobs'] >> publish
+                all_dependencies = all_dependencies + conf['dependencies']
+                jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
 
+            with TaskGroup(group_id="pre_test_sub_" + step_config['destination_subzone']) as pre_test_sub_task_group:
+                pre_test_jobs
+
+            with TaskGroup(group_id="sub_" + step_config['destination_subzone']) as sub_task_group:
+                for dataset_id, job in jobs.items():
+                    if len(job['dependencies']) == 0:
+                        job['job']
+                    else:
+                        for dependency in job['dependencies']:
+                            jobs[dependency]['job'] >> job['job']
+
+            with TaskGroup(group_id="post_test_sub_" + step_config['destination_subzone']) as post_test_sub_task_group:
+                post_test_jobs
+
+            start >> pre_test_sub_task_group >> sub_task_group >> post_test_sub_task_group >> publish
+
+        groups.append(subzone_group)
+
+    if len(groups) == 1:
+        groups[0]
+    else:
+        for i in range(0, len(groups) - 1):
+            groups[i] >> groups[i + 1]
 
 
 def read_json(path: str):
