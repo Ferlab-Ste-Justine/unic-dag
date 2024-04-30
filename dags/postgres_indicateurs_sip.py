@@ -38,14 +38,24 @@ with DAG(
             # {"name": "extubation" , "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/extubation_schema.sql" },
             # {"name": "sejour"     , "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/sejour_schema.sql"     },
             # {"name": "ventilation", "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/ventilation_schema.sql"},
-            {"name": "lits"       , "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/lits_schema.sql"},
-            {"name": "infirmiere" , "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/infirmiere_schema.sql"},
+            # {"name": "lits"       , "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/lits_schema.sql"},
+            {"name": "infirmieres" , "postgres_table_creation_sql_path" : "sql/indicateurs_sip/tables/infirmieres_schema.sql"},
         ]
     }
 
     start = EmptyOperator(
         task_id="start_postgres_indicateurs_sip",
         on_execute_callback=Slack.notify_dag_start
+    )
+
+    #WARNING THIS WILL DROP TABLES
+    drop_tables = PostgresCaOperator(
+        task_id="drop_tables",
+        postgres_conn_id="postgresql_bi_rw",
+        sql="sql/indicateurs_sip/tables/drop_tables.sql",
+        ca_path=CA_PATH,
+        ca_filename=CA_FILENAME,
+        ca_cert=CA_CERT,
     )
 
     create_table_tasks = [PostgresCaOperator(
@@ -62,4 +72,4 @@ with DAG(
         on_success_callback=Slack.notify_dag_completion
     )
 
-    start >> create_table_tasks >> end
+    start >> drop_tables >> create_table_tasks >> end
