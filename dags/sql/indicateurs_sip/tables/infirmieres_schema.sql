@@ -5,4 +5,4 @@ CREATE TABLE IF NOT EXISTS indicateurs_sip.infirmieres (
     day Date,
     encounterid Int,
     careproviderid Int,
-    shift Int);
+    shift VARCHAR);
