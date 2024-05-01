@@ -33,7 +33,7 @@
         {"dataset_id":"released_indicateurs_baby"             , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"released_indicateurs_complications"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"released_indicateurs_delivery"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"released_indicateurs_pregnancy"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"released_indicateurs_pregnancy"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
       ]
     },
     {
@@ -48,7 +48,7 @@
         {"dataset_id":"published_indicateurs_baby"             , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"published_indicateurs_complications"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"published_indicateurs_delivery"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"published_indicateurs_pregnancy"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_indicateurs_pregnancy"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
       ]
     }
   ]
