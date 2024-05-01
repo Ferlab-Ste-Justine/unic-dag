@@ -118,9 +118,10 @@ def setup_dag(dag: DAG,
     :return:
     """
 
-    previous_publish = None
+    # previous_publish = None
     groups = []
     for step_config in dag_config['steps']:
+
         with TaskGroup(group_id=step_config['destination_subzone']) as subzone_group:
             zone = step_config['destination_zone']
             subzone = step_config['destination_subzone']
@@ -130,15 +131,14 @@ def setup_dag(dag: DAG,
             start = get_start_operator(subzone, schema)
             publish = get_publish_operator(step_config, config_file, jar, dag, schema, spark_failure_msg)
 
-            if previous_publish:
-                previous_publish >> start
-            previous_publish = publish
+            # if previous_publish:
+            #     previous_publish >> start
+            # previous_publish = publish
 
             jobs = {}
             all_dependencies = []
             pre_test_jobs = []
             post_test_jobs = []
-            subgroups = []
 
             for conf in step_config['datasets']:
                 dataset_id = conf['dataset_id']
@@ -161,8 +161,11 @@ def setup_dag(dag: DAG,
                 all_dependencies = all_dependencies + conf['dependencies']
                 jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
 
+            subgroups = []
+
             with TaskGroup(group_id="pre_test_sub_" + step_config['destination_subzone']) as pre_test_sub_task_group:
                 pre_test_jobs
+                subgroups.append(pre_test_sub_task_group)
 
             with TaskGroup(group_id="sub_" + step_config['destination_subzone']) as sub_task_group:
                 for dataset_id, job in jobs.items():
@@ -172,19 +175,21 @@ def setup_dag(dag: DAG,
                         for dependency in job['dependencies']:
                             jobs[dependency]['job'] >> job['job']
 
+                subgroups.append(sub_task_group)
+
             with TaskGroup(group_id="post_test_sub_" + step_config['destination_subzone']) as post_test_sub_task_group:
                 post_test_jobs
+                subgroups.append(post_test_sub_task_group)
 
-            start >> pre_test_sub_task_group >> sub_task_group >> post_test_sub_task_group >> publish
+            start >> subgroups[0] >> subgroups[1] >> subgroups[2] >> publish
 
-        groups.append(subzone_group)
+            groups.append(subzone_group)
 
-    if len(groups) == 1:
-        groups[0]
-    else:
+    if len(groups) > 1:
         for i in range(0, len(groups) - 1):
-            groups[i] >> groups[i + 1]
-
+            groups[i] >> groups[i+1]
+    else:
+        groups[0]
 
 def read_json(path: str):
     """
