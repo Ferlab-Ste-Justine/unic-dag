@@ -2,7 +2,7 @@
 
 -- create infirmieres table
 CREATE TABLE IF NOT EXISTS indicateurs_sip.infirmieres (
-    day Date,
+    date Date,
     encounterid Int,
     careproviderid Int,
     shift VARCHAR);
