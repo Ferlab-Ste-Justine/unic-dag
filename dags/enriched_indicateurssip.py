@@ -70,7 +70,7 @@ with dag:
 
         def enriched_arguments(destination: str) -> List[str]:
             # !!! Do not set to initial, otherwise the participant index will be re-generated !!!
-            return ["config/prod.conf", "default", destination]
+            return ["config/prod.conf", "initial", destination]
 
 
         enriched_participant_index = SparkOperator(
@@ -266,8 +266,8 @@ with dag:
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/extubation/extubation.csv"  , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "extubation" },
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/sejour/sejour.csv"          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "sejour"     },
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ventilation/ventilation.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ventilation"},
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/sejour/lits.csv"            , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "lits"       },
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ventilation/infirmieres.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infirmieres"}
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/lits/lits.csv"              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "lits"       },
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/infirmieres/infirmieres.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infirmieres"}
         ]
 
         published_indicateurs_sip = CopyCsvToPostgres(
