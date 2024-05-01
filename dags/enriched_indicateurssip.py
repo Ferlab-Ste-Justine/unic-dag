@@ -133,7 +133,32 @@ with dag:
             dag=dag,
         )
 
-        enriched_participant_index >> enriched_sejour >> [enriched_catheter, enriched_ventilation, enriched_extubation]
+        enriched_lits = SparkOperator(
+            task_id="enriched_indicateurssip_lits",
+            name="enriched-indicateurssip-lits",
+            arguments=enriched_arguments("enriched_indicateurssip_lits"),
+            zone=enriched_zone,
+            spark_class=enriched_main_class,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag,
+        )
+
+        enriched_infirmieres = SparkOperator(
+            task_id="enriched_indicateurssip_infirmieres",
+            name="enriched-indicateurssip-infirmieres",
+            arguments=enriched_arguments("enriched_indicateurssip_infirmieres"),
+            zone=enriched_zone,
+            spark_class=enriched_main_class,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag,
+        )
+
+        enriched_participant_index >> enriched_sejour >> [enriched_catheter, enriched_ventilation,
+                                                          enriched_extubation, enriched_lits, enriched_infirmieres]
 
     ENRICHED_GROUP = enriched()
 
@@ -202,7 +227,31 @@ with dag:
             dag=dag,
         )
 
-        [released_sejour, released_catheter, released_ventilation, released_extubation]
+        released_lits = SparkOperator(
+            task_id="released_indicateurssip_lits",
+            name="released-indicateurssip-lits",
+            arguments=released_arguments("released_indicateurssip_lits"),
+            zone=released_zone,
+            spark_class=released_main_class,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag,
+        )
+
+        released_infirmieres = SparkOperator(
+            task_id="released_indicateurssip_infirmieres",
+            name="released-indicateurssip-infirmieres",
+            arguments=released_arguments("released_indicateurssip_infirmieres"),
+            zone=released_zone,
+            spark_class=released_main_class,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag,
+        )
+
+        [released_sejour, released_catheter, released_ventilation, released_extubation, released_lits, released_infirmieres]
 
     RELEASED_GROUP = released()
 
@@ -216,7 +265,9 @@ with dag:
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/catheter/catheter.csv"      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "catheter"   },
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/extubation/extubation.csv"  , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "extubation" },
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/sejour/sejour.csv"          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "sejour"     },
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ventilation/ventilation.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ventilation"}
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ventilation/ventilation.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ventilation"},
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/sejour/lits.csv"            , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "lits"       },
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ventilation/infirmieres.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infirmieres"}
         ]
 
         published_indicateurs_sip = CopyCsvToPostgres(
