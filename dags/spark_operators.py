@@ -117,7 +117,7 @@ def get_test_sub_group(zone: str,
     :return: TaskGoup
     """
 
-    if test_type is "pre":
+    if test_type == "pre":
         with TaskGroup(group_id="pre_tests_sub_" + subzone) as pre_test_sub_group:
 
             pre_test_jobs = []
@@ -135,7 +135,7 @@ def get_test_sub_group(zone: str,
 
         return pre_test_sub_group
 
-    elif test_type is "post":
+    elif test_type == "post":
         with TaskGroup(group_id="post_tests_sub_" + subzone) as post_test_sub_group:
 
             post_test_jobs = []
