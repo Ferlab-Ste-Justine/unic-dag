@@ -69,7 +69,6 @@ def get_publish_operator(dag_config: dict,
     :return: both start and end to the publish operator if the operator contain multiple task
     """
     zone = dag_config['destination_zone']
-    subzone = dag_config['destination_subzone']
     schemas = dag_config['schemas']
     main_class = dag_config['publish_class']
 
@@ -112,7 +111,6 @@ def get_test_sub_group(zone: str,
     Create task group for tests in a subzone
 
     :param zone:
-    :param subzone:
     :param config_file:
     :param jar:
     :param dag:
@@ -198,6 +196,8 @@ def setup_dag(dag: DAG,
             all_dependencies = []
             all_pre_tests = []
             all_post_tests = []
+            pre_test_sub_group = None
+            post_test_sub_group = None
 
             for conf in step_config['datasets']:
                 all_pre_tests.extend(conf['pre_tests'])
