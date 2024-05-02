@@ -97,6 +97,65 @@ def get_publish_operator(dag_config: dict,
 
     return job
 
+def get_test_sub_group(zone: str,
+                   subzone: str,
+                   config_file: str,
+                   jar: str,
+                   dag: DAG,
+                   test_type: str,
+                   datasets: list):
+    """
+    Create task group for tests in a subzone
+
+    :param zone:
+    :param subzone:
+    :param config_file:
+    :param jar:
+    :param dag:
+    :param test_type: pre or post
+    :param datasets: list of dataset configs
+    :return: TaskGoup
+    """
+
+    if test_type is "pre":
+        with TaskGroup(group_id="pre_tests_sub_" + subzone) as pre_test_sub_group:
+
+            pre_test_jobs = []
+
+            for conf in datasets:
+                dataset_id = conf['dataset_id']
+                config_type = conf['cluster_type']
+
+                for pre_test in conf['post_tests']:
+                    pre_test_job = create_spark_test(dataset_id, pre_test, zone, config_type, config_file, jar, dag,
+                                                     spark_test_failure_msg)
+                    pre_test_jobs.append(pre_test_job)
+
+            pre_test_jobs
+
+        return pre_test_sub_group
+
+    elif test_type is "post":
+        with TaskGroup(group_id="post_tests_sub_" + subzone) as post_test_sub_group:
+
+            post_test_jobs = []
+
+            for conf in datasets:
+                dataset_id = conf['dataset_id']
+                config_type = conf['cluster_type']
+
+                for post_test in conf['post_tests']:
+                    post_test_job = create_spark_test(dataset_id, post_test, zone, config_type, config_file, jar, dag,
+                                                     spark_test_failure_msg)
+                    post_test_jobs.append(post_test_job)
+
+            post_test_jobs
+
+        return post_test_sub_group
+
+    else:
+        raise AttributeError(f"Invalid test type: {test_type}. Please provide one of the supported test types: 'pre' or 'post'.")
+
 def setup_dag(dag: DAG,
               dag_config: dict,
               config_file: str,
@@ -118,7 +177,6 @@ def setup_dag(dag: DAG,
     :return:
     """
 
-    # previous_publish = None
     groups = []
     for step_config in dag_config['steps']:
 
@@ -129,62 +187,59 @@ def setup_dag(dag: DAG,
             multiple_main_methods = step_config['multiple_main_methods']
 
             start = get_start_operator(subzone, schema)
-            publish = get_publish_operator(step_config, config_file, jar, dag, schema, spark_failure_msg)
-
-            # if previous_publish:
-            #     previous_publish >> start
-            # previous_publish = publish
 
             jobs = {}
             all_dependencies = []
-            pre_test_jobs = []
-            post_test_jobs = []
-
-            for conf in step_config['datasets']:
-                dataset_id = conf['dataset_id']
-                config_type = conf['cluster_type']
-                run_type = conf['run_type']
-
-                job = create_spark_job(dataset_id, zone, subzone, run_type, config_type, config_file, jar, dag, main_class,
-                                       multiple_main_methods, version, spark_failure_msg, skip_task)
-
-                for pre_test in conf['pre_tests']:
-                    pre_test_job = create_spark_test(dataset_id, pre_test, zone, config_type, config_file, jar, dag,
-                                                     spark_test_failure_msg)
-                    pre_test_jobs.append(pre_test_job)
-
-                for post_test in conf['post_tests']:
-                    post_test_job = create_spark_test(dataset_id, post_test, zone, config_type, config_file, jar, dag,
-                                                      spark_test_failure_msg)
-                    post_test_jobs.append(post_test_job)
-
-                all_dependencies = all_dependencies + conf['dependencies']
-                jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
-
+            all_pre_tests = []
+            all_post_tests = []
             subgroups = []
 
-            with TaskGroup(group_id="pre_test_sub_" + step_config['destination_subzone']) as pre_test_sub_task_group:
-                pre_test_jobs
-                subgroups.append(pre_test_sub_task_group)
+            for conf in step_config['datasets']:
+                all_pre_tests = all_pre_tests + conf['pre_tests']
+                all_post_tests = all_post_tests + conf['post_tests']
+
+            if len(all_pre_tests) > 0: # generate all pre tests in subzone
+                pre_test_sub_group = get_test_sub_group(zone, subzone, config_file, jar, dag, "pre", step_config['datasets'])
+                subgroups.append(pre_test_sub_group)
 
             with TaskGroup(group_id="sub_" + step_config['destination_subzone']) as sub_task_group:
+                for conf in step_config['datasets']:
+                    dataset_id = conf['dataset_id']
+                    config_type = conf['cluster_type']
+                    run_type = conf['run_type']
+
+                    job = create_spark_job(dataset_id, zone, subzone, run_type, config_type, config_file, jar, dag, main_class,
+                                           multiple_main_methods, version, spark_failure_msg, skip_task)
+
+                    all_dependencies = all_dependencies + conf['dependencies']
+                    jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
+
                 for dataset_id, job in jobs.items():
-                    if len(job['dependencies']) == 0:
+                    for dependency in job['dependencies']:
+                        jobs[dependency]['job'] >> job['job']
+                    if len(job['dependencies']) == 0 or dataset_id not in all_dependencies:
                         job['job']
-                    else:
-                        for dependency in job['dependencies']:
-                            jobs[dependency]['job'] >> job['job']
 
                 subgroups.append(sub_task_group)
 
-            with TaskGroup(group_id="post_test_sub_" + step_config['destination_subzone']) as post_test_sub_task_group:
-                post_test_jobs
-                subgroups.append(post_test_sub_task_group)
 
-            start >> subgroups[0] >> subgroups[1] >> subgroups[2] >> publish
+            if len(all_post_tests) > 0: # generate all post tests in subzone
+                post_test_sub_group = get_test_sub_group(zone, subzone, config_file, jar, dag, "post", step_config['datasets'])
+                subgroups.append(post_test_sub_group)
+
+            publish = get_publish_operator(step_config, config_file, jar, dag, schema, spark_failure_msg)
+
+            # Subzone sub task groups execution order
+            if len(all_pre_tests) > 0 and len(all_post_tests) > 0:
+                start >> subgroups[0] >> subgroups[1] >> subgroups[2] >> publish
+            elif len(all_pre_tests) > 0 or len(all_post_tests) > 0:
+                start >> subgroups[0] >> subgroups[1] >> publish
+            else:
+                start >> subgroups[0] >> publish
 
             groups.append(subzone_group)
 
+    # Subzone task groups execution order
     if len(groups) > 1:
         for i in range(0, len(groups) - 1):
             groups[i] >> groups[i+1]
