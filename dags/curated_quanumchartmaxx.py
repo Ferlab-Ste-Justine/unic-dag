@@ -244,9 +244,9 @@ with dag:
         anonymized_quanumchartmaxx_config = [
             ("anonymized_quanum_chartmaxx_a*", "small-etl"),
             ("anonymized_quanum_chartmaxx_childhood_asthma_test_4_11_years_old", "small-etl"),
-            ("anonymized_quanum_chartmaxx_dossier*", "small-etl"),
-            ("anonymized_quanum_chartmaxx_p*", "small-etl"),
-            ("anonymized_quanum_chartmaxx_clinique_*", "small-etl")
+            ("anonymized_quanum_chartmaxx_dossier*", "medium-etl"),
+            ("anonymized_quanum_chartmaxx_p*", "medium-etl"),
+            ("anonymized_quanum_chartmaxx_clinique_*", "medium-etl")
         ]
 
         [SparkOperator(
