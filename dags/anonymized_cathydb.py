@@ -13,7 +13,7 @@ from airflow import DAG
 from airflow.operators.empty import EmptyOperator
 
 from core.config import default_params, default_args, spark_failure_msg, jar
-# from core.slack import Slack
+from core.slack import Slack
 from operators.spark import SparkOperator
 
 DOC = """
@@ -49,7 +49,7 @@ dag = DAG(
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=1, # test with 1 active dag run & 1 task can scale later
-    max_active_tasks=1,
+    max_active_tasks=2,
     tags=["anonymized"]
 )
 
@@ -69,14 +69,16 @@ with dag:
 
     start_anonymization_cathydb = EmptyOperator(
         task_id="start_anonymization_cathydb",
-        # on_execute_callback=Slack.notify_dag_start
+        on_execute_callback=Slack.notify_dag_start
     )
 
     cathydb_anonymized_tasks = [
-        ("anonymized_cathydb_sip_alert", "small-etl"),
-        ("anonymized_cathydb_neo_alert", "small-etl"),
-        ("anonymized_cathydb_neo_numeric_data", "large-etl"),
-        ("anonymized_cathydb_sip_numeric_data", "large-etl"),
+        ("anonymized_cathydb_sip_alert"        , "small-etl") ,
+        ("anonymized_cathydb_neo_alert"        , "small-etl") ,
+        ("anonymized_cathydb_neo_numeric_data" , "large-etl") ,
+        ("anonymized_cathydb_sip_numeric_data" , "large-etl") ,
+        ("anonymized_cathydb_neo_signal_data"  , "large-etl") ,
+        ("anonymized_cathydb_sip_signal_data"  , "large-etl") ,
     ]
 
     anonymized_spark_tasks = [SparkOperator(
@@ -93,7 +95,7 @@ with dag:
 
     publish_anonymized_cathydb = EmptyOperator(
         task_id="publish_ingestion_cathydb",
-        # on_success_callback=Slack.notify_dag_completion
+        on_success_callback=Slack.notify_dag_completion
     )
 
     start_anonymization_cathydb >> anonymized_spark_tasks >> publish_anonymized_cathydb
