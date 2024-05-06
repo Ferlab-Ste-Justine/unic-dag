@@ -6,6 +6,7 @@ import re
 from typing import Optional
 
 from airflow import DAG
+from airflow.decorators import task_group
 from airflow.operators.empty import EmptyOperator
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
@@ -120,8 +121,8 @@ def get_test_sub_group(zone: str,
     """
 
     if test_type == "pre":
-        with TaskGroup(group_id="pre_tests") as pre_test_sub_group:
-
+        @task_group(group_id="pre_tests")
+        def pre_tests():
             pre_test_jobs = []
 
             for conf in datasets:
@@ -135,11 +136,11 @@ def get_test_sub_group(zone: str,
 
             pre_test_jobs
 
-        return pre_test_sub_group
+        return pre_tests()
 
     elif test_type == "post":
-        with TaskGroup(group_id="post_tests") as post_test_sub_group:
-
+        @task_group(group_id="post_tests")
+        def post_tests():
             post_test_jobs = []
 
             for conf in datasets:
@@ -153,7 +154,7 @@ def get_test_sub_group(zone: str,
 
             post_test_jobs
 
-        return post_test_sub_group
+        return post_tests()
 
     else:
         raise AttributeError(f"Invalid test type: {test_type}. Please provide one of the supported test types: 'pre' or 'post'.")
@@ -203,7 +204,8 @@ def setup_dag(dag: DAG,
                 all_pre_tests.extend(conf['pre_tests'])
                 all_post_tests.extend(conf['post_tests'])
 
-            if len(all_pre_tests) > 0: # generate all pre tests in subzone
+            if len(all_pre_tests) > 0:# generate all pre tests in subzone
+
                 pre_test_sub_group = get_test_sub_group(zone, config_file, jar, dag, "pre", step_config['datasets'])
 
             if len(all_post_tests) > 0: # generate all post tests in subzone
