@@ -7,7 +7,7 @@ from datetime import timedelta, datetime
 from airflow import DAG
 from airflow.models import Param
 
-from core.config import config_file, jar, version, spark_failure_msg, default_args, default_params
+from lib.config import config_file, jar, version, spark_failure_msg, default_args, default_params
 from spark_operators import setup_dag
 
 config = {

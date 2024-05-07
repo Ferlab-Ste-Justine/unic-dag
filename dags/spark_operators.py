@@ -7,13 +7,13 @@ from typing import Optional
 
 from airflow import DAG
 from airflow.decorators import task_group
-from airflow.operators.empty import EmptyOperator
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from core.slack import Slack
-from core.config import spark_test_failure_msg
-from operators.spark import SparkOperator
+from lib.config import spark_test_failure_msg
+from lib.operators.spark import SparkOperator
+from lib.slack import Slack
+from lib.tasks import notify
 
 
 def sanitize_string(string: str, replace_by: str):
@@ -25,32 +25,6 @@ def sanitize_string(string: str, replace_by: str):
     """
     return re.sub("[^a-zA-Z0-9 ]", replace_by, string)
 
-
-def get_start_operator(subzone: str, schema: str):
-    """
-    :param subzone:
-    :param dag:
-    :param schema:
-    :return:
-    """
-    return EmptyOperator(
-        task_id=f"start_{subzone}_{schema}",
-        on_execute_callback=Slack.notify_dag_start,
-        trigger_rule=TriggerRule.NONE_FAILED
-    )
-
-def get_end_operator(subzone: str, schema: str):
-    """
-    :param subzone:
-    :param dag:
-    :param schema:
-    :return:
-    """
-    return EmptyOperator(
-        task_id=f"end_{subzone}_{schema}",
-        on_success_callback=Slack.notify_dag_completion,
-        trigger_rule=TriggerRule.NONE_FAILED
-    )
 
 # pylint: disable=too-many-locals,no-else-return
 def get_publish_operator(dag_config: dict,
@@ -189,8 +163,8 @@ def setup_dag(dag: DAG,
             main_class = step_config['main_class']
             multiple_main_methods = step_config['multiple_main_methods']
 
-            start = get_start_operator(subzone, schema)
-            end = get_end_operator(subzone, schema)
+            start = notify.start(task_id=f"start_{subzone}_{schema}")
+            end = notify.end(f"end_{subzone}_{schema}")
             publish = get_publish_operator(step_config, config_file, jar, dag, spark_failure_msg)
 
             jobs = {}

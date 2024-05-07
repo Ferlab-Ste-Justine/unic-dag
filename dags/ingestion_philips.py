@@ -1,20 +1,17 @@
 """
 DAG pour l'ingestion quotidienne des data de philips a partir de Philips
 """
-# pylint: disable=missing-function-docstring, duplicate-code
+# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
 
 from datetime import datetime, timedelta
 from typing import List
 
 import pendulum
-
 from airflow import DAG
-from airflow.operators.empty import EmptyOperator
 
-
-from core.config import jar, spark_failure_msg, default_params, default_args
-from core.slack import Slack
-from operators.spark import SparkOperator
+from lib.config import jar, spark_failure_msg, default_params, default_args
+from lib.operators.spark import SparkOperator
+from lib.tasks.notify import start, end
 
 DOC = """
 # Ingestion Philips DAG
@@ -58,11 +55,6 @@ dag = DAG(
 )
 
 with dag:
-    start = EmptyOperator(
-        task_id="start_ingestion_philips",
-        on_execute_callback=Slack.notify_dag_start
-    )
-
     def arguments(destination: str) -> List[str]:
         return [
             "--config", "config/prod.conf",
@@ -71,6 +63,7 @@ with dag:
             "--destination", destination,
             "--date", "{{ data_interval_end | ds }}"
         ]
+
 
     philips_external_numeric = SparkOperator(
         task_id="raw_philips_external_numeric",
@@ -168,11 +161,8 @@ with dag:
         dag=dag
     )
 
-    end = EmptyOperator(
-        task_id="publish_ingestion_philips",
-        on_success_callback=Slack.notify_dag_completion
-    )
-
-    start >> [philips_external_numeric, philips_external_wave, philips_external_patient,
-              philips_external_numericvalue, philips_external_wavesample, philips_external_alert,
-              philips_external_patientdateattribute, philips_external_patientstringattribute] >> end
+    start("start_ingestion_philips") >> [philips_external_numeric, philips_external_wave, philips_external_patient,
+                                         philips_external_numericvalue, philips_external_wavesample,
+                                         philips_external_alert,
+                                         philips_external_patientdateattribute,
+                                         philips_external_patientstringattribute] >> end("end_ingestion_philips")

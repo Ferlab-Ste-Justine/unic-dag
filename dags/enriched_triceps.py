@@ -1,19 +1,18 @@
 """
 Enriched triceps DAG
 """
-# pylint: disable=missing-function-docstring, duplicate-code
+# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
 from datetime import datetime, timedelta
 from typing import List
 
 import pendulum
 from airflow import DAG
-from airflow.operators.empty import EmptyOperator
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from core.config import default_params, default_timeout_hours, default_args, spark_failure_msg
-from core.slack import Slack
-from operators.spark import SparkOperator
+from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg
+from lib.operators.spark import SparkOperator
+from lib.tasks.notify import end, start
 
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
@@ -69,11 +68,6 @@ dag = DAG(
 with dag:
     # def skip_tab() -> str:
     #     return "{% if params.skip_last_visit_survey != True %}{% else %}True{% endif %}"
-
-    start = EmptyOperator(
-        task_id="start",
-        on_execute_callback=Slack.notify_dag_start
-    )
 
     with TaskGroup(group_id="enriched") as enriched:
         ENRICHED_ZONE = "yellow"
@@ -659,9 +653,4 @@ with dag:
             dag=dag
         )
 
-    end = EmptyOperator(
-        task_id="end",
-        on_success_callback=Slack.notify_dag_completion
-    )
-
-    start >> enriched >> released >> published >> end
+    start() >> enriched >> released >> published >> end()

@@ -2,7 +2,7 @@ import os
 
 from airflow.models import Variable, Param
 
-from core.failure import Failure
+from lib.failure import Failure
 
 
 def generate_default_args(owner, on_failure_callback):
@@ -32,6 +32,3 @@ jar = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 version = '{{ params.version }}'
 
 mail_from = os.environ.get("AIRFLOW__SMTP__SMTP_MAIL_FROM")
-
-postgres_ca_path = '/tmp/ca/bi/'  # Corresponds to path in postgres connection string
-postgres_ca_filename = 'ca.crt'  # Corresponds to filename in postgres connection string

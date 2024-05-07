@@ -1,21 +1,20 @@
 """
 Enriched Indicateurs SIP
 """
-# pylint: disable=missing-function-docstring, duplicate-code
+# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
 from datetime import datetime, timedelta
 from typing import List
 
 import pendulum
 from airflow import DAG
-from airflow.models import Variable
-from airflow.operators.empty import EmptyOperator
-from airflow.utils.trigger_rule import TriggerRule
 from airflow.decorators import task_group
+from airflow.models import Variable
+from airflow.utils.trigger_rule import TriggerRule
 
-from core.config import default_params, default_timeout_hours, default_args, spark_failure_msg
-from core.slack import Slack
-from operators.copy_csv_to_postgres import CopyCsvToPostgres
-from operators.spark import SparkOperator
+from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg
+from lib.operators.copy_csv_to_postgres import CopyCsvToPostgres
+from lib.operators.spark import SparkOperator
+from lib.tasks.notify import start, end
 
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
@@ -57,11 +56,6 @@ dag = DAG(
 )
 
 with dag:
-
-    start = EmptyOperator(
-        task_id="start",
-        on_execute_callback=Slack.notify_dag_start
-    )
 
     @task_group()
     def enriched():
@@ -284,9 +278,4 @@ with dag:
 
     PUBLISHED_GROUP = published()
 
-    end = EmptyOperator(
-        task_id="end",
-        on_success_callback=Slack.notify_dag_completion
-    )
-
-    start >> ENRICHED_GROUP >> RELEASED_GROUP >> PUBLISHED_GROUP >> end
+    start() >> ENRICHED_GROUP >> RELEASED_GROUP >> PUBLISHED_GROUP >> end()

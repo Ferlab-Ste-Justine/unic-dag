@@ -8,8 +8,8 @@ from datetime import timedelta, datetime
 import pendulum
 from airflow import DAG
 
-from core.config import dags_config_path, extract_schema, default_timeout_hours, default_args, config_file, spark_failure_msg, jar, \
-    version, default_params
+from lib.config import dags_config_path, extract_schema, default_timeout_hours, default_args, config_file, \
+    spark_failure_msg, jar, version, default_params
 from spark_operators import read_json, setup_dag
 
 for (r, zones, _) in os.walk(dags_config_path):

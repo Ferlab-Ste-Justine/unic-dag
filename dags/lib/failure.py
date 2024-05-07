@@ -1,5 +1,5 @@
-from core.slack import Slack
-from core.cleanup import Cleanup
+from lib.slack import Slack
+from lib.cleanup import Cleanup
 import logging
 import re
 

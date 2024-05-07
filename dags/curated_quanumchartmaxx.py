@@ -13,9 +13,9 @@ from airflow.decorators import task_group
 from airflow.models import Param
 from airflow.operators.empty import EmptyOperator
 
-from core.config import default_params, default_args, spark_failure_msg, jar
-from core.slack import Slack
-from operators.spark import SparkOperator
+from lib.config import default_params, default_args, spark_failure_msg, jar
+from lib.operators.spark import SparkOperator
+from lib.tasks.notify import start, end
 from spark_operators import sanitize_string
 
 DOC = """
@@ -95,11 +95,6 @@ def run_type() -> str:
 
 
 with dag:
-    start_task = EmptyOperator(
-        task_id="start",
-        on_execute_callback=Slack.notify_dag_start
-    )
-
 
     @task_group(group_id="curated_quanum")
     def curated_quanum():
@@ -261,10 +256,4 @@ with dag:
             dag=dag
         ) for task_name, cluster_size in anonymized_quanumchartmaxx_config]
 
-
-    end_task = EmptyOperator(
-        task_id="end",
-        on_success_callback=Slack.notify_dag_completion
-    )
-
-    start_task >> curated_quanum() >> curated_quanumchartmaxx() >> anonymized_quanum() >> anonymized_quanumchartmaxx() >> end_task
+    start() >> curated_quanum() >> curated_quanumchartmaxx() >> anonymized_quanum() >> anonymized_quanumchartmaxx() >> end()

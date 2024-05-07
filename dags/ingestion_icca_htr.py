@@ -1,18 +1,16 @@
 """
 DAG pour l'ingestion des data de ICCA htr se trouvant dans cathydb
 """
-# pylint: disable=missing-function-docstring, duplicate-code
+# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
 from datetime import datetime, timedelta
 from typing import List
 
-from airflow import DAG
-from airflow.operators.empty import EmptyOperator
-
 import pendulum
+from airflow import DAG
 
-from core.config import default_params, default_args, spark_failure_msg, jar
-# from core.slack import Slack
-from operators.spark import SparkOperator
+from lib.config import default_params, default_args, spark_failure_msg, jar
+from lib.operators.spark import SparkOperator
+from lib.tasks.notify import start, end
 
 DOC = """
 # Ingestion CathyDB DAG
@@ -66,10 +64,6 @@ def arguments(destination: str, steps: str = "default") -> List[str]:
     ]
 
 with dag:
-    start_ingestion_icca_htr = EmptyOperator(
-        task_id="start_ingestion_icca_htr",
-        # on_execute_callback=Slack.notify_dag_start
-    )
 
     raw_icca_htr = SparkOperator(
         task_id="raw_icca_icca_htr",
@@ -95,9 +89,4 @@ with dag:
         dag=dag
     )
 
-    publish_ingestion_icca_htr = EmptyOperator(
-        task_id="publish_ingestion_icca_htr",
-        # on_success_callback=Slack.notify_dag_completion
-    )
-
-    start_ingestion_icca_htr >> raw_icca_htr >> anonymized_icca_htr >> publish_ingestion_icca_htr
+    start("start_ingestion_icca_htr") >> raw_icca_htr >> anonymized_icca_htr >> end("end_ingestion_icca_htr")

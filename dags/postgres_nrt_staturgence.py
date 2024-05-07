@@ -5,14 +5,13 @@ DAG pour la création des tables dans la bd unic_datamart pour le projet Near Re
 from datetime import datetime
 
 from airflow import DAG
-from airflow.decorators import task_group
-from airflow.models import Variable, Param
-from airflow.operators.empty import EmptyOperator
+from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from core.config import postgres_ca_path, postgres_ca_filename
-from core.slack import Slack
-from operators.postgresca import PostgresCaOperator
+from lib.groups.postgres.create_tables import create_tables
+from lib.groups.postgres.drop_tables import drop_tables
+from lib.slack import Slack
+from lib.tasks.notify import end, start
 
 DOC = """
 # Postgres Near Real-Time (NRT) StatUrgence DAG
@@ -26,8 +25,6 @@ paramètre au DAG seront dropées et recréées selon les schémas définis dans
 ### Configuration
 * Paramètre `tables` : Liste des tables à créer dans la base de données. Par défaut crée toutes les tables.
 """
-
-postgres_ca_cert = Variable.get('postgres_ca_certificate', None)
 
 # Specify path to SQL query for schema and each table
 sql_config = {
@@ -78,59 +75,4 @@ with DAG(
         tags=["postgresql"]
 ) as dag:
 
-    def skip_task(table_name: str) -> str:
-        """
-        Skip task if table_name is not in the list of tables passed as parameter to the DAG
-        """
-        return f"{{% if '{table_name}' in params.tables %}}{{% else %}}yes{{% endif %}}"
-
-    def drop_table(table_name: str) -> str:
-        """
-        Generate drop table statement for the given table_name.
-        """
-        return f"DROP TABLE IF EXISTS {table_name};"
-
-    start = EmptyOperator(
-        task_id="start_postgres_nrt_staturgence",
-        on_execute_callback=Slack.notify_dag_start
-    )
-
-    # WARNING THIS WILL DROP TABLES
-    @task_group(group_id="drop_tables")
-    def drop_tables():
-        """
-        Drop tables task group.
-        """
-        [PostgresCaOperator(
-            task_id=f"drop_{table_config['name']}_table",
-            postgres_conn_id="postgresql_bi_rw",
-            sql=drop_table(table_config['name']),
-            ca_path=postgres_ca_path,
-            ca_filename=postgres_ca_filename,
-            ca_cert=postgres_ca_cert,
-            skip=skip_task(table_config['name'])
-        ) for table_config in sql_config['tables']]
-
-
-    @task_group(group_id="create_tables")
-    def create_tables():
-        """
-        Create tables task group.
-        """
-        [PostgresCaOperator(
-            task_id=f"create_{table_config['name']}_table",
-            postgres_conn_id="postgresql_bi_rw",
-            sql=table_config['postgres_table_creation_sql_path'],
-            ca_path=postgres_ca_path,
-            ca_filename=postgres_ca_filename,
-            ca_cert=postgres_ca_cert,
-            skip=skip_task(table_config['name'])
-        ) for table_config in sql_config['tables']]
-
-
-    end = EmptyOperator(
-        task_id="publish_postgres_nrt_staturgence",
-        on_success_callback=Slack.notify_dag_completion
-    )
-
-    start >> drop_tables() >> create_tables() >> end
+    start("start_postgres_nrt_staturgence") >> drop_tables(sql_config) >> create_tables(sql_config) >> end("publish_postgres_nrt_staturgence")
