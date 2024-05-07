@@ -1,0 +1,43 @@
+-- noinspection SqlNoDataSourceInspectionForFile
+
+-- create recherche_episode_triage table
+CREATE TABLE IF NOT EXISTS nrt_staturgence.recherche_episode_triage
+(
+    no_episode                  decimal(9)  NOT NULL,
+    id_triage                   decimal(5)  NOT NULL,
+    dhm_triage                  timestamp(6),
+    dhm_fin_triage              timestamp(6),
+    code_priorite               varchar(1),
+    code_autonomie_apres_triage varchar(1),
+    no_dossier                  varchar(10) NOT NULL,
+    urgence                     varchar(2)  NOT NULL,
+    score_pram                  varchar(4000),
+    score_rdai                  varchar(4000),
+    commentaires                text,
+    raison_visite               varchar(40),
+    reponses                    text,
+    tension_sys                 decimal(5),
+    tension_dia                 decimal(5),
+    type_tension                varchar(1),
+    pulsation                   decimal(5),
+    type_pulsation              varchar(1),
+    respiration                 decimal(5),
+    type_respiration            varchar(1),
+    temperature                 decimal(5),
+    type_temperature            varchar(1),
+    saturation                  decimal(5),
+    type_saturation             varchar(1),
+    debit_pointe                decimal(5),
+    taille                      decimal(5),
+    poids                       decimal(5),
+    type_poids_taille           varchar(1),
+    douleur                     varchar(4),
+    date_menstruation           timestamp(6),
+    glasgow                     varchar(8),
+    glucose                     varchar(8),
+    priorite_juge_clin          varchar(1),
+    jugement_clinique           varchar(50),
+    type_patient                varchar(4),
+    triage_par                  varchar(10),
+    sv_pris                     decimal(5)
+);
