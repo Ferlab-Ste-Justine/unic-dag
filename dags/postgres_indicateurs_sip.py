@@ -7,6 +7,7 @@ from airflow import DAG
 from airflow.models import Variable
 from airflow.operators.empty import EmptyOperator
 
+from core.config import postgres_ca_path, postgres_ca_filename
 from core.slack import Slack
 from operators.postgresca import PostgresCaOperator
 
@@ -16,8 +17,6 @@ DOC = """
 ETL pour la creation de tables dans unic_datamart pour indicateursSip
 """
 
-CA_PATH = '/tmp/ca/bi/'  # must correspond to path in postgres connection string
-CA_FILENAME = 'ca.crt'  # must correspond to filename in postgres connection string
 CA_CERT = Variable.get('postgres_ca_certificate', None)
 
 with DAG(
@@ -53,8 +52,8 @@ with DAG(
         task_id="drop_tables",
         postgres_conn_id="postgresql_bi_rw",
         sql="sql/indicateurs_sip/tables/drop_tables.sql",
-        ca_path=CA_PATH,
-        ca_filename=CA_FILENAME,
+        ca_path=postgres_ca_path,
+        ca_filename=postgres_ca_filename,
         ca_cert=CA_CERT,
     )
 
@@ -62,8 +61,8 @@ with DAG(
         task_id=f"create_{table_config['name']}_table",
         postgres_conn_id="postgresql_bi_rw",
         sql= table_config['postgres_table_creation_sql_path'],
-        ca_path=CA_PATH,
-        ca_filename=CA_FILENAME,
+        ca_path=postgres_ca_path,
+        ca_filename=postgres_ca_filename,
         ca_cert=CA_CERT,
     ) for table_config in sql_config['tables']]
 
