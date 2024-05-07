@@ -1,16 +1,15 @@
 """
 DAG pour l'ingestion des data de neonat se trouvant dans cathydb
 """
-# pylint: disable=missing-function-docstring, duplicate-code
+# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
 from datetime import datetime, timedelta
 from typing import List
 
 from airflow import DAG
-from airflow.operators.empty import EmptyOperator
 
-from core.config import default_params, default_args, spark_failure_msg, jar
-from core.slack import Slack
-from operators.spark import SparkOperator
+from lib.config import default_params, default_args, spark_failure_msg, jar
+from lib.operators.spark import SparkOperator
+from lib.tasks.notify import start, end
 
 DOC = """
 # Ingestion CathyDB DAG
@@ -63,10 +62,6 @@ def arguments(destination: str, steps: str = "default") -> List[str]:
     ]
 
 with dag:
-    start_ingestion_cathydb = EmptyOperator(
-        task_id="start_ingestion_cathydb",
-        on_execute_callback=Slack.notify_dag_start
-    )
 
     cathydb_raw_tasks = [
         ("raw_cathydb_external_numeric", "medium-etl"),
@@ -89,10 +84,4 @@ with dag:
         dag=dag
     ) for task_name, cluster_size in cathydb_raw_tasks]
 
-
-    publish_ingestion_cathydb = EmptyOperator(
-        task_id="publish_ingestion_cathydb",
-        on_success_callback=Slack.notify_dag_completion
-    )
-
-    start_ingestion_cathydb >> raw_spark_tasks >> publish_ingestion_cathydb
+    start("start_ingestion_cathydb") >> raw_spark_tasks >> end("end_ingestion_cathydb")

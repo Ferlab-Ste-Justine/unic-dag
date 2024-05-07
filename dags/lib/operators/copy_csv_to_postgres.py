@@ -1,11 +1,12 @@
 import csv
+from tempfile import NamedTemporaryFile
+from typing import List, Dict
 
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 
-from operators.postgresca import PostgresCaOperator
-from typing import List, Dict
-from tempfile import NamedTemporaryFile
+from lib.operators.postgresca import PostgresCaOperator
+
 
 class CopyCsvToPostgres(PostgresCaOperator):
     """

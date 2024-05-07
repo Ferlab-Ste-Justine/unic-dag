@@ -1,17 +1,16 @@
 """
 DAG pour le parsing le segment OBX des messages HL7 de Radimage
 """
-# pylint: disable=duplicate-code
+# pylint: disable=duplicate-code, expression-not-assigned
 from datetime import datetime, timedelta
 
 import pendulum
-
 from airflow import DAG
-from airflow.operators.empty import EmptyOperator
 
-from core.config import default_params, default_args, spark_failure_msg, jar
+from lib.config import default_params, default_args, spark_failure_msg, jar
 # from core.slack import Slack
-from operators.spark import SparkOperator
+from lib.operators.spark import SparkOperator
+from lib.tasks.notify import start, end
 
 DOC = """
 # Curated Radimage HL7 DAG
@@ -49,9 +48,6 @@ dag = DAG(
 )
 
 with dag:
-    start = EmptyOperator(
-        task_id="start_curated_radimage_hl7_obx"
-    )
 
     radimage_hl7_curated = SparkOperator(
         task_id="curated_radimage_hl7_oru_r01_obx",
@@ -65,8 +61,4 @@ with dag:
         dag=dag
     )
 
-    end = EmptyOperator(
-        task_id="publish_curated_radimage_hl7_obx"
-    )
-
-    start >> radimage_hl7_curated >> end
+    start("start_curated_radimage_hl7_obx") >> radimage_hl7_curated >> end("end_curated_radimage_hl7_obx")

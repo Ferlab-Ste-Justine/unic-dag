@@ -1,17 +1,16 @@
 """
 DAG that handles the ETL process for curated Philips.
 """
+# pylint: disable=expression-not-assigned
 
 from datetime import datetime, timedelta
+
 import pendulum
-
 from airflow import DAG
-from airflow.operators.empty import EmptyOperator
 
-from core.config import default_args, spark_failure_msg, jar, default_params
-from core.slack import Slack
-from operators.spark import SparkOperator
-
+from lib.config import default_args, spark_failure_msg, jar, default_params
+from lib.operators.spark import SparkOperator
+from lib.tasks.notify import start, end
 
 ZONE = 'red'
 TAGS = ['curated']
@@ -78,11 +77,6 @@ def create_spark_task(destination, cluster_size):
 
 with dag:
 
-    start = EmptyOperator(
-        task_id='start_curated_philips',
-        on_execute_callback=Slack.notify_dag_start
-    )
-
     spark_task_configs = [
         ('curated_philips_sip_external_patient', 'medium-etl'),
         ('curated_philips_neo_external_patient', 'medium-etl'),
@@ -90,9 +84,4 @@ with dag:
 
     spark_tasks = [create_spark_task(destination, cluster_size) for destination, cluster_size in spark_task_configs]
 
-    end = EmptyOperator(
-        task_id='publish_curated_philips',
-        on_success_callback=Slack.notify_dag_completion
-    )
-
-    start >> spark_tasks >> end
+    start('start_curated_philips') >> spark_tasks >> end('end_curated_philips')

@@ -2,7 +2,7 @@ from airflow.exceptions import AirflowSkipException
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 from kubernetes.client import models as k8s
 
-from core.cleanup import Cleanup
+from lib.cleanup import Cleanup
 
 
 class SparkOperator(KubernetesPodOperator):

@@ -1,17 +1,16 @@
 """
 DAG pour le parsing des messages HL7 de Softpath
 """
-# pylint: disable=duplicate-code
+# pylint: disable=duplicate-code, expression-not-assigned
 from datetime import datetime, timedelta
 
 import pendulum
-
 from airflow import DAG
-from airflow.operators.empty import EmptyOperator
 
-from core.config import default_params, default_args, spark_failure_msg, jar
+from lib.config import default_params, default_args, spark_failure_msg, jar
 # from core.slack import Slack
-from operators.spark import SparkOperator
+from lib.operators.spark import SparkOperator
+from lib.tasks.notify import end, start
 
 DOC = """
 # Curated Softpath HL7 DAG
@@ -52,10 +51,6 @@ dag = DAG(
 )
 
 with dag:
-    start = EmptyOperator(
-        task_id="start_curated_softpath_hl7",
-        # on_execute_callback=Slack.notify_dag_start
-    )
 
     softpath_hl7_curated_tasks = [
         ("curated_softpath_hl7_oru_r01_pid", "small-etl"),
@@ -97,9 +92,4 @@ with dag:
     #     dag=dag
     # ) for task_name, cluster_size in softpath_hl7_anonymized_tasks]
 
-    end = EmptyOperator(
-        task_id="publish_curated_softpath_hl7",
-        # on_success_callback=Slack.notify_dag_completion
-    )
-
-    start >> softpath_hl7_curated >> end
+    start("start_curated_softpath_hl7") >> softpath_hl7_curated >> end("end_curated_softpath_hl7")

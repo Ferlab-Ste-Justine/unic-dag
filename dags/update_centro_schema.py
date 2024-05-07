@@ -1,16 +1,15 @@
 """
 Update Centro schema
 """
-# pylint: disable=missing-function-docstring
+# pylint: disable=missing-function-docstring, expression-not-assigned
 from datetime import datetime, timedelta
 from typing import List
 
 from airflow import DAG
-from airflow.operators.empty import EmptyOperator
 
-from core.config import default_args, default_timeout_hours, spark_failure_msg
-from core.slack import Slack
-from operators.spark import SparkOperator
+from lib.config import default_args, default_timeout_hours, spark_failure_msg
+from lib.operators.spark import SparkOperator
+from lib.tasks.notify import end, start
 
 JAR = 's3a://spark-prd/jars/unic-etl-master.jar'
 ZONE = 'red'
@@ -40,12 +39,6 @@ dag = DAG(
 with dag:
     def arguments(dataset_regex: str) -> List[str]:
         return ["config/prod.conf", "default", dataset_regex]
-
-
-    start = EmptyOperator(
-        task_id="start",
-        on_execute_callback=Slack.notify_dag_start
-    )
 
     aid = SparkOperator(
         task_id="update_centro_schema_aid",
@@ -239,9 +232,4 @@ with dag:
         dag=dag
     )
 
-    end = EmptyOperator(
-        task_id="end",
-        on_success_callback=Slack.notify_dag_completion
-    )
-
-    start >> [aid, chi, chusj, cirene, ctc, dev, fkp, gen, inh, neo, neu, obg, obs, ped, psy, pul] >> end
+    start() >> [aid, chi, chusj, cirene, ctc, dev, fkp, gen, inh, neo, neu, obg, obs, ped, psy, pul] >> end()
