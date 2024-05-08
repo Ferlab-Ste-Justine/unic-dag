@@ -12,6 +12,7 @@ from lib.groups.postgres.create_tables import create_tables
 from lib.groups.postgres.drop_tables import drop_tables
 from lib.slack import Slack
 from lib.tasks.notify import end, start
+from lib.tasks.postgres import create_schema
 
 DOC = """
 # Postgres Near Real-Time (NRT) StatUrgence DAG
@@ -75,4 +76,4 @@ with DAG(
         tags=["postgresql"]
 ) as dag:
 
-    start("start_postgres_nrt_staturgence") >> drop_tables(sql_config) >> create_tables(sql_config) >> end("publish_postgres_nrt_staturgence")
+    start("start_postgres_nrt_staturgence") >> create_schema(sql_config) >> drop_tables(sql_config) >> create_tables(sql_config) >> end("publish_postgres_nrt_staturgence")
