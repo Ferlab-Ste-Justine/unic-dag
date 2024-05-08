@@ -13,6 +13,7 @@ from lib.groups.postgres.create_tables import create_tables
 from lib.groups.postgres.drop_tables import drop_tables
 from lib.slack import Slack
 from lib.tasks.notify import start, end
+from lib.tasks.postgres import create_schema
 
 DOC = """
 # Postgres Indicateurs SIP DAG
@@ -56,4 +57,4 @@ with DAG(
         tags=["postgresql"]
 ) as dag:
 
-    start("start_postgres_indicateurs_sip") >> drop_tables(sql_config) >> create_tables(sql_config) >> end("publish_postgres_indicateurs_sip")
+    start("start_postgres_indicateurs_sip") >> create_schema(sql_config) >> drop_tables(sql_config) >> create_tables(sql_config) >> end("publish_postgres_indicateurs_sip")
