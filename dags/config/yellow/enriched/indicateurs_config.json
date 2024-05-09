@@ -16,7 +16,7 @@
         {"dataset_id":"enriched_indicateurs_complications"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index", "enriched_indicateurs_physician_index"], "pre_tests": [], "post_tests": []},
         {"dataset_id":"enriched_indicateurs_delivery"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index", "enriched_indicateurs_physician_index", "enriched_indicateurs_init_baby"], "pre_tests": [], "post_tests": []},
         {"dataset_id":"enriched_indicateurs_participant_index", "cluster_type": "large" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_indicateurs_physician_index"  , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"enriched_indicateurs_physician_index"  , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"], "pre_tests": [], "post_tests": []},
         {"dataset_id":"enriched_indicateurs_pregnancy"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index", "enriched_indicateurs_physician_index"], "pre_tests": [], "post_tests": []},
         {"dataset_id":"enriched_indicateurs_init_baby"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"], "pre_tests": [], "post_tests": []}
       ]
