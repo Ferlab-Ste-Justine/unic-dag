@@ -1,8 +1,14 @@
 from airflow.models import Variable
 
-postgres_ca_path = '/tmp/ca/bi/'  # Corresponds to path in postgres connection string
+postgres_vlan2_conn_id = 'postgresql_vlan2_rw'
+postgres_bi_conn_id = 'postgresql_bi_rw'
+
+postgres_vlan2_ca_path = '/tmp/ca/'  # Corresponds to path in postgres vlan2 connection string
+postgres_bi_ca_path = '/tmp/ca/bi/'  # Corresponds to path in postgres bi connection string
+
 postgres_ca_filename = 'ca.crt'  # Corresponds to filename in postgres connection string
-postgres_ca_cert = Variable.get('postgres_ca_certificate', None)
+postgres_vlan2_ca_cert = Variable.get('postgres_vlan2_ca_certificate', None)
+postgres_bi_ca_cert = Variable.get('postgres_ca_certificate', None)
 
 def skip_task(table_name: str) -> str:
     """

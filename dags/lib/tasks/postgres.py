@@ -1,16 +1,22 @@
+from enum import Enum
+
 from lib.operators.postgresca import PostgresCaOperator
-from lib.postgres import postgres_ca_path, postgres_ca_filename, postgres_ca_cert
+from lib.postgres import postgres_bi_ca_path, postgres_ca_filename, postgres_bi_ca_cert, postgres_bi_conn_id
 
 
-def create_schema(sql_config: dict) -> PostgresCaOperator:
-    """
-    Create schema in Postgres
-    """
+class PostgresResource(Enum):
+    SCHEMA = "schema"
+    TYPES = "types"
+    INDEXES = "indexes"
+
+
+def create_resource(postgres_resource: PostgresResource, sql_config: dict, conn_id: str = postgres_bi_conn_id,
+                    ca_path: str = postgres_bi_ca_path, ca_cert: str = postgres_bi_ca_cert) -> PostgresCaOperator:
     return PostgresCaOperator(
-        task_id=f"create_{sql_config['schema']['name']}_schema",
-        postgres_conn_id="postgresql_bi_rw",
-        sql=sql_config['schema']['postgres_schema_creation_sql_path'],
-        ca_path=postgres_ca_path,
+        task_id=f"create_{sql_config[postgres_resource.value]['name']}_{postgres_resource.value}",
+        postgres_conn_id=conn_id,
+        sql=sql_config[postgres_resource.value][f'postgres_{postgres_resource.value}_creation_sql_path'],
+        ca_path=ca_path,
         ca_filename=postgres_ca_filename,
-        ca_cert=postgres_ca_cert
+        ca_cert=ca_cert
     )
