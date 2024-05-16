@@ -35,14 +35,14 @@ sql_config = {
     "schema": {"name": "catalog", "postgres_schema_creation_sql_path": "sql/catalog/schema.sql"},
     "types": {"name": "catalog", "postgres_types_creation_sql_path": "sql/catalog/types.sql"},
     "tables": [
-        {"name": "resource", "postgres_table_creation_sql_path": "sql/catalog/tables/resource.sql"},
-        {"name": "analyst", "postgres_table_creation_sql_path": "sql/catalog/tables/analyst.sql"},
-        {"name": "value_set", "postgres_table_creation_sql_path": "sql/catalog/tables/value_set.sql"},
-        {"name": "dictionary", "postgres_table_creation_sql_path": "sql/catalog/tables/dictionary.sql"},
-        {"name": "dict_table", "postgres_table_creation_sql_path": "sql/catalog/tables/dict_table.sql"},
-        {"name": "variable", "postgres_table_creation_sql_path": "sql/catalog/tables/variable.sql"},
-        {"name": "value_set_code", "postgres_table_creation_sql_path": "sql/catalog/tables/value_set_code.sql"},
-        {"name": "mapping", "postgres_table_creation_sql_path": "sql/catalog/tables/mapping.sql"}
+        {"name": "resource"      , "postgres_table_creation_sql_path": "sql/catalog/tables/resource.sql"      , "dependencies": ["analyst"]},
+        {"name": "analyst"       , "postgres_table_creation_sql_path": "sql/catalog/tables/analyst.sql"       , "dependencies": []},
+        {"name": "value_set"     , "postgres_table_creation_sql_path": "sql/catalog/tables/value_set.sql"     , "dependencies": []},
+        {"name": "dictionary"    , "postgres_table_creation_sql_path": "sql/catalog/tables/dictionary.sql"    , "dependencies": ["resource"]},
+        {"name": "dict_table"    , "postgres_table_creation_sql_path": "sql/catalog/tables/dict_table.sql"    , "dependencies": ["dictionary"]},
+        {"name": "variable"      , "postgres_table_creation_sql_path": "sql/catalog/tables/variable.sql"      , "dependencies": ["dict_table", "value_set"]},
+        {"name": "value_set_code", "postgres_table_creation_sql_path": "sql/catalog/tables/value_set_code.sql", "dependencies": ["value_set"]},
+        {"name": "mapping"       , "postgres_table_creation_sql_path": "sql/catalog/tables/mapping.sql"       , "dependencies": ["value_set_code"]}
     ],
     "indexes": {"name": "catalog", "postgres_indexes_creation_sql_path": "sql/catalogue/indexes.sql"}
 }
