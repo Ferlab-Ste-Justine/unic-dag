@@ -22,6 +22,6 @@ CREATE TABLE IF NOT EXISTS catalog.resource
     project_completion_date         DATE,
     to_be_published                 BOOLEAN                    NOT NULL,
     system_database_type            VARCHAR(255),
-    analyst_id                      INTEGER REFERENCES analyst (id),
+    analyst_id                      INTEGER REFERENCES catalog.analyst (id),
     system_collection_starting_year INTEGER
 );
