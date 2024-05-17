@@ -44,7 +44,7 @@ sql_config = {
         {"name": "value_set_code", "postgres_table_creation_sql_path": "sql/catalog/tables/value_set_code.sql", "dependencies": ["value_set"]},
         {"name": "mapping"       , "postgres_table_creation_sql_path": "sql/catalog/tables/mapping.sql"       , "dependencies": ["value_set_code"]}
     ],
-    "indexes": {"name": "catalog", "postgres_indexes_creation_sql_path": "sql/catalogue/indexes.sql"}
+    "indexes": {"name": "catalog", "postgres_indexes_creation_sql_path": "sql/catalog/indexes.sql"}
 }
 table_name_list = [table['name'] for table in sql_config['tables']]
 
