@@ -45,6 +45,7 @@ QUANUMCHARTMAXX_ANONYMIZED_ZONE = "yellow"
 QUANUM_CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.quanum.Main"
 QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
 QUANUMCHARTMAXX_CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.quanumchartmaxx.Main"
+QUANUM_CURATED_NEW_FORM_CHECKER_CLASS = "bio.ferlab.ui.etl.script.QuanumNewFormChecker"
 
 LOCAL_TZ = pendulum.timezone("America/Montreal")
 
@@ -134,6 +135,18 @@ with dag:
             dag=dag
         )
 
+        # Check if there are new forms that we don't have in etl ds configuration
+        curated_quanum_new_form_checker_task = SparkOperator(
+            task_id="curated_quanum_new_form_checker",
+            name="curated_quanum_new_form_checker".replace("_", "-"),
+            zone=QUANUM_CURATED_ZONE,
+            spark_class=QUANUM_CURATED_NEW_FORM_CHECKER_CLASS,
+            spark_jar=jar,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="xsmall-etl",
+            dag=dag
+        )
+
         # Make graph more readable in Airflow UI
         start_quanum_forms_task = EmptyOperator(task_id="start_quanum_forms")
 
@@ -172,7 +185,7 @@ with dag:
         ) for task_name, cluster_size in curated_quanum_config]
 
         [curated_quanum_form_data_vw_task, curated_quanum_form_metadata_vw_task,
-         curated_quanum_form_name_vw_task] >> start_quanum_forms_task
+         curated_quanum_form_name_vw_task] >> curated_quanum_new_form_checker_task >> start_quanum_forms_task
         start_quanum_forms_task >> curated_quanum_tasks
 
 
