@@ -155,7 +155,7 @@ with dag:
             ("curated_quanum_a*", "medium-etl"),
             ("curated_quanum_b*", "small-etl"),
             ("curated_quanum_c*", "medium-etl"),
-            ("curated_quanum_dossier*", "small-etl"),
+            ("curated_quanum_d*", "small-etl"),
             ("curated_quanum_e*", "small-etl"),
             ("curated_quanum_f*", "small-etl"),
             ("curated_quanum_g*", "small-etl"),
