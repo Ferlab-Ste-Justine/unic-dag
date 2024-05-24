@@ -139,7 +139,7 @@ with dag:
         curated_quanum_new_form_checker_task = SparkOperator(
             task_id="curated_quanum_new_form_checker",
             name="curated_quanum_new_form_checker".replace("_", "-"),
-            arguments=["config/prod.conf", "default"]
+            arguments=["config/prod.conf", "default"],
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_NEW_FORM_CHECKER_CLASS,
             spark_jar=jar,
