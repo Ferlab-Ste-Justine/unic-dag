@@ -194,7 +194,7 @@ with dag:
             ("curated_quanum_chartmaxx_a*", "medium-etl"),
             ("curated_quanum_chartmaxx_b*", "small-etl"),
             ("curated_quanum_chartmaxx_c*", "medium-etl"),
-            ("curated_quanum_chartmaxx_dossier*", "small-etl"),
+            ("curated_quanum_chartmaxx_d*", "small-etl"),
             ("curated_quanum_chartmaxx_e*", "small-etl"),
             ("curated_quanum_chartmaxx_f*", "small-etl"),
             ("curated_quanum_chartmaxx_g*", "small-etl"),
