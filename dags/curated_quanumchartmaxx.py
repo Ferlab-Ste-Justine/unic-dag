@@ -153,7 +153,7 @@ with dag:
 
         curated_quanum_config = [
             ("curated_quanum_a*", "medium-etl"),
-            ("curated_quanum_c*", "large-etl"),
+            ("curated_quanum_c*", "medium-etl"),
             ("curated_quanum_d*", "small-etl"),
             ("curated_quanum_e*", "medium-etl"),
             ("curated_quanum_f*", "small-etl"),
@@ -162,7 +162,7 @@ with dag:
             ("curated_quanum_maladie*", "medium-etl"),
             ("curated_quanum_n*", "small-etl"),
             ("curated_quanum_o*", "small-etl"),
-            ("curated_quanum_p*", "large-etl"),
+            ("curated_quanum_p*", "medium-etl"),
             ("curated_quanum_q*", "small-etl"),
             ("curated_quanum_r*", "small-etl"),
             ("curated_quanum_s*", "small-etl"),
