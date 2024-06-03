@@ -14,7 +14,6 @@ CREATE TABLE IF NOT EXISTS catalog.resource
     principal_investigator          VARCHAR(500),
     erb_project_id                  VARCHAR(255),
     project_creation_date           DATE,
-    project_active                  catalog.project_active_enum,
     project_status                  catalog.project_status_enum,
     project_approved                BOOLEAN,
     project_folder                  VARCHAR(255),
