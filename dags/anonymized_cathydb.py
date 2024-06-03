@@ -72,6 +72,8 @@ with dag:
         ("anonymized_cathydb_sip_numeric_data" , "large-etl") ,
         ("anonymized_cathydb_neo_signal_data"  , "large-etl") ,
         ("anonymized_cathydb_sip_signal_data"  , "large-etl") ,
+        ("anonymized_philips_neo_patient_data" , "large-etl") ,
+        ("anonymized_philips_sip_patient_data" , "large-etl") ,
     ]
 
     anonymized_spark_tasks = [SparkOperator(
