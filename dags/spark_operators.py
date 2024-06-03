@@ -103,7 +103,7 @@ def get_test_sub_group(zone: str,
                 dataset_id = conf['dataset_id']
                 config_type = conf['cluster_type']
 
-                for pre_test in conf['post_tests']:
+                for pre_test in conf['pre_tests']:
                     pre_test_job = create_spark_test(dataset_id, pre_test, zone, config_type, config_file, jar, dag,
                                                      spark_test_failure_msg)
                     pre_test_jobs.append(pre_test_job)
