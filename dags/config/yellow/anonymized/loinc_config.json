@@ -11,10 +11,10 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id":"anonymized_loinc_code_mapping"   , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["equal_counts"]},
-      {"dataset_id":"anonymized_loinc_dsq_table_codes", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["equal_counts"]},
-      {"dataset_id":"anonymized_loinc_organization"   , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["equal_counts"]},
-      {"dataset_id":"anonymized_loinc_terminology"    , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["equal_counts"]}
+      {"dataset_id":"anonymized_loinc_code_mapping"   , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id":"anonymized_loinc_dsq_table_codes", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id":"anonymized_loinc_organization"   , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id":"anonymized_loinc_terminology"    , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]}
     ]
   }]
 
