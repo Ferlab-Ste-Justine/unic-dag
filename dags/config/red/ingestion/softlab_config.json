@@ -40,13 +40,13 @@
     "multiple_main_methods": false,
     "datasets":
     [
-      {"dataset_id": "anonymized_softlab_v_p_genindex_hisaux", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_softlab_v_p_genindex_hisaux", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
       {"dataset_id": "anonymized_softlab_v_p_lab_message"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id": "anonymized_softlab_v_p_lab_o*"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_softlab_v_p_lab_patient"    , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_softlab_v_p_lab_s*"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_softlab_v_p_lab_o*"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_softlab_v_p_lab_patient"    , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_softlab_v_p_lab_s*"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
       {"dataset_id": "anonymized_softlab_v_p_lab_test_result", "cluster_type": "large",  "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id": "anonymized_softmic_v_p_mic_*"          , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]}
+      {"dataset_id": "anonymized_softmic_v_p_mic_*"          , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]}
     ]
   }]
 
