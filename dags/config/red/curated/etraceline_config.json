@@ -23,20 +23,20 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "anonymized_etraceline_a*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_d*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_e*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_f*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_g*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_l*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_m*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_etraceline_a*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_etraceline_d*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_etraceline_e*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_etraceline_f*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_etraceline_g*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_etraceline_l*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_etraceline_m*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
       {"dataset_id": "anonymized_etraceline_patient", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_pl*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_ps*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_pt*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_s*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_t*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_u*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_parititon_counts"], "post_tests": ["equal_null_counts", "equal_counts"]}
+      {"dataset_id": "anonymized_etraceline_pl*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_etraceline_ps*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_etraceline_pt*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_etraceline_s*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_etraceline_t*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_etraceline_u*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]}
     ]
   }]
 }
