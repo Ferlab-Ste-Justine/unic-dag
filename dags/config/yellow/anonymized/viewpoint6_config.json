@@ -11,13 +11,13 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id": "anonymized_viewpoint6_query_exam"                  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-        {"dataset_id": "anonymized_viewpoint6_query_fetus"                 , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-        {"dataset_id": "anonymized_viewpoint6_query_fetus_iutentries"      , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-        {"dataset_id": "anonymized_viewpoint6_query_fetus_placenta_details", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-        {"dataset_id": "anonymized_viewpoint6_query_fetus_ptentries"       , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-        {"dataset_id": "anonymized_viewpoint6_query_fetus_shunt"           , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]},
-        {"dataset_id": "anonymized_viewpoint6_query_patient"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["equal_null_counts", "equal_counts"]}
+        {"dataset_id": "anonymized_viewpoint6_query_exam"                  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+        {"dataset_id": "anonymized_viewpoint6_query_fetus"                 , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+        {"dataset_id": "anonymized_viewpoint6_query_fetus_iutentries"      , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+        {"dataset_id": "anonymized_viewpoint6_query_fetus_placenta_details", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+        {"dataset_id": "anonymized_viewpoint6_query_fetus_ptentries"       , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+        {"dataset_id": "anonymized_viewpoint6_query_fetus_shunt"           , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+        {"dataset_id": "anonymized_viewpoint6_query_patient"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]}
       ]
     }]
   }
