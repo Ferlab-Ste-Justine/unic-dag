@@ -13,7 +13,7 @@ def drop_tables(sql_config: dict, conn_id: str = postgres_bi_conn_id, ca_path: s
     [PostgresCaOperator(
         task_id=f"drop_{table_config['name']}_table",
         postgres_conn_id=conn_id,
-        sql=drop_table(table_config['name']),
+        sql=drop_table(schema_name=sql_config['schema']['name'], table_name=table_config['name']),
         ca_path=ca_path,
         ca_filename=postgres_ca_filename,
         ca_cert=ca_cert,

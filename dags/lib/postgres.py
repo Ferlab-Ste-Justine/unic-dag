@@ -17,8 +17,8 @@ def skip_task(table_name: str) -> str:
     return f"{{% if '{table_name}' in params.tables %}}{{% else %}}yes{{% endif %}}"
 
 
-def drop_table(table_name: str) -> str:
+def drop_table(schema_name: str, table_name: str) -> str:
     """
     Generate drop table statement for the given table_name.
     """
-    return f"DROP TABLE IF EXISTS {table_name};"
+    return f"DROP TABLE IF EXISTS {schema_name}.{table_name};"
