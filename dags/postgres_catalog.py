@@ -42,7 +42,8 @@ sql_config = {
         {"name": "dict_table"    , "postgres_table_creation_sql_path": "sql/catalog/tables/dict_table.sql"    , "dependencies": ["dictionary"]},
         {"name": "variable"      , "postgres_table_creation_sql_path": "sql/catalog/tables/variable.sql"      , "dependencies": ["dict_table", "value_set"]},
         {"name": "value_set_code", "postgres_table_creation_sql_path": "sql/catalog/tables/value_set_code.sql", "dependencies": ["value_set"]},
-        {"name": "mapping"       , "postgres_table_creation_sql_path": "sql/catalog/tables/mapping.sql"       , "dependencies": ["value_set_code"]}
+        {"name": "mapping"       , "postgres_table_creation_sql_path": "sql/catalog/tables/mapping.sql"       , "dependencies": ["value_set_code"]},
+        {"name": "user"          , "postgres_table_creation_sql_path": "sql/catalog/tables/user.sql"          , "dependencies": []}
     ],
     "indexes": {"name": "catalog", "postgres_indexes_creation_sql_path": "sql/catalog/indexes.sql"}
 }
