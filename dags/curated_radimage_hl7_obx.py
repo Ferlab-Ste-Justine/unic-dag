@@ -35,14 +35,14 @@ dag = DAG(
     dag_id="curated_radimage_hl7_obx",
     doc_md=DOC,
     start_date=datetime(2013, 10, 5, 7, tzinfo=pendulum.timezone("America/Montreal")),
-    end_date=datetime(2024, 3, 20, tzinfo=pendulum.timezone("America/Montreal")),
+    end_date=datetime(2024, 6, 5, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
-    max_active_runs=1,
+    max_active_runs=5,
     max_active_tasks=3,
     tags=["curated"]
 )
