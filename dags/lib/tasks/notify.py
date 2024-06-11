@@ -22,7 +22,7 @@ def end(task_id: str = "end", notify: bool = True) -> EmptyOperator:
     Notify that the DAG has ended.
     :param task_id: Task ID of the end task. Defaults to "end".
     """
-    on_execute_callback = Slack.notify_dag_start if notify else None
+    on_execute_callback = Slack.notify_dag_completion if notify else None
     return EmptyOperator(
         task_id=task_id,
         on_execute_callback=on_execute_callback,
