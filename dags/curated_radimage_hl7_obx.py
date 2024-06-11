@@ -42,7 +42,7 @@ dag = DAG(
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
-    max_active_runs=3,
+    max_active_runs=5,
     max_active_tasks=5,
     tags=["curated"]
 )
@@ -61,4 +61,4 @@ with dag:
         dag=dag
     )
 
-    start("start_curated_radimage_hl7_obx") >> radimage_hl7_curated >> end("end_curated_radimage_hl7_obx")
+    start("start_curated_radimage_hl7_obx", notify=False) >> radimage_hl7_curated >> end("end_curated_radimage_hl7_obx", notify=False)
