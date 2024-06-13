@@ -72,12 +72,14 @@ def parquet_to_excel(
     except Exception as e:
         raise AirflowFailException(f"Failed to combine parquet files into single df: {e}")
 
+    # Set the header if not provided
+    if header is None:
+            header = df.columns
+
     # Save the output to xlsx format
     local_excel_file = os.path.join(local_excel_directory, os.path.basename(excel_output_key))
     try:
         df.to_excel(local_excel_file, index=False, header=header, sheet_name=sheet_name)
-        if header is None:
-            header = df.columns
     except Exception as e:
         raise AirflowFailException(f"Failed to convert {local_excel_file} to excel: {e}")
 
