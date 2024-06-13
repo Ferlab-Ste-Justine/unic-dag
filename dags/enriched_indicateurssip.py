@@ -11,7 +11,7 @@ from airflow.decorators import task_group
 from airflow.models import Variable
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg
+from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg, green_minio_conn_id
 from lib.operators.copy_csv_to_postgres import CopyCsvToPostgres
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import start, end
@@ -271,7 +271,7 @@ with dag:
             ca_filename=ca_filename,
             ca_cert=ca_cert,
             table_copy_conf=copy_conf,
-            minio_conn_id="green_minio"
+            minio_conn_id=green_minio_conn_id
         )
 
         published_indicateurs_sip
