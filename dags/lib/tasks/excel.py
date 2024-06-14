@@ -1,21 +1,25 @@
 import os
-import glob
+from io import BytesIO
+from typing import Union, List
+
+import pandas as pd
 from airflow.decorators import task
 from airflow.exceptions import AirflowFailException
-import pandas as pd
+from airflow.exceptions import AirflowSkipException
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+
+from lib.config import minio_conn_id
 
 
 @task(task_id="parquet_to_excel")
 def parquet_to_excel(
-    parquet_bucket_name: str,
-    parquet_dir_key: str,
-    excel_bucket_name: str,
-    excel_output_key: str,
-    header: list = None,
-    sheet_name: str = "sheet1",
-    minio_conn_id: str = 'minio_conn_id') -> None:
-
+        parquet_bucket_name: str,
+        parquet_dir_key: str,
+        excel_bucket_name: str,
+        excel_output_key: str,
+        header: list = None,
+        sheet_name: str = "sheet1",
+        minio_conn_id: str = 'minio_conn_id') -> None:
     """
     Create an Airflow task to convert multiple or single parquet from a specified directory from Minio into a single excel file.
     Output stored in another specified directory.
@@ -39,7 +43,7 @@ def parquet_to_excel(
     # Define local dirs
     local_parquet_directory = '/tmp/parquet/'
     local_excel_directory = '/tmp/excel'
-    
+
     # Create dirs if they do not exist
     os.makedirs(local_parquet_directory, exist_ok=True)
     os.makedirs(local_excel_directory, exist_ok=True)
@@ -65,7 +69,7 @@ def parquet_to_excel(
 
     if not parquet_files:
         raise AirflowFailException(f'No parquet files found in: {parquet_bucket_name}/{parquet_dir_key}')
-    
+
     # Combine Parquet files into a single dataframe
     try:
         df = pd.concat([pd.read_parquet(file) for file in parquet_files], ignore_index=True)
@@ -74,7 +78,7 @@ def parquet_to_excel(
 
     # Set the header if not provided
     if header is None:
-            header = df.columns
+        header = df.columns
 
     # Save the output to xlsx format
     local_excel_file = os.path.join(local_excel_directory, os.path.basename(excel_output_key))
@@ -92,14 +96,13 @@ def parquet_to_excel(
 
 @task(task_id="csv_to_excel")
 def csv_to_excel(
-    csv_bucket_name: str,
-    csv_dir_key: str,
-    excel_bucket_name: str,
-    excel_output_key: str,
-    header: list = None,
-    sheet_name: str = "sheet1",
-    minio_conn_id: str = 'minio_conn_id') -> None:
-
+        csv_bucket_name: str,
+        csv_dir_key: str,
+        excel_bucket_name: str,
+        excel_output_key: str,
+        header: list = None,
+        sheet_name: str = "sheet1",
+        minio_conn_id: str = 'minio_conn_id') -> None:
     """
     Create an Airflow task to convert multiple or single csv from a specified directory from Minio.
     Each output file is stored in another specified directory.
@@ -123,7 +126,7 @@ def csv_to_excel(
     # Define local dirs
     local_csv_directory = '/tmp/csv/'
     local_excel_directory = '/tmp/excel/'
-    
+
     # Create dirs if they do not exist
     os.makedirs(local_csv_directory, exist_ok=True)
     os.makedirs(local_excel_directory, exist_ok=True)
@@ -169,3 +172,36 @@ def csv_to_excel(
         s3.load_file(local_excel_file, key=excel_output_key, bucket_name=excel_bucket_name, replace=True)
     except Exception as e:
         raise AirflowFailException(f"Failed to upload Excel file {local_excel_file} to bucket {excel_bucket_name}: {e}")
+
+
+@task(task_id="excel_to_csv")
+def excel_to_csv(s3_source_bucket: str, s3_source_key: str,
+                 s3_destination_bucket: str, s3_destination_key: str,
+                 s3_conn_id: str = minio_conn_id,
+                 sheet_name: Union[str, int, None] = 0,
+                 header: Union[int, List[int], None] = 0,
+                 skip: bool = False):
+    """
+    Convert a single Excel file to a single CSV file in S3.
+
+    :param s3_source_bucket:      Bucket name of the Excel source file
+    :param s3_source_key:         Key of the Excel source file
+    :param s3_destination_bucket: Bucket name of the CSV destination file
+    :param s3_destination_key:    Key of the CSV destination file
+    :param s3_conn_id:            S3 connection ID, defaults to the minio_conn_id specified in the config file
+    :param sheet_name:            Name of the Excel sheet to read, defaults to the first sheet
+    :param header:                Row(s) to use for the header in the Excel file, defaults to 0
+    :param skip:                  True to skip the task, defaults to False (task is not skipped)
+    :return:
+    """
+    if skip:
+        raise AirflowSkipException()
+
+    s3 = S3Hook(s3_conn_id)
+
+    s3_response = s3.get_key(key=s3_source_key, bucket_name=s3_source_bucket)
+    excel_data = s3_response.get()['Body'].read()
+    df = pd.read_excel(io=BytesIO(excel_data), sheet_name=sheet_name, header=header)
+
+    csv_data = df.to_csv(index=False)  # Remove the DataFrame index column
+    s3.load_string(string_data=csv_data, key=s3_destination_key, bucket_name=s3_destination_bucket, replace=True)
