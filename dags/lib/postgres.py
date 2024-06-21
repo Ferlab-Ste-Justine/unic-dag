@@ -21,4 +21,4 @@ def drop_table(schema_name: str, table_name: str) -> str:
     """
     Generate drop table statement for the given table_name.
     """
-    return f"DROP TABLE IF EXISTS {schema_name}.{table_name};"
+    return f"DROP TABLE IF EXISTS {schema_name}.{table_name} CASCADE;"
