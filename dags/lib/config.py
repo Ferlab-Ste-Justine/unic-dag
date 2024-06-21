@@ -32,5 +32,6 @@ jar = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 version = '{{ params.version }}'
 
 minio_conn_id = "minio"
+yellow_minio_conn_id = "yellow_minio"
 green_minio_conn_id = "green_minio"
 mail_from = os.environ.get("AIRFLOW__SMTP__SMTP_MAIL_FROM")
