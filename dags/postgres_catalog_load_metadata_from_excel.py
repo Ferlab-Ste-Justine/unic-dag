@@ -12,7 +12,7 @@ from airflow.exceptions import AirflowFailException
 from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import jar, spark_failure_msg, yellow_minio_conn_id
+from lib.config import jar, spark_failure_msg, yellow_minio_conn_id, green_minio_conn_id
 from lib.operators.spark import SparkOperator
 from lib.postgres import skip_task
 from lib.slack import Slack
@@ -116,7 +116,7 @@ with DAG(
                 s3_source_key=s3_source_key,
                 s3_destination_bucket=YELLOW_BUCKET,
                 s3_destination_key=s3_destination_key,
-                s3_conn_id=yellow_minio_conn_id,
+                s3_conn_id=green_minio_conn_id,
                 sheet_name=sheet_name,
                 skip=skip_task(table_name)
             )
