@@ -197,7 +197,7 @@ def excel_to_csv(s3_source_bucket: str, s3_source_key: str,
     if skip:
         raise AirflowSkipException()
 
-    s3 = S3Hook(s3_conn_id)
+    s3 = S3Hook(aws_conn_id=s3_conn_id)
 
     s3_response = s3.get_key(key=s3_source_key, bucket_name=s3_source_bucket)
     excel_data = s3_response.get()['Body'].read()
