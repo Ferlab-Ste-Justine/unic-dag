@@ -126,9 +126,8 @@ with dag:
         )
 
     with TaskGroup(group_id="published") as published:
-        DATA_INTERVAL_END ='{{ data_interval_end | ds }}'
-        FILEDATE = str(DATA_INTERVAL_END).replace("-","_")
-
+        FILEDATE ='{{ data_interval_end | ds | replace("-", "_") }}'
+        
         parquet_bucket_name = parquet_to_excel.override(task_id="published_surveillancegermes_weekly_summary")(
         parquet_bucket_name='green-prd',
         parquet_dir_key='released/sil/surveillancegermes/latest/weekly_summary',
