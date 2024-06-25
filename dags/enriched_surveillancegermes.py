@@ -2,6 +2,8 @@
 Enriched Surveillance Germes DAG
 """
 # pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
+# pylint: disable=C0103
+
 from datetime import datetime, timedelta
 from typing import List
 
@@ -13,7 +15,7 @@ from airflow.utils.trigger_rule import TriggerRule
 from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import start, end
-from lib.tasks.excel import csv_to_excel
+from lib.tasks.excel import parquet_to_excel
 
 from lib.config import green_minio_conn_id
 
@@ -125,30 +127,12 @@ with dag:
         )
 
     with TaskGroup(group_id="published") as published:
-        PUBLISHED_ZONE = "green"
-        PUBLISHED_MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
-
-        def published_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination]
-
-        published_weekly_summary = SparkOperator(
-            task_id="published_surveillancegermes_weekly_summary",
-            name="published-surveillancegermes-weekly-summary",
-            arguments=published_arguments("published_surveillancegermes_weekly_summary"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
-            spark_config="medium-etl",
-            dag=dag,
-        )
-
         DATA_INTERVAL_END ='{{ data_interval_end | ds }}'
         FILEDATE = DATA_INTERVAL_END.replace("-","_")
-        # pylint: disable=C0103
-        csv_to_excel_weekly_summary = csv_to_excel(
-        csv_bucket_name='green-prd',
-        csv_dir_key='published/surveillancegermes/weekly_summary',
+
+        parquet_bucket_name = parquet_to_excel(
+        parquet_bucket_name='green-prd',
+        parquet_dir_key='released/sil/surveillancegermes/latest/weekly_summary',
         excel_bucket_name='green-prd',
         excel_output_key=f'published/surveillancegermes/weekly_summary/weekly_summary_{FILEDATE}.xlsx',
         minio_conn_id=green_minio_conn_id
