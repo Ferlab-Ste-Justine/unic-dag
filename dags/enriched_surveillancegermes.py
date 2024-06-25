@@ -13,6 +13,7 @@ from airflow.utils.trigger_rule import TriggerRule
 from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import start, end
+from lib.tasks.excel import csv_to_excel
 
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
@@ -139,5 +140,14 @@ with dag:
             spark_config="medium-etl",
             dag=dag,
         )
+        
+        data_interval_end ='{{ data_interval_end | ds }}'
+        filedate = data_interval_end.replace("-","-") 
+        excel_to_csv_weekly_summary = csv_to_excel(
+        csv_bucket_name='green-prd',
+        csv_dir_key='published/surveillancegermes/weekly_summary',
+        excel_bucket_name='green-prd',
+        excel_output_key=f'published/surveillancegermes/weekly_summary/weekly_summary_{filedate}.xlsx'
+        )   
 
     start() >> enriched >> released >> published >> end()
