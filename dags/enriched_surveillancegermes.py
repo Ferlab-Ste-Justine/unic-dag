@@ -15,6 +15,8 @@ from lib.operators.spark import SparkOperator
 from lib.tasks.notify import start, end
 from lib.tasks.excel import csv_to_excel
 
+from lib.config import green_minio_conn_id
+
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
 DOC = """
@@ -147,7 +149,8 @@ with dag:
         csv_bucket_name='green-prd',
         csv_dir_key='published/surveillancegermes/weekly_summary',
         excel_bucket_name='green-prd',
-        excel_output_key=f'published/surveillancegermes/weekly_summary/weekly_summary_{filedate}.xlsx'
+        excel_output_key=f'published/surveillancegermes/weekly_summary/weekly_summary_{filedate}.xlsx',
+        minio_conn_id=green_minio_conn_id
         )   
 
     start() >> enriched >> released >> published >> end()
