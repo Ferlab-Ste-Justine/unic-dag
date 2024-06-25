@@ -142,15 +142,16 @@ with dag:
             spark_config="medium-etl",
             dag=dag,
         )
-        
-        data_interval_end ='{{ data_interval_end | ds }}'
-        filedate = data_interval_end.replace("-","_") 
-        excel_to_csv_weekly_summary = csv_to_excel(
+
+        DATA_INTERVAL_END ='{{ data_interval_end | ds }}'
+        FILEDATE = DATA_INTERVAL_END.replace("-","_")
+        # pylint: disable=C0103
+        csv_to_excel_weekly_summary = csv_to_excel(
         csv_bucket_name='green-prd',
         csv_dir_key='published/surveillancegermes/weekly_summary',
         excel_bucket_name='green-prd',
-        excel_output_key=f'published/surveillancegermes/weekly_summary/weekly_summary_{filedate}.xlsx',
+        excel_output_key=f'published/surveillancegermes/weekly_summary/weekly_summary_{FILEDATE}.xlsx',
         minio_conn_id=green_minio_conn_id
-        )   
+        )
 
     start() >> enriched >> released >> published >> end()
