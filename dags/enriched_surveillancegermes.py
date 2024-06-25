@@ -142,7 +142,7 @@ with dag:
         )
         
         data_interval_end ='{{ data_interval_end | ds }}'
-        filedate = data_interval_end.replace("-","-") 
+        filedate = data_interval_end.replace("-","_") 
         excel_to_csv_weekly_summary = csv_to_excel(
         csv_bucket_name='green-prd',
         csv_dir_key='published/surveillancegermes/weekly_summary',
