@@ -1,8 +1,7 @@
 """
 Enriched Surveillance Germes DAG
 """
-# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
-# pylint: disable=C0103
+# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned, invalid-name
 
 from datetime import datetime, timedelta
 from typing import List
@@ -130,7 +129,7 @@ with dag:
         DATA_INTERVAL_END ='{{ data_interval_end | ds }}'
         FILEDATE = DATA_INTERVAL_END.replace("-","_")
 
-        parquet_bucket_name = parquet_to_excel(
+        parquet_bucket_name = parquet_to_excel.override(task_id="published_surveillancegermes_weekly_summary")(
         parquet_bucket_name='green-prd',
         parquet_dir_key='released/sil/surveillancegermes/latest/weekly_summary',
         excel_bucket_name='green-prd',
