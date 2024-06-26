@@ -12,9 +12,11 @@ from airflow.exceptions import AirflowFailException
 from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import jar, spark_failure_msg, yellow_minio_conn_id
+from lib.config import jar, spark_failure_msg, yellow_minio_conn_id, minio_conn_id
 from lib.operators.spark import SparkOperator
-from lib.postgres import skip_task
+from lib.operators.upsert_csv_to_postgres import UpsertCsvToPostgres
+from lib.postgres import skip_task, postgres_vlan2_conn_id, postgres_vlan2_ca_path, postgres_ca_filename, \
+    postgres_vlan2_ca_cert
 from lib.slack import Slack
 from lib.tasks.excel import excel_to_csv
 from lib.tasks.notify import start, end
@@ -99,6 +101,23 @@ with DAG(
     def validate_project_param(tables: List[str], project: str):
         if "dictionary" in tables and project == "":
             raise AirflowFailException("DAG param 'project' is required when 'dictionary' table is selected.")
+
+
+    # Temp for testing
+    upsert_csv = UpsertCsvToPostgres(
+        task_id="upsert_analyst",
+        s3_bucket="yellow-prd",
+        s3_key="catalog/csv/output/analyst.csv",
+        s3_conn_id=minio_conn_id,
+        postgres_conn_id=postgres_vlan2_conn_id,
+        postgres_ca_path=postgres_vlan2_ca_path,
+        postgres_ca_filename=postgres_ca_filename,
+        postgres_ca_cert=postgres_vlan2_ca_cert,
+        schema_name="catalog",
+        table_name="analyst",
+        table_schema_path="sql/catalog/tables/analyst.sql",
+        primary_keys=["name"]
+    )
 
 
     @task_group(group_id="excel_to_csv")
@@ -211,6 +230,7 @@ with DAG(
 
     get_tables_task = get_tables()
     start() >> get_tables_task >> validate_project_param(tables=get_tables_task, project=get_project()) \
-        >> excel_to_csv_group() \
-        >> load_tables_group() \
-        >> end()
+    >> upsert_csv \
+    >> excel_to_csv_group() \
+    >> load_tables_group() \
+    >> end()
