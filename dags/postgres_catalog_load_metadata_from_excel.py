@@ -12,7 +12,7 @@ from airflow.exceptions import AirflowFailException
 from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import jar, spark_failure_msg, yellow_minio_conn_id, minio_conn_id
+from lib.config import jar, spark_failure_msg, yellow_minio_conn_id
 from lib.operators.spark import SparkOperator
 from lib.operators.upsert_csv_to_postgres import UpsertCsvToPostgres
 from lib.postgres import skip_task, postgres_vlan2_conn_id, postgres_vlan2_ca_path, postgres_ca_filename, \
@@ -108,7 +108,7 @@ with DAG(
         task_id="upsert_analyst",
         s3_bucket="yellow-prd",
         s3_key="catalog/csv/output/analyst.csv",
-        s3_conn_id=minio_conn_id,
+        s3_conn_id=yellow_minio_conn_id,
         postgres_conn_id=postgres_vlan2_conn_id,
         postgres_ca_path=postgres_vlan2_ca_path,
         postgres_ca_filename=postgres_ca_filename,
