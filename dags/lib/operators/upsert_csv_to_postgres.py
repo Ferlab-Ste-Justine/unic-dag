@@ -85,12 +85,11 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         df = pd.read_csv(local_file, sep=self.csv_sep)
 
         # Generate create temp table query
-        target_table_name = f"{self.schema_name}.{self.table_name}"
         staging_table_name = f"{self.table_name}_staging"
         with open(self.table_schema_path, 'r') as file:
             create_table_query = file.read() \
                 .replace("CREATE TABLE", "CREATE TEMP TABLE") \
-                .replace(target_table_name, staging_table_name)
+                .replace(f"{self.schema_name}.{self.table_name}", staging_table_name)
 
         # Generate upsert query
         columns = df.columns.tolist()
@@ -101,7 +100,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         SELECT {columns} FROM {staging_table}
         ON CONFLICT ({primary_keys})
         """).format(
-            target_table=sql.Identifier(target_table_name),
+            target_table=sql.Identifier(self.schema_name, self.table_name),
             columns=sql.SQL(', ').join(map(sql.Identifier, columns)),
             staging_table=sql.Identifier(staging_table_name),
             primary_keys=sql.SQL(", ").join(map(sql.Identifier, self.primary_keys)),
