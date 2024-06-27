@@ -1,3 +1,4 @@
+import csv
 import logging
 from tempfile import NamedTemporaryFile
 from typing import List
@@ -82,12 +83,10 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         s3_transfer.download_fileobj(local_file)
         local_file.flush()
         local_file.seek(0)
-        print(local_file.read())
 
-        df = pd.read_csv(local_file, sep=self.csv_sep, header=0)
-        print(df)
-        columns = df.columns.tolist()
-        update_columns = [col for col in columns if col not in self.primary_keys]
+        with open(local_file.name, 'rt') as temp_file:
+            columns = csv.DictReader(temp_file, delimiter=self.csv_sep).fieldnames
+            update_columns = [col for col in columns if col not in self.primary_keys]
 
         # Generate create temp table query
         staging_table_name = f"{self.table_name}_staging"
