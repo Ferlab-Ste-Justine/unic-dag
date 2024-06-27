@@ -82,8 +82,10 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         s3_transfer.download_fileobj(local_file)
         local_file.flush()
         local_file.seek(0)
+        print(local_file.read())
 
         df = pd.read_csv(local_file, sep=self.csv_sep)
+        print(df)
         columns = df.columns.tolist()
         update_columns = [col for col in columns if col not in self.primary_keys]
 
@@ -101,7 +103,6 @@ class UpsertCsvToPostgres(PostgresCaOperator):
             columns=sql.SQL(', ').join(map(sql.Identifier, columns)))
 
         # Generate upsert query
-
         upsert_query = sql.SQL("""
         INSERT INTO {target_table} ({columns})
         SELECT {columns} FROM {staging_table}
