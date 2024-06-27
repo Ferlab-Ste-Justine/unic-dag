@@ -3,7 +3,6 @@ import logging
 from tempfile import NamedTemporaryFile
 from typing import List
 
-import pandas as pd
 import psycopg2
 from airflow.exceptions import AirflowSkipException
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
@@ -122,29 +121,17 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         psql_conn = psql.get_conn()
         with psql_conn.cursor() as cur:
             try:
-                print(create_table_query)
-                print(copy_query.as_string(cur))
-                print(upsert_on_conflict_query.as_string(cur))
                 # Create staging table
                 cur.execute(create_table_query)
-                psql_conn.commit()
                 cur.execute(sql.SQL("select * from {}").format(sql.Identifier(staging_table_name)))
-                rows = cur.fetchall()
-                print(pd.DataFrame(rows))
 
                 # Copy data to staging table
                 cur.copy_expert(copy_query, local_file)
-                psql_conn.commit()
                 cur.execute(sql.SQL("select * from {}").format(sql.Identifier(staging_table_name)))
-                rows = cur.fetchall()
-                print(pd.DataFrame(rows))
 
                 # Execute upsert
                 cur.execute(upsert_on_conflict_query)
-                psql_conn.commit()
                 cur.execute(sql.SQL("select * from {}").format(sql.Identifier(self.schema_name, self.table_name)))
-                rows = cur.fetchall()
-                print(pd.DataFrame(rows))
 
                 # Drop staging table
                 cur.execute(
