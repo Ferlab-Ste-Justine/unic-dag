@@ -82,7 +82,10 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         s3_transfer.download_fileobj(local_file)
         local_file.flush()
         local_file.seek(0)
+
         df = pd.read_csv(local_file, sep=self.csv_sep)
+        columns = df.columns.tolist()
+        update_columns = [col for col in columns if col not in self.primary_keys]
 
         # Generate create temp table query
         staging_table_name = f"{self.table_name}_staging"
@@ -91,9 +94,13 @@ class UpsertCsvToPostgres(PostgresCaOperator):
                 .replace("CREATE TABLE", "CREATE TEMP TABLE") \
                 .replace(f"{self.schema_name}.{self.table_name}", staging_table_name)
 
+        # Generate copy query
+        copy_query = sql.SQL("COPY {staging_table} ({columns}) FROM STDIN DELIMITER {sep} CSV HEADER").format(
+            staging_table=sql.Identifier(staging_table_name),
+            sep=sql.Literal(self.csv_sep),
+            columns=sql.SQL(', ').join(map(sql.Identifier, columns)))
+
         # Generate upsert query
-        columns = df.columns.tolist()
-        update_columns = [col for col in columns if col not in self.primary_keys]
 
         upsert_query = sql.SQL("""
         INSERT INTO {target_table} ({columns})
@@ -116,6 +123,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         with psql_conn.cursor() as cur:
             try:
                 print(create_table_query)
+                print(copy_query.as_string(cur))
                 print(upsert_on_conflict_query.as_string(cur))
                 # Create staging table
                 cur.execute(create_table_query)
@@ -125,11 +133,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
                 print(pd.DataFrame(rows))
 
                 # Copy data to staging table
-                cur.copy_expert(
-                    sql.SQL("COPY {staging_table} ({columns}) FROM STDIN DELIMITER {sep} CSV HEADER").format(
-                        staging_table=sql.Identifier(staging_table_name), sep=sql.Literal(self.csv_sep),
-                        columns=sql.SQL(', ').join(map(sql.Identifier, columns))),
-                    local_file)
+                cur.copy_expert(copy_query, local_file)
                 cur.execute(sql.SQL("select * from {}").format(sql.Identifier(staging_table_name)))
                 psql_conn.commit()
                 rows = cur.fetchall()
