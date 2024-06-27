@@ -1,8 +1,9 @@
-from io import BytesIO, StringIO
+import logging
 from tempfile import NamedTemporaryFile
 from typing import List
 
 import pandas as pd
+import psycopg2
 from airflow.exceptions import AirflowSkipException
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.providers.postgres.hooks.postgres import PostgresHook
@@ -98,7 +99,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         INSERT INTO {target_table} ({columns})
         SELECT {columns} FROM {staging_table}
         ON CONFLICT ({primary_keys}) DO UPDATE
-        SET {update_set}
+        SET {update_set};
         """).format(
             target_table=sql.Identifier(target_table_name),
             columns=sql.SQL(', ').join(map(sql.Identifier, columns)),
@@ -110,19 +111,30 @@ class UpsertCsvToPostgres(PostgresCaOperator):
 
         psql_conn = psql.get_conn()
         with psql_conn.cursor() as cur:
-            # Create staging table
-            cur.execute(create_table_query)
+            try:
+                print(create_table_query)
+                print(upsert_query.as_string(cur))
+                # Create staging table
+                cur.execute(create_table_query)
 
-            # Copy data to staging table
-            cur.copy_expert(sql.SQL("COPY {staging_table} FROM STDIN DELIMITER {sep} CSV HEADER").format(
-                staging_table=sql.Identifier(staging_table_name), sep=sql.Literal(self.csv_sep)), local_file)
+                # Copy data to staging table
+                cur.copy_expert(sql.SQL("COPY {staging_table} FROM STDIN DELIMITER {sep} CSV HEADER").format(
+                    staging_table=sql.Identifier(staging_table_name), sep=sql.Literal(self.csv_sep)), local_file)
 
-            # Execute upsert
-            cur.execute(upsert_query)
+                # Execute upsert
+                cur.execute(upsert_query)
 
-            # Drop staging table
-            cur.execute(sql.SQL("DROP TABLE {staging_table}").format(staging_table=sql.Identifier(staging_table_name)))
+                # Drop staging table
+                cur.execute(
+                    sql.SQL("DROP TABLE {staging_table}").format(staging_table=sql.Identifier(staging_table_name)))
 
-            psql_conn.commit()
-            cur.close()
-            psql_conn.close()
+                psql_conn.commit()
+
+            except psycopg2.DatabaseError as error:
+                psql_conn.rollback()
+                logging.error(f'Failed to upsert CSV to Postgres: {error}')
+
+            finally:
+                local_file.close()
+                cur.close()
+                psql_conn.close()
