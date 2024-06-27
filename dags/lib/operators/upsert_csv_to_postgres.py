@@ -125,8 +125,11 @@ class UpsertCsvToPostgres(PostgresCaOperator):
                 print(pd.DataFrame(rows))
 
                 # Copy data to staging table
-                cur.copy_expert(sql.SQL("COPY {staging_table} FROM STDIN DELIMITER {sep} CSV HEADER").format(
-                    staging_table=sql.Identifier(staging_table_name), sep=sql.Literal(self.csv_sep)), local_file)
+                cur.copy_expert(
+                    sql.SQL("COPY {staging_table} ({columns}) FROM STDIN DELIMITER {sep} CSV HEADER").format(
+                        staging_table=sql.Identifier(staging_table_name), sep=sql.Literal(self.csv_sep),
+                        columns=sql.SQL(', ').join(map(sql.Identifier, columns))),
+                    local_file)
                 cur.execute(sql.SQL("select * from {}").format(sql.Identifier(staging_table_name)))
                 psql_conn.commit()
                 rows = cur.fetchall()
