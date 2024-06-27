@@ -95,25 +95,29 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         # Generate upsert query
         columns = df.columns.tolist()
         update_columns = [col for col in columns if col not in self.primary_keys]
+
         upsert_query = sql.SQL("""
         INSERT INTO {target_table} ({columns})
         SELECT {columns} FROM {staging_table}
-        ON CONFLICT ({primary_keys}) DO UPDATE
-        SET {update_set};
+        ON CONFLICT ({primary_keys})
         """).format(
             target_table=sql.Identifier(target_table_name),
             columns=sql.SQL(', ').join(map(sql.Identifier, columns)),
             staging_table=sql.Identifier(staging_table_name),
             primary_keys=sql.SQL(", ").join(map(sql.Identifier, self.primary_keys)),
-            update_set=sql.SQL(", ").join(
-                sql.SQL("{col} = EXCLUDED.{col}").format(col=sql.Identifier(col)) for col in update_columns)
         )
+
+        conflict_statement = sql.SQL("DO NOTHING") if not update_columns else sql.SQL("DO UPDATE SET {set}").format(
+            set=sql.SQL(", ").join(
+                sql.SQL("{col} = EXCLUDED.{col}").format(col=sql.Identifier(col)) for col in update_columns))
+
+        upsert_on_conflict_query = upsert_query + conflict_statement
 
         psql_conn = psql.get_conn()
         with psql_conn.cursor() as cur:
             try:
                 print(create_table_query)
-                print(upsert_query.as_string(cur))
+                print(upsert_on_conflict_query.as_string(cur))
                 # Create staging table
                 cur.execute(create_table_query)
 
@@ -122,7 +126,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
                     staging_table=sql.Identifier(staging_table_name), sep=sql.Literal(self.csv_sep)), local_file)
 
                 # Execute upsert
-                cur.execute(upsert_query)
+                cur.execute(upsert_on_conflict_query)
 
                 # Drop staging table
                 cur.execute(
@@ -133,6 +137,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
             except psycopg2.DatabaseError as error:
                 psql_conn.rollback()
                 logging.error(f'Failed to upsert CSV to Postgres: {error}')
+                raise error
 
             finally:
                 local_file.close()
