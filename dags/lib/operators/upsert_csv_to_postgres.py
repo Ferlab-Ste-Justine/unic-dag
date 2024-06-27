@@ -120,6 +120,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
                 # Create staging table
                 cur.execute(create_table_query)
                 cur.execute(sql.SQL("select * from {}").format(sql.Identifier(staging_table_name)))
+                psql_conn.commit()
                 rows = cur.fetchall()
                 print(pd.DataFrame(rows))
 
@@ -127,12 +128,14 @@ class UpsertCsvToPostgres(PostgresCaOperator):
                 cur.copy_expert(sql.SQL("COPY {staging_table} FROM STDIN DELIMITER {sep} CSV HEADER").format(
                     staging_table=sql.Identifier(staging_table_name), sep=sql.Literal(self.csv_sep)), local_file)
                 cur.execute(sql.SQL("select * from {}").format(sql.Identifier(staging_table_name)))
+                psql_conn.commit()
                 rows = cur.fetchall()
                 print(pd.DataFrame(rows))
 
                 # Execute upsert
                 cur.execute(upsert_on_conflict_query)
                 cur.execute(sql.SQL("select * from {}").format(sql.Identifier(self.schema_name, self.table_name)))
+                psql_conn.commit()
                 rows = cur.fetchall()
                 print(pd.DataFrame(rows))
 
