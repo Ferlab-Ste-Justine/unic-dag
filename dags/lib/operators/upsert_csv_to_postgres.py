@@ -81,7 +81,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
 
         # Generate create temp table query
         target_table_name = f"{self.schema_name}.{self.table_name}"
-        staging_table_name = f"{self.schema_name}.{self.table_name}_staging"
+        staging_table_name = f"{self.table_name}_staging"
         with open(self.table_schema_path, 'r') as file:
             create_table_query = file.read() \
                 .replace("CREATE TABLE", "CREATE TEMP TABLE") \
