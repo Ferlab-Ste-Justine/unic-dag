@@ -7,6 +7,7 @@ from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.providers.postgres.hooks.postgres import PostgresHook
 from psycopg2 import sql
 
+from lib.config import root
 from lib.operators.postgresca import PostgresCaOperator
 
 
@@ -58,7 +59,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         self.s3_conn_id = s3_conn_id
         self.schema_name = schema_name
         self.table_name = table_name
-        self.table_schema_path = table_schema_path
+        self.table_schema_path = f"{root}/{table_schema_path}"
         self.primary_keys = primary_keys
         self.csv_sep = csv_sep
         self.postgres_conn_id = postgres_conn_id
