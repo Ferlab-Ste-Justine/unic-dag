@@ -84,7 +84,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         local_file.seek(0)
         print(local_file.read())
 
-        df = pd.read_csv(local_file, sep=self.csv_sep)
+        df = pd.read_csv(local_file, sep=self.csv_sep, header=0)
         print(df)
         columns = df.columns.tolist()
         update_columns = [col for col in columns if col not in self.primary_keys]
