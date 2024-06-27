@@ -1,4 +1,5 @@
-from io import BytesIO
+from io import BytesIO, StringIO
+from tempfile import NamedTemporaryFile
 from typing import List
 
 import pandas as pd
@@ -74,10 +75,13 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         s3 = S3Hook(aws_conn_id=self.s3_conn_id)
         psql = PostgresHook(postgres_conn_id=self.postgres_conn_id)
 
-        # Read CSV file to upsert
-        s3_response = s3.get_key(key=self.s3_key, bucket_name=self.s3_bucket)
-        csv_data = s3_response.get()['Body'].read()
-        df = pd.read_csv(BytesIO(csv_data), sep=self.csv_sep)
+        # Download CSV file to upsert
+        local_file = NamedTemporaryFile(suffix='.csv')
+        s3_transfer = s3.get_key(key=self.s3_key, bucket_name=self.s3_bucket)
+        s3_transfer.download_fileobj(local_file)
+        local_file.flush()
+        local_file.seek(0)
+        df = pd.read_csv(local_file, sep=self.csv_sep)
 
         # Generate create temp table query
         target_table_name = f"{self.schema_name}.{self.table_name}"
@@ -111,7 +115,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
 
             # Copy data to staging table
             cur.copy_expert(sql.SQL("COPY {staging_table} FROM STDIN DELIMITER {sep} CSV HEADER").format(
-                staging_table=sql.Identifier(staging_table_name), sep=sql.Literal(self.csv_sep)), csv_data)
+                staging_table=sql.Identifier(staging_table_name), sep=sql.Literal(self.csv_sep)), local_file)
 
             # Execute upsert
             cur.execute(upsert_query)
