@@ -34,7 +34,6 @@ passées en paramètre au DAG seront chargées dans la BD Postgres du Catalogue.
 * Paramètre `branch` : Branche du jar à utiliser.
 * Paramètre `tables` : Liste des tables à créer dans la base de données. Par défaut, crée toutes les tables.
 * Paramètre `project` : Nom du projet à charger. Obligatoire si `dictionary` fait partie des tables sélectionnées.
-* Paramètre `run_type` : Type d'exécution. `default` pour faire un upsert dans la BD, `initial` pour overwrite.
 
 ## Tables à charger
 * analyst : Charge la table `analyst`.
@@ -54,9 +53,7 @@ with DAG(
             "tables": Param(default=table_name_list, type=["array"], examples=table_name_list,
                             description="Tables to load."),
             "project": Param(None, type=["null", "string"],
-                             description="Required if 'dictionary' is selected in 'tables' param."),
-            "run_type": Param(default="default", type=["string"], enum=["default", "initial"],
-                              description="Initial will reset all rows related to the project, across all tables.")
+                             description="Required if 'dictionary' is selected in 'tables' param.")
         },
         default_args={
             'trigger_rule': TriggerRule.NONE_FAILED,
@@ -72,16 +69,12 @@ with DAG(
         return "{{ params.project or '' }}"
 
 
-    def get_run_type() -> str:
-        return "{{ params.run_type }}"
-
-
-    def arguments(table_name: str, app_name: str, run_type: Optional[str] = None, project_name: Optional[str] = None) -> \
+    def arguments(table_name: str, app_name: str, project_name: Optional[str] = None) -> \
             List[str]:
         args = [
             table_name,
             "--config", "config/prod.conf",
-            "--steps", run_type if run_type is not None else "default",
+            "--steps", "default",
             "--app-name", app_name
         ]
         if project_name is not None:
@@ -101,23 +94,6 @@ with DAG(
     def validate_project_param(tables: List[str], project: str):
         if "dictionary" in tables and project == "":
             raise AirflowFailException("DAG param 'project' is required when 'dictionary' table is selected.")
-
-
-    # Temp for testing
-    upsert_csv = UpsertCsvToPostgres(
-        task_id="upsert_analyst",
-        s3_bucket="yellow-prd",
-        s3_key="catalog/csv/output/analyst.csv",
-        s3_conn_id=yellow_minio_conn_id,
-        postgres_conn_id=postgres_vlan2_conn_id,
-        postgres_ca_path=postgres_vlan2_ca_path,
-        postgres_ca_filename=postgres_ca_filename,
-        postgres_ca_cert=postgres_vlan2_ca_cert,
-        schema_name="catalog",
-        table_name="analyst",
-        table_schema_path="sql/catalog/tables/analyst.sql",
-        primary_keys=["name"]
-    )
 
 
     @task_group(group_id="excel_to_csv")
@@ -144,81 +120,125 @@ with DAG(
         excel_to_csv_task("resource")
         excel_to_csv_task("dictionary",
                           s3_source_key=f"catalog/dictionary_{get_project()}.xlsx",
-                          s3_destination_key=f"catalog/csv/{get_project()}/dictionary.csv",
+                          s3_destination_key=f"catalog/csv/input/{get_project()}/dictionary.csv",
                           sheet_name="dictionary")
         excel_to_csv_task("dict_table",
                           s3_source_key=f"catalog/dictionary_{get_project()}.xlsx",
-                          s3_destination_key=f"catalog/csv/{get_project()}/dict_table.csv",
+                          s3_destination_key=f"catalog/csv/input/{get_project()}/dict_table.csv",
                           sheet_name="dict_table")
         excel_to_csv_task("variable",
                           s3_source_key=f"catalog/dictionary_{get_project()}.xlsx",
-                          s3_destination_key=f"catalog/csv/{get_project()}/variable.csv",
+                          s3_destination_key=f"catalog/csv/input/{get_project()}/variable.csv",
                           sheet_name="variable")
         excel_to_csv_task("value_set",
                           s3_source_key=f"catalog/dictionary_{get_project()}.xlsx",
-                          s3_destination_key=f"catalog/csv/{get_project()}/value_set.csv",
+                          s3_destination_key=f"catalog/csv/input/{get_project()}/value_set.csv",
                           sheet_name="value_set")
         excel_to_csv_task("value_set_code",
                           s3_source_key=f"catalog/dictionary_{get_project()}.xlsx",
-                          s3_destination_key=f"catalog/csv/{get_project()}/value_set_code.csv",
+                          s3_destination_key=f"catalog/csv/input/{get_project()}/value_set_code.csv",
                           sheet_name="value_set_code")
         excel_to_csv_task("mapping",
                           s3_source_key=f"catalog/dictionary_{get_project()}.xlsx",
-                          s3_destination_key=f"catalog/csv/{get_project()}/mapping.csv",
+                          s3_destination_key=f"catalog/csv/input/{get_project()}/mapping.csv",
                           sheet_name="mapping")
+
+
+    @task_group(group_id="prepare_tables")
+    def prepare_tables_group():
+        def prepare_table(table_name: str, cluster_size: str, project_name: Optional[str] = None) -> SparkOperator:
+            if project_name:
+                args = arguments(table_name, app_name=f"prepare_{table_name}_table_for_{project_name}",
+                                 project_name=project_name)
+
+            else:
+                args = arguments(table_name, app_name=f"prepare_{table_name}_table")
+
+            return SparkOperator(
+                task_id=f"prepare_{table_name}_table",
+                name=f"prepare-{table_name}-table",
+                arguments=args,
+                zone=ZONE,
+                spark_class=MAIN_CLASS,
+                spark_jar=jar,
+                spark_failure_msg=spark_failure_msg,
+                spark_config=cluster_size,
+                skip=skip_task(table_name),
+                dag=dag
+            )
+
+        prepare_analyst_table_task = prepare_table("analyst", cluster_size="xsmall-etl")
+        prepare_resource_table_task = prepare_table("resource", cluster_size="xsmall-etl")
+
+        @task_group(group_id="prepare_project_tables")
+        def prepare_project_tables():
+            prepare_dictionary_table_task = prepare_table("dictionary", cluster_size="xsmall-etl",
+                                                          project_name=get_project())
+            prepare_value_set_table_task = prepare_table("value_set", cluster_size="xsmall-etl",
+                                                         project_name=get_project())
+            prepare_dict_table_table_task = prepare_table("dict_table", cluster_size="xsmall-etl",
+                                                          project_name=get_project())
+            prepare_value_set_code_table_task = prepare_table("value_set_code", cluster_size="small-etl",
+                                                              project_name=get_project())
+            prepare_variable_table_task = prepare_table("variable", cluster_size="small-etl",
+                                                        project_name=get_project())
+            prepare_mapping_table_task = prepare_table("mapping", cluster_size="small-etl",
+                                                       project_name=get_project())
+
+            prepare_dictionary_table_task >> prepare_dict_table_table_task
+            prepare_value_set_table_task >> prepare_value_set_code_table_task
+            prepare_value_set_code_table_task >> prepare_mapping_table_task
+            [prepare_dict_table_table_task, prepare_value_set_table_task] >> prepare_variable_table_task
+
+        prepare_analyst_table_task >> prepare_resource_table_task >> prepare_project_tables()
 
 
     @task_group(group_id="load_tables")
     def load_tables_group():
-        def load_table(table_name: str, cluster_size: str) -> SparkOperator:
-            return SparkOperator(
+        def load_table(table_name: str, s3_key: str, primary_keys: List[str]):
+            return UpsertCsvToPostgres(
                 task_id=f"load_{table_name}_table",
-                name=f"load-{table_name}-table",
-                arguments=arguments(table_name, app_name=f"load_{table_name}_table"),
-                zone=ZONE,
-                spark_class=MAIN_CLASS,
-                spark_jar=jar,
-                spark_failure_msg=spark_failure_msg,
-                spark_config=cluster_size,
-                skip=skip_task(table_name),
-                dag=dag
+                s3_bucket="yellow-prd",
+                s3_key=s3_key,
+                s3_conn_id=yellow_minio_conn_id,
+                postgres_conn_id=postgres_vlan2_conn_id,
+                postgres_ca_path=postgres_vlan2_ca_path,
+                postgres_ca_filename=postgres_ca_filename,
+                postgres_ca_cert=postgres_vlan2_ca_cert,
+                schema_name="catalog",
+                table_name=table_name,
+                table_schema_path=f"sql/catalog/tables/{table_name}.sql",
+                primary_keys=primary_keys,
+                skip=skip_task(table_name)
             )
 
-        load_analyst_table_task = load_table("analyst", cluster_size="xsmall-etl")
-        load_resource_table_task = load_table("resource", cluster_size="xsmall-etl")
-
-        def load_project_table(table_name: str, cluster_size: str, project_name: Optional[str],
-                               run_type: Optional[str] = None) -> SparkOperator:
-            return SparkOperator(
-                task_id=f"load_{table_name}_table",
-                name=f"load-{table_name}-table",
-                arguments=arguments(table_name, app_name=f"load_{table_name}_table_for_{get_project()}",
-                                    run_type=run_type,
-                                    project_name=project_name),
-                zone=ZONE,
-                spark_class=MAIN_CLASS,
-                spark_jar=jar,
-                spark_failure_msg=spark_failure_msg,
-                spark_config=cluster_size,
-                skip=skip_task(table_name),
-                dag=dag
-            )
+        load_analyst_table_task = load_table("analyst",
+                                             s3_key="catalog/csv/output/analyst.csv",
+                                             primary_keys=["name"])
+        load_resource_table_task = load_table("resource",
+                                              s3_key="catalog/csv/output/resource.csv",
+                                              primary_keys=["code"])
 
         @task_group(group_id="load_project_tables")
         def load_project_tables():
-            load_dictionary_table_task = load_project_table("dictionary", cluster_size="xsmall-etl",
-                                                            run_type=get_run_type(), project_name=get_project())
-            load_value_set_table_task = load_project_table("value_set", cluster_size="xsmall-etl",
-                                                           run_type=get_run_type(),
-                                                           project_name=get_project())
-            load_dict_table_table_task = load_project_table("dict_table", cluster_size="xsmall-etl",
-                                                            project_name=get_project())
-            load_value_set_code_table_task = load_project_table("value_set_code", cluster_size="small-etl",
-                                                                project_name=get_project())
-            load_variable_table_task = load_project_table("variable", cluster_size="small-etl",
-                                                          project_name=get_project())
-            load_mapping_table_task = load_project_table("mapping", cluster_size="small-etl",
-                                                         project_name=get_project())
+            load_dictionary_table_task = load_table("dictionary",
+                                                    s3_key=f"catalog/csv/output/{get_project()}/dictionary.csv",
+                                                    primary_keys=["resource_id"])
+            load_dict_table_table_task = load_table("dict_table",
+                                                    s3_key=f"catalog/csv/output/{get_project()}/dict_table.csv",
+                                                    primary_keys=["dictionary_id", "name"])
+            load_variable_table_task = load_table("variable",
+                                                  s3_key=f"catalog/csv/output/{get_project()}/variable.csv",
+                                                  primary_keys=["path"])
+            load_value_set_table_task = load_table("value_set",
+                                                   s3_key=f"catalog/csv/output/{get_project()}/value_set.csv",
+                                                   primary_keys=["name"])
+            load_value_set_code_table_task = load_table("value_set_code",
+                                                        s3_key=f"catalog/csv/output/{get_project()}/value_set_code.csv",
+                                                        primary_keys=["value_set_id", "code"])
+            load_mapping_table_task = load_table("mapping",
+                                                 s3_key=f"catalog/csv/output/{get_project()}/mapping.csv",
+                                                 primary_keys=["value_set_code_id", "original_value"])
 
             load_dictionary_table_task >> load_dict_table_table_task
             load_value_set_table_task >> load_value_set_code_table_task
@@ -230,7 +250,7 @@ with DAG(
 
     get_tables_task = get_tables()
     start() >> get_tables_task >> validate_project_param(tables=get_tables_task, project=get_project()) \
-    >> upsert_csv \
     >> excel_to_csv_group() \
+    >> prepare_tables_group() \
     >> load_tables_group() \
     >> end()
