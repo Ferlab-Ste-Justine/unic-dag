@@ -104,7 +104,7 @@ with DAG(
                 s3_source_key = f"catalog/{table_name}.xlsx"
 
             if s3_destination_key is None:
-                s3_destination_key = f"catalog/csv/{table_name}.csv"
+                s3_destination_key = f"catalog/csv/input/{table_name}.csv"
 
             return excel_to_csv.override(task_id=f"excel_to_csv_{table_name}")(
                 s3_source_bucket=YELLOW_BUCKET,
@@ -213,31 +213,31 @@ with DAG(
             )
 
         load_analyst_table_task = load_table("analyst",
-                                             s3_key="catalog/csv/output/analyst.csv",
+                                             s3_key="catalog/csv/output/analyst/analyst.csv",
                                              primary_keys=["name"])
         load_resource_table_task = load_table("resource",
-                                              s3_key="catalog/csv/output/resource.csv",
+                                              s3_key="catalog/csv/output/resource/resource.csv",
                                               primary_keys=["code"])
 
         @task_group(group_id="load_project_tables")
         def load_project_tables():
             load_dictionary_table_task = load_table("dictionary",
-                                                    s3_key=f"catalog/csv/output/{get_project()}/dictionary.csv",
+                                                    s3_key=f"catalog/csv/output/{get_project()}/dictionary/dictionary.csv",
                                                     primary_keys=["resource_id"])
             load_dict_table_table_task = load_table("dict_table",
-                                                    s3_key=f"catalog/csv/output/{get_project()}/dict_table.csv",
+                                                    s3_key=f"catalog/csv/output/{get_project()}/dict_table/dict_table.csv",
                                                     primary_keys=["dictionary_id", "name"])
             load_variable_table_task = load_table("variable",
-                                                  s3_key=f"catalog/csv/output/{get_project()}/variable.csv",
+                                                  s3_key=f"catalog/csv/output/{get_project()}/variable/variable.csv",
                                                   primary_keys=["path"])
             load_value_set_table_task = load_table("value_set",
-                                                   s3_key=f"catalog/csv/output/{get_project()}/value_set.csv",
+                                                   s3_key=f"catalog/csv/output/{get_project()}/value_set/value_set.csv",
                                                    primary_keys=["name"])
             load_value_set_code_table_task = load_table("value_set_code",
-                                                        s3_key=f"catalog/csv/output/{get_project()}/value_set_code.csv",
+                                                        s3_key=f"catalog/csv/output/{get_project()}/value_set_code/value_set_code.csv",
                                                         primary_keys=["value_set_id", "code"])
             load_mapping_table_task = load_table("mapping",
-                                                 s3_key=f"catalog/csv/output/{get_project()}/mapping.csv",
+                                                 s3_key=f"catalog/csv/output/{get_project()}/mapping/mapping.csv",
                                                  primary_keys=["value_set_code_id", "original_value"])
 
             load_dictionary_table_task >> load_dict_table_table_task
