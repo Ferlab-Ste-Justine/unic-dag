@@ -203,5 +203,9 @@ def excel_to_csv(s3_source_bucket: str, s3_source_key: str,
     excel_data = s3_response.get()['Body'].read()
     df = pd.read_excel(io=BytesIO(excel_data), sheet_name=sheet_name, header=header)
 
-    csv_data = df.to_csv(index=False)  # Remove the DataFrame index column
+    # Trim string columns
+    df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
+
+    # Remove the DataFrame index column + escape quotes with \ when converting to CSV
+    csv_data = df.to_csv(index=False, escapechar="\\")
     s3.load_string(string_data=csv_data, key=s3_destination_key, bucket_name=s3_destination_bucket, replace=True)
