@@ -205,7 +205,7 @@ def excel_to_csv(s3_source_bucket: str, s3_source_key: str,
 
     # Trim string columns and remove new lines
     df = df.applymap(lambda x: x.strip() if isinstance(x, str) else x)
-    df = df.replace(to_replace=[r"\\t|\\n|\\r", "\t|\n|\r"], value=["", ""], regex=True, inplace=True)
+    df.replace(to_replace=[r"\\t|\\n|\\r", "\t|\n|\r"], value=["", ""], regex=True, inplace=True)
 
     # Remove the DataFrame index column + escape quotes with \ when converting to CSV
     csv_data = df.to_csv(index=False, escapechar="\\")
