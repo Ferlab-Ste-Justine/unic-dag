@@ -1,5 +1,6 @@
 import csv
 import logging
+import re
 from tempfile import NamedTemporaryFile
 from typing import List
 
@@ -92,6 +93,9 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         with open(self.table_schema_path, 'r') as file:
             create_table_query = file.read() \
                 .replace(f"CREATE TABLE IF NOT EXISTS {self.schema_name}.{self.table_name}", f"CREATE TEMP TABLE {staging_table_name}")
+
+            # Remove foreign table constraints
+            create_table_query = re.sub(r"REFERENCES\s*\w+\.\w+\s*\(\w+\)", "", create_table_query)
 
         # Generate copy query
         copy_query = sql.SQL("COPY {staging_table} ({columns}) FROM STDIN DELIMITER {sep} CSV HEADER").format(
