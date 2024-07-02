@@ -91,8 +91,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         staging_table_name = f"{self.table_name}_staging"
         with open(self.table_schema_path, 'r') as file:
             create_table_query = file.read() \
-                .replace("CREATE TABLE", "CREATE TEMP TABLE") \
-                .replace(f"{self.schema_name}.{self.table_name}", staging_table_name)
+                .replace(f"CREATE TABLE IF NOT EXISTS {self.schema_name}.{self.table_name}", f"CREATE TEMP TABLE {staging_table_name}")
 
         # Generate copy query
         copy_query = sql.SQL("COPY {staging_table} ({columns}) FROM STDIN DELIMITER {sep} CSV HEADER").format(
