@@ -7,7 +7,7 @@ CREATE TABLE IF NOT EXISTS catalog.resource
     last_update                     TIMESTAMP                  NOT NULL DEFAULT NOW(),
     code                            VARCHAR(50) UNIQUE         NOT NULL,
     name                            VARCHAR(255)               NOT NULL,
-    title                           VARCHAR(255),
+    title                           VARCHAR(500),
     resource_type                   catalog.resource_type_enum NOT NULL,
     description_en                  VARCHAR(1000)              NOT NULL,
     description_fr                  VARCHAR(1000)              NOT NULL,
