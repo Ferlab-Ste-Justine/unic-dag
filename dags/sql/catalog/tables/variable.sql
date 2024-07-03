@@ -13,7 +13,7 @@ CREATE TABLE IF NOT EXISTS catalog.variable
     label_en             VARCHAR(255),
     value_set_id         INTEGER REFERENCES catalog.value_set (id),
     from_variable_id     INTEGER[],
-    derivation_algorithm VARCHAR(500),
+    derivation_algorithm TEXT,
     notes                VARCHAR(255),
     variable_status      catalog.status_enum,
     rolling_version      catalog.rolling_version_enum               NOT NULL,
