@@ -149,8 +149,8 @@ with DAG(
                           sheet_name="mapping")
 
 
-    @task_group(group_id="prepare_tables")
-    def prepare_tables_group():
+    @task_group(group_id="load_tables")
+    def load_tables_group():
         def prepare_table(table_name: str, cluster_size: str, project_name: Optional[str] = None) -> SparkOperator:
             if project_name:
                 args = arguments(table_name, app_name=f"prepare_{table_name}_table_for_{project_name}",
@@ -172,34 +172,6 @@ with DAG(
                 dag=dag
             )
 
-        prepare_analyst_table_task = prepare_table("analyst", cluster_size="xsmall-etl")
-        prepare_resource_table_task = prepare_table("resource", cluster_size="xsmall-etl")
-
-        @task_group(group_id="prepare_project_tables")
-        def prepare_project_tables():
-            prepare_dictionary_table_task = prepare_table("dictionary", cluster_size="xsmall-etl",
-                                                          project_name=get_project())
-            prepare_value_set_table_task = prepare_table("value_set", cluster_size="xsmall-etl",
-                                                         project_name=get_project())
-            prepare_dict_table_table_task = prepare_table("dict_table", cluster_size="xsmall-etl",
-                                                          project_name=get_project())
-            prepare_value_set_code_table_task = prepare_table("value_set_code", cluster_size="small-etl",
-                                                              project_name=get_project())
-            prepare_variable_table_task = prepare_table("variable", cluster_size="small-etl",
-                                                        project_name=get_project())
-            prepare_mapping_table_task = prepare_table("mapping", cluster_size="small-etl",
-                                                       project_name=get_project())
-
-            prepare_dictionary_table_task >> prepare_dict_table_table_task
-            prepare_value_set_table_task >> prepare_value_set_code_table_task
-            prepare_value_set_code_table_task >> prepare_mapping_table_task
-            [prepare_dict_table_table_task, prepare_value_set_table_task] >> prepare_variable_table_task
-
-        prepare_analyst_table_task >> prepare_resource_table_task >> prepare_project_tables()
-
-
-    @task_group(group_id="load_tables")
-    def load_tables_group():
         def load_table(table_name: str, s3_key: str, primary_keys: List[str]):
             return UpsertCsvToPostgres(
                 task_id=f"load_{table_name}_table",
@@ -217,45 +189,83 @@ with DAG(
                 skip=skip_task(table_name)
             )
 
+        # analyst table
+        prepare_analyst_table_task = prepare_table("analyst", cluster_size="xsmall-etl")
         load_analyst_table_task = load_table("analyst",
                                              s3_key="catalog/csv/output/analyst/analyst.csv",
                                              primary_keys=["name"])
+
+        prepare_analyst_table_task >> load_analyst_table_task
+
+        # resource table
+        prepare_resource_table_task = prepare_table("resource", cluster_size="xsmall-etl")
         load_resource_table_task = load_table("resource",
                                               s3_key="catalog/csv/output/resource/resource.csv",
                                               primary_keys=["code"])
 
+        prepare_resource_table_task >> load_resource_table_task
+        load_analyst_table_task >> prepare_resource_table_task
+
         @task_group(group_id="load_project_tables")
         def load_project_tables():
+            # dictionary table
+            prepare_dictionary_table_task = prepare_table("dictionary", cluster_size="xsmall-etl",
+                                                          project_name=get_project())
             load_dictionary_table_task = load_table("dictionary",
                                                     s3_key=f"catalog/csv/output/{get_project()}/dictionary/dictionary.csv",
                                                     primary_keys=["resource_id"])
-            load_dict_table_table_task = load_table("dict_table",
-                                                    s3_key=f"catalog/csv/output/{get_project()}/dict_table/dict_table.csv",
-                                                    primary_keys=["dictionary_id", "name"])
-            load_variable_table_task = load_table("variable",
-                                                  s3_key=f"catalog/csv/output/{get_project()}/variable/variable.csv",
-                                                  primary_keys=["path"])
+
+            # value_set table
+            prepare_value_set_table_task = prepare_table("value_set", cluster_size="xsmall-etl",
+                                                         project_name=get_project())
             load_value_set_table_task = load_table("value_set",
                                                    s3_key=f"catalog/csv/output/{get_project()}/value_set/value_set.csv",
                                                    primary_keys=["name"])
+
+            # dict_table table
+            prepare_dict_table_table_task = prepare_table("dict_table", cluster_size="xsmall-etl",
+                                                          project_name=get_project())
+            load_dict_table_table_task = load_table("dict_table",
+                                                    s3_key=f"catalog/csv/output/{get_project()}/dict_table/dict_table.csv",
+                                                    primary_keys=["dictionary_id", "name"])
+
+            # value_set_code table
+            prepare_value_set_code_table_task = prepare_table("value_set_code", cluster_size="small-etl",
+                                                              project_name=get_project())
             load_value_set_code_table_task = load_table("value_set_code",
                                                         s3_key=f"catalog/csv/output/{get_project()}/value_set_code/value_set_code.csv",
                                                         primary_keys=["value_set_id", "code"])
+
+            prepare_variable_table_task = prepare_table("variable", cluster_size="small-etl",
+                                                        project_name=get_project())
+            load_variable_table_task = load_table("variable",
+                                                  s3_key=f"catalog/csv/output/{get_project()}/variable/variable.csv",
+                                                  primary_keys=["path"])
+
+            # mapping table
+            prepare_mapping_table_task = prepare_table("mapping", cluster_size="small-etl",
+                                                       project_name=get_project())
             load_mapping_table_task = load_table("mapping",
                                                  s3_key=f"catalog/csv/output/{get_project()}/mapping/mapping.csv",
                                                  primary_keys=["value_set_code_id", "original_value"])
 
-            load_dictionary_table_task >> load_dict_table_table_task
-            load_value_set_table_task >> load_value_set_code_table_task
-            load_value_set_code_table_task >> load_mapping_table_task
-            [load_dict_table_table_task, load_value_set_table_task] >> load_variable_table_task
+            prepare_dictionary_table_task >> load_dictionary_table_task
+            prepare_value_set_table_task >> load_value_set_table_task
+            prepare_dict_table_table_task >> load_dict_table_table_task
+            prepare_value_set_code_table_task >> load_value_set_code_table_task
+            prepare_variable_table_task >> load_variable_table_task
+            prepare_mapping_table_task >> load_mapping_table_task
 
-        load_analyst_table_task >> load_resource_table_task >> load_project_tables()
+            load_dictionary_table_task >> prepare_dict_table_table_task
+            load_value_set_table_task >> prepare_value_set_code_table_task
+            load_value_set_code_table_task >> prepare_mapping_table_task
+            [load_dict_table_table_task, load_value_set_table_task] >> prepare_variable_table_task
+
+        load_resource_table_task >> load_project_tables()
 
 
     get_tables_task = get_tables()
     start() >> get_tables_task >> validate_project_param(tables=get_tables_task, project=get_project()) \
     >> excel_to_csv_group() \
-    >> prepare_tables_group() \
     >> load_tables_group() \
     >> end()
