@@ -5,7 +5,7 @@ CREATE TABLE IF NOT EXISTS catalog.resource
 (
     id                              SERIAL PRIMARY KEY,
     last_update                     TIMESTAMP                  NOT NULL DEFAULT NOW(),
-    code                            VARCHAR(20) UNIQUE         NOT NULL,
+    code                            VARCHAR(50) UNIQUE         NOT NULL,
     name                            VARCHAR(255)               NOT NULL,
     title                           VARCHAR(255),
     resource_type                   catalog.resource_type_enum NOT NULL,
