@@ -2,7 +2,7 @@ import csv
 import logging
 import re
 from tempfile import NamedTemporaryFile
-from typing import List
+from typing import List, Sequence
 
 import psycopg2
 from airflow.exceptions import AirflowSkipException
@@ -33,6 +33,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
     :param skip:                True to skip the task, defaults to False (task is not skipped)
     :return:
     """
+    template_fields: Sequence[str] = (*PostgresCaOperator.template_fields, 's3_key')
 
     def __init__(
             self,
@@ -92,7 +93,8 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         staging_table_name = f"{self.table_name}_staging"
         with open(self.table_schema_path, 'r') as file:
             create_table_query = file.read() \
-                .replace(f"CREATE TABLE IF NOT EXISTS {self.schema_name}.{self.table_name}", f"CREATE TEMP TABLE {staging_table_name}")
+                .replace(f"CREATE TABLE IF NOT EXISTS {self.schema_name}.{self.table_name}",
+                         f"CREATE TEMP TABLE {staging_table_name}")
 
             # Remove foreign table constraints
             create_table_query = re.sub(r"REFERENCES\s*\w+\.\w+\s*\(\w+\)", "", create_table_query)
