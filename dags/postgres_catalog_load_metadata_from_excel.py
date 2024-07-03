@@ -33,18 +33,23 @@ passées en paramètre au DAG seront chargées dans la BD Postgres du Catalogue.
 ### Configuration
 * Paramètre `branch` : Branche du jar à utiliser.
 * Paramètre `tables` : Liste des tables à créer dans la base de données. Par défaut, crée toutes les tables.
-* Paramètre `project` : Nom du projet à charger. Obligatoire si `dictionary` fait partie des tables sélectionnées.
+* Paramètre `project` : Nom du projet à charger. Obligatoire si `dictionary`, `dict_table`, `value_set`, `value_set_code`, `variable` ou `mapping` font partie des tables sélectionnées.
 
 ## Tables à charger
 * analyst : Charge la table `analyst`.
 * resource : Charge la table `resource`.
-* dictionary : Charge les lignes associées au projet passé en paramètre dans les tables `dictionary`, `dict_table`, 
-`value_set`, `value_set_code`, `variable`, `mapping`.  
+* dictionary : Charge la table `dictionary`. 
+* dict_table : Charge la table `dict_table`.
+* value_set : Charge la table `value_set`.
+* value_set_code : Charge la table `value_set_code`.
+* variable : Charge la table `variable`.
+* mapping : Charge la table `mapping`.
 """
 ZONE = "yellow"
 MAIN_CLASS = "bio.ferlab.ui.etl.catalog.csv.Main"
 YELLOW_BUCKET = "yellow-prd"
-table_name_list = ["resource", "analyst", "dictionary"]
+table_name_list = ["resource", "analyst", "dictionary", "dict_table", "value_set", "value_set_code", "variable",
+                   "mapping"]
 
 with DAG(
         dag_id="postgres_catalog_load_metadata_from_excel",
@@ -53,7 +58,7 @@ with DAG(
             "tables": Param(default=table_name_list, type=["array"], examples=table_name_list,
                             description="Tables to load."),
             "project": Param(None, type=["null", "string"],
-                             description="Required if 'dictionary' is selected in 'tables' param.")
+                             description="Required if 'dictionary', 'dict_table', 'value_set', 'value_set_code', 'variable' or 'mapping' are selected in 'tables' param.")
         },
         default_args={
             'trigger_rule': TriggerRule.NONE_FAILED,
@@ -78,7 +83,7 @@ with DAG(
             "--app-name", app_name
         ]
         if project_name is not None:
-            args.append("--project-name")
+            args.append("--project")
             args.append(project_name)
 
         return args
