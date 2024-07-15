@@ -11,8 +11,8 @@ CREATE TABLE IF NOT EXISTS catalog.resource
     resource_type                   catalog.resource_type_enum NOT NULL,
     description_en                  VARCHAR(1000)              NOT NULL,
     description_fr                  VARCHAR(1000)              NOT NULL,
-    principal_investigator          VARCHAR(500),
-    erb_project_id                  VARCHAR(255),
+    project_principal_investigator  VARCHAR(500),
+    project_erb_id                  VARCHAR(255),
     project_creation_date           DATE,
     project_status                  catalog.project_status_enum,
     project_approved                BOOLEAN,
@@ -21,6 +21,7 @@ CREATE TABLE IF NOT EXISTS catalog.resource
     project_completion_date         DATE,
     to_be_published                 BOOLEAN                    NOT NULL,
     system_database_type            VARCHAR(255),
-    analyst_id                      INTEGER REFERENCES catalog.analyst (id),
-    system_collection_starting_year INTEGER
+    project_analyst_id              INTEGER REFERENCES catalog.analyst (id),
+    system_collection_starting_year INTEGER,
+    dict_current_version            INTEGER
 );
