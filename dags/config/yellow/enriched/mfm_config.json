@@ -78,7 +78,7 @@
         {"dataset_id":"published_mfm_baby_information"                                  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"published_mfm_basic_pregnancy_information"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"published_mfm_birth"                                             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"published_mfm_family_medical_history"                            , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_family_medical_history"                            , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"published_mfm_first_trimester_prenatal_ultrasound"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"published_mfm_labour_and_delivery"                               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"published_mfm_maternal_and_pregnancy_complications"              , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
