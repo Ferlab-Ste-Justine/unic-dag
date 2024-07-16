@@ -33,12 +33,11 @@ passées en paramètre au DAG seront chargées dans la BD Postgres du Catalogue.
 ### Configuration
 * Paramètre `branch` : Branche du jar à utiliser.
 * Paramètre `tables` : Liste des tables à créer dans la base de données. Par défaut, crée toutes les tables.
-* Paramètre `project` : Nom du projet à charger. Obligatoire si `dictionary`, `dict_table`, `value_set`, `value_set_code`, `variable` ou `mapping` font partie des tables sélectionnées.
+* Paramètre `project` : Nom du projet à charger. Obligatoire si `dict_table`, `value_set`, `value_set_code`, `variable` ou `mapping` font partie des tables sélectionnées.
 
 ## Tables à charger
 * analyst : Charge la table `analyst`.
 * resource : Charge la table `resource`.
-* dictionary : Charge la table `dictionary`. 
 * dict_table : Charge la table `dict_table`.
 * value_set : Charge la table `value_set`.
 * value_set_code : Charge la table `value_set_code`.
@@ -48,8 +47,7 @@ passées en paramètre au DAG seront chargées dans la BD Postgres du Catalogue.
 ZONE = "yellow"
 MAIN_CLASS = "bio.ferlab.ui.etl.catalog.csv.Main"
 YELLOW_BUCKET = "yellow-prd"
-table_name_list = ["resource", "analyst", "dictionary", "dict_table", "value_set", "value_set_code", "variable",
-                   "mapping"]
+table_name_list = ["resource", "analyst", "dict_table", "value_set", "value_set_code", "variable", "mapping"]
 
 with DAG(
         dag_id="postgres_catalog_load_metadata_from_excel",
@@ -58,7 +56,7 @@ with DAG(
             "tables": Param(default=table_name_list, type=["array"], examples=table_name_list,
                             description="Tables to load."),
             "project": Param(None, type=["null", "string"],
-                             description="Required if 'dictionary', 'dict_table', 'value_set', 'value_set_code', 'variable' or 'mapping' are selected in 'tables' param.")
+                             description="Required if 'dict_table', 'value_set', 'value_set_code', 'variable' or 'mapping' are selected in 'tables' param.")
         },
         default_args={
             'trigger_rule': TriggerRule.NONE_FAILED,
@@ -97,20 +95,16 @@ with DAG(
 
     @task(task_id="validate_project_param")
     def validate_project_param(tables: List[str], project: str):
-        if "dictionary" in tables and project == "":
-            raise AirflowFailException("DAG param 'project' is required when 'dictionary' table is selected.")
+        if any(table in tables for table in
+               ["dict_table", "value_set", "value_set_code", "variable", "mapping"]) and project == "":
+            raise AirflowFailException(
+                "DAG param 'project' is required when tables other than 'resource' and 'analyst' are selected.")
 
 
     @task_group(group_id="excel_to_csv")
     def excel_to_csv_group():
         def excel_to_csv_task(table_name: str, s3_source_key: Optional[str] = None,
                               s3_destination_key: Optional[str] = None, sheet_name: Union[str, int] = 0):
-            if s3_source_key is None:
-                s3_source_key = f"catalog/{table_name}.xlsx"
-
-            if s3_destination_key is None:
-                s3_destination_key = f"catalog/csv/input/{table_name}.csv"
-
             return excel_to_csv.override(task_id=f"excel_to_csv_{table_name}")(
                 s3_source_bucket=YELLOW_BUCKET,
                 s3_source_key=s3_source_key,
@@ -121,12 +115,12 @@ with DAG(
                 skip=skip_task(table_name)
             )
 
-        excel_to_csv_task("analyst")
-        excel_to_csv_task("resource")
-        excel_to_csv_task("dictionary",
-                          s3_source_key=f"catalog/dictionary_{get_project()}.xlsx",
-                          s3_destination_key=f"catalog/csv/input/{get_project()}/dictionary.csv",
-                          sheet_name="dictionary")
+        excel_to_csv_task("analyst",
+                          s3_source_key="catalog/analyst.xlsx",
+                          s3_destination_key="catalog/csv/output/analyst.csv")  # Directly put analyst in output directory since no transformations have to be run by the ETL
+        excel_to_csv_task("resource",
+                          s3_source_key="catalog/resource.xlsx",
+                          s3_destination_key="catalog/csv/input/resource.csv")
         excel_to_csv_task("dict_table",
                           s3_source_key=f"catalog/dictionary_{get_project()}.xlsx",
                           s3_destination_key=f"catalog/csv/input/{get_project()}/dict_table.csv",
@@ -189,13 +183,10 @@ with DAG(
                 skip=skip_task(table_name)
             )
 
-        # analyst table
-        prepare_analyst_table_task = prepare_table("analyst", cluster_size="xsmall-etl")
+        # analyst table (directly loaded since no transformations have to be run by the ETL)
         load_analyst_table_task = load_table("analyst",
                                              s3_key="catalog/csv/output/analyst/analyst.csv",
                                              primary_keys=["name"])
-
-        prepare_analyst_table_task >> load_analyst_table_task
 
         # resource table
         prepare_resource_table_task = prepare_table("resource", cluster_size="xsmall-etl")
@@ -208,13 +199,6 @@ with DAG(
 
         @task_group(group_id="load_project_tables")
         def load_project_tables():
-            # dictionary table
-            prepare_dictionary_table_task = prepare_table("dictionary", cluster_size="xsmall-etl",
-                                                          project_name=get_project())
-            load_dictionary_table_task = load_table("dictionary",
-                                                    s3_key=f"catalog/csv/output/{get_project()}/dictionary/dictionary.csv",
-                                                    primary_keys=["resource_id"])
-
             # value_set table
             prepare_value_set_table_task = prepare_table("value_set", cluster_size="xsmall-etl",
                                                          project_name=get_project())
@@ -227,7 +211,7 @@ with DAG(
                                                           project_name=get_project())
             load_dict_table_table_task = load_table("dict_table",
                                                     s3_key=f"catalog/csv/output/{get_project()}/dict_table/dict_table.csv",
-                                                    primary_keys=["dictionary_id", "name"])
+                                                    primary_keys=["resource_id", "name"])
 
             # value_set_code table
             prepare_value_set_code_table_task = prepare_table("value_set_code", cluster_size="small-etl",
@@ -249,14 +233,13 @@ with DAG(
                                                  s3_key=f"catalog/csv/output/{get_project()}/mapping/mapping.csv",
                                                  primary_keys=["value_set_code_id", "original_value"])
 
-            prepare_dictionary_table_task >> load_dictionary_table_task
             prepare_value_set_table_task >> load_value_set_table_task
             prepare_dict_table_table_task >> load_dict_table_table_task
             prepare_value_set_code_table_task >> load_value_set_code_table_task
             prepare_variable_table_task >> load_variable_table_task
             prepare_mapping_table_task >> load_mapping_table_task
 
-            load_dictionary_table_task >> prepare_dict_table_table_task
+            load_resource_table_task >> prepare_dict_table_table_task
             load_value_set_table_task >> prepare_value_set_code_table_task
             load_value_set_code_table_task >> prepare_mapping_table_task
             [load_dict_table_table_task, load_value_set_table_task] >> prepare_variable_table_task
