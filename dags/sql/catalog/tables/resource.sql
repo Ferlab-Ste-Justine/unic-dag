@@ -23,5 +23,5 @@ CREATE TABLE IF NOT EXISTS catalog.resource
     system_database_type            VARCHAR(255),
     project_analyst_id              INTEGER REFERENCES catalog.analyst (id),
     system_collection_starting_year INTEGER,
-    dict_current_version            INTEGER
+    dict_current_version            VARCHAR(255)
 );
