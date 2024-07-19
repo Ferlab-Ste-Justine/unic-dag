@@ -32,8 +32,8 @@ CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
 args = default_args.copy()
 args.update({
     'provide_context': True,
-    'depends_on_past': True,
-    'wait_for_downstream': True})
+    'depends_on_past': False,
+    'wait_for_downstream': False})
 
 dag = DAG(
     dag_id="curated_softpath_hl7",
