@@ -45,8 +45,8 @@ dag = DAG(
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
-    max_active_runs=3,
-    max_active_tasks=5,
+    max_active_runs=15,
+    max_active_tasks=10,
     tags=["curated"]
 )
 
