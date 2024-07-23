@@ -74,21 +74,31 @@ dag = DAG(
 )
 
 
-def generate_spark_arguments(destination: str, steps: str = "default", etl_version: str = "v2",
-                             subzone: str = "curated") -> List[str]:
+def generate_spark_arguments(destination: str, specific_main_method: bool, pass_date: bool,
+                             steps: str = "default") -> List[str]:
     """
     Generate Spark task arguments for the ETL process.
     """
-    if etl_version == "v2":
-        if subzone == "curated":
-            return ["config/prod.conf", steps, destination, '{{ds}}']
-        return ["config/prod.conf", steps, destination]
-    return [
-        "--config", "config/prod.conf",
-        "--steps", steps,
-        "--app-name", destination,
-        "--destination", destination,
-    ]
+    if specific_main_method:
+        arguments = [
+            destination,
+            "--config", "config/prod.conf",
+            "--steps", steps,
+            "--app-name", destination,
+        ]
+    else:
+        arguments = [
+            "--config", "config/prod.conf",
+            "--steps", steps,
+            "--app-name", destination,
+            "--destination", destination,
+        ]
+
+    if pass_date:
+        arguments.append("--date")
+        arguments.append("{{ ds }}")
+
+    return arguments
 
 
 def run_type() -> str:
@@ -96,13 +106,13 @@ def run_type() -> str:
 
 
 with dag:
-
     @task_group(group_id="curated_quanum")
     def curated_quanum():
         curated_quanum_form_data_vw_task = SparkOperator(
             task_id="curated_quanum_form_data_vw",
             name="curated_quanum_form_data_vw".replace("_", "-"),
-            arguments=generate_spark_arguments("curated_quanum_form_data_vw", run_type()),
+            arguments=generate_spark_arguments("curated_quanum_form_data_vw", specific_main_method=True,
+                                               pass_date=True, steps=run_type()),
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_MAIN_CLASS,
             spark_jar=jar,
@@ -114,7 +124,8 @@ with dag:
         curated_quanum_form_metadata_vw_task = SparkOperator(
             task_id="curated_quanum_form_metadata_vw",
             name="curated_quanum_form_name_vw".replace("_", "-"),
-            arguments=generate_spark_arguments("curated_quanum_form_metadata_vw", run_type()),
+            arguments=generate_spark_arguments("curated_quanum_form_metadata_vw", specific_main_method=True,
+                                               pass_date=True, steps=run_type()),
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_MAIN_CLASS,
             spark_jar=jar,
@@ -126,7 +137,8 @@ with dag:
         curated_quanum_form_name_vw_task = SparkOperator(
             task_id="curated_quanum_form_name_vw",
             name="curated_quanum_form_name_vw".replace("_", "-"),
-            arguments=generate_spark_arguments("curated_quanum_form_name_vw", run_type()),
+            arguments=generate_spark_arguments("curated_quanum_form_name_vw", specific_main_method=True,
+                                               pass_date=True, steps=run_type()),
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_MAIN_CLASS,
             spark_jar=jar,
@@ -174,7 +186,7 @@ with dag:
         curated_quanum_tasks = [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
-            arguments=generate_spark_arguments(task_name, run_type()),
+            arguments=generate_spark_arguments(task_name, specific_main_method=False, pass_date=True, steps=run_type()),
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_MAIN_CLASS,
             spark_jar=jar,
@@ -215,7 +227,7 @@ with dag:
         [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
-            arguments=generate_spark_arguments(task_name, run_type(), "v4"),
+            arguments=generate_spark_arguments(task_name, specific_main_method=False, pass_date=False, steps=run_type()),
             zone=QUANUMCHARTMAXX_CURATED_ZONE,
             spark_class=QUANUMCHARTMAXX_CURATED_MAIN_CLASS,
             spark_jar=jar,
@@ -259,7 +271,7 @@ with dag:
         [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
-            arguments=generate_spark_arguments(task_name, run_type(), "v2", "anonymized"),
+            arguments=["config/prod.conf", run_type(), task_name],
             zone=QUANUMCHARTMAXX_ANONYMIZED_ZONE,
             spark_class=QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS,
             spark_jar=jar,
@@ -267,5 +279,6 @@ with dag:
             spark_config=cluster_size,
             dag=dag
         ) for task_name, cluster_size in anonymized_quanumchartmaxx_config]
+
 
     start() >> curated_quanum() >> curated_quanumchartmaxx() >> anonymized_quanum() >> anonymized_quanumchartmaxx() >> end()

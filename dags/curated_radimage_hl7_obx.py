@@ -48,11 +48,18 @@ dag = DAG(
 )
 
 with dag:
+    arguments = [
+        "curated_radimage_hl7_oru_r01_obx",
+        "--config", "config/prod.conf",
+        "--steps", "default",
+        "--app-name", "curated_radimage_hl7_oru_r01_obx",
+        "--date", "{{ ds }}"
+    ]
 
     radimage_hl7_curated = SparkOperator(
         task_id="curated_radimage_hl7_oru_r01_obx",
         name="curated-radimage-hl7-oru-r01-obx",
-        arguments=["config/prod.conf", "default", "curated_radimage_hl7_oru_r01_obx", '{{ds}}'],
+        arguments=arguments,
         zone=CURATED_ZONE,
         spark_class=CURATED_MAIN_CLASS,
         spark_jar=jar,

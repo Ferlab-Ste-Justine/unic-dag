@@ -3,6 +3,7 @@ DAG pour le parsing des messages HL7 de Radimage
 """
 # pylint: disable=duplicate-code, expression-not-assigned
 from datetime import datetime, timedelta
+from typing import List
 
 import pendulum
 from airflow import DAG
@@ -48,32 +49,55 @@ dag = DAG(
 )
 
 with dag:
+    def get_arguments(destination: str, specific_main_method: bool, steps: str = "default") -> List[str]:
+        """
+        Generate Spark task arguments for the ETL process.
+        """
+        if specific_main_method:
+            arguments = [
+                destination,
+                "--config", "config/prod.conf",
+                "--steps", steps,
+                "--app-name", destination,
+                "--date", "{{ ds }}"
+            ]
+        else:
+            arguments = [
+                "--config", "config/prod.conf",
+                "--steps", steps,
+                "--app-name", destination,
+                "--destination", destination,
+                "--date", "{{ ds }}"
+            ]
+
+        return arguments
+
 
     radimage_hl7_curated_tasks = [
-        ("curated_radimage_hl7_oru_r01_al1", "small-etl"),
-        ("curated_radimage_hl7_oru_r01_nte", "small-etl"),
-        ("curated_radimage_hl7_oru_r01_obr", "small-etl"),
-        ("curated_radimage_hl7_oru_r01_obx", "small-etl"),
-        ("curated_radimage_hl7_oru_r01_orc", "small-etl"),
-        ("curated_radimage_hl7_oru_r01_pid", "small-etl"),
-        ("curated_radimage_hl7_oru_r01_pv1", "small-etl"),
-        ("curated_radimage_hl7_oru_r01_zal", "small-etl"),
-        ("curated_radimage_hl7_oru_r01_zbr", "small-etl"),
-        ("curated_radimage_hl7_oru_r01_zdc", "small-etl"),
-        ("curated_radimage_hl7_oru_r01_zrc", "small-etl"),
+        ("curated_radimage_hl7_oru_r01_al1", "small-etl", False),
+        ("curated_radimage_hl7_oru_r01_nte", "small-etl", False),
+        ("curated_radimage_hl7_oru_r01_obr", "small-etl", False),
+        ("curated_radimage_hl7_oru_r01_obx", "small-etl", True),
+        ("curated_radimage_hl7_oru_r01_orc", "small-etl", False),
+        ("curated_radimage_hl7_oru_r01_pid", "small-etl", False),
+        ("curated_radimage_hl7_oru_r01_pv1", "small-etl", False),
+        ("curated_radimage_hl7_oru_r01_zal", "small-etl", False),
+        ("curated_radimage_hl7_oru_r01_zbr", "small-etl", False),
+        ("curated_radimage_hl7_oru_r01_zdc", "small-etl", False),
+        ("curated_radimage_hl7_oru_r01_zrc", "small-etl", False),
     ]
 
     radimage_hl7_curated = [SparkOperator(
         task_id=task_name,
-        name=task_name.replace("_","-"),
-        arguments=["config/prod.conf", "default", task_name, '{{ds}}'],
+        name=task_name.replace("_", "-"),
+        arguments=get_arguments(task_name, specific_main_method),
         zone=CURATED_ZONE,
         spark_class=CURATED_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config=cluster_size,
         dag=dag
-    ) for task_name, cluster_size in radimage_hl7_curated_tasks]
+    ) for task_name, cluster_size, specific_main_method in radimage_hl7_curated_tasks]
 
     # radimage_hl7_anonymized_tasks = [
     #     ("anonymized_radimage_hl7_oru_r01_al1", "small-etl"),

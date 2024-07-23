@@ -6,23 +6,21 @@
     "destination_zone": "red",
     "destination_subzone": "curated",
     "main_class": "bio.ferlab.ui.etl.red.curated.Main",
-    "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
     "datasets":
     [
-      {"dataset_id":"curated_unic_patient_index", "cluster_type": "large", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
+      {"dataset_id":"curated_unic_patient_index", "cluster_type": "large", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": true}
     ]
   }, {
     "destination_zone": "yellow",
     "destination_subzone": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
-    "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
     "datasets":
     [
-      {"dataset_id":"anonymized_unic_patient_index", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["patient_index_greater_or_equal_counts"], "post_tests": ["equal_counts"]}
+      {"dataset_id":"anonymized_unic_patient_index", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["patient_index_greater_or_equal_counts"], "post_tests": ["equal_counts"], "specific_main_method": false}
     ]
   }]
 
