@@ -49,13 +49,8 @@ with dag:
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.red.enriched.cpip.Main"
 
         def enriched_arguments(destination: str) -> List[str]:
-            return [
-                "--config", "config/prod.conf",
-                "--steps", "default",
-                "--app-name", destination,
-                "--destination", destination,
-                "--date", "{{ ds }}"
-            ]
+            # !!! Do not set to initial, otherwise the participant index will be re-generated !!!
+            return ["config/prod.conf", "default", destination, "{{ ds }}"]
 
         enriched_cpip_participant_index = SparkOperator(
             task_id="enriched_cpip_participant_index",
