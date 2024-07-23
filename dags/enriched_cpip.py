@@ -30,7 +30,7 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_cpip",
     doc_md=DOC,
-    start_date=datetime(2024, 6, 23, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2024, 7, 23, tzinfo=pendulum.timezone("America/Montreal")),
     params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,
