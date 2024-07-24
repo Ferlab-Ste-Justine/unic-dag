@@ -36,10 +36,10 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"curated_softpath_v_p_pat_gyncase"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": true},
-        {"dataset_id":"curated_softpath_v_p_pat_patcase"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": true},
-        {"dataset_id":"curated_softpath_v_p_pat_patcasewithtest", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": true},
-        {"dataset_id":"curated_softpath_v_p_pat_specimenblock"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": true}
+        {"dataset_id":"curated_softpath_v_p_pat_gyncase"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
+        {"dataset_id":"curated_softpath_v_p_pat_patcase"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
+        {"dataset_id":"curated_softpath_v_p_pat_patcasewithtest", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
+        {"dataset_id":"curated_softpath_v_p_pat_specimenblock"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false}
       ]
     },
     {
