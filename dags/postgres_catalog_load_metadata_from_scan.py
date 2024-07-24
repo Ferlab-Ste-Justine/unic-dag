@@ -117,12 +117,12 @@ with DAG(
                 skip=skip_task(table_name)
             )
 
-        scan_dict_table_task = scan_table_task("dict_table", "small")
+        scan_dict_table_task = scan_table_task("dict_table", "small-etl")
         load_dict_table_task = load_table_task("dict_table",
                                                s3_key=f"catalog/csv/output/{get_resource_code()}/dict_table/dict_table.csv",
                                                primary_keys=["resource_id", "name"])
 
-        scan_variable_task = scan_table_task("variable", "small")
+        scan_variable_task = scan_table_task("variable", "small-etl")
         load_variable_task = load_table_task("variable",
                                              s3_key=f"catalog/csv/output/{get_resource_code()}/variable/variable.csv",
                                              primary_keys=["path"])
