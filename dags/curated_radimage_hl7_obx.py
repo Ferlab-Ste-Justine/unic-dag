@@ -49,10 +49,10 @@ dag = DAG(
 
 with dag:
     arguments = [
-        "curated_radimage_hl7_oru_r01_obx",
         "--config", "config/prod.conf",
         "--steps", "default",
         "--app-name", "curated_radimage_hl7_oru_r01_obx",
+        "---destination", "curated_radimage_hl7_oru_r01_obx",
         "--date", "{{ ds }}"
     ]
 

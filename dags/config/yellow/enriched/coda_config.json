@@ -7,58 +7,61 @@
       "destination_zone": "yellow",
       "destination_subzone": "enriched",
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.coda.Main",
+      "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"enriched_coda_condition"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"enriched_coda_encounter"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index", "enriched_coda_observation_pcr", "enriched_coda_observation_vent", "enriched_coda_observation_labs", "enriched_coda_medication_administration", "enriched_coda_condition"], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"enriched_coda_location_bed"             , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_encounter"], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"enriched_coda_location_ward"            , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_location_bed"], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"enriched_coda_medication_administration", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"enriched_coda_observation_labs"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"enriched_coda_observation_pcr"          , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"enriched_coda_observation_vent"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"enriched_coda_participant_index"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_observation_pcr"], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"enriched_coda_patient"                  , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"], "pre_tests": [], "post_tests": [], "specific_main_method": false}
+        {"dataset_id":"enriched_coda_condition"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"enriched_coda_encounter"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index", "enriched_coda_observation_pcr", "enriched_coda_observation_vent", "enriched_coda_observation_labs", "enriched_coda_medication_administration", "enriched_coda_condition"], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"enriched_coda_location_bed"             , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_encounter"], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"enriched_coda_location_ward"            , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_location_bed"], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"enriched_coda_medication_administration", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"enriched_coda_observation_labs"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"enriched_coda_observation_pcr"          , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"enriched_coda_observation_vent"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"enriched_coda_participant_index"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_observation_pcr"], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"enriched_coda_patient"                  , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"], "pre_tests": [], "post_tests": []}
       ]
     },
     {
       "destination_zone": "green",
       "destination_subzone": "released",
       "main_class": "bio.ferlab.ui.etl.green.released..versioned.Main",
+      "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"released_coda_condition"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"released_coda_encounter"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"released_coda_location_bed"             , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"released_coda_location_ward"            , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"released_coda_medication_administration", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"released_coda_observation_labs"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"released_coda_observation_pcr"          , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"released_coda_observation_vent"         , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"released_coda_patient"                  , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false}
+        {"dataset_id":"released_coda_condition"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"released_coda_encounter"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"released_coda_location_bed"             , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"released_coda_location_ward"            , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"released_coda_medication_administration", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"released_coda_observation_labs"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"released_coda_observation_pcr"          , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"released_coda_observation_vent"         , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"released_coda_patient"                  , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
       ]
     },
     {
       "destination_zone": "green",
       "destination_subzone": "published",
       "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "multiple_main_methods": false,
       "publish_class": "bio.ferlab.ui.etl.green.published.coda.PublishToAidbox",
       "schemas": ["patient"],
       "datasets":
       [
-        {"dataset_id":"published_coda_condition"                , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"published_coda_encounter"                , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"published_coda_location_bed"             , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"published_coda_location_ward"            , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"published_coda_medication_administration", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"published_coda_observation_labs"         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"published_coda_observation_pcr"          , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"published_coda_observation_vent"         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false},
-        {"dataset_id":"published_coda_patient"                  , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": [], "specific_main_method": false}
+        {"dataset_id":"published_coda_condition"                , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_coda_encounter"                , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_coda_location_bed"             , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_coda_location_ward"            , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_coda_medication_administration", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_coda_observation_labs"         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_coda_observation_pcr"          , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_coda_observation_vent"         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_coda_patient"                  , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
       ]
     }
   ]

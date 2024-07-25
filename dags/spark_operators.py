@@ -161,6 +161,7 @@ def setup_dag(dag: DAG,
             zone = step_config['destination_zone']
             subzone = step_config['destination_subzone']
             main_class = step_config['main_class']
+            multiple_main_methods = step_config['multiple_main_methods']
 
             start = notify.start(task_id=f"start_{subzone}_{schema}")
             end = notify.end(f"end_{subzone}_{schema}")
@@ -188,10 +189,9 @@ def setup_dag(dag: DAG,
                 dataset_id = conf['dataset_id']
                 config_type = conf['cluster_type']
                 run_type = conf['run_type']
-                specific_main_method = conf['specific_main_method']
 
                 job = create_spark_job(dataset_id, zone, subzone, run_type, config_type, config_file, jar, dag, main_class,
-                                       specific_main_method, version, spark_failure_msg, skip_task)
+                                       multiple_main_methods, version, spark_failure_msg, skip_task)
 
                 all_dependencies.extend(conf['dependencies'])
                 jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
@@ -268,7 +268,7 @@ def create_spark_job(destination: str,
                      jar: str,
                      dag: DAG,
                      main_class: str,
-                     specific_main_method: bool,
+                     multiple_main_methods: bool,
                      version: str,
                      spark_failure_msg: str,
                      skip: Optional[str] = None):
@@ -283,7 +283,7 @@ def create_spark_job(destination: str,
     :param jar:
     :param dag:
     :param main_class:
-    :param specific_main_method: True if the main entrypoint for the spark job is a specific method named as the destination
+    :param multiple_main_methods: True if the main class contains multiple methods instead of a single run() method
     :param version: Version to release, defaults to "latest"
     :param spark_failure_msg:
     :param skip:
@@ -293,7 +293,7 @@ def create_spark_job(destination: str,
     args = [config_file, run_type, destination]
 
     if subzone in ["raw", "curated"]:
-        if specific_main_method:
+        if multiple_main_methods:
             args = [
                 destination,
                 "--config", config_file,
