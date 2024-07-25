@@ -63,7 +63,6 @@ with dag:
             ]
         else:
             arguments = [
-                "run",
                 "--config", "config/prod.conf",
                 "--steps", steps,
                 "--app-name", destination,

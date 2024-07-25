@@ -88,7 +88,6 @@ def generate_spark_arguments(destination: str, specific_main_method: bool, pass_
         ]
     else:
         arguments = [
-            "run",
             "--config", "config/prod.conf",
             "--steps", steps,
             "--app-name", destination,
