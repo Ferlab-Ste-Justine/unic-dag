@@ -88,6 +88,7 @@ def generate_spark_arguments(destination: str, specific_main_method: bool, pass_
         ]
     else:
         arguments = [
+            "run",
             "--config", "config/prod.conf",
             "--steps", steps,
             "--app-name", destination,
@@ -248,7 +249,7 @@ with dag:
         [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
-            arguments=generate_spark_arguments(task_name, run_type(), "v2", "anonymized"),
+            arguments=["config/prod.conf", run_type(), task_name],
             zone=QUANUMCHARTMAXX_ANONYMIZED_ZONE,
             spark_class=QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS,
             spark_jar=jar,

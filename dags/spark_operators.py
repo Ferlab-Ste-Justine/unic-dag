@@ -302,6 +302,7 @@ def create_spark_job(destination: str,
             ]
         else:
             args = [
+                "run",  # Generic main method name
                 "--config", config_file,
                 "--steps", run_type,
                 "--app-name", destination,
