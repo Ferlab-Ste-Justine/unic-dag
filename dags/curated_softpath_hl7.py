@@ -52,49 +52,38 @@ dag = DAG(
 )
 
 with dag:
-    def get_arguments(destination: str, specific_main_method: bool, steps: str = "default") -> List[str]:
+    def get_arguments(destination: str, steps: str = "default") -> List[str]:
         """
         Generate Spark task arguments for the ETL process.
         """
-        if specific_main_method:
-            arguments = [
-                destination,
-                "--config", "config/prod.conf",
-                "--steps", steps,
-                "--app-name", destination,
-                "--date", "{{ ds }}"
-            ]
-        else:
-            arguments = [
-                "--config", "config/prod.conf",
-                "--steps", steps,
-                "--app-name", destination,
-                "--destination", destination,
-                "--date", "{{ ds }}"
-            ]
-
-        return arguments
+        return [
+            "--config", "config/prod.conf",
+            "--steps", steps,
+            "--app-name", destination,
+            "--destination", destination,
+            "--date", "{{ ds }}"
+        ]
 
 
     softpath_hl7_curated_tasks = [
-        ("curated_softpath_hl7_oru_r01_pid", "small-etl", False),
-        ("curated_softpath_hl7_oru_r01_pv1", "small-etl", False),
-        ("curated_softpath_hl7_oru_r01_orc", "small-etl", False),
-        ("curated_softpath_hl7_oru_r01_obr", "small-etl", False),
-        ("curated_softpath_hl7_oru_r01_obx", "small-etl", True)
+        ("curated_softpath_hl7_oru_r01_pid", "small-etl"),
+        ("curated_softpath_hl7_oru_r01_pv1", "small-etl"),
+        ("curated_softpath_hl7_oru_r01_orc", "small-etl"),
+        ("curated_softpath_hl7_oru_r01_obr", "small-etl"),
+        ("curated_softpath_hl7_oru_r01_obx", "small-etl")
     ]
 
     softpath_hl7_curated = [SparkOperator(
         task_id=task_name,
         name=task_name.replace("_", "-"),
-        arguments=get_arguments(task_name, specific_main_method),
+        arguments=get_arguments(task_name),
         zone=CURATED_ZONE,
         spark_class=CURATED_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config=cluster_size,
         dag=dag
-    ) for task_name, cluster_size, specific_main_method in softpath_hl7_curated_tasks]
+    ) for task_name, cluster_size in softpath_hl7_curated_tasks]
 
     # softpath_hl7_anonymized_tasks = [
     #     ("anonymized_softpath_hl7_oru_r01_pid", "small-etl"),
