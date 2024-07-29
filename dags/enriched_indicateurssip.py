@@ -44,7 +44,7 @@ dag = DAG(
     dag_id="enriched_indicateurssip",
     doc_md=DOC,
     start_date=datetime(2023, 12, 12, 18, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval=timedelta(weeks=1),
+    schedule_interval="0 22 * * *",
     params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,
