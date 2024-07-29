@@ -30,8 +30,8 @@ Ces tables vont être utilisées pour générer les graphes Power BI pour affich
 ### Horaire
 * __Date de début__ - 19 Decembre 2023
 * __Date de fin__ - aucune
-* __Jour et heure__ - Mardi, 18 heure de Montréal
-* __Intervalle__ - Chaque semaine
+* __Jour et heure__ - 22 heure de Montréal
+* __Intervalle__ - Chaque Jour
 
 
 """
