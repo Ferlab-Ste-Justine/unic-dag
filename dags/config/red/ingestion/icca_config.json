@@ -1,6 +1,6 @@
 {
   "concurrency": 4,
-  "schedule": "0 3 * * 2",
+  "schedule": "0 3 * * *",
   "timeout_hours": 4,
   "steps": [{
     "destination_zone": "red",

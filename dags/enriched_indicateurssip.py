@@ -30,8 +30,8 @@ Ces tables vont être utilisées pour générer les graphes Power BI pour affich
 ### Horaire
 * __Date de début__ - 19 Decembre 2023
 * __Date de fin__ - aucune
-* __Jour et heure__ - Mardi, 18 heure de Montréal
-* __Intervalle__ - Chaque semaine
+* __Jour et heure__ - 22 heure de Montréal
+* __Intervalle__ - Chaque Jour
 
 
 """
@@ -44,7 +44,7 @@ dag = DAG(
     dag_id="enriched_indicateurssip",
     doc_md=DOC,
     start_date=datetime(2023, 12, 12, 18, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval=timedelta(weeks=1),
+    schedule_interval="0 22 * * *",
     params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,
