@@ -38,9 +38,10 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"curated_softpath_v_p_pat_gyncase"        , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"curated_softpath_v_p_pat_gyncase"        , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": []},
         {"dataset_id":"curated_softpath_v_p_pat_patcase"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": []},
         {"dataset_id":"curated_softpath_v_p_pat_patcasewithtest", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": []},
+        {"dataset_id":"curated_softpath_v_p_pat_report"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": []},
         {"dataset_id":"curated_softpath_v_p_pat_specimenblock"  , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": []}
       ]
     },
