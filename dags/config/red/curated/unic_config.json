@@ -22,7 +22,7 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id":"anonymized_unic_patient_index", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["patient_index_greater_or_equal_counts"], "post_tests": ["equal_counts", "patient_index_valid_counts"]}
+      {"dataset_id":"anonymized_unic_patient_index", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["patient_index_greater_or_equal_counts"], "post_tests": ["equal_counts", "patient_index_valid_counts"]}
     ]
   }]
 
