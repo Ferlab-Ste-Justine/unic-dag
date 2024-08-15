@@ -1,7 +1,7 @@
 """
 DAG pour la création des tables dans la bd unic_db pour le catalogue de l'UnIC.
 """
-# pylint: disable=expression-not-assigned
+# pylint: disable=missing-function-docstring, expression-not-assigned
 
 from datetime import datetime
 
@@ -11,7 +11,8 @@ from airflow.utils.trigger_rule import TriggerRule
 
 from lib.groups.postgres.create_tables import create_tables
 from lib.groups.postgres.drop_tables import drop_tables
-from lib.postgres import postgres_vlan2_conn_id, postgres_vlan2_ca_path, postgres_vlan2_ca_cert
+from lib.postgres import postgres_vlan2_ca_path, postgres_vlan2_ca_cert, \
+    unic_prod_postgres_vlan2_conn_id, unic_dev_postgres_vlan2_conn_id
 from lib.slack import Slack
 from lib.tasks.notify import start, end
 from lib.tasks.postgres import create_resource, PostgresResource
@@ -28,6 +29,7 @@ créés sur les tables.
 
 ### Configuration
 * Paramètre `tables` : Liste des tables à créer dans la base de données. Par défaut, crée toutes les tables.
+* Paramètre `env` : Environnement de la BD. Par défaut, 'prod'.
 """
 
 # Specify path to SQL query for schema and each table
@@ -51,7 +53,10 @@ table_name_list = [table['name'] for table in sql_config['tables']]
 
 with DAG(
         dag_id="postgres_catalog",
-        params={"tables": Param(table_name_list, type=['array'], examples=table_name_list)},
+        params={
+            "tables": Param(table_name_list, type=['array'], examples=table_name_list),
+            "env": Param("prod", type="string", enum=["dev", "prod"])
+        },
         default_args={
             'trigger_rule': TriggerRule.NONE_FAILED,
             'on_failure_callback': Slack.notify_task_failure,
@@ -63,10 +68,13 @@ with DAG(
         max_active_tasks=1,
         tags=["postgresql"]
 ) as dag:
+    def get_conn_id() -> str:
+        return f"{{% if params.env == 'prod' %}}{unic_prod_postgres_vlan2_conn_id}{{% else %}}{unic_dev_postgres_vlan2_conn_id}{{% endif %}}"
+
     start("start_postgres_catalog") \
-        >> create_resource(PostgresResource.SCHEMA, sql_config, conn_id=postgres_vlan2_conn_id, ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
-        >> create_resource(PostgresResource.TYPES, sql_config, conn_id=postgres_vlan2_conn_id, ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
-        >> drop_tables(sql_config, conn_id=postgres_vlan2_conn_id, ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
-        >> create_tables(sql_config, conn_id=postgres_vlan2_conn_id, ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
-        >> create_resource(PostgresResource.INDEXES, sql_config, conn_id=postgres_vlan2_conn_id, ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
+        >> create_resource(PostgresResource.SCHEMA, sql_config, conn_id=get_conn_id(), ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
+        >> create_resource(PostgresResource.TYPES, sql_config, conn_id=get_conn_id(), ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
+        >> drop_tables(sql_config, conn_id=get_conn_id(), ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
+        >> create_tables(sql_config, conn_id=get_conn_id(), ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
+        >> create_resource(PostgresResource.INDEXES, sql_config, conn_id=get_conn_id(), ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
         >> end("end_postgres_catalog")
