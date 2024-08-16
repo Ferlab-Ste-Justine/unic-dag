@@ -53,6 +53,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
             **kwargs) -> None:
         super().__init__(
             sql=None,
+            postgres_conn_id=postgres_conn_id,
             ca_path=postgres_ca_path,
             ca_filename=postgres_ca_filename,
             ca_cert=postgres_ca_cert,

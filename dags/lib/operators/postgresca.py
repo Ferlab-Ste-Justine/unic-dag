@@ -22,11 +22,12 @@ class PostgresCaOperator(PostgresOperator):
             ca_cert: str,
             skip: bool = False,
             **kwargs) -> None:
-        super().__init__(postgres_conn_id=postgres_conn_id, **kwargs)
+        self.postgres_conn_id = postgres_conn_id
         self.ca_path = ca_path
         self.ca_filename = ca_filename
         self.ca_cert = ca_cert
         self.skip = skip
+        super().__init__(postgres_conn_id=self.postgres_conn_id, **kwargs)
 
     def execute(self, **kwargs):
         if self.skip:
