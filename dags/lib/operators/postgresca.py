@@ -24,7 +24,7 @@ class PostgresCaOperator(PostgresOperator):
             skip: bool = False,
             **kwargs) -> None:
         # postgres_conn_id has to be rendered before super class is instantiated
-        self.postgres_conn_id = self.render_template(postgres_conn_id, kwargs)
+        self.postgres_conn_id = postgres_conn_id
         self.ca_path = ca_path
         self.ca_filename = ca_filename
         self.ca_cert = ca_cert
