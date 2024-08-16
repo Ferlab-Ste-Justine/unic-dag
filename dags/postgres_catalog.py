@@ -10,7 +10,6 @@ from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
 from lib.groups.postgres.create_tables import create_tables
-from lib.groups.postgres.drop_tables import drop_tables
 from lib.postgres import postgres_vlan2_ca_path, postgres_vlan2_ca_cert, \
     unic_prod_postgres_vlan2_conn_id, unic_dev_postgres_vlan2_conn_id
 from lib.slack import Slack
@@ -55,7 +54,7 @@ with DAG(
         dag_id="postgres_catalog",
         params={
             "tables": Param(table_name_list, type=['array'], examples=table_name_list),
-            "env": Param("prod", type="string", enum=["dev", "prod"])
+            "env": Param("dev", type="string", enum=["dev", "prod"])
         },
         default_args={
             'trigger_rule': TriggerRule.NONE_FAILED,
@@ -74,7 +73,6 @@ with DAG(
     start("start_postgres_catalog") \
         >> create_resource(PostgresResource.SCHEMA, sql_config, conn_id=get_conn_id(), ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
         >> create_resource(PostgresResource.TYPES, sql_config, conn_id=get_conn_id(), ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
-        >> drop_tables(sql_config, conn_id=get_conn_id(), ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
         >> create_tables(sql_config, conn_id=get_conn_id(), ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
         >> create_resource(PostgresResource.INDEXES, sql_config, conn_id=get_conn_id(), ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
         >> end("end_postgres_catalog")

@@ -58,7 +58,7 @@ with DAG(
                             description="Tables to load."),
             "project": Param(None, type=["null", "string"],
                              description="Required if 'dict_table', 'value_set', 'value_set_code', 'variable' or 'mapping' are selected in 'tables' param."),
-            "env": Param("prod", type="string", enum=["dev", "prod"])
+            "env": Param("dev", type="string", enum=["dev", "prod"])
         },
         default_args={
             'trigger_rule': TriggerRule.NONE_FAILED,
