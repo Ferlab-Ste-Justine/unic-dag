@@ -11,7 +11,7 @@ from airflow.utils.trigger_rule import TriggerRule
 
 from lib.groups.postgres.create_tables import create_tables
 from lib.postgres import postgres_vlan2_ca_path, postgres_vlan2_ca_cert, \
-    unic_prod_postgres_vlan2_conn_id, unic_dev_postgres_vlan2_conn_id
+    unic_dev_postgres_vlan2_conn_id
 from lib.slack import Slack
 from lib.tasks.notify import start, end
 from lib.tasks.postgres import create_resource, PostgresResource
@@ -68,7 +68,8 @@ with DAG(
         tags=["postgresql"]
 ) as dag:
     def get_conn_id() -> str:
-        return f"{{% if params.env == 'prod' %}}{unic_prod_postgres_vlan2_conn_id}{{% else %}}{unic_dev_postgres_vlan2_conn_id}{{% endif %}}"
+        # dev conn id is temporarily hardcoded until we have a propre dev Airflow instance
+        return unic_dev_postgres_vlan2_conn_id
 
     start("start_postgres_catalog") \
         >> create_resource(PostgresResource.SCHEMA, sql_config, conn_id=get_conn_id(), ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \

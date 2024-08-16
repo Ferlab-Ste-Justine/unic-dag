@@ -16,7 +16,7 @@ from lib.config import jar, spark_failure_msg, yellow_minio_conn_id
 from lib.operators.spark import SparkOperator
 from lib.operators.upsert_csv_to_postgres import UpsertCsvToPostgres
 from lib.postgres import skip_task, postgres_vlan2_ca_path, postgres_ca_filename, \
-    postgres_vlan2_ca_cert, unic_prod_postgres_vlan2_conn_id, unic_dev_postgres_vlan2_conn_id
+    postgres_vlan2_ca_cert, unic_dev_postgres_vlan2_conn_id
 from lib.slack import Slack
 from lib.tasks.excel import excel_to_csv
 from lib.tasks.notify import start, end
@@ -77,7 +77,8 @@ with DAG(
         return "{{ params.env }}"
 
     def get_conn_id() -> str:
-        return f"{{% if params.env == 'prod' %}}{unic_prod_postgres_vlan2_conn_id}{{% else %}}{unic_dev_postgres_vlan2_conn_id}{{% endif %}}"
+        # dev conn id is temporarily hardcoded until we have a propre dev Airflow instance
+        return unic_dev_postgres_vlan2_conn_id
 
     def arguments(table_name: str, app_name: str, env: str, project_name: Optional[str] = None) -> \
             List[str]:
