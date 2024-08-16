@@ -1,6 +1,7 @@
 from airflow.models import Variable
 
-postgres_vlan2_conn_id = 'postgresql_vlan2_rw'
+unic_prod_postgres_vlan2_conn_id = 'unic_prod_postgresql_vlan2_rw'
+unic_dev_postgres_vlan2_conn_id = 'unic_dev_postgresql_vlan2_rw'
 postgres_bi_conn_id = 'postgresql_bi_rw'
 
 postgres_vlan2_ca_path = '/tmp/ca/'  # Corresponds to path in postgres vlan2 connection string

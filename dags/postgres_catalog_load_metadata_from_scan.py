@@ -14,8 +14,8 @@ from airflow.utils.trigger_rule import TriggerRule
 from lib.config import jar, spark_failure_msg, yellow_minio_conn_id
 from lib.operators.spark import SparkOperator
 from lib.operators.upsert_csv_to_postgres import UpsertCsvToPostgres
-from lib.postgres import skip_task, postgres_vlan2_conn_id, postgres_vlan2_ca_path, postgres_ca_filename, \
-    postgres_vlan2_ca_cert
+from lib.postgres import skip_task, postgres_vlan2_ca_path, postgres_ca_filename, \
+    postgres_vlan2_ca_cert, unic_prod_postgres_vlan2_conn_id, unic_dev_postgres_vlan2_conn_id
 from lib.slack import Slack
 from lib.tasks.notify import start, end
 
@@ -33,6 +33,7 @@ Ce DAG scan les données d'une ressource pour en déduire les métadonnées puis
 * Paramètre `resource_type` : Type de la ressource à charger parmi `source_system`, `research_project` ou `eqp`.
 * Paramètre `to_be_published` : Si les métadonnées de la ressource doivent être publiées dans le portail.
 * Paramètre `tables` : Liste des tables à créer dans la base de données. Par défaut, crée toutes les tables.
+* Paramètre `env` : Environnement de la BD. Par défaut, 'prod'.
 
 ## Tables à charger
 * dict_table : Charge la table `dict_table`.
@@ -52,7 +53,8 @@ with DAG(
                                    description="Type of the resource."),
             "to_be_published": Param(True, type="boolean", description="Whether the resource should be published."),
             "tables": Param(default=table_name_list, type=["array"], examples=table_name_list,
-                            description="Tables to load.")
+                            description="Tables to load."),
+            "env": Param("prod", type="string", enum=["dev", "prod"])
         },
         default_args={
             'trigger_rule': TriggerRule.NONE_FAILED,
@@ -72,12 +74,22 @@ with DAG(
         return "{{ params.resource_type }}"
 
 
-    def arguments(table_name: str, resource_code: str, resource_type: str, to_be_published: bool = True) -> List[str]:
+    def get_env() -> str:
+        return "{{ params.env }}"
+
+
+    def get_conn_id() -> str:
+        return f"{{% if params.env == 'prod' %}}{unic_prod_postgres_vlan2_conn_id}{{% else %}}{unic_dev_postgres_vlan2_conn_id}{{% endif %}}"
+
+
+    def arguments(table_name: str, env: str, resource_code: str, resource_type: str, to_be_published: bool = True) -> \
+    List[str]:
         return [
             table_name,
             "--config", "config/prod.conf",
             "--steps", "default",
             "--app-name", f"scan_{table_name}_table_for_{resource_code}",
+            "--env", env,
             "--resource-code", resource_code,
             "--resource-type", resource_type,
             "--to-be-published", str(to_be_published)
@@ -90,7 +102,7 @@ with DAG(
             return SparkOperator(
                 task_id=f"scan_{table_name}_table",
                 name=f"scan-{table_name}-table",
-                arguments=arguments(table_name, get_resource_code(), get_resource_type(), to_be_published),
+                arguments=arguments(table_name, get_env(), get_resource_code(), get_resource_type(), to_be_published),
                 zone=ZONE,
                 spark_class=MAIN_CLASS,
                 spark_jar=jar,
@@ -106,7 +118,7 @@ with DAG(
                 s3_bucket=YELLOW_BUCKET,
                 s3_key=s3_key,
                 s3_conn_id=yellow_minio_conn_id,
-                postgres_conn_id=postgres_vlan2_conn_id,
+                postgres_conn_id=get_conn_id(),
                 postgres_ca_path=postgres_vlan2_ca_path,
                 postgres_ca_filename=postgres_ca_filename,
                 postgres_ca_cert=postgres_vlan2_ca_cert,

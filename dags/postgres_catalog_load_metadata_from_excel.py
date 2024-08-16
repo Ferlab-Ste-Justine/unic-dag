@@ -15,8 +15,8 @@ from airflow.utils.trigger_rule import TriggerRule
 from lib.config import jar, spark_failure_msg, yellow_minio_conn_id
 from lib.operators.spark import SparkOperator
 from lib.operators.upsert_csv_to_postgres import UpsertCsvToPostgres
-from lib.postgres import skip_task, postgres_vlan2_conn_id, postgres_vlan2_ca_path, postgres_ca_filename, \
-    postgres_vlan2_ca_cert
+from lib.postgres import skip_task, postgres_vlan2_ca_path, postgres_ca_filename, \
+    postgres_vlan2_ca_cert, unic_prod_postgres_vlan2_conn_id, unic_dev_postgres_vlan2_conn_id
 from lib.slack import Slack
 from lib.tasks.excel import excel_to_csv
 from lib.tasks.notify import start, end
@@ -34,6 +34,7 @@ passées en paramètre au DAG seront chargées dans la BD Postgres du Catalogue.
 * Paramètre `branch` : Branche du jar à utiliser.
 * Paramètre `tables` : Liste des tables à créer dans la base de données. Par défaut, crée toutes les tables.
 * Paramètre `project` : Nom du projet à charger. Obligatoire si `dict_table`, `value_set`, `value_set_code`, `variable` ou `mapping` font partie des tables sélectionnées.
+* Paramètre `env` : Environnement de la BD. Par défaut, 'prod'.
 
 ## Tables à charger
 * analyst : Charge la table `analyst`.
@@ -56,7 +57,8 @@ with DAG(
             "tables": Param(default=table_name_list, type=["array"], examples=table_name_list,
                             description="Tables to load."),
             "project": Param(None, type=["null", "string"],
-                             description="Required if 'dict_table', 'value_set', 'value_set_code', 'variable' or 'mapping' are selected in 'tables' param.")
+                             description="Required if 'dict_table', 'value_set', 'value_set_code', 'variable' or 'mapping' are selected in 'tables' param."),
+            "env": Param("prod", type="string", enum=["dev", "prod"])
         },
         default_args={
             'trigger_rule': TriggerRule.NONE_FAILED,
@@ -71,14 +73,20 @@ with DAG(
     def get_project() -> str:
         return "{{ params.project or '' }}"
 
+    def get_env() -> str:
+        return "{{ params.env }}"
 
-    def arguments(table_name: str, app_name: str, project_name: Optional[str] = None) -> \
+    def get_conn_id() -> str:
+        return f"{{% if params.env == 'prod' %}}{unic_prod_postgres_vlan2_conn_id}{{% else %}}{unic_dev_postgres_vlan2_conn_id}{{% endif %}}"
+
+    def arguments(table_name: str, app_name: str, env: str, project_name: Optional[str] = None) -> \
             List[str]:
         args = [
             table_name,
             "--config", "config/prod.conf",
             "--steps", "default",
-            "--app-name", app_name
+            "--app-name", app_name,
+            "--env", env
         ]
         if project_name is not None:
             args.append("--project")
@@ -145,13 +153,13 @@ with DAG(
 
     @task_group(group_id="load_tables")
     def load_tables_group():
-        def prepare_table(table_name: str, cluster_size: str, project_name: Optional[str] = None) -> SparkOperator:
+        def prepare_table(table_name: str, cluster_size: str, env: str, project_name: Optional[str] = None) -> SparkOperator:
             if project_name:
-                args = arguments(table_name, app_name=f"prepare_{table_name}_table_for_{project_name}",
+                args = arguments(table_name, app_name=f"prepare_{table_name}_table_for_{project_name}", env=env,
                                  project_name=project_name)
 
             else:
-                args = arguments(table_name, app_name=f"prepare_{table_name}_table")
+                args = arguments(table_name, app_name=f"prepare_{table_name}_table", env=env)
 
             return SparkOperator(
                 task_id=f"prepare_{table_name}_table",
@@ -172,7 +180,7 @@ with DAG(
                 s3_bucket="yellow-prd",
                 s3_key=s3_key,
                 s3_conn_id=yellow_minio_conn_id,
-                postgres_conn_id=postgres_vlan2_conn_id,
+                postgres_conn_id=get_conn_id(),
                 postgres_ca_path=postgres_vlan2_ca_path,
                 postgres_ca_filename=postgres_ca_filename,
                 postgres_ca_cert=postgres_vlan2_ca_cert,
@@ -189,7 +197,7 @@ with DAG(
                                              primary_keys=["name"])
 
         # resource table
-        prepare_resource_table_task = prepare_table("resource", cluster_size="xsmall-etl")
+        prepare_resource_table_task = prepare_table("resource", cluster_size="xsmall-etl", env=get_env())
         load_resource_table_task = load_table("resource",
                                               s3_key="catalog/csv/output/resource/resource.csv",
                                               primary_keys=["code"])
@@ -201,34 +209,34 @@ with DAG(
         def load_project_tables():
             # value_set table
             prepare_value_set_table_task = prepare_table("value_set", cluster_size="xsmall-etl",
-                                                         project_name=get_project())
+                                                         env=get_env(), project_name=get_project())
             load_value_set_table_task = load_table("value_set",
                                                    s3_key=f"catalog/csv/output/{get_project()}/value_set/value_set.csv",
                                                    primary_keys=["name"])
 
             # dict_table table
             prepare_dict_table_table_task = prepare_table("dict_table", cluster_size="xsmall-etl",
-                                                          project_name=get_project())
+                                                          env=get_env(), project_name=get_project())
             load_dict_table_table_task = load_table("dict_table",
                                                     s3_key=f"catalog/csv/output/{get_project()}/dict_table/dict_table.csv",
                                                     primary_keys=["resource_id", "name"])
 
             # value_set_code table
             prepare_value_set_code_table_task = prepare_table("value_set_code", cluster_size="small-etl",
-                                                              project_name=get_project())
+                                                              env=get_env(), project_name=get_project())
             load_value_set_code_table_task = load_table("value_set_code",
                                                         s3_key=f"catalog/csv/output/{get_project()}/value_set_code/value_set_code.csv",
                                                         primary_keys=["value_set_id", "code"])
 
             prepare_variable_table_task = prepare_table("variable", cluster_size="small-etl",
-                                                        project_name=get_project())
+                                                        env=get_env(), project_name=get_project())
             load_variable_table_task = load_table("variable",
                                                   s3_key=f"catalog/csv/output/{get_project()}/variable/variable.csv",
                                                   primary_keys=["path"])
 
             # mapping table
             prepare_mapping_table_task = prepare_table("mapping", cluster_size="small-etl",
-                                                       project_name=get_project())
+                                                       env=get_env(), project_name=get_project())
             load_mapping_table_task = load_table("mapping",
                                                  s3_key=f"catalog/csv/output/{get_project()}/mapping/mapping.csv",
                                                  primary_keys=["value_set_code_id", "original_value"])
