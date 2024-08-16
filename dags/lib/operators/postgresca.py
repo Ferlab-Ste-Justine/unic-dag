@@ -13,7 +13,7 @@ class PostgresCaOperator(PostgresOperator):
     :param ca_filename: Filename where ca certificate file will be written (.crt)
     :param ca_cert: Ca certificate
     """
-    template_fields: Sequence[str] = (*PostgresOperator.template_fields, 'skip')
+    template_fields: Sequence[str] = (*PostgresOperator.template_fields, 'skip', 'postgres_conn_id')
     def __init__(
             self,
             ca_path: str,
