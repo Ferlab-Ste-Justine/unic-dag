@@ -54,7 +54,7 @@ with DAG(
             "to_be_published": Param(True, type="boolean", description="Whether the resource should be published."),
             "tables": Param(default=table_name_list, type=["array"], examples=table_name_list,
                             description="Tables to load."),
-            "env": Param("prod", type="string", enum=["dev", "prod"])
+            "env": Param("dev", type="string", enum=["dev", "prod"])
         },
         default_args={
             'trigger_rule': TriggerRule.NONE_FAILED,
