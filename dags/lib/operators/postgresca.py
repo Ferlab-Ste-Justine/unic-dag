@@ -16,12 +16,13 @@ class PostgresCaOperator(PostgresOperator):
     template_fields: Sequence[str] = (*PostgresOperator.template_fields, 'skip', 'postgres_conn_id')
     def __init__(
             self,
+            postgres_conn_id: str,
             ca_path: str,
             ca_filename: str,
             ca_cert: str,
             skip: bool = False,
             **kwargs) -> None:
-        super().__init__(**kwargs)
+        super().__init__(postgres_conn_id=postgres_conn_id, **kwargs)
         self.ca_path = ca_path
         self.ca_filename = ca_filename
         self.ca_cert = ca_cert
