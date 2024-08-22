@@ -29,6 +29,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
     :param table_name           Postgres table name
     :param table_schema_path    Path where the create table query is located
     :param primary_keys         List of table primary keys used for the upsert
+    :param excluded_columns     List of table columns to exclude from the upsert (columns that should not be updated)
     :param csv_sep              Separator of the CSV file, defaults to ","
     :param skip:                True to skip the task, defaults to False (task is not skipped)
     :return:
@@ -48,6 +49,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
             table_name: str,
             table_schema_path: str,
             primary_keys: List[str],
+            excluded_columns=None,
             csv_sep: str = ",",
             skip: bool = False,
             **kwargs) -> None:
@@ -66,6 +68,8 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         self.table_name = table_name
         self.table_schema_path = f"{root}/{table_schema_path}"
         self.primary_keys = primary_keys
+        if excluded_columns is None:
+            self.excluded_columns = []
         self.csv_sep = csv_sep
         self.postgres_conn_id = postgres_conn_id
         self.skip = skip
@@ -88,7 +92,8 @@ class UpsertCsvToPostgres(PostgresCaOperator):
 
         with open(local_file.name, 'rt') as temp_file:
             columns = csv.DictReader(temp_file, delimiter=self.csv_sep).fieldnames
-            update_columns = [col for col in columns if col not in self.primary_keys]
+            excluded_update_columns = self.primary_keys + self.excluded_columns
+            update_columns = [col for col in columns if col not in excluded_update_columns]
 
         # Generate create temp table query
         staging_table_name = f"{self.table_name}_staging"

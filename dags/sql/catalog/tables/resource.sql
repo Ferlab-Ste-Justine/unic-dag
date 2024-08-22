@@ -5,6 +5,7 @@ CREATE TABLE IF NOT EXISTS catalog.resource
 (
     id                              SERIAL PRIMARY KEY,
     last_update                     TIMESTAMP                  NOT NULL DEFAULT NOW(),
+    created_at                      TIMESTAMP                  NOT NULL DEFAULT now(),
     code                            VARCHAR(50) UNIQUE         NOT NULL,
     name                            VARCHAR(255)               NOT NULL,
     title                           VARCHAR(500),
@@ -21,7 +22,7 @@ CREATE TABLE IF NOT EXISTS catalog.resource
     project_completion_date         DATE,
     to_be_published                 BOOLEAN                    NOT NULL,
     system_database_type            VARCHAR(255),
-    project_analyst_id              INTEGER REFERENCES catalog.analyst (id),
+    project_analyst_id              INTEGER                    REFERENCES catalog.analyst (id) ON DELETE SET NULL,
     system_collection_starting_year INTEGER,
     dict_current_version            VARCHAR(255)
 );
