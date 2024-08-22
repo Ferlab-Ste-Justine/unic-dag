@@ -127,6 +127,7 @@ with DAG(
                 table_name=table_name,
                 table_schema_path=f"sql/catalog/tables/{table_name}.sql",
                 primary_keys=primary_keys,
+                excluded_columns=["created_at"],
                 skip=skip_task(table_name)
             )
 
