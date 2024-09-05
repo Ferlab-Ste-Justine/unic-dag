@@ -68,8 +68,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         self.table_name = table_name
         self.table_schema_path = f"{root}/{table_schema_path}"
         self.primary_keys = primary_keys
-        if excluded_columns is None:
-            self.excluded_columns = []
+        self.excluded_columns = excluded_columns if excluded_columns else []
         self.csv_sep = csv_sep
         self.postgres_conn_id = postgres_conn_id
         self.skip = skip
