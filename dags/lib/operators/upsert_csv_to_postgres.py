@@ -102,7 +102,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
                          f"CREATE TEMP TABLE {staging_table_name}")
 
             # Remove foreign table constraints
-            create_table_query = re.sub(r"REFERENCES\s*\w+\.\w+\s*\(\w+\)", "", create_table_query)
+            create_table_query = re.sub(r"REFERENCES\s*\w+\.\w+\s*\(\w+\)\s*ON\s*DELETE\s*(CASCADE|SET\s*NULL)", "", create_table_query)
 
         # Generate copy query
         copy_query = sql.SQL("COPY {staging_table} ({columns}) FROM STDIN DELIMITER {sep} CSV HEADER").format(
