@@ -42,7 +42,7 @@ dag = DAG(
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
-    max_active_runs=1, 
+    max_active_runs=1,
     max_active_tasks=3,
     tags=TAGS
 )
@@ -60,7 +60,7 @@ def create_spark_task(destination: str, cluster_size: str, main_class: str, zone
         SparkOperator
     """
 
-    args = [
+    spark_args = [
         "--config", "config/prod.conf",
         "--steps", steps,
         "--app-name", destination,
@@ -71,7 +71,7 @@ def create_spark_task(destination: str, cluster_size: str, main_class: str, zone
     return SparkOperator(
         task_id=destination,
         name=destination,
-        arguments=args,
+        arguments=spark_args,
         zone=zone,
         spark_class=main_class,
         spark_jar=jar,
@@ -81,7 +81,7 @@ def create_spark_task(destination: str, cluster_size: str, main_class: str, zone
     )
 
 with dag:
-    
+
     philips_curated_tasks_config = [
         ('curated_philips_sip_external_patient', 'medium-etl'),
         ('curated_philips_neo_external_patient', 'medium-etl'),
@@ -98,10 +98,10 @@ with dag:
         ("anonymized_philips_sip_patient_data" , "large-etl") ,
     ]
 
-    curated_spark_tasks = [create_spark_task(destination, cluster_size, CURATED_MAIN_CLASS, CURATED_ZONE) 
+    curated_spark_tasks = [create_spark_task(destination, cluster_size, CURATED_MAIN_CLASS, CURATED_ZONE)
                              for destination, cluster_size in philips_curated_tasks_config]
-    
-    anonymized_spark_tasks = [create_spark_task(destination, cluster_size, ANONYMIZED_MAIN_CLASS, ANONYMIZED_ZONE) 
+
+    anonymized_spark_tasks = [create_spark_task(destination, cluster_size, ANONYMIZED_MAIN_CLASS, ANONYMIZED_ZONE)
                               for destination, cluster_size in philips_anonymized_tasks_config]
 
     start('start_curated_philips') >> curated_spark_tasks >> start('start_anonymized_philips') >> anonymized_spark_tasks >> end('end_ingestion_philips')
