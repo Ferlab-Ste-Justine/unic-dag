@@ -6,7 +6,7 @@ DAG pour l'optimization des tables deltas
 from typing import List
 
 from airflow import DAG
-from airflow.models import Param, DagRun
+from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
 from lib.config import jar, spark_failure_msg
