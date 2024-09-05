@@ -14,8 +14,11 @@ from lib.operators.spark import SparkOperator
 from lib.tasks.notify import start, end
 
 DOC = """
-    ******************** Anonymized Philips DAG ********************
+    # Anonymized Philips DAG
+
+    ### Description
     High-Resolution Neonatal and Sip Data Anonymization ETL from Philips daily data
+
 """
 
 CURATED_ZONE = "red"
@@ -43,7 +46,7 @@ dag = DAG(
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=1,
-    max_active_tasks=3,
+    max_active_tasks=2,
     tags=TAGS
 )
 
@@ -104,4 +107,5 @@ with dag:
     anonymized_spark_tasks = [create_spark_task(destination, cluster_size, ANONYMIZED_MAIN_CLASS, ANONYMIZED_ZONE)
                               for destination, cluster_size in philips_anonymized_tasks_config]
 
-    start('start_curated_philips') >> curated_spark_tasks >> start('start_anonymized_philips') >> anonymized_spark_tasks >> end('end_ingestion_philips')
+    start('start_curated_philips') >> curated_spark_tasks >> end('end_curated_philips') >> start('start_anonymized_philips') >> anonymized_spark_tasks >> end('end_ingestion_philips')
+    
