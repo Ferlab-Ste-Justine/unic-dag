@@ -1,0 +1,45 @@
+{
+  "concurrency": 1,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [
+    {
+      "destination_zone": "yellow",
+      "destination_subzone": "enriched",
+      "main_class": "bio.ferlab.ui.etl.yellow.enriched.sil.cholestaseneonatale.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"enriched_cholestaseneonatale_laboratory_results", "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
+      ]
+    },
+
+    {
+      "destination_zone": "green",
+      "destination_subzone": "released",
+      "main_class": "bio.ferlab.ui.etl.green.released.versioned.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"released_cholestaseneonatale_laboratory_results", "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
+      ]
+    },
+
+    {
+      "destination_zone": "green",
+      "destination_subzone": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"published_cholestaseneonatale_laboratory_results", "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
+      ]
+    }
+  ]
+}
