@@ -6,7 +6,7 @@ DAG pour l'optimization des tables deltas
 from typing import List
 
 from airflow import DAG
-from airflow.models import Param
+from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
 
 from lib.config import jar, spark_failure_msg
@@ -36,8 +36,8 @@ with DAG(
         dag_id="optimize_delta_tables",
         params={
             "branch": Param("master", type="string"),
-            "dataset-ids": Param([], type=["array"],description="Tables to optimize."), # add examples of all tables?
-            "number-of-versions": Param(10, type="integer", description="Number of versions to keep during vacuum"), # what should the default be?
+            "dataset-ids": Param([], type=["array"],description="Tables to optimize."),
+            "number-of-versions": Param(10, type="integer", description="Number of versions to keep during vacuum"),
             "zone": Param("red", type="string", enum=["red", "yellow", "green"])
         },
         default_args={
@@ -51,14 +51,19 @@ with DAG(
 
 ) as dag:
 
-    def get_dataset_ids() -> List[str]:
-        return "{{ params.number-of-versions or '' }}".split(",") # this may fail, try dagRun if case
+    def get_dataset_ids(ti=None) -> List[str]:
+        dag_run: DagRun = ti.dag_run
+
+        dataset_ids_args = []
+        dataset_ids = dag_run.conf['dataset_ids']
+        [dataset_ids_args.extend(['--dataset_id', d]) for d in dataset_ids]
+        return dataset_ids_args
 
     def get_number_of_versions() -> int:
-        return int("{{ params.number-of-versions or '' }}") # this may fail, try dagRun if case
+        return "{{ params.number-of-versions }}"
 
     def get_zone() -> str:
-        return "{{ params.zone or '' }}"
+        return "{{ params.zone }}"
 
     def arguments(dataset_ids: list, number_of_versions: int, app_name: str) -> List[str]:
         args = [
