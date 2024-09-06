@@ -12,7 +12,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"enriched_cholestaseneonatale_laboratory_results"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
+        {"dataset_id":"enriched_cholestaseneonatale_laboratory_results", "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
       ]
     },
 
@@ -25,7 +25,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"released_cholestaseneonatale_laboratory_results"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
+        {"dataset_id":"released_cholestaseneonatale_laboratory_results", "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
       ]
     },
 
@@ -38,7 +38,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"published_cholestaseneonatale_laboratory_results"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
+        {"dataset_id":"published_cholestaseneonatale_laboratory_results", "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
       ]
     }
   ]
