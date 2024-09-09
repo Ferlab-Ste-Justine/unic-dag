@@ -5,6 +5,7 @@ DAG pour l'optimization des tables deltas
 
 from typing import List
 
+from airflow.decorators import task
 from airflow import DAG
 from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
@@ -36,8 +37,8 @@ with DAG(
         dag_id="optimize_delta_tables",
         params={
             "branch": Param("master", type="string"),
-            "dataset-ids": Param([], type=["array"],description="Tables to optimize."),
-            "number-of-versions": Param(10, type="integer", description="Number of versions to keep during vacuum"),
+            "dataset_ids": Param([], type=["array"],description="Tables to optimize."),
+            "number_of_versions": Param(10, type="integer", description="Number of versions to keep during vacuum"),
             "zone": Param("red", type="string", enum=["red", "yellow", "green"])
         },
         default_args={
@@ -51,21 +52,10 @@ with DAG(
 
 ) as dag:
 
-    def get_dataset_ids(ti=None) -> List[str]:
-        dag_run: DagRun = ti.dag_run
-
-        dataset_ids_args = []
-        dataset_ids = dag_run.conf['dataset_ids']
-        [dataset_ids_args.extend(['--dataset_id', d]) for d in dataset_ids]
-        return dataset_ids_args
-
-    def get_number_of_versions() -> int:
-        return "{{ params.number-of-versions }}"
-
     def get_zone() -> str:
         return "{{ params.zone }}"
 
-    def arguments(dataset_ids: list, number_of_versions: int, app_name: str) -> List[str]:
+    def arguments(dataset_ids: List[str], number_of_versions: int, app_name: str) -> List[str]:
         args = [
             dataset_ids,
             number_of_versions,
@@ -76,16 +66,38 @@ with DAG(
 
         return args
 
-    optimize_tables = SparkOperator(
-        task_id="optimize_delta_tables",
-        name="optimize-delta-tables",
-        arguments=arguments(dataset_ids=get_dataset_ids(), number_of_versions=get_number_of_versions(), app_name="optimize_delta_tables"),
-        zone=get_zone(),
-        spark_class=MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config="medium-etl",
-        dag=dag
-    )
+    @task
+    def get_dataset_ids(ti=None) -> List[str]:
+        dag_run: DagRun = ti.dag_run
 
-    start("start_optimize_delta_tables") >> optimize_tables >> end("end_optimize_delta_tables")
+        dataset_ids_args = []
+        dataset_ids = dag_run.conf['dataset_ids']
+        [dataset_ids_args.extend(['--dataset_id', d]) for d in dataset_ids]
+        return dataset_ids_args
+
+    @task
+    def get_number_of_versions(ti=None) -> int:
+        dag_run: DagRun = ti.dag_run
+
+        return dag_run.conf['number_of_versions']
+
+    @task
+    def optimize_delta_tables(dataset_ids: List[str], number_of_versions: int):
+        return SparkOperator(
+            task_id="optimize_delta_tables",
+            name="optimize-delta-tables",
+            arguments=arguments(dataset_ids=dataset_ids, number_of_versions=number_of_versions, app_name="optimize_delta_tables"),
+            zone=get_zone(),
+            spark_class=MAIN_CLASS,
+            spark_jar=jar,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="medium-etl",
+            dag=dag
+        )
+
+    get_dataset_ids_task = get_dataset_ids()
+    get_number_of_versions_task = get_number_of_versions()
+
+    start("start_optimize_delta_tables") >> get_dataset_ids_task >> get_number_of_versions_task \
+    >> optimize_delta_tables(dataset_ids=get_dataset_ids_task, number_of_versions=get_number_of_versions_task) \
+    >> end("end_optimize_delta_tables")
