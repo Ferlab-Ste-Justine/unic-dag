@@ -41,7 +41,7 @@ with DAG(
             "branch": Param("master", type="string"),
             "dataset_ids": Param([], type=["array"],description="Tables to optimize."),
             "number_of_versions": Param(10, type="integer", description="Number of versions to keep during vacuum"),
-            "zone": Param("red", type="string", enum=["red", "yellow", "green"])
+            "zone": Param("yellow", type="string", enum=["red", "yellow", "green"])
         },
         default_args={
             'trigger_rule': TriggerRule.NONE_FAILED,
@@ -55,10 +55,9 @@ with DAG(
 
 ) as dag:
 
-    def arguments(dataset_ids: List[str], number_of_versions: str, app_name: str) -> List[str]:
+    def arguments(number_of_versions: str, app_name: str) -> List[str]:
         args = [
-            dataset_ids,
-            number_of_versions,
+            "--number-of-versions", number_of_versions,
             "--config", "config/prod.conf",
             "--steps", "default",
             "--app-name", app_name
@@ -81,11 +80,29 @@ with DAG(
         [dataset_ids_args.extend(['--dataset_id', d]) for d in dataset_ids]
         return dataset_ids_args
 
+
+    # Custom Operator
+    class OptimizeDeltaTables(SparkOperator):
+        template_fields = SparkOperator.template_fields + ('arguments', 'dataset_ids',)
+
+        def __init__(self,
+                     dataset_ids,
+                     **kwargs):
+            super().__init__(**kwargs)
+            self.dataset_ids = dataset_ids
+
+        def execute(self, **kwargs):
+            # Append dataset_ids to arguments at runtime, after dataset_ids has been templated. Otherwise, dataset_ids
+            # is interpreted as XComArg and can't be appended to arguments.
+            self.arguments = self.arguments + self.dataset_ids
+            super().execute(**kwargs)
+
     def optimize_delta_tables(dataset_ids: List[str]):
-        return SparkOperator(
+        return OptimizeDeltaTables(
             task_id="optimize_delta_tables",
             name="optimize-delta-tables",
-            arguments=arguments(dataset_ids=dataset_ids, number_of_versions=get_number_of_versions(), app_name="optimize_delta_tables"),
+            arguments=arguments(number_of_versions=get_number_of_versions(), app_name="optimize_delta_tables"),
+            dataset_ids=dataset_ids,
             zone=get_zone(),
             spark_class=MAIN_CLASS,
             spark_jar=jar,
