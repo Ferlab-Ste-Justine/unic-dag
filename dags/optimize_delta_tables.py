@@ -3,6 +3,8 @@ DAG pour l'optimization des tables deltas
 """
 # pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned
 
+from datetime import datetime
+
 from typing import List
 
 from airflow.decorators import task
@@ -46,6 +48,7 @@ with DAG(
             'on_failure_callback': Slack.notify_task_failure,
         },
         doc_md=DOC,
+        start_date=datetime(2024, 9, 9),
         render_template_as_native_obj=True,
         is_paused_upon_creation=True,
         schedule_interval=None,
