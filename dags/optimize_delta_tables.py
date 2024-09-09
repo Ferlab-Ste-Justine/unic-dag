@@ -1,7 +1,7 @@
 """
 DAG pour l'optimization des tables deltas
 """
-# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned
+# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, too-many-ancestors
 
 from datetime import datetime
 
@@ -81,8 +81,8 @@ with DAG(
         return dataset_ids_args
 
 
-    # Custom Operator
     class OptimizeDeltaTables(SparkOperator):
+        """Custom Operator for Delta Table Optimization"""
         template_fields = SparkOperator.template_fields + ('arguments', 'dataset_ids',)
 
         def __init__(self,
