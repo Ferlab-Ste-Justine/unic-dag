@@ -40,7 +40,7 @@ with DAG(
         params={
             "branch": Param("master", type="string"),
             "dataset_ids": Param([], type=["array"],description="Tables to optimize."),
-            "number_of_versions": Param(10, type="integer", description="Number of versions to keep during vacuum"),
+            "number_of_versions": Param("10", type="string", description="Number of versions to keep during vacuum"),
             "zone": Param("yellow", type="string", enum=["red", "yellow", "green"])
         },
         default_args={
