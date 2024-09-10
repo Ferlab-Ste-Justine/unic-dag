@@ -1,7 +1,7 @@
 """
 DAG pour l'optimization des tables deltas
 """
-# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, too-many-ancestors
+# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, too-many-ancestors, unused-argument
 
 from datetime import datetime
 
@@ -57,7 +57,7 @@ with DAG(
 
     def arguments(number_of_versions: str, app_name: str) -> List[str]:
         args = [
-            "--number-of-versions", f'"{number_of_versions}"',
+            "--number-of-versions", "10",
             "--config", "config/prod.conf",
             "--steps", "default",
             "--app-name", app_name
