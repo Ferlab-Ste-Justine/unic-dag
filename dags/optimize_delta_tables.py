@@ -69,7 +69,7 @@ with DAG(
         return "{{ params.zone }}"
 
     def get_number_of_versions() -> str:
-        return "{{ params.number_of_versions }}"
+        return "{{ params.number_of_versions | quote }}"
 
     @task
     def get_dataset_ids(ti=None) -> List[str]:
