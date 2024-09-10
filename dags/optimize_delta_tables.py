@@ -95,7 +95,7 @@ with DAG(
         def execute(self, **kwargs):
             # Append dataset_ids to arguments at runtime, after dataset_ids has been templated. Otherwise, dataset_ids
             # is interpreted as XComArg and can't be appended to arguments.
-            self.arguments = self.arguments + self.dataset_ids + "--number-of-versions" + str(self.number_of_versions)
+            self.arguments = self.arguments + self.dataset_ids + ["--number-of-versions", str(self.number_of_versions)]
             super().execute(**kwargs)
 
     def optimize_delta_tables(dataset_ids: List[str]):
