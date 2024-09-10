@@ -1,7 +1,7 @@
 """
 DAG pour l'optimization des tables deltas
 """
-# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, too-many-ancestors
+# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, too-many-ancestors, unused-argument
 
 from datetime import datetime
 
