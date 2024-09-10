@@ -118,4 +118,3 @@ with DAG(
     start("start_optimize_delta_tables") >> get_dataset_ids_task \
     >> optimize_delta_tables(dataset_ids=get_dataset_ids_task) \
     >> end("end_optimize_delta_tables")
-
