@@ -55,9 +55,8 @@ with DAG(
 
 ) as dag:
 
-    def arguments(number_of_versions: str, app_name: str) -> List[str]:
+    def arguments(app_name: str) -> List[str]:
         args = [
-            "--number-of-versions", number_of_versions,
             "--config", "config/prod.conf",
             "--steps", "default",
             "--app-name", app_name
@@ -69,7 +68,7 @@ with DAG(
         return "{{ params.zone }}"
 
     def get_number_of_versions() -> str:
-        return "{{ params.number_of_versions|string }}"
+        return "{{ params.number_of_versions }}"
 
     @task
     def get_dataset_ids(ti=None) -> List[str]:
@@ -83,26 +82,29 @@ with DAG(
 
     class OptimizeDeltaTables(SparkOperator):
         """Custom Operator for Delta Table Optimization"""
-        template_fields = SparkOperator.template_fields + ('arguments', 'dataset_ids',)
+        template_fields = SparkOperator.template_fields + ('arguments', 'dataset_ids', 'number_of_versions')
 
         def __init__(self,
                      dataset_ids,
+                     number_of_versions,
                      **kwargs):
             super().__init__(**kwargs)
             self.dataset_ids = dataset_ids
+            self.number_of_versions = number_of_versions
 
         def execute(self, **kwargs):
             # Append dataset_ids to arguments at runtime, after dataset_ids has been templated. Otherwise, dataset_ids
             # is interpreted as XComArg and can't be appended to arguments.
-            self.arguments = self.arguments + self.dataset_ids
+            self.arguments = self.arguments + self.dataset_ids + "--number-of-versions" + str(self.number_of_versions)
             super().execute(**kwargs)
 
     def optimize_delta_tables(dataset_ids: List[str]):
         return OptimizeDeltaTables(
             task_id="optimize_delta_tables",
             name="optimize-delta-tables",
-            arguments=arguments(number_of_versions=get_number_of_versions(), app_name="optimize_delta_tables"),
+            arguments=arguments(app_name="optimize_delta_tables"),
             dataset_ids=dataset_ids,
+            number_of_versions = get_number_of_versions(),
             zone=get_zone(),
             spark_class=MAIN_CLASS,
             spark_jar=jar,
@@ -116,3 +118,4 @@ with DAG(
     start("start_optimize_delta_tables") >> get_dataset_ids_task \
     >> optimize_delta_tables(dataset_ids=get_dataset_ids_task) \
     >> end("end_optimize_delta_tables")
+
