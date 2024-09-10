@@ -57,7 +57,7 @@ with DAG(
 
     def arguments(number_of_versions: str, app_name: str) -> List[str]:
         args = [
-            "--number-of-versions", number_of_versions,
+            "--number-of-versions", f'"{number_of_versions}"',
             "--config", "config/prod.conf",
             "--steps", "default",
             "--app-name", app_name
