@@ -76,7 +76,7 @@ with DAG(
 
         dataset_ids_args = []
         dataset_ids = dag_run.conf['dataset_ids']
-        [dataset_ids_args.extend(['--dataset_id', d]) for d in dataset_ids]
+        [dataset_ids_args.extend(['--dataset-id', d]) for d in dataset_ids]
         return dataset_ids_args
 
 
