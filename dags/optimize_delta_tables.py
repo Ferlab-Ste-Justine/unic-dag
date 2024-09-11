@@ -33,7 +33,7 @@ Ce DAG prends une liste de dataset ids et compacte et vacuum l'entièreté des d
 
 """
 
-MAIN_CLASS = "bio.ferlab.datalake.spark3.utils.OptimizeDeltaTables.Main"
+MAIN_CLASS = "bio.ferlab.datalake.spark3.utils.OptimizeDeltaTables"
 
 with DAG(
         dag_id="optimize_delta_tables",
