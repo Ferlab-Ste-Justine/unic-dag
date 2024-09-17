@@ -1,0 +1,19 @@
+{
+  "concurrency": 4,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [
+    {
+      "destination_zone": "red",
+      "destination_subzone": "enriched",
+      "main_class": "bio.ferlab.ui.etl.red.enriched.spitzai.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+        {"dataset_id":"enriched_spitzai_participant_index", "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
+      ]
+    }
+  ]
+}
