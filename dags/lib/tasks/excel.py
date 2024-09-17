@@ -202,9 +202,9 @@ def excel_to_csv(s3_source_bucket: str, s3_source_key: str,
     s3_response = s3.get_key(key=s3_source_key, bucket_name=s3_source_bucket)
     excel_data = s3_response.get()['Body'].read()
 
-    # Default na values except 'NA' and 'None' that are sometimes used in our data
+    # Default na values except 'NA', 'None' and 'null' that are sometimes used in our data
     na_values = ['-1.#IND', '1.#QNAN', '1.#IND', '-1.#QNAN', '#N/A N/A', '#N/A', 'N/A', 'n/a', '<NA>', '#NA', 'NULL',
-                 'null', 'NaN', '-NaN', 'nan', '-nan', '']
+                 'NaN', '-NaN', 'nan', '-nan', '']
     df = pd.read_excel(io=BytesIO(excel_data), sheet_name=sheet_name, header=header, keep_default_na=False,
                        na_values=na_values)
 
