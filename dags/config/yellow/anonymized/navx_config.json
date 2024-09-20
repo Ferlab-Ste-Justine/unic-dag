@@ -1,0 +1,19 @@
+{
+    "concurrency": 2,
+    "schedule": null,
+    "timeout_hours": 1,
+    "steps": [
+      {
+        "destination_zone": "yellow",
+        "destination_subzone": "anonymized",
+        "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+        "multiple_main_methods": false,
+        "publish_class": "",
+        "schemas": [],
+        "datasets":
+        [
+          {"dataset_id": "curated_navx_base_donnes_patients_harmonized"    , "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [""], "post_tests": ["equal_counts", "lower_or_equal_null_counts"]},
+          {"dataset_id": "curated_navx_photos_medicales_export_harmonized" , "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [""], "post_tests": ["equal_counts", "lower_or_equal_null_counts"]}
+        ]
+      }]
+  }
