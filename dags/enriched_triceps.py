@@ -14,8 +14,8 @@ from lib.config import default_params, default_timeout_hours, default_args, spar
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import end, start
 
+VERSION = "{{ data_interval_end | ds }}"
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
-
 DOC = """
 # Enriched Triceps DAG
 
@@ -282,7 +282,7 @@ with dag:
 
         def released_arguments(destination: str) -> List[str]:
             # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
-            return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
+            return ["config/prod.conf", "default", destination, VERSION]
 
 
         released_appointment_information = SparkOperator(
@@ -470,7 +470,7 @@ with dag:
         PUBLISHED_MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
 
         def published_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination]
+            return ["config/prod.conf", "default", destination, VERSION]
 
 
         published_appointment_information = SparkOperator(
