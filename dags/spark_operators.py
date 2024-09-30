@@ -308,7 +308,7 @@ def create_spark_job(destination: str,
                 "--destination", destination
             ]
 
-    elif subzone == "released":
+    elif subzone in ["released", "published"]:
         args.append(version)
 
     return SparkOperator(
