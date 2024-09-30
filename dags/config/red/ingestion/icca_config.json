@@ -39,7 +39,7 @@
       {"dataset_id": "anonymized_icca_blood_gas"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "anonymized_icca_d_*"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "anonymized_icca_lits"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id": "anonymized_icca_ptassessment"      , "cluster_type": "large", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_icca_ptassessment"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "anonymized_icca_ptbedstay"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "anonymized_icca_ptcensus"          , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "anonymized_icca_ptdemographic"     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
