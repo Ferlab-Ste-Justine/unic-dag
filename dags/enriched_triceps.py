@@ -14,7 +14,6 @@ from lib.config import default_params, default_timeout_hours, default_args, spar
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import end, start
 
-VERSION = "{{ data_interval_end | ds }}"
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 DOC = """
 # Enriched Triceps DAG
@@ -68,6 +67,8 @@ dag = DAG(
 with dag:
     # def skip_tab() -> str:
     #     return "{% if params.skip_last_visit_survey != True %}{% else %}True{% endif %}"
+
+    VERSION = "{{ data_interval_end | ds }}"
 
     with TaskGroup(group_id="enriched") as enriched:
         ENRICHED_ZONE = "yellow"
