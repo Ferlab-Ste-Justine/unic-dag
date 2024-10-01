@@ -11,7 +11,7 @@ from airflow.models import Param, Variable
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg
+from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg, version
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import end, start
 
@@ -164,7 +164,7 @@ with dag:
 
 
         def published_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination]
+            return ["config/prod.conf", "default", destination, version]
 
 
         published_last_visit_survey = SparkOperator(
