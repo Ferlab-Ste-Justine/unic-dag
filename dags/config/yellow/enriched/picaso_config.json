@@ -13,7 +13,7 @@
       "datasets":
       [
         {"dataset_id":"enriched_picaso_participant_index"            , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []                                   , "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_picaso_patient_medical_record"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_picaso_participant_index"], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"enriched_picaso_patient_medical_record"       , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_picaso_participant_index"], "pre_tests": [], "post_tests": []},
         {"dataset_id":"enriched_picaso_patient_cancer_profile"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_picaso_participant_index"], "pre_tests": [], "post_tests": []},
         {"dataset_id":"enriched_picaso_hospitalisation"              , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_picaso_participant_index"], "pre_tests": [], "post_tests": []},
         {"dataset_id":"enriched_picaso_betadglucan_test"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_picaso_hospitalisation"]  , "pre_tests": [], "post_tests": []},
@@ -32,7 +32,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"released_picaso_patient_medical_record"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"released_picaso_patient_medical_record"       , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"released_picaso_patient_cancer_profile"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"released_picaso_hospitalisation"              , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"released_picaso_betadglucan_test"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
@@ -51,7 +51,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"published_picaso_patient_medical_record"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_picaso_patient_medical_record"       , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"published_picaso_patient_cancer_profile"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"published_picaso_hospitalisation"              , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
         {"dataset_id":"published_picaso_betadglucan_test"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
