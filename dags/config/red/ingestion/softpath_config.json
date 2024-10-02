@@ -32,7 +32,7 @@
     {
       "destination_zone": "red",
       "destination_subzone": "curated",
-      "main_class": "bio.ferlab.ui.etl.red.curated.softpath.Main",
+      "main_class": "bio.ferlab.ui.etl.red.curated.sil.Main",
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
