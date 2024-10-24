@@ -11,7 +11,7 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id":"curated_unic_patient_index", "cluster_type": "large", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["patient_index_valid_counts"]}
+      {"dataset_id":"curated_unic_patient_index", "cluster_type": "large", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["patient_index_valid_counts"]}
     ]
   }, {
     "destination_zone": "yellow",
