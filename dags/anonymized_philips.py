@@ -31,8 +31,8 @@ args = default_args.copy()
 LOCAL_TZ = pendulum.timezone("America/Montreal")
 
 args.update({
-    'depends_on_past': True,
-    'wait_for_downstream': True,
+    'depends_on_past': False,
+    'wait_for_downstream': False,
     'provide_context': True})
 
 dag = DAG(
