@@ -41,7 +41,7 @@ dag = DAG(
     start_date=datetime(2023, 8, 15, tzinfo=LOCAL_TZ),
     schedule_interval="@daily",
     params=default_params,
-    dagrun_timeout=timedelta(hours=4),
+    dagrun_timeout=timedelta(hours=8),
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
