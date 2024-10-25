@@ -1,7 +1,17 @@
+from enum import Enum
+
 from airflow.models import Variable
 
-unic_prod_postgres_vlan2_conn_id = 'unic_prod_postgresql_vlan2_rw'
-unic_dev_postgres_vlan2_conn_id = 'unic_dev_postgresql_vlan2_rw'
+
+class PostgresEnv(Enum):
+    DEV = 'dev'
+    PROD = 'prod'
+
+
+def unic_postgres_vlan2_conn_id(env: PostgresEnv) -> str:
+    return f'unic_{env.value}_postgresql_vlan2_rw'
+
+
 postgres_bi_conn_id = 'postgresql_bi_rw'
 
 postgres_vlan2_ca_path = '/tmp/ca/'  # Corresponds to path in postgres vlan2 connection string
@@ -10,6 +20,7 @@ postgres_bi_ca_path = '/tmp/ca/bi/'  # Corresponds to path in postgres bi connec
 postgres_ca_filename = 'ca.crt'  # Corresponds to filename in postgres connection string
 postgres_vlan2_ca_cert = Variable.get('postgres_vlan2_ca_certificate', None)
 postgres_bi_ca_cert = Variable.get('postgres_ca_certificate', None)
+
 
 def skip_task(table_name: str) -> str:
     """
