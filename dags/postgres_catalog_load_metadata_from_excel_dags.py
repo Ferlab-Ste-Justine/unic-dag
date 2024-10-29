@@ -195,13 +195,13 @@ for env in PostgresEnv:
 
             # analyst table (directly loaded since no transformations have to be run by the ETL)
             load_analyst_table_task = load_table("analyst",
-                                                 s3_key="catalog/csv/output/analyst/analyst.csv",
+                                                 s3_key=f"catalog/{env_name}/csv/output/analyst/analyst.csv",
                                                  primary_keys=["name"])
 
             # resource table
             prepare_resource_table_task = prepare_table("resource", cluster_size="xsmall-etl")
             load_resource_table_task = load_table("resource",
-                                                  s3_key="catalog/csv/output/resource/resource.csv",
+                                                  s3_key=f"catalog/{env_name}/csv/output/resource/resource.csv",
                                                   primary_keys=["code"])
 
             prepare_resource_table_task >> load_resource_table_task
@@ -213,34 +213,34 @@ for env in PostgresEnv:
                 prepare_value_set_table_task = prepare_table("value_set", cluster_size="xsmall-etl",
                                                              project_name=get_project())
                 load_value_set_table_task = load_table("value_set",
-                                                       s3_key=f"catalog/csv/output/{get_project()}/value_set/value_set.csv",
+                                                       s3_key=f"catalog/{env_name}/csv/output/{get_project()}/value_set/value_set.csv",
                                                        primary_keys=["name"])
 
                 # dict_table table
                 prepare_dict_table_table_task = prepare_table("dict_table", cluster_size="xsmall-etl",
                                                               project_name=get_project())
                 load_dict_table_table_task = load_table("dict_table",
-                                                        s3_key=f"catalog/csv/output/{get_project()}/dict_table/dict_table.csv",
+                                                        s3_key=f"catalog/{env_name}/csv/output/{get_project()}/dict_table/dict_table.csv",
                                                         primary_keys=["resource_id", "name"])
 
                 # value_set_code table
                 prepare_value_set_code_table_task = prepare_table("value_set_code", cluster_size="small-etl",
                                                                   project_name=get_project())
                 load_value_set_code_table_task = load_table("value_set_code",
-                                                            s3_key=f"catalog/csv/output/{get_project()}/value_set_code/value_set_code.csv",
+                                                            s3_key=f"catalog/{env_name}/csv/output/{get_project()}/value_set_code/value_set_code.csv",
                                                             primary_keys=["value_set_id", "code"])
 
                 prepare_variable_table_task = prepare_table("variable", cluster_size="small-etl",
                                                             project_name=get_project())
                 load_variable_table_task = load_table("variable",
-                                                      s3_key=f"catalog/csv/output/{get_project()}/variable/variable.csv",
+                                                      s3_key=f"catalog/{env_name}/csv/output/{get_project()}/variable/variable.csv",
                                                       primary_keys=["path"])
 
                 # mapping table
                 prepare_mapping_table_task = prepare_table("mapping", cluster_size="small-etl",
                                                            project_name=get_project())
                 load_mapping_table_task = load_table("mapping",
-                                                     s3_key=f"catalog/csv/output/{get_project()}/mapping/mapping.csv",
+                                                     s3_key=f"catalog/{env_name}/csv/output/{get_project()}/mapping/mapping.csv",
                                                      primary_keys=["value_set_code_id", "original_value"])
 
                 prepare_value_set_table_task >> load_value_set_table_task
