@@ -1,0 +1,58 @@
+{
+  "concurrency": 4,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [
+    {
+      "destination_zone": "yellow",
+      "destination_subzone": "enriched",
+      "main_class": "bio.ferlab.ui.etl.yellow.enriched.trekids.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+      {"dataset_id":"enriched_trekids_participant_index"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []                                    , "pre_tests": [], "post_tests": []},
+      {"dataset_id":"enriched_trekids_hospitalisation"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"enriched_trekids_laboratory"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"enriched_trekids_medication"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"enriched_trekids_patient_info"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"enriched_trekids_patient_medical_history", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"], "pre_tests": [], "post_tests": []}
+      ]
+    },
+
+    {
+      "destination_zone": "green",
+      "destination_subzone": "released",
+      "main_class": "bio.ferlab.ui.etl.green.released.versioned.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+      {"dataset_id":"released_trekids_hospitalisation"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"released_trekids_laboratory"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"released_trekids_medication"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"released_trekids_patient_info"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"released_trekids_patient_medical_history", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
+      ]
+    },
+
+    {
+      "destination_zone": "green",
+      "destination_subzone": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+      {"dataset_id":"published_trekids_hospitalisation"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"published_trekids_laboratory"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"published_trekids_medication"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"published_trekids_patient_info"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id":"published_trekids_patient_medical_history", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
+      ]
+    }
+  ]
+}
