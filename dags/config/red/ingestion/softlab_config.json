@@ -41,15 +41,15 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id":"curated_softmic_v_p_mic_active_order", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softmic_v_p_mic_isocomm"     , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softmic_v_p_mic_isolate"     , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softmic_v_p_mic_media"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softmic_v_p_mic_mediacomm"   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softmic_v_p_mic_order_comm"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softmic_v_p_mic_sensi"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softmic_v_p_mic_test"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softmic_v_p_mic_testcomm"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": []}
+        {"dataset_id":"curated_softmic_v_p_mic_active_order", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
+        {"dataset_id":"curated_softmic_v_p_mic_isocomm"     , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
+        {"dataset_id":"curated_softmic_v_p_mic_isolate"     , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
+        {"dataset_id":"curated_softmic_v_p_mic_media"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
+        {"dataset_id":"curated_softmic_v_p_mic_mediacomm"   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
+        {"dataset_id":"curated_softmic_v_p_mic_order_comm"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
+        {"dataset_id":"curated_softmic_v_p_mic_sensi"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
+        {"dataset_id":"curated_softmic_v_p_mic_test"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
+        {"dataset_id":"curated_softmic_v_p_mic_testcomm"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []}
       ]
     },
     {
@@ -61,12 +61,12 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id": "anonymized_softlab_v_p_genindex_hisaux" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+        {"dataset_id": "anonymized_softlab_v_p_genindex_hisaux" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
         {"dataset_id": "anonymized_softlab_v_p_lab_message"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": []}                ,
-        {"dataset_id": "anonymized_softlab_v_p_lab_order"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+        {"dataset_id": "anonymized_softlab_v_p_lab_order"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
         {"dataset_id": "anonymized_softlab_v_p_lab_ordered_test", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": []}                ,
-        {"dataset_id": "anonymized_softlab_v_p_lab_patient"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-        {"dataset_id": "anonymized_softlab_v_p_lab_s*"          , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+        {"dataset_id": "anonymized_softlab_v_p_lab_patient"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+        {"dataset_id": "anonymized_softlab_v_p_lab_s*"          , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
         {"dataset_id": "anonymized_softlab_v_p_lab_test_result" , "cluster_type": "large" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": []}                ,
         {"dataset_id": "anonymized_softmic_v_p_mic_active_order", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
         {"dataset_id": "anonymized_softmic_v_p_mic_comm*"       , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
