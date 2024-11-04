@@ -11,7 +11,7 @@
       "schemas": [],
       "datasets":
       [
-        {"dataset_id": "anonymized_neurodev_participant_index", "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]}
+        {"dataset_id": "anonymized_neurodev_participant_index", "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]}
       ]
     }]
   }

@@ -11,9 +11,9 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id": "anonymized_laboratoire_systeme_v_s_lab_*"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_laboratoire_systeme_v_s_mic_*"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_laboratoire_systeme_v_s_pat_*"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_laboratoire_systeme_v_s_lab_*"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_laboratoire_systeme_v_s_mic_*"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_laboratoire_systeme_v_s_pat_*"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
       {"dataset_id": "anonymized_laboratoire_systeme_dictionnaire_analyses_hors_quebec", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": []}
     ]
   }]
