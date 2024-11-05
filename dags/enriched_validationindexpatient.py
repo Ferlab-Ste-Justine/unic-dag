@@ -3,11 +3,9 @@ Enriched ValidationIndexPatient DAG
 """
 # pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
 from datetime import datetime, timedelta
-from typing import List
 
 import pendulum
 from airflow import DAG
-from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
 from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg
@@ -45,7 +43,6 @@ dag = DAG(
 
 with dag:
 
-    @task_group()
     def enriched():
         enriched_zone = "red"
         enriched_main_class = "bio.ferlab.ui.etl.red.enriched.validationindexpatient.Main"
