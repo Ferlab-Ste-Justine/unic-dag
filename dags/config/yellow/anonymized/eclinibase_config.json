@@ -37,7 +37,7 @@
       {"dataset_id": "anonymized_eclinibase_v_raison_annulation_rdv"       , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "anonymized_eclinibase_v_raison_debut_attente"        , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "anonymized_eclinibase_v_religion"                    , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id": "anonymized_eclinibase_v_rendez_vous"                 , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "anonymized_eclinibase_v_rendez_vous"                 , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "anonymized_eclinibase_v_rendez_vous_autre_ressource" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "anonymized_eclinibase_v_rendez_vous_rens_divers"     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "anonymized_eclinibase_v_rens_divers"                 , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
