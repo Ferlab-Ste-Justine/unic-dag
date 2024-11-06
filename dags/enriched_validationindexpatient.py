@@ -28,7 +28,7 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_validationindexpatient",
     doc_md=DOC,
-    start_date=datetime(2024, 11, 6, 13, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2024, 10, 9, 13, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=4),
     params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
