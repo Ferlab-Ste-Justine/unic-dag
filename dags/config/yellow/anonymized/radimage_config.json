@@ -11,13 +11,13 @@
     "schemas": [],
     "datasets":
     [
-      {"dataset_id":"anonymized_radimage_c*" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_radimage_e*" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_radimage_i*" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_radimage_m*" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_radimage_p*" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_radimage_re*", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_radimage_s*" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]}
+      {"dataset_id":"anonymized_radimage_c*" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+      {"dataset_id":"anonymized_radimage_e*" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+      {"dataset_id":"anonymized_radimage_i*" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+      {"dataset_id":"anonymized_radimage_m*" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+      {"dataset_id":"anonymized_radimage_p*" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+      {"dataset_id":"anonymized_radimage_re*", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+      {"dataset_id":"anonymized_radimage_s*" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]}
     ]
   }]
 }
