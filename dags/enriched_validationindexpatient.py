@@ -47,7 +47,7 @@ with dag:
         enriched_zone = "red"
         enriched_main_class = "bio.ferlab.ui.etl.red.enriched.validationindexpatient.Main"
 
-        enriched_validationindexpatient_patients_dupliques = SparkOperator(
+        return SparkOperator(
             task_id="enriched_validationindexpatient_patients_dupliques",
             name="enriched-validationindexpatient-patients-dupliques",
             arguments=["config/prod.conf", "default", "enriched_validationindexpatient_patients_dupliques"],
@@ -59,6 +59,6 @@ with dag:
             dag=dag
         )
 
-        enriched_validationindexpatient_patients_dupliques
+    enriched_validationindexpatient_patients_dupliques = enriched()
 
-    start("start_enriched_validationindexpatient") >> enriched >> end("end_enriched_validationindexpatient")
+    start("start_enriched_validationindexpatient") >> enriched_validationindexpatient_patients_dupliques >> end("end_enriched_validationindexpatient")
