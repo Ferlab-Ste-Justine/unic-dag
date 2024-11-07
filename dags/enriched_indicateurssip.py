@@ -24,7 +24,7 @@ DOC = """
 ETL enriched pour le projet Inidicateurs SIP. 
 
 ### Description
-Cet ETL met à jour d'une façon hebdomadaire 4 tables : Sejour, Catheter, Ventilation et Extubation à partir de ICCA. 
+Cet ETL met à jour d'une façon hebdomadaire 6 tables : Sejour, Catheter, Ventilation, Extubation, Ecmo et Scores à partir de ICCA. 
 Ces tables vont être utilisées pour générer les graphes Power BI pour afficher les indicateurs demandés.
 
 ### Horaire
@@ -151,8 +151,33 @@ with dag:
             dag=dag,
         )
 
+        enriched_ecmo = SparkOperator(
+            task_id="enriched_indicateurssip_ecmo",
+            name="enriched-indicateurssip-ecmo",
+            arguments=enriched_arguments("enriched_indicateurssip_ecmo"),
+            zone=enriched_zone,
+            spark_class=enriched_main_class,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag,
+        )
+
+        enriched_scores = SparkOperator(
+            task_id="enriched_indicateurssip_scores",
+            name="enriched-indicateurssip-scores",
+            arguments=enriched_arguments("enriched_indicateurssip_scores"),
+            zone=enriched_zone,
+            spark_class=enriched_main_class,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag,
+        )
+
         enriched_participant_index >> enriched_sejour >> [enriched_catheter, enriched_ventilation,
-                                                          enriched_extubation, enriched_lits, enriched_infirmieres]
+                                                          enriched_extubation, enriched_lits, enriched_infirmieres,
+                                                          enriched_ecmo, enriched_scores]
 
     ENRICHED_GROUP = enriched()
 
@@ -245,7 +270,32 @@ with dag:
             dag=dag,
         )
 
-        [released_sejour, released_catheter, released_ventilation, released_extubation, released_lits, released_infirmieres]
+        released_ecmo = SparkOperator(
+            task_id="released_indicateurssip_ecmo",
+            name="released-indicateurssip-ecmo",
+            arguments=released_arguments("released_indicateurssip_ecmo"),
+            zone=released_zone,
+            spark_class=released_main_class,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag,
+        )
+
+        released_scores = SparkOperator(
+            task_id="released_indicateurssip_scores",
+            name="released-indicateurssip-scores",
+            arguments=released_arguments("released_indicateurssip_scores"),
+            zone=released_zone,
+            spark_class=released_main_class,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag,
+        )
+
+
+        [released_sejour, released_catheter, released_ventilation, released_extubation, released_lits, released_infirmieres, released_ecmo, released_scores]
 
     RELEASED_GROUP = released()
 
@@ -261,7 +311,9 @@ with dag:
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/sejour/sejour.csv"          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "sejour"     },
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ventilation/ventilation.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ventilation"},
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/lits/lits.csv"              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "lits"       },
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/infirmieres/infirmieres.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infirmieres"}
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/infirmieres/infirmieres.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infirmieres"},
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ecmo/ecmo.csv"              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ecmo"}       ,
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/scores/scores.csv"          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "scores"}
         ]
 
         published_indicateurs_sip = CopyCsvToPostgres(
