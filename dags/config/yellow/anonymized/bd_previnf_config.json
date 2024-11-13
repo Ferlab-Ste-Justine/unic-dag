@@ -1,0 +1,22 @@
+{
+    "concurrency": 3,
+    "schedule": null,
+    "timeout_hours": 2,
+    "steps": [{
+      "destination_zone": "yellow",
+      "destination_subzone": "anonymized",
+      "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "datasets":
+      [
+         {"dataset_id":"anonymized_bd_previnf_tab_denominateurs_anneeprecedente", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_indicateurs"                  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_indicateurs_anneeprecedente"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_listdenominateurs"            , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_parametrescalculsindicateurs" , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_unites"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
+      ]
+    }]
+  }
