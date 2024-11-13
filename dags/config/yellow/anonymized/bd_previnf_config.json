@@ -16,7 +16,6 @@
          {"dataset_id":"anonymized_bd_previnf_tab_indicateurs_anneeprecedente"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
          {"dataset_id":"anonymized_bd_previnf_tab_listdenominateurs"            , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
          {"dataset_id":"anonymized_bd_previnf_tab_parametrescalculsindicateurs" , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-         {"dataset_id":"anonymized_growthxp_visit"                              , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
          {"dataset_id":"anonymized_bd_previnf_tab_unites"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
       ]
     }]
