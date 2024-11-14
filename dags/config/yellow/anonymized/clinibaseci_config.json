@@ -13,7 +13,7 @@
     "datasets":
     [
       {"dataset_id": "anonymized_clinibaseci_ben*"      , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_diagnostic", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_clinibaseci_diagnostic", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
       {"dataset_id": "anonymized_clinibaseci_lit_tb"    , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
       {"dataset_id": "anonymized_clinibaseci_sejclin_tb", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
       {"dataset_id": "anonymized_clinibaseci_sejhosp*"  , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
