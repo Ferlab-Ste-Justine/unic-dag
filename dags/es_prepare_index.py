@@ -22,11 +22,12 @@ ZONE = "yellow"
 env_name = None
 
 
-def arguments(name: str) -> List[str]:
+def arguments(task_id: str) -> List[str]:
     return [
+        task_id,
         "--config", "config/prod.conf",
         "--steps", "default",
-        "--app-name", f"prepare_{name}",
+        "--app-name", f"prepare_{task_id}",
         "--env", env_name
     ]
 
