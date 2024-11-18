@@ -2,7 +2,7 @@
 Génération des DAGs pour le préaration des indexs OpenSearch.
 Un DAG par environnement postgres est généré.
 """
-# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned
+# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, cell-var-from-loop
 
 from datetime import datetime
 from typing import List
@@ -11,8 +11,8 @@ from airflow import DAG
 from airflow.decorators import task_group
 from airflow.utils.trigger_rule import TriggerRule
 
+from lib.tasks.opensearch import prepare_index
 from lib.config import default_params, jar, spark_failure_msg
-from lib.operators.spark import SparkOperator
 from lib.postgres import PostgresEnv
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -20,6 +20,7 @@ from lib.tasks.notify import start, end
 PREPARE_INDEX_MAIN_CLASS = 'bio.ferlab.ui.etl.catalog.es.PrepareIndex'
 ZONE = "yellow"
 env_name = None
+
 
 def arguments(name: str) -> List[str]:
     return [
@@ -69,17 +70,8 @@ for env in PostgresEnv:
                 ("es_index_variable_centric", "large-etl")
             ]
 
-            [SparkOperator(
-                task_id=task_id,
-                name=task_id.replace("_","-"),
-                zone=ZONE,
-                arguments=arguments("resource_centric"),
-                spark_class=PREPARE_INDEX_MAIN_CLASS,
-                spark_jar=jar,
-                spark_failure_msg=spark_failure_msg,
-                spark_config=cluster_size,
-                dag=dag
-            ) for task_id, cluster_size in es_prepare_index_conf]
+            [prepare_index(task_id, arguments(task_id), jar, spark_failure_msg,
+                           cluster_size, dag) for task_id, cluster_size in es_prepare_index_conf]
 
 
         start("start_es_prepare_index") >> prepare_index_group() >> end("end_postgres_prepare_index")
