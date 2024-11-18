@@ -11,8 +11,7 @@ from airflow import DAG
 from airflow.decorators import task_group
 from airflow.utils.trigger_rule import TriggerRule
 
-from dags.lib.config import default_params
-from lib.config import jar, spark_failure_msg
+from lib.config import default_params, jar, spark_failure_msg
 from lib.operators.spark import SparkOperator
 from lib.postgres import PostgresEnv
 from lib.slack import Slack
