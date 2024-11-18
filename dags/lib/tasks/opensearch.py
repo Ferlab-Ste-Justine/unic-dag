@@ -1,6 +1,6 @@
 from airflow import DAG
 
-from dags.lib.operators.spark import SparkOperator
+from lib.operators.spark import SparkOperator
 
 
 def prepare_index(task_id: str, args: list[str], jar: str, spark_failure_msg: str, cluster_size: str,
