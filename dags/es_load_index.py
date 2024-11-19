@@ -57,7 +57,7 @@ for env in PostgresEnv:
     * variable centric 
     """
 
-    with (DAG(
+    with DAG(
             dag_id=f"es_{env_name}_load_index",
             params={
                 "branch": Param("master", type="string"),
@@ -72,7 +72,8 @@ for env in PostgresEnv:
             is_paused_upon_creation=False,
             schedule_interval=None,
             tags=["opensearch"]
-    ) as dag):
+    ) as dag:
+
         @task_group(group_id="load_indexes")
         def load_index_group(release_id: str):
             es_load_index_conf = [
