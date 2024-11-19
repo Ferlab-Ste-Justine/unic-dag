@@ -2,7 +2,7 @@
 Génération des DAGs pour le load des indexs OpenSearch.
 Un DAG par environnement postgres est généré.
 """
-# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, cell-var-from-loop, syntax-error, redefined-outer-name
+# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, cell-var-from-loop, syntax-error, redefined-outer-name, duplicate-code
 
 from datetime import datetime
 from typing import List
