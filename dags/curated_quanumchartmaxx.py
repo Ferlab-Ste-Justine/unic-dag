@@ -15,6 +15,7 @@ from airflow.operators.empty import EmptyOperator
 
 from lib.config import default_params, default_args, spark_failure_msg, jar
 from lib.operators.spark import SparkOperator
+from lib.slack import Slack
 from lib.tasks.notify import start, end
 from spark_operators import sanitize_string
 
@@ -70,7 +71,8 @@ dag = DAG(
     catchup=False,
     max_active_runs=1,
     concurrency=4,
-    tags=["curated", "anonymized"]
+    tags=["curated", "anonymized"],
+    on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
 )
 
 

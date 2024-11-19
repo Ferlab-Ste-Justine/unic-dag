@@ -9,8 +9,9 @@ from typing import List
 import pendulum
 from airflow import DAG
 
-from lib.config import jar, spark_failure_msg, default_params, default_args
+from lib.config import jar, spark_failure_msg, default_params, default_args, default_timeout_hours
 from lib.operators.spark import SparkOperator
+from lib.slack import Slack
 from lib.tasks.notify import start, end
 
 DOC = """
@@ -45,13 +46,14 @@ dag = DAG(
     start_date=datetime(2023, 8, 15, 3, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),  # everyday at 3am timezone montreal
     params=default_params,
-    dagrun_timeout=timedelta(hours=2),
+    dagrun_timeout=default_timeout_hours,
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=1,
     max_active_tasks=2,
-    tags=["raw"]
+    tags=["raw"],
+    on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
 )
 
 with dag:

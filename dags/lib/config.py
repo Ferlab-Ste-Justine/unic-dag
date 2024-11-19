@@ -1,15 +1,20 @@
 import os
+from datetime import timedelta
 
 from airflow.models import Variable, Param
 
 from lib.failure import Failure
+from lib.slack import Slack
 
 
-def generate_default_args(owner, on_failure_callback):
+def generate_default_args(owner, on_failure_callback, on_retry_callback):
     return {
         "owner": owner,
         "depends_on_past": False,
-        "on_failure_callback": on_failure_callback
+        "on_failure_callback": on_failure_callback,
+        "on_retry_callback": on_retry_callback,
+        "retries": 3,
+        "retry_delay": timedelta(minutes=3),
     }
 
 
@@ -18,7 +23,9 @@ dags_config_path = f"{root}/config"
 extract_schema = '(.*)_config.json'
 config_file = "config/prod.conf"
 
-default_args = generate_default_args(owner="unic", on_failure_callback=Failure.on_failure_callback)
+default_args = generate_default_args(owner="unic",
+                                     on_failure_callback=Failure.on_failure_callback,
+                                     on_retry_callback=Slack.notify_task_retry)
 default_params = {
     "branch": Param("master", type="string"),
     "version": Param("latest", type="string")

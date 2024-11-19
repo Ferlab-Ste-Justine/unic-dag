@@ -1,13 +1,15 @@
 import urllib.parse
-import requests
 from typing import Any
+
+import requests
 from airflow.models import Variable
 
-class Slack:
 
+class Slack:
     SUCCESS = ':large_green_square:'
     INFO = ':large_blue_square:'
     ERROR = ':large_red_square:'
+    WARNING = ':large_yellow_square:'
 
     base_url = Variable.get('base_url', None)
     slack_hook_url = Variable.get('slack_hook_url', None)
@@ -45,7 +47,29 @@ class Slack:
             f'{dag_id}.{task_id}', dag_id, context['run_id'], task_id,
         )
 
-        Slack.notify(f'Task {dag_link} failed.{slack_msg}', type=Slack.ERROR)
+        Slack.notify(f'Task {dag_link} failed. {slack_msg}', type=Slack.ERROR)
+
+    @staticmethod
+    def notify_task_retry(context):
+        dag_id = context['dag'].dag_id
+        task_id = context['task'].task_id
+        ti = context['task_instance']
+
+        slack_msg = """
+                *Retry number*: {retry_number},
+                *Execution Time*: {exec_date},  
+                *Log Url*: {log_url}
+                """.format(
+            retry_number=ti.try_number,
+            exec_date=context['execution_date'],
+            log_url=ti.log_url,
+        )
+
+        dag_link = Slack._dag_link(
+            f'{dag_id}.{task_id}', dag_id, context['run_id'], task_id,
+        )
+
+        Slack.notify(f'Task {dag_link} up for retry. {slack_msg}', type=Slack.WARNING)
 
     @staticmethod
     def notify_dag_start(context):

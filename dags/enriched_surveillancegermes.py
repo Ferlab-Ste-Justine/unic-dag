@@ -12,11 +12,11 @@ from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
 from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg
-from lib.operators.spark import SparkOperator
-from lib.tasks.notify import start, end
-from lib.tasks.excel import parquet_to_excel
-
 from lib.config import green_minio_conn_id
+from lib.operators.spark import SparkOperator
+from lib.slack import Slack
+from lib.tasks.excel import parquet_to_excel
+from lib.tasks.notify import start, end
 
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
@@ -64,7 +64,8 @@ dag = DAG(
     catchup=True,
     max_active_runs=1,
     max_active_tasks=1,
-    tags=["enriched"]
+    tags=["enriched"],
+    on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
 )
 
 with dag:
