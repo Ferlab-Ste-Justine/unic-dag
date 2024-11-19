@@ -70,7 +70,6 @@ for env in PostgresEnv:
             schedule_interval=None,
             tags=["opensearch"]
     ) as dag):
-
         @task_group(group_id="load_indexes")
         def load_index_group(release_id: str):
             es_load_index_conf = [
