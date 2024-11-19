@@ -10,6 +10,7 @@ from airflow import DAG
 
 from lib.config import dags_config_path, extract_schema, default_timeout_hours, default_args, config_file, \
     spark_failure_msg, jar, version, default_params
+from lib.failure import Failure
 from spark_operators import read_json, setup_dag
 
 for (r, zones, _) in os.walk(dags_config_path):
@@ -36,7 +37,8 @@ for (r, zones, _) in os.walk(dags_config_path):
                                 catchup=False,
                                 tags=[subzone],
                                 dagrun_timeout=timedelta(hours=timeout_hours),
-                                is_paused_upon_creation=True
+                                is_paused_upon_creation=True,
+                                on_failure_callback=Failure.on_failure_callback  # Should send notification to Slack when DAG exceeds timeout
                             )
                             with dag:
                                 setup_dag(
