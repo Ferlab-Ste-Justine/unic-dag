@@ -21,12 +21,12 @@ from lib.tasks.notify import start, end
 env_name = None
 
 
-def load_index_arguments(task_id: str, release_id: str, template_filename: str, alias: str) -> List[str]:
+def load_index_arguments(release_id: str, template_filename: str, alias: str) -> List[str]:
     return [
-        task_id,
+        "run",
         "--config", "config/prod.conf",
         "--steps", "default",
-        "--app-name", f"load_{task_id}",
+        "--app-name", f"load_{alias}",
         "--env", env_name,
         "--esnodes", es_url,
         "--release-id", release_id,
@@ -34,9 +34,9 @@ def load_index_arguments(task_id: str, release_id: str, template_filename: str, 
         "--alias", alias
     ]
 
-def publish_index_arguments(task_id: str, release_id: str, alias: str) -> List[str]:
+def publish_index_arguments(release_id: str, alias: str) -> List[str]:
     return [
-        task_id,
+        "run",
         "--esnodes", es_url,
         "--release-id", release_id,
         "--alias", alias
@@ -90,7 +90,7 @@ for env in PostgresEnv:
                 ("es_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
             ]
 
-            [load_index(task_id, load_index_arguments(task_id, release_id, template_filename, alias),
+            [load_index(task_id, load_index_arguments(release_id, template_filename, alias),
                         jar, spark_failure_msg, cluster_size, dag) for
              task_id, alias, cluster_size, template_filename in es_load_index_conf]
 
@@ -102,7 +102,7 @@ for env in PostgresEnv:
                 ("es_publish_index_variable_centric", "variable_centric", "large-etl")
             ]
 
-            [publish_index(task_id, publish_index_arguments(task_id, release_id, alias),
+            [publish_index(task_id, publish_index_arguments(release_id, alias),
                         jar, spark_failure_msg, cluster_size, dag) for
              task_id, alias, cluster_size in es_publish_index_conf]
 
