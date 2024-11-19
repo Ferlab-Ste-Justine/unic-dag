@@ -20,6 +20,7 @@ from lib.tasks.notify import start, end
 
 env_name = None
 
+
 def arguments(task_id: str, release_id: str, template_filename: str, job_type: str) -> List[str]:
     return [
         task_id,
@@ -33,8 +34,10 @@ def arguments(task_id: str, release_id: str, template_filename: str, job_type: s
         "--job-type", job_type
     ]
 
+
 def release_id() -> str:
     return '{{ params.release_id or "" }}'
+
 
 for env in PostgresEnv:
     env_name = env.value
@@ -82,7 +85,8 @@ for env in PostgresEnv:
                         jar, spark_failure_msg, cluster_size, dag) for
              task_id, job_type, cluster_size, template_filename in es_load_index_conf]
 
-        get_release_id_task = get_release_id(release_id(), "resource_centric") # the release id will be the same for all indexes
+
+        get_release_id_task = get_release_id(release_id(), "resource_centric")  # the release id will be the same for all indexes
 
         start("start_es_prepare_index") >> get_release_id_task \
         >> load_index_group(release_id=get_release_id_task) >> end("end_postgres_prepare_index")
