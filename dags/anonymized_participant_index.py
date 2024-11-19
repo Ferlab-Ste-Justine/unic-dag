@@ -8,6 +8,7 @@ from airflow import DAG
 from airflow.models import Param
 
 from lib.config import config_file, jar, version, spark_failure_msg, default_args, default_params
+from lib.slack import Slack
 from spark_operators import setup_dag
 
 config = {
@@ -67,7 +68,8 @@ with DAG(
     catchup=False,
     tags=["anonymized"],
     dagrun_timeout=timedelta(hours=config['timeout_hours']),
-    is_paused_upon_creation=True
+    is_paused_upon_creation=True,
+    on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
 ) as dag:
 
     def skip_task() -> str:

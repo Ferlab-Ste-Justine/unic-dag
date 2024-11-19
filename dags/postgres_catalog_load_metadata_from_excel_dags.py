@@ -13,7 +13,7 @@ from airflow.exceptions import AirflowFailException
 from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import jar, spark_failure_msg, yellow_minio_conn_id
+from lib.config import jar, spark_failure_msg, yellow_minio_conn_id, default_args
 from lib.operators.spark import SparkOperator
 from lib.operators.upsert_csv_to_postgres import UpsertCsvToPostgres
 from lib.postgres import skip_task, postgres_vlan2_ca_path, postgres_ca_filename, \
@@ -49,6 +49,12 @@ def arguments(table_name: str, app_name: str, project_name: Optional[str] = None
 
     return args
 
+
+# Update default args
+dag_args = default_args.copy()
+dag_args.update({
+    'trigger_rule': TriggerRule.NONE_FAILED,
+    'on_failure_callback': Slack.notify_task_failure})
 
 for env in PostgresEnv:
     env_name = env.value
@@ -87,15 +93,13 @@ for env in PostgresEnv:
                 "project": Param(None, type=["null", "string"],
                                  description="Required if 'dict_table', 'value_set', 'value_set_code', 'variable' or 'mapping' are selected in 'tables' param."),
             },
-            default_args={
-                'trigger_rule': TriggerRule.NONE_FAILED,
-                'on_failure_callback': Slack.notify_task_failure,
-            },
+            default_args=dag_args,
             doc_md=doc,
             start_date=datetime(2024, 6, 12),
             is_paused_upon_creation=False,
             schedule_interval=None,
-            tags=["postgresql"]
+            tags=["postgresql"],
+            on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
         @task(task_id="get_tables")
         def get_tables(ti=None) -> List[str]:
@@ -259,6 +263,6 @@ for env in PostgresEnv:
 
         get_tables_task = get_tables()
         start() >> get_tables_task >> validate_project_param(tables=get_tables_task, project=get_project()) \
-            >> excel_to_csv_group() \
-            >> load_tables_group() \
-            >> end()
+        >> excel_to_csv_group() \
+        >> load_tables_group() \
+        >> end()

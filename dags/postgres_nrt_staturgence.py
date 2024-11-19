@@ -8,6 +8,7 @@ from airflow import DAG
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
+from lib.config import default_args
 from lib.groups.postgres.create_tables import create_tables
 from lib.groups.postgres.drop_tables import drop_tables
 from lib.slack import Slack
@@ -61,19 +62,23 @@ sql_config = {
 }
 table_name_list = [table['name'] for table in sql_config['tables']]
 
+# Update default args
+args = default_args.copy()
+args.update({
+    'trigger_rule': TriggerRule.NONE_FAILED,
+    'on_failure_callback': Slack.notify_task_failure})
+
 with DAG(
         dag_id="postgres_nrt_staturgence",
         params={"tables": Param(table_name_list, type=['array'], examples=table_name_list)},
-        default_args={
-            'trigger_rule': TriggerRule.NONE_FAILED,
-            'on_failure_callback': Slack.notify_task_failure,
-        },
+        default_args=args,
         doc_md=DOC,
         start_date=datetime(2024, 5, 7),
         is_paused_upon_creation=False,
         schedule_interval=None,
         max_active_tasks=1,
-        tags=["postgresql"]
+        tags=["postgresql"],
+        on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
 ) as dag:
 
     start("start_postgres_nrt_staturgence") >> create_resource(PostgresResource.SCHEMA, sql_config) \

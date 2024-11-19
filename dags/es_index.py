@@ -12,11 +12,11 @@ from airflow.decorators import task_group
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.tasks.opensearch import load_index, get_release_id, publish_index
-from lib.config import jar, spark_failure_msg, es_url
+from lib.config import jar, spark_failure_msg, es_url, default_args
 from lib.postgres import PostgresEnv
 from lib.slack import Slack
 from lib.tasks.notify import start, end
+from lib.tasks.opensearch import load_index, get_release_id, publish_index
 
 env_name = None
 
@@ -33,6 +33,7 @@ def load_index_arguments(release_id: str, template_filename: str, alias: str) ->
         "--alias", alias
     ]
 
+
 def publish_index_arguments(release_id: str, alias: str) -> List[str]:
     return [
         "--esnodes", es_url,
@@ -44,6 +45,12 @@ def publish_index_arguments(release_id: str, alias: str) -> List[str]:
 def release_id() -> str:
     return '{{ params.release_id or "" }}'
 
+
+# Update default args
+args = default_args.copy()
+args.update({
+    'trigger_rule': TriggerRule.NONE_FAILED,
+    'on_failure_callback': Slack.notify_task_failure})
 
 for env in PostgresEnv:
     env_name = env.value
@@ -69,17 +76,14 @@ for env in PostgresEnv:
                 "branch": Param("master", type="string"),
                 "release_id": Param("", type=["null", "string"])
             },
-            default_args={
-                'trigger_rule': TriggerRule.NONE_FAILED,
-                'on_failure_callback': Slack.notify_task_failure,
-            },
+            default_args=args,
             doc_md=doc,
             start_date=datetime(2024, 11, 19),
             is_paused_upon_creation=False,
             schedule_interval=None,
-            tags=["opensearch"]
+            tags=["opensearch"],
+            on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
-
         @task_group(group_id="load_indexes")
         def load_index_group(release_id: str):
             es_load_index_conf = [
@@ -92,6 +96,7 @@ for env in PostgresEnv:
                         jar, spark_failure_msg, cluster_size, dag) for
              task_id, alias, cluster_size, template_filename in es_load_index_conf]
 
+
         @task_group(group_id="publish_indexes")
         def publish_index_group(release_id: str):
             es_publish_index_conf = [
@@ -101,11 +106,12 @@ for env in PostgresEnv:
             ]
 
             [publish_index(task_id, publish_index_arguments(release_id, alias),
-                        jar, spark_failure_msg, cluster_size, dag) for
+                           jar, spark_failure_msg, cluster_size, dag) for
              task_id, alias, cluster_size in es_publish_index_conf]
 
 
-        get_release_id_task = get_release_id(release_id(), "resource_centric")  # the release id will be the same for all indexes
+        get_release_id_task = get_release_id(release_id(),
+                                             "resource_centric")  # the release id will be the same for all indexes
 
         start("start_es_prepare_index") >> get_release_id_task \
         >> load_index_group(release_id=get_release_id_task) \

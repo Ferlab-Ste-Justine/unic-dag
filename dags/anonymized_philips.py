@@ -11,6 +11,7 @@ from airflow import DAG
 
 from lib.config import default_params, default_args, spark_failure_msg, jar
 from lib.operators.spark import SparkOperator
+from lib.slack import Slack
 from lib.tasks.notify import start, end
 
 DOC = """
@@ -47,7 +48,8 @@ dag = DAG(
     catchup=True,
     max_active_runs=2,
     max_active_tasks=2,
-    tags=TAGS
+    tags=TAGS,
+    on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
 )
 
 def create_spark_task(destination: str, cluster_size: str, main_class: str, zone: str, steps: str = "default") -> SparkOperator:

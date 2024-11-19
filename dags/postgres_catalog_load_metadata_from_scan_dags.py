@@ -12,7 +12,7 @@ from airflow.decorators import task_group
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import jar, spark_failure_msg, yellow_minio_conn_id
+from lib.config import jar, spark_failure_msg, yellow_minio_conn_id, default_args
 from lib.operators.spark import SparkOperator
 from lib.operators.upsert_csv_to_postgres import UpsertCsvToPostgres
 from lib.postgres import skip_task, postgres_vlan2_ca_path, postgres_ca_filename, \
@@ -26,6 +26,12 @@ YELLOW_BUCKET = "yellow-prd"
 table_name_list = ["dict_table", "variable"]
 env_name = None
 conn_id = None
+
+# Update default args
+args = default_args.copy()
+args.update({
+    'trigger_rule': TriggerRule.NONE_FAILED,
+    'on_failure_callback': Slack.notify_task_failure})
 
 
 def get_resource_code() -> str:
@@ -86,15 +92,13 @@ for env in PostgresEnv:
                 "tables": Param(default=table_name_list, type=["array"], examples=table_name_list,
                                 description="Tables to load."),
             },
-            default_args={
-                'trigger_rule': TriggerRule.NONE_FAILED,
-                'on_failure_callback': Slack.notify_task_failure,
-            },
+            default_args=args,
             doc_md=doc,
             start_date=datetime(2024, 7, 24),
             is_paused_upon_creation=False,
             schedule_interval=None,
-            tags=["postgresql"]
+            tags=["postgresql"],
+            on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
         @task_group(group_id="load_tables")
         def load_tables_group():

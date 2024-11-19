@@ -2,7 +2,7 @@
 Génération des DAGSs pour la création des tables dans la bd unic_db pour le catalogue de l'UnIC.
 Un DAG par environnement postgres est généré.
 """
-# pylint: disable=missing-function-docstring, expression-not-assigned
+# pylint: disable=missing-function-docstring, expression-not-assigned, duplicate-code
 
 from datetime import datetime
 
@@ -10,13 +10,13 @@ from airflow import DAG
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
+from lib.config import default_args
 from lib.groups.postgres.create_tables import create_tables
 from lib.postgres import postgres_vlan2_ca_path, postgres_vlan2_ca_cert, \
     PostgresEnv, unic_postgres_vlan2_conn_id
 from lib.slack import Slack
 from lib.tasks.notify import start, end
 from lib.tasks.postgres import create_resource, PostgresResource
-
 
 # Specify path to SQL query for schema and each table
 sql_config = {
@@ -36,6 +36,12 @@ sql_config = {
     "indexes": {"name": "catalog", "postgres_indexes_creation_sql_path": "sql/catalog/indexes.sql"}
 }
 table_name_list = [table['name'] for table in sql_config['tables']]
+
+# Update default args
+args = default_args.copy()
+args.update({
+    'trigger_rule': TriggerRule.NONE_FAILED,
+    'on_failure_callback': Slack.notify_task_failure})
 
 for env in PostgresEnv:
     env_name = env.value
@@ -60,23 +66,21 @@ for env in PostgresEnv:
             params={
                 "tables": Param(table_name_list, type=['array'], examples=table_name_list),
             },
-            default_args={
-                'trigger_rule': TriggerRule.NONE_FAILED,
-                'on_failure_callback': Slack.notify_task_failure,
-            },
+            default_args=args,
             doc_md=doc,
             start_date=datetime(2024, 5, 13),
             is_paused_upon_creation=False,
             schedule_interval=None,
             max_active_tasks=1,
-            tags=["postgresql"]
+            tags=["postgresql"],
+            on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
         start("start_postgres_catalog") \
-            >> create_resource(PostgresResource.SCHEMA, sql_config, conn_id=conn_id, ca_path=postgres_vlan2_ca_path,
-                               ca_cert=postgres_vlan2_ca_cert) \
-            >> create_resource(PostgresResource.TYPES, sql_config, conn_id=conn_id, ca_path=postgres_vlan2_ca_path,
-                               ca_cert=postgres_vlan2_ca_cert) \
-            >> create_tables(sql_config, conn_id=conn_id, ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
-            >> create_resource(PostgresResource.INDEXES, sql_config, conn_id=conn_id, ca_path=postgres_vlan2_ca_path,
-                               ca_cert=postgres_vlan2_ca_cert) \
-            >> end("end_postgres_catalog")
+        >> create_resource(PostgresResource.SCHEMA, sql_config, conn_id=conn_id, ca_path=postgres_vlan2_ca_path,
+                           ca_cert=postgres_vlan2_ca_cert) \
+        >> create_resource(PostgresResource.TYPES, sql_config, conn_id=conn_id, ca_path=postgres_vlan2_ca_path,
+                           ca_cert=postgres_vlan2_ca_cert) \
+        >> create_tables(sql_config, conn_id=conn_id, ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
+        >> create_resource(PostgresResource.INDEXES, sql_config, conn_id=conn_id, ca_path=postgres_vlan2_ca_path,
+                           ca_cert=postgres_vlan2_ca_cert) \
+        >> end("end_postgres_catalog")

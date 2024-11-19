@@ -2,8 +2,6 @@
 Génération des DAGs pour le préaration des indexs OpenSearch.
 Un DAG par environnement postgres est généré.
 """
-# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, cell-var-from-loop, duplicate-code
-
 from datetime import datetime
 from typing import List
 
@@ -11,13 +9,22 @@ from airflow import DAG
 from airflow.decorators import task_group
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.tasks.opensearch import prepare_index
-from lib.config import default_params, jar, spark_failure_msg
+from lib.config import default_params, jar, spark_failure_msg, default_args
 from lib.postgres import PostgresEnv
 from lib.slack import Slack
 from lib.tasks.notify import start, end
+from lib.tasks.opensearch import prepare_index
+
+# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, cell-var-from-loop, duplicate-code
 
 env_name = None
+
+# Update default args
+args = default_args.copy()
+args.update({
+    'trigger_rule': TriggerRule.NONE_FAILED,
+    'on_failure_callback': Slack.notify_task_failure})
+
 
 def arguments(task_id: str) -> List[str]:
     return [
@@ -49,17 +56,14 @@ for env in PostgresEnv:
     with DAG(
             dag_id=f"es_{env_name}_prepare_index",
             params=default_params,
-            default_args={
-                'trigger_rule': TriggerRule.NONE_FAILED,
-                'on_failure_callback': Slack.notify_task_failure,
-            },
+            default_args=args,
             doc_md=doc,
             start_date=datetime(2024, 11, 18),
             is_paused_upon_creation=False,
             schedule_interval=None,
-            tags=["opensearch"]
+            tags=["opensearch"],
+            on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
-
         @task_group(group_id="prepare_indexes")
         def prepare_index_group():
             es_prepare_index_conf = [
