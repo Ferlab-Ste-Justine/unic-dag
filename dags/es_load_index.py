@@ -9,9 +9,10 @@ from typing import List
 
 from airflow import DAG
 from airflow.decorators import task_group
+from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.opensearch import get_release_id
+from lib.opensearch import get_release_id, release_id
 from lib.tasks.opensearch import load_index
 from lib.config import default_params, jar, spark_failure_msg, es_url
 from lib.postgres import PostgresEnv
@@ -20,10 +21,9 @@ from lib.tasks.notify import start, end
 
 env_name = None
 
+def arguments(task_id: str, template_filename: str, job_type: str) -> List[str]:
 
-def arguments(task_id: str, release_id: str, template_filename: str, job_type: str) -> List[str]:
-
-    final_release_id = get_release_id(release_id, job_type)
+    final_release_id = get_release_id(release_id(), job_type)
 
     return [
         task_id,
@@ -58,7 +58,10 @@ for env in PostgresEnv:
 
     with DAG(
             dag_id=f"es_{env_name}_load_index",
-            params=default_params,
+            params={
+                "branch": Param("master", type="string"),
+                "release_id": Param(None, type="string")
+            },
             default_args={
                 'trigger_rule': TriggerRule.NONE_FAILED,
                 'on_failure_callback': Slack.notify_task_failure,
@@ -72,14 +75,14 @@ for env in PostgresEnv:
         @task_group(group_id="load_indexes")
         def load_index_group():
             es_load_index_conf = [
-                ("es_index_resource_centric", "resource_centric", "large-etl", "re_0001", "resource_centric_template.json"),
-                ("es_index_table_centric", "table_centric", "large-etl", "re_0001", "table_centric_template.json"),
-                ("es_index_variable_centric", "variable_centric", "large-etl", "re_0001", "variable_centric_template.json")
+                ("es_index_resource_centric", "resource_centric", "large-etl", "resource_centric_template.json"),
+                ("es_index_table_centric", "table_centric", "large-etl", "table_centric_template.json"),
+                ("es_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
             ] # change release_id to None after initial load, put release_id in params in permenant ETL
 
-            [load_index(task_id, arguments(task_id, release_id, template_filename, job_type),
+            [load_index(task_id, arguments(task_id, template_filename, job_type),
                         jar, spark_failure_msg, cluster_size, dag) for
-             task_id, job_type, cluster_size, release_id, template_filename in es_load_index_conf]
+             task_id, job_type, cluster_size, template_filename in es_load_index_conf]
 
 
         start("start_es_prepare_index") >> load_index_group() >> end("end_postgres_prepare_index")

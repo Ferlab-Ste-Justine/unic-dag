@@ -30,3 +30,6 @@ def get_release_id(release_id: str, index: str, increment: bool = True, skip: bo
         return new_release_id
     else:
         return f're_{current_release_id}'
+
+def release_id() -> str:
+    return '{{ params.release_id or "" }}'
