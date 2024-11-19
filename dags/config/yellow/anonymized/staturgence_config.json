@@ -1,7 +1,7 @@
 {
   "concurrency": 3,
   "schedule": "0 23 * * 7",
-  "timeout_hours": 4,
+  "timeout_hours": 5,
   "steps": [{
     "destination_zone": "yellow",
     "destination_subzone": "anonymized",
