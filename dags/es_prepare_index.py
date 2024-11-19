@@ -2,7 +2,7 @@
 Génération des DAGs pour le préaration des indexs OpenSearch.
 Un DAG par environnement postgres est généré.
 """
-# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, cell-var-from-loop
+# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, cell-var-from-loop, duplicate-code
 
 from datetime import datetime
 from typing import List
@@ -17,10 +17,7 @@ from lib.postgres import PostgresEnv
 from lib.slack import Slack
 from lib.tasks.notify import start, end
 
-PREPARE_INDEX_MAIN_CLASS = 'bio.ferlab.ui.etl.catalog.es.PrepareIndex'
-ZONE = "yellow"
 env_name = None
-
 
 def arguments(task_id: str) -> List[str]:
     return [
