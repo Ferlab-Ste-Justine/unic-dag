@@ -17,10 +17,7 @@ from lib.postgres import PostgresEnv
 from lib.slack import Slack
 from lib.tasks.notify import start, end
 
-PREPARE_INDEX_MAIN_CLASS = 'bio.ferlab.ui.etl.catalog.es.PrepareIndex'
-ZONE = "yellow"
 env_name = None
-
 
 def arguments(task_id: str) -> List[str]:
     return [
