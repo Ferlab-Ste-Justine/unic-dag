@@ -11,7 +11,7 @@ from airflow import DAG
 from airflow.decorators import task_group
 from airflow.utils.trigger_rule import TriggerRule
 
-from dags.lib.opensearch import get_release_id
+from lib.opensearch import get_release_id
 from lib.tasks.opensearch import load_index
 from lib.config import default_params, jar, spark_failure_msg, es_url
 from lib.postgres import PostgresEnv
