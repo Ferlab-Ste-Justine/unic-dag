@@ -12,7 +12,7 @@ from airflow.decorators import task_group
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.tasks.opensearch import load_index, get_release_id
+from lib.tasks.opensearch import load_index, get_release_id, publish_index
 from lib.config import jar, spark_failure_msg, es_url
 from lib.postgres import PostgresEnv
 from lib.slack import Slack
@@ -21,17 +21,23 @@ from lib.tasks.notify import start, end
 env_name = None
 
 
-def arguments(task_id: str, release_id: str, template_filename: str, job_type: str) -> List[str]:
+def load_index_arguments(release_id: str, template_filename: str, alias: str) -> List[str]:
     return [
-        task_id,
         "--config", "config/prod.conf",
         "--steps", "default",
-        "--app-name", f"load_{task_id}",
+        "--app-name", f"load_{alias}",
         "--env", env_name,
         "--esnodes", es_url,
         "--release-id", release_id,
         "--template-filename", template_filename,
-        "--job-type", job_type
+        "--alias", alias
+    ]
+
+def publish_index_arguments(release_id: str, alias: str) -> List[str]:
+    return [
+        "--esnodes", es_url,
+        "--release-id", release_id,
+        "--alias", alias
     ]
 
 
@@ -58,7 +64,7 @@ for env in PostgresEnv:
     """
 
     with DAG(
-            dag_id=f"es_{env_name}_load_index",
+            dag_id=f"es_{env_name}_index",
             params={
                 "branch": Param("master", type="string"),
                 "release_id": Param("", type=["null", "string"])
@@ -82,12 +88,25 @@ for env in PostgresEnv:
                 ("es_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
             ]
 
-            [load_index(task_id, arguments(task_id, release_id, template_filename, job_type),
+            [load_index(task_id, load_index_arguments(release_id, template_filename, alias),
                         jar, spark_failure_msg, cluster_size, dag) for
-             task_id, job_type, cluster_size, template_filename in es_load_index_conf]
+             task_id, alias, cluster_size, template_filename in es_load_index_conf]
+
+        @task_group(group_id="publish_indexes")
+        def publish_index_group(release_id: str):
+            es_publish_index_conf = [
+                ("es_publish_index_resource_centric", "resource_centric", "large-etl"),
+                ("es_publish_index_table_centric", "table_centric", "large-etl"),
+                ("es_publish_index_variable_centric", "variable_centric", "large-etl")
+            ]
+
+            [publish_index(task_id, publish_index_arguments(release_id, alias),
+                        jar, spark_failure_msg, cluster_size, dag) for
+             task_id, alias, cluster_size in es_publish_index_conf]
 
 
         get_release_id_task = get_release_id(release_id(), "resource_centric")  # the release id will be the same for all indexes
 
         start("start_es_prepare_index") >> get_release_id_task \
-        >> load_index_group(release_id=get_release_id_task) >> end("end_postgres_prepare_index")
+        >> load_index_group(release_id=get_release_id_task) \
+        >> publish_index_group(release_id=get_release_id_task) >> end("end_postgres_prepare_index")

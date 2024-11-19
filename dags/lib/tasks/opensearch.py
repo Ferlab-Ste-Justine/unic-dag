@@ -41,6 +41,21 @@ def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, 
         dag=dag
     )
 
+def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
+               zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.es.Publisher') -> SparkOperator:
+
+    return SparkOperator(
+        task_id=task_id,
+        name=task_id.replace("_", "-"),
+        zone=zone,
+        arguments=args,
+        spark_class=spark_class,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config=cluster_size,
+        dag=dag
+    )
+
 @task(task_id='get_release_id')
 def get_release_id(release_id: str, index: str, increment: bool = True, skip: bool = False) -> str:
     if skip:
