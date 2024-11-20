@@ -36,4 +36,4 @@ yellow_minio_conn_id = "yellow_minio"
 green_minio_conn_id = "green_minio"
 mail_from = os.environ.get("AIRFLOW__SMTP__SMTP_MAIL_FROM")
 
-es_url = "https://os_url:9200"
+es_url = "https://workers.opensearch.unic.sainte-justine.intranet:9200"
