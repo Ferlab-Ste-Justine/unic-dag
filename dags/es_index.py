@@ -12,7 +12,7 @@ from airflow.decorators import task_group
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import jar, spark_failure_msg, es_url, default_args
+from lib.config import jar, spark_failure_msg, es_url
 from lib.postgres import PostgresEnv
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -45,10 +45,11 @@ def release_id() -> str:
 
 
 # Update default args
-args = default_args.copy()
-args.update({
-    'trigger_rule': TriggerRule.NONE_FAILED,
-    'on_failure_callback': Slack.notify_task_failure})
+args = {
+    "owner": "unic",
+    "depends_on_past": False,
+    'trigger_rule': TriggerRule.NONE_FAILED
+}
 
 for env in PostgresEnv:
     env_name = env.value
