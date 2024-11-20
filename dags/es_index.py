@@ -28,7 +28,7 @@ def load_index_arguments(release_id: str, template_filename: str, alias: str) ->
         "--release-id", release_id,
         "--template-filename", template_filename,
         "--alias", alias,
-        "--config", "config/prod.conf",
+        "--config", "config/prod.conf"
     ]
 
 def publish_index_arguments(release_id: str, alias: str) -> List[str]:
