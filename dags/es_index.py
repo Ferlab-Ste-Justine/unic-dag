@@ -23,14 +23,12 @@ env_name = None
 
 def load_index_arguments(release_id: str, template_filename: str, alias: str) -> List[str]:
     return [
-        "--config", "config/prod.conf",
-        "--steps", "default",
-        "--app-name", f"load_{alias}",
         "--env", env_name,
         "--esnodes", es_url,
         "--release-id", release_id,
         "--template-filename", template_filename,
-        "--alias", alias
+        "--alias", alias,
+        "--config", "config/prod.conf"
     ]
 
 def publish_index_arguments(release_id: str, alias: str) -> List[str]:
