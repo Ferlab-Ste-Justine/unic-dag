@@ -5,7 +5,7 @@ from kubernetes.client import models as k8s
 from lib.cleanup import Cleanup
 
 
-class SparkOSOperator(KubernetesPodOperator):
+class SparkOpenSearchOperator(KubernetesPodOperator):
     template_fields = KubernetesPodOperator.template_fields + (
         'spark_jar',
         'skip'
