@@ -80,8 +80,8 @@ for env in PostgresEnv:
             start_date=datetime(2024, 11, 19),
             is_paused_upon_creation=False,
             schedule_interval=None,
-            tags=["opensearch"],
-            on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
+            tags=["opensearch"]
+            # on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
         @task_group(group_id="load_indexes")
         def load_index_group(release_id: str):
