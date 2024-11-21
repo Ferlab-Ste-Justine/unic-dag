@@ -14,7 +14,7 @@ from airflow.utils.trigger_rule import TriggerRule
 
 from lib.config import jar, spark_failure_msg, es_url
 from lib.postgres import PostgresEnv
-from lib.slack import Slack
+# from lib.slack import Slack
 from lib.tasks.notify import start, end
 from lib.tasks.opensearch import load_index, get_release_id, publish_index
 
