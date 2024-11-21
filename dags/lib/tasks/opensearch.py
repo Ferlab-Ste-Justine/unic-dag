@@ -9,6 +9,8 @@ from lib.operators.spark import SparkOperator
 from airflow.exceptions import AirflowSkipException
 from lib.config import es_url
 
+from dags.lib.operators.spark_opensearch import SparkOSOperator
+
 
 def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,
                   dag: DAG, zone: str = "yellow",
@@ -29,7 +31,7 @@ def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
 def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
           zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.es.Indexer') -> SparkOperator:
 
-    return SparkOperator(
+    return SparkOSOperator(
         task_id=task_id,
         name=task_id.replace("_", "-"),
         zone=zone,
@@ -44,7 +46,7 @@ def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, 
 def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
                zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.es.Publisher') -> SparkOperator:
 
-    return SparkOperator(
+    return SparkOSOperator(
         task_id=task_id,
         name=task_id.replace("_", "-"),
         zone=zone,
@@ -56,7 +58,7 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
         dag=dag
     )
 
-@task(task_id='get_release_id')
+@task(task_id='get_release_id') # ne va pas marcher dans unic, le service est dans l'autre cluster.
 def get_release_id(release_id: str, index: str, increment: bool = True, skip: bool = False) -> str:
     if skip:
         raise AirflowSkipException()
