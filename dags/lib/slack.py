@@ -50,6 +50,14 @@ class Slack:
         Slack.notify(f'Task {dag_link} failed. {slack_msg}', type=Slack.ERROR)
 
     @staticmethod
+    def notify_dag_failure(context):
+        dag_id = context['dag'].dag_id
+        slack_msg = """*Execution Time*: {exec_date}""".format(exec_date=context['execution_date'])
+        dag_link = Slack._dag_link(dag_id, dag_id, context['run_id'])
+
+        Slack.notify(f'Dag {dag_link} failed. {slack_msg}', type=Slack.ERROR)
+
+    @staticmethod
     def notify_task_retry(context):
         dag_id = context['dag'].dag_id
         task_id = context['task'].task_id

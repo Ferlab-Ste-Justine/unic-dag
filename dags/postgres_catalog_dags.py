@@ -73,7 +73,7 @@ for env in PostgresEnv:
             schedule_interval=None,
             max_active_tasks=1,
             tags=["postgresql"],
-            on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
+            on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
         start("start_postgres_catalog") \
         >> create_resource(PostgresResource.SCHEMA, sql_config, conn_id=conn_id, ca_path=postgres_vlan2_ca_path,

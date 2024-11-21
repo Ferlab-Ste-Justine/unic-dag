@@ -62,7 +62,7 @@ for env in PostgresEnv:
             is_paused_upon_creation=False,
             schedule_interval=None,
             tags=["opensearch"],
-            on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
+            on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
         @task_group(group_id="prepare_indexes")
         def prepare_index_group():
