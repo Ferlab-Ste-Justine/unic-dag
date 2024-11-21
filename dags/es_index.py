@@ -14,7 +14,7 @@ from airflow.utils.trigger_rule import TriggerRule
 
 from lib.config import jar, spark_failure_msg, es_url
 from lib.postgres import PostgresEnv
-from lib.slack import Slack
+# from lib.slack import Slack
 from lib.tasks.notify import start, end
 from lib.tasks.opensearch import load_index, get_release_id, publish_index
 
@@ -80,8 +80,8 @@ for env in PostgresEnv:
             start_date=datetime(2024, 11, 19),
             is_paused_upon_creation=False,
             schedule_interval=None,
-            tags=["opensearch"],
-            on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
+            tags=["opensearch"]
+            # on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
         @task_group(group_id="load_indexes")
         def load_index_group(release_id: str):
