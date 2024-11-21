@@ -78,7 +78,7 @@ with DAG(
         schedule_interval=None,
         max_active_tasks=1,
         tags=["postgresql"],
-        on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
+        on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
 ) as dag:
 
     start("start_postgres_nrt_staturgence") >> create_resource(PostgresResource.SCHEMA, sql_config) \

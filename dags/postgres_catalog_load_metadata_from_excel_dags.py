@@ -99,7 +99,7 @@ for env in PostgresEnv:
             is_paused_upon_creation=False,
             schedule_interval=None,
             tags=["postgresql"],
-            on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
+            on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
         @task(task_id="get_tables")
         def get_tables(ti=None) -> List[str]:

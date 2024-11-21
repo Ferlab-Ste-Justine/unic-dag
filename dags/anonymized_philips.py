@@ -49,7 +49,7 @@ dag = DAG(
     max_active_runs=2,
     max_active_tasks=2,
     tags=TAGS,
-    on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
+    on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
 )
 
 def create_spark_task(destination: str, cluster_size: str, main_class: str, zone: str, steps: str = "default") -> SparkOperator:

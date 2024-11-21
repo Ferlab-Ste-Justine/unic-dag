@@ -69,7 +69,7 @@ with DAG(
     tags=["anonymized"],
     dagrun_timeout=timedelta(hours=config['timeout_hours']),
     is_paused_upon_creation=True,
-    on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
+    on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
 ) as dag:
 
     def skip_task() -> str:

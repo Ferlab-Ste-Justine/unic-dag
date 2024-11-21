@@ -24,7 +24,7 @@ extract_schema = '(.*)_config.json'
 config_file = "config/prod.conf"
 
 default_args = generate_default_args(owner="unic",
-                                     on_failure_callback=Failure.on_failure_callback,
+                                     on_failure_callback=Failure.task_on_failure_callback,
                                      on_retry_callback=Slack.notify_task_retry)
 default_params = {
     "branch": Param("master", type="string"),

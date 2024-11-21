@@ -50,7 +50,7 @@ dag = DAG(
     max_active_runs=1, # test with 1 active dag run & 1 task can scale later
     max_active_tasks=2,
     tags=["anonymized"],
-    on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
+    on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
 )
 
 def arguments(destination: str, steps: str = "default") -> List[str]:

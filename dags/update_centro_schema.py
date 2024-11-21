@@ -35,7 +35,7 @@ dag = DAG(
     is_paused_upon_creation=True,
     max_active_tasks=3,
     tags=["schema"],
-    on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
+    on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
 )
 
 with dag:

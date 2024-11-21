@@ -1,10 +1,14 @@
-from lib.slack import Slack
-from lib.cleanup import Cleanup
 import logging
 import re
 
+from lib.cleanup import Cleanup
+from lib.slack import Slack
+
+
 class Failure:
-    def on_failure_callback(context):
+
+    @staticmethod
+    def task_on_failure_callback(context):
         exception = context['exception']
         namespace = context['task'].namespace
         name = context['task'].name

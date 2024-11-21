@@ -54,7 +54,7 @@ with DAG(
         render_template_as_native_obj=True,
         is_paused_upon_creation=True,
         schedule_interval=None,
-        on_failure_callback=Slack.notify_task_failure  # Should send notification to Slack when DAG exceeds timeout
+        on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
 ) as dag:
     def arguments(app_name: str) -> List[str]:
         args = [
