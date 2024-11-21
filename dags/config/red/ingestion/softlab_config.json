@@ -13,7 +13,7 @@
     [
       {"dataset_id": "raw_softlab_v_p_genindex_hisaux" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "raw_softlab_v_p_lab_message"     , "cluster_type": "large" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_test_result", "raw_softlab_v_p_lab_patient", "raw_softlab_v_p_lab_stay", "raw_softlab_v_p_lab_order"], "pre_tests": [], "post_tests": []},
-      {"dataset_id": "raw_softlab_v_p_lab_order"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_stay"], "pre_tests": [], "post_tests": []},
+      {"dataset_id": "raw_softlab_v_p_lab_order"       , "cluster_type": "large" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_stay"], "pre_tests": [], "post_tests": []},
       {"dataset_id": "raw_softlab_v_p_lab_ordered_test", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "raw_softlab_v_p_lab_patient"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_stay"], "pre_tests": [], "post_tests": []},
       {"dataset_id": "raw_softlab_v_p_lab_specimen"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_order"], "pre_tests": [], "post_tests": []},
