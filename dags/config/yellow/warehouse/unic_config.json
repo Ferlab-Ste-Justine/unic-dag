@@ -29,7 +29,7 @@
       {"dataset_id": "warehouse_sociodemographics_residence_history"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "warehouse_sociodemographics_civil_status_history", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
       {"dataset_id": "warehouse_sociodemographics_employement_history" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id": "warehouse_transfusions"                          , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
+      {"dataset_id": "warehouse_transfusions"                          , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
     ]
   }]
 }
