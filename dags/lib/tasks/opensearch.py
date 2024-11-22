@@ -7,7 +7,7 @@ from typing import List
 from airflow.decorators import task
 from lib.operators.spark import SparkOperator
 from airflow.exceptions import AirflowSkipException
-from lib.config import es_url
+from lib.config import os_url, os_ca_path, os_ca_cert, os_ca_filename
 
 from lib.operators.spark_opensearch import SparkOpenSearchOperator
 
@@ -40,6 +40,9 @@ def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, 
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config=cluster_size,
+        ca_path=os_ca_path,
+        ca_filename=os_ca_filename,
+        ca_cert=os_ca_cert,
         dag=dag
     )
 
@@ -55,6 +58,9 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config=cluster_size,
+        ca_path=os_ca_path,
+        ca_filename=os_ca_filename,
+        ca_cert=os_ca_cert,
         dag=dag
     )
 
@@ -69,7 +75,7 @@ def get_release_id(release_id: str, index: str, increment: bool = True, skip: bo
 
     logging.info(f'No release id passed to DAG. Fetching release id from ES for all index {index}.')
     # Fetch current id from ES
-    url = f'{es_url}/{index}?&pretty'
+    url = f'{os_url}/{index}?&pretty'
     response = requests.get(url)
     logging.info(f'ES response:\n{response.text}')
 

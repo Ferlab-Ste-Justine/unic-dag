@@ -12,7 +12,7 @@ from airflow.decorators import task_group
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import jar, spark_failure_msg, es_url
+from lib.config import jar, spark_failure_msg, os_url
 from lib.postgres import PostgresEnv
 # from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -24,7 +24,7 @@ env_name = None
 def load_index_arguments(release_id: str, template_filename: str, alias: str) -> List[str]:
     return [
         "--env", env_name,
-        "--esnodes", es_url,
+        "--esnodes", os_url,
         "--release-id", release_id,
         "--template-filename", template_filename,
         "--alias", alias,
@@ -34,7 +34,7 @@ def load_index_arguments(release_id: str, template_filename: str, alias: str) ->
 
 def publish_index_arguments(release_id: str, alias: str) -> List[str]:
     return [
-        "--esnodes", es_url,
+        "--esnodes", os_url,
         "--release-id", release_id,
         "--alias", alias
     ]
