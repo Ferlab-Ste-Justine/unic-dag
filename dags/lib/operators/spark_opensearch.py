@@ -28,12 +28,11 @@ class SparkOpenSearchOperator(SparkOperator):
             **kwargs,
     ) -> None:
         super().__init__(
-            is_delete_operator_pod=False,
-            image='ferlabcrsj/spark:10cc50d5f431244f9523ea76188300fac5173de1',
-            service_account_name='spark',
-            priority_weight=1,
-            weight_rule="absolute",
-            depends_on_past=False,
+            spark_class=self.spark_class,
+            spark_jar=self.spark_jar,
+            spark_failure_msg=self.spark_failure_msg,
+            zone=self.zone,
+            spark_config=self.spark_config,
             **kwargs
         )
         self.spark_class = spark_class
@@ -45,14 +44,6 @@ class SparkOpenSearchOperator(SparkOperator):
         self.ca_filename = ca_filename
         self.ca_cert = ca_cert
         self.skip = skip
-        super().__init__(
-            spark_class=self.spark_class,
-            spark_jar=self.spark_jar,
-            spark_failure_msg=self.spark_failure_msg,
-            zone=self.zone,
-            spark_config=self.spark_config,
-            **kwargs
-        )
 
     def execute(self, **kwargs):
         if self.skip:
