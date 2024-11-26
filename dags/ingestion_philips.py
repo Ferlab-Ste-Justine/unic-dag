@@ -9,7 +9,7 @@ from typing import List
 import pendulum
 from airflow import DAG
 
-from lib.config import jar, spark_failure_msg, default_params, default_args, default_timeout_hours
+from lib.config import jar, spark_failure_msg, default_params, default_args
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -46,7 +46,7 @@ dag = DAG(
     start_date=datetime(2023, 8, 15, 3, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),  # everyday at 3am timezone montreal
     params=default_params,
-    dagrun_timeout=default_timeout_hours,
+    dagrun_timeout=None,
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
