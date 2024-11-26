@@ -3,12 +3,14 @@ import subprocess
 from airflow.exceptions import AirflowSkipException
 
 from lib.operators.spark import SparkOperator
+from kubernetes.client import models as k8s
 
 
 class SparkOpenSearchOperator(SparkOperator):
     template_fields = SparkOperator.template_fields + (
         'spark_class',
         'spark_jar',
+        'ca_pod_template',
         'spark_failure_msg',
         'zone',
         'spark_config',
@@ -23,6 +25,7 @@ class SparkOpenSearchOperator(SparkOperator):
             ca_path: str,
             ca_filename: str,
             ca_cert: str,
+            ca_pod_template: str,
             spark_config: str = '',
             skip: bool = False,
             **kwargs,
@@ -35,6 +38,7 @@ class SparkOpenSearchOperator(SparkOperator):
         self.ca_path = ca_path
         self.ca_filename = ca_filename
         self.ca_cert = ca_cert
+        self.ca_pod_template = ca_pod_template
         self.skip = skip
         super().__init__(
             spark_class=self.spark_class,
@@ -45,11 +49,19 @@ class SparkOpenSearchOperator(SparkOperator):
             **kwargs
         )
 
+
     def execute(self, **kwargs):
         if self.skip:
             raise AirflowSkipException()
 
         self.load_cert()
+
+        super.env_vars = [
+            k8s.V1EnvVar(
+                name='POD_TEMPLATE_OS_CERT',
+                value=self.ca_pod_template,
+            )]
+
         super().execute(**kwargs)
 
     def load_cert(self):
@@ -57,6 +69,4 @@ class SparkOpenSearchOperator(SparkOperator):
 
         with open(self.ca_path + self.ca_filename, "w") as outfile:
             outfile.write(self.ca_cert)
-
-        subprocess.run(["sh", "-c", f"keytool -importkeystore -noprompt -srckeystore /etc/pki/java/cacerts -destkeystore /opt/keystores/truststore.p12 -srcstoretype PKCS12 -deststoretype PKCS12 -srcstorepass changeit -storepass changeit && keytool -import -noprompt -keystore /opt/keystores/truststore.p12 -file {self.ca_path}{self.ca_filename} -storepass changeit -alias es"])
 

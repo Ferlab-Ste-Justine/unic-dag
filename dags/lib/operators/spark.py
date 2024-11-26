@@ -44,7 +44,7 @@ class SparkOperator(KubernetesPodOperator):
         self.cmds = ['/opt/client-entrypoint.sh']
         self.image_pull_policy = 'IfNotPresent'
 
-        self.env_vars = [
+        new_env_vars = [
             k8s.V1EnvVar(
                 name='SPARK_CLIENT_POD_NAME',
                 value_from=k8s.V1EnvVarSource(
@@ -62,6 +62,11 @@ class SparkOperator(KubernetesPodOperator):
                 value=self.spark_class,
             ),
         ]
+
+        if self.env_vars:
+            self.env_vars += new_env_vars
+        else:
+            self.env_vars = new_env_vars
 
         self.volumes = [
             k8s.V1Volume(
