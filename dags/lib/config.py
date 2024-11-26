@@ -43,7 +43,7 @@ yellow_minio_conn_id = "yellow_minio"
 green_minio_conn_id = "green_minio"
 mail_from = os.environ.get("AIRFLOW__SMTP__SMTP_MAIL_FROM")
 
-os_url = 'http://unic-prod-opensearch-workers:9200'
+os_url = 'https://workers.opensearch.unic.sainte-justine.intranet:9200'
 os_ca_path = "/tmp/es-ca/"
 os_ca_cert = Variable.get('opensearch_ca_certificate', None)
 os_ca_filename = "ca.crt"
