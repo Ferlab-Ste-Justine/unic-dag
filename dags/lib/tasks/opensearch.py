@@ -7,7 +7,7 @@ from typing import List
 from airflow.decorators import task
 from lib.operators.spark import SparkOperator
 from airflow.exceptions import AirflowSkipException
-from lib.config import os_url, os_ca_path, os_ca_cert, os_ca_filename
+from lib.config import os_url, os_ca_path, os_ca_cert, os_ca_filename, os_yml
 
 from lib.operators.spark_opensearch import SparkOpenSearchOperator
 
@@ -43,6 +43,7 @@ def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, 
         ca_path=os_ca_path,
         ca_filename=os_ca_filename,
         ca_cert=os_ca_cert,
+        ca_pod_template=os_yml,
         dag=dag
     )
 
@@ -61,6 +62,7 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
         ca_path=os_ca_path,
         ca_filename=os_ca_filename,
         ca_cert=os_ca_cert,
+        ca_pod_template=os_yml,
         dag=dag
     )
 
