@@ -12,7 +12,7 @@ from airflow.decorators import task_group
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import jar, spark_failure_msg, os_url
+from lib.config import jar, spark_failure_msg, os_url, os_port
 from lib.postgres import PostgresEnv
 # from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -21,20 +21,22 @@ from lib.tasks.opensearch import load_index, get_release_id, publish_index
 env_name = None
 
 
-def load_index_arguments(release_id: str, template_filename: str, alias: str) -> List[str]:
+def load_index_arguments(release_id: str, template_filename: str, jobType: str) -> List[str]:
     return [
         "--env", env_name,
-        "--esnodes", os_url,
+        "--osurl", os_url,
+        "--osport", os_port,
         "--release-id", release_id,
         "--template-filename", template_filename,
-        "--alias", alias,
+        "--jobType", jobType,
         "--config", "config/prod.conf"
     ]
 
 
 def publish_index_arguments(release_id: str, alias: str) -> List[str]:
     return [
-        "--esnodes", os_url,
+        "--osurl", os_url,
+        "--port", os_port,
         "--release-id", release_id,
         "--alias", alias
     ]
@@ -91,9 +93,9 @@ for env in PostgresEnv:
                 ("es_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
             ]
 
-            [load_index(task_id, load_index_arguments(release_id, template_filename, alias),
+            [load_index(task_id, load_index_arguments(release_id, template_filename, jobType),
                         jar, spark_failure_msg, cluster_size, dag) for
-             task_id, alias, cluster_size, template_filename in es_load_index_conf]
+             task_id, jobType, cluster_size, template_filename in es_load_index_conf]
 
 
         @task_group(group_id="publish_indexes")

@@ -5,7 +5,7 @@ from airflow import DAG
 from typing import List
 
 from airflow.decorators import task
-from lib.operators.spark import SparkOperator
+from lib.operators.spark import SparkOperator, SparkOpenSearchOperator
 from airflow.exceptions import AirflowSkipException
 from lib.config import os_url
 
@@ -44,7 +44,7 @@ def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, 
 def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
                zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.es.Publisher') -> SparkOperator:
 
-    return SparkOperator(
+    return SparkOpenSearchOperator(
         task_id=task_id,
         name=task_id.replace("_", "-"),
         zone=zone,
