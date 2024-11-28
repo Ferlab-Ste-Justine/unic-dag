@@ -177,9 +177,23 @@ with dag:
             dag=dag,
         )
 
+        enriched_infections = SparkOperator(
+            task_id="enriched_indicateurssip_infections",
+            name="enriched-indicateurssip-infections",
+            arguments=enriched_arguments("enriched_indicateurssip_infections"),
+            zone=enriched_zone,
+            spark_class=enriched_main_class,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag,
+        )
+
+
+
         enriched_participant_index >> enriched_sejour >> [enriched_catheter, enriched_ventilation,
                                                           enriched_extubation, enriched_lits, enriched_infirmieres,
-                                                          enriched_ecmo, enriched_scores]
+                                                          enriched_ecmo, enriched_scores] >> [enriched_infections]
 
     ENRICHED_GROUP = enriched()
 
@@ -296,8 +310,20 @@ with dag:
             dag=dag,
         )
 
+        released_infections = SparkOperator(
+            task_id="released_indicateurssip_infections",
+            name="released-indicateurssip-infections",
+            arguments=released_arguments("released_indicateurssip_infections"),
+            zone=released_zone,
+            spark_class=released_main_class,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag,
+        )
 
-        [released_sejour, released_catheter, released_ventilation, released_extubation, released_lits, released_infirmieres, released_ecmo, released_scores]
+
+        [released_sejour, released_catheter, released_ventilation, released_extubation, released_lits, released_infirmieres, released_ecmo, released_scores, released_infections]
 
     RELEASED_GROUP = released()
 
@@ -315,7 +341,9 @@ with dag:
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/lits/lits.csv"              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "lits"       },
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/infirmieres/infirmieres.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infirmieres"},
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ecmo/ecmo.csv"              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ecmo"}       ,
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/scores/scores.csv"          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "scores"}
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/scores/scores.csv"          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "scores"}     ,
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/infections/infections.csv"  , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infections"}
+
         ]
 
         published_indicateurs_sip = CopyCsvToPostgres(
