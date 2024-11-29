@@ -193,7 +193,7 @@ with dag:
 
         enriched_participant_index >> enriched_sejour >> [enriched_catheter, enriched_ventilation,
                                                           enriched_extubation, enriched_lits, enriched_infirmieres,
-                                                          enriched_ecmo, enriched_scores] >> [enriched_infections]
+                                                          enriched_ecmo, enriched_scores] >> enriched_infections
 
     ENRICHED_GROUP = enriched()
 
