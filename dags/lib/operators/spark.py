@@ -68,7 +68,7 @@ class SparkOperator(KubernetesPodOperator):
         else:
             self.env_vars = new_env_vars
 
-        self.volumes = [
+        new_volumes = [
             k8s.V1Volume(
                 name='spark-defaults',
                 config_map=k8s.V1ConfigMapVolumeSource(
@@ -82,7 +82,13 @@ class SparkOperator(KubernetesPodOperator):
                 ),
             ),
         ]
-        self.volume_mounts = [
+
+        if self.volumes:
+            self.volumes += new_volumes
+        else:
+            self.volumes = new_volumes
+
+        new_volume_mounts = [
             k8s.V1VolumeMount(
                 name='spark-defaults',
                 mount_path='/opt/spark-configs/defaults',
@@ -94,6 +100,11 @@ class SparkOperator(KubernetesPodOperator):
                 read_only=True,
             ),
         ]
+
+        if self.volume_mounts:
+            self.volume_mounts += new_volume_mounts
+        else:
+            self.volume_mounts = new_volume_mounts
 
         if self.spark_config:
             self.volumes.append(
