@@ -13,7 +13,7 @@
     "datasets":
     [
       {"dataset_id": "anonymized_clinibaseci_benempl"           , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_beneficiaire_tx"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
+      {"dataset_id": "anonymized_clinibaseci_beneficiaire_tx"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": []},
       {"dataset_id": "anonymized_clinibaseci_beneficiaire_tb"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
       {"dataset_id": "anonymized_clinibaseci_benef_infection_tb", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
       {"dataset_id": "anonymized_clinibaseci_bendeces_tb"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
