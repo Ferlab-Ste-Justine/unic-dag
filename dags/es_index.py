@@ -21,14 +21,14 @@ from lib.tasks.opensearch import load_index, get_release_id, publish_index
 env_name = None
 
 
-def load_index_arguments(release_id: str, template_filename: str, jobType: str) -> List[str]:
+def load_index_arguments(release_id: str, template_filename: str, alias: str) -> List[str]:
     return [
         "--env", env_name,
         "--osurl", os_url,
         "--osport", os_port,
         "--release-id", release_id,
         "--template-filename", template_filename,
-        "--jobType", jobType,
+        "--alias", alias,
         "--config", "config/prod.conf"
     ]
 
@@ -93,9 +93,9 @@ for env in PostgresEnv:
                 ("es_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
             ]
 
-            [load_index(task_id, load_index_arguments(release_id, template_filename, jobType),
+            [load_index(task_id, load_index_arguments(release_id, template_filename, alias),
                         jar, spark_failure_msg, cluster_size, dag) for
-             task_id, jobType, cluster_size, template_filename in es_load_index_conf]
+             task_id, alias, cluster_size, template_filename in es_load_index_conf]
 
 
         @task_group(group_id="publish_indexes")
