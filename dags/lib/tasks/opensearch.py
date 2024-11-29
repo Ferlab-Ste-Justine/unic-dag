@@ -5,10 +5,10 @@ from airflow import DAG
 from typing import List
 
 from airflow.decorators import task
-from lib.operators.spark import SparkOperator, SparkOpenSearchOperator
+from lib.operators.spark import SparkOperator
+from lib.operators.spark_opensearch import SparkOpenSearchOperator
 from airflow.exceptions import AirflowSkipException
 from lib.config import os_url
-
 
 def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,
                   dag: DAG, zone: str = "yellow",
