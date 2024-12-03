@@ -9,10 +9,13 @@
     "multiple_main_methods": true,
     "publish_class": "",
     "schemas": [],
-    "datasets":
-    [
+    "pre_tests": [
+      {"name": "greater_partition_counts", "destinations": ["curated_etraceline_patient"]}
+    ],
+    "datasets": [
       {"dataset_id": "curated_etraceline_patient", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []}
-    ]
+    ],
+    "post_tests": []
   },
   {
     "destination_zone": "yellow",
@@ -21,28 +24,38 @@
     "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
-    "datasets":
-    [
-      {"dataset_id": "anonymized_etraceline_acte_produits"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_d*"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_etat_produit"   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_famp_supp"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_groupe"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_l*"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_mds_produit"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_mds_carac"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_patient"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_pl_final_prod"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_pl_type_pool"   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_pldef_pool"     , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_psl_produit"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_psl_carac"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_pt_*"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_ptdef_transform", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_s*"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_t*"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_etraceline_unit_poso"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]}
-
+    "pre_tests": [
+      {"name": "greater_or_equal_partition_counts", "destinations": [
+        "anonymized_etraceline_acte_produits", "anonymized_etraceline_etat_produit", "anonymized_etraceline_famp_supp",
+        "anonymized_etraceline_groupe", "anonymized_etraceline_mds_carac", "anonymized_etraceline_pl_type_pool",
+        "anonymized_etraceline_pldef_pool", "anonymized_etraceline_psl_carac", "anonymized_etraceline_ptdef_transform",
+        "anonymized_etraceline_unit_poso"
+      ]},
+      {"name": "greater_partition_counts", "destinations": [
+        "anonymized_etraceline_d*", "anonymized_etraceline_l*", "anonymized_etraceline_mds_produit",
+        "anonymized_etraceline_pl_final_prod", "anonymized_etraceline_psl_produit", "anonymized_etraceline_pt_*",
+        "anonymized_etraceline_s*", "anonymized_etraceline_t*"
+      ]}
+    ],
+    "datasets": [
+      {"dataset_id": "anonymized_etraceline_acte_produits", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_etraceline_d*"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_etraceline_etat_produit" , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_etraceline_famp_supp"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_etraceline_groupe"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_etraceline_l*"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_etraceline_m*"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_etraceline_patient"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_etraceline_pl*"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_etraceline_ps*"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_etraceline_pt*"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_etraceline_s*"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_etraceline_t*"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_etraceline_unit_poso"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+    ],
+    "post_tests": [
+      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_etraceline_*"]},
+      {"name": "equal_counts", "destinations": ["anonymized_etraceline_*"]}
     ]
   }]
 }

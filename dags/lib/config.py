@@ -20,7 +20,7 @@ def generate_default_args(owner, on_failure_callback, on_retry_callback):
 
 root = Variable.get('dags_path', '/opt/airflow/dags/repo/dags')
 dags_config_path = f"{root}/config"
-extract_schema = '(.*)_config.json'
+extract_resource = '(.*)_config.json'
 config_file = "config/prod.conf"
 
 default_args = generate_default_args(owner="unic",
@@ -32,7 +32,6 @@ default_params = {
 }
 
 spark_failure_msg = "Spark job failed"
-spark_test_failure_msg = "Spark test job failed"
 default_timeout_hours = 4
 
 jar = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
@@ -46,3 +45,7 @@ mail_from = os.environ.get("AIRFLOW__SMTP__SMTP_MAIL_FROM")
 os_url = 'https://workers.opensearch.unic.sainte-justine.intranet'
 os_port = '9200'
 
+# QA tests config
+qa_test_main_class = "bio.ferlab.ui.etl.qa.Main"
+qa_test_default_cluster_type = "xsmall"
+qa_test_spark_failure_msg = "Spark test job failed"

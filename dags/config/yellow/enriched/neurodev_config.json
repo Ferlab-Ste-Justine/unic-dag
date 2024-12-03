@@ -10,10 +10,11 @@
         "multiple_main_methods": false,
         "publish_class": "",
         "schemas": [],
-        "datasets":
-        [
-          {"dataset_id":"enriched_neurodev_comparative_genomic_hybridization" , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
-        ] 
+        "pre_tests": [],
+        "datasets": [
+          {"dataset_id":"enriched_neurodev_comparative_genomic_hybridization" , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+        ],
+        "post_tests": []
       },
       {
         "destination_zone": "green",
@@ -22,10 +23,11 @@
         "multiple_main_methods": false,
         "publish_class": "",
         "schemas": [],
-        "datasets":
-        [
-          {"dataset_id":"released_neurodev_comparative_genomic_hybridization", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
-        ]
+        "pre_tests": [],
+        "datasets": [
+          {"dataset_id":"released_neurodev_comparative_genomic_hybridization", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        ],
+        "post_tests": []
       },
       {
         "destination_zone": "green",
@@ -34,10 +36,11 @@
         "multiple_main_methods": false,
         "publish_class": "",
         "schemas": [],
-        "datasets":
-        [
-          {"dataset_id":"published_neurodev_comparative_genomic_hybridization", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
-        ]
+        "pre_tests": [],
+        "datasets": [
+          {"dataset_id":"published_neurodev_comparative_genomic_hybridization", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        ],
+        "post_tests": []
       }
     ]
 }

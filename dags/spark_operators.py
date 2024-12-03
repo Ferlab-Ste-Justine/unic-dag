@@ -6,11 +6,10 @@ import re
 from typing import Optional
 
 from airflow import DAG
-from airflow.decorators import task_group
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import spark_test_failure_msg
+from lib.groups.qa import tests as qa_group
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks import notify
@@ -76,68 +75,12 @@ def get_publish_operator(dag_config: dict,
 
     return job
 
-def get_test_sub_group(zone: str,
-                   config_file: str,
-                   jar: str,
-                   dag: DAG,
-                   test_type: str,
-                   datasets: list) -> TaskGroup:
-    """
-    Create task group for tests in a subzone
-
-    :param zone:
-    :param config_file:
-    :param jar:
-    :param dag:
-    :param test_type: pre or post
-    :param datasets: list of dataset configs
-    :return: TaskGoup
-    """
-
-    if test_type == "pre":
-        @task_group(group_id="pre_tests")
-        def pre_tests():
-            pre_test_jobs = []
-
-            for conf in datasets:
-                dataset_id = conf['dataset_id']
-                config_type = conf['cluster_type']
-
-                for pre_test in conf['pre_tests']:
-                    pre_test_job = create_spark_test(dataset_id, pre_test, zone, config_type, config_file, jar, dag,
-                                                     spark_test_failure_msg)
-                    pre_test_jobs.append(pre_test_job)
-
-            pre_test_jobs
-
-        return pre_tests()
-
-    elif test_type == "post":
-        @task_group(group_id="post_tests")
-        def post_tests():
-            post_test_jobs = []
-
-            for conf in datasets:
-                dataset_id = conf['dataset_id']
-                config_type = conf['cluster_type']
-
-                for post_test in conf['post_tests']:
-                    post_test_job = create_spark_test(dataset_id, post_test, zone, config_type, config_file, jar, dag,
-                                                     spark_test_failure_msg)
-                    post_test_jobs.append(post_test_job)
-
-            post_test_jobs
-
-        return post_tests()
-
-    else:
-        raise AttributeError(f"Invalid test type: {test_type}. Please provide one of the supported test types: 'pre' or 'post'.")
 
 def setup_dag(dag: DAG,
               dag_config: dict,
               config_file: str,
               jar: str,
-              schema: str,
+              resource: str,
               version: str,
               spark_failure_msg: str,
               skip_task: Optional[str] = None):
@@ -147,7 +90,7 @@ def setup_dag(dag: DAG,
     :param dag_config:
     :param config_file:
     :param jar:
-    :param schema:
+    :param resource:
     :param version: Version to release, defaults to "latest"
     :param spark_failure_msg:
     :param skip_task: A function to evaluate whether a task should be skipped or not, defaults to None
@@ -156,41 +99,38 @@ def setup_dag(dag: DAG,
 
     groups = []
     for step_config in dag_config['steps']:
-
         with TaskGroup(group_id=step_config['destination_subzone']) as subzone_group:
             zone = step_config['destination_zone']
             subzone = step_config['destination_subzone']
             main_class = step_config['main_class']
             multiple_main_methods = step_config['multiple_main_methods']
 
-            start = notify.start(task_id=f"start_{subzone}_{schema}")
-            end = notify.end(f"end_{subzone}_{schema}")
+            start = notify.start(task_id=f"start_{subzone}_{resource}")
+            end = notify.end(f"end_{subzone}_{resource}")
             publish = get_publish_operator(step_config, config_file, jar, dag, spark_failure_msg)
 
             jobs = {}
             all_dependencies = []
-            all_pre_tests = []
-            all_post_tests = []
+            pre_tests = step_config['pre_tests']
+            post_tests = step_config['post_tests']
             pre_test_sub_group = None
             post_test_sub_group = None
 
-            for conf in step_config['datasets']:
-                all_pre_tests.extend(conf['pre_tests'])
-                all_post_tests.extend(conf['post_tests'])
+            if pre_tests:
+                pre_test_sub_group = qa_group.tests.override(group_id="pre_tests")(
+                    pre_tests, resource, zone, subzone, config_file, jar, dag)
 
-            if len(all_pre_tests) > 0:# generate all pre tests in subzone
-
-                pre_test_sub_group = get_test_sub_group(zone, config_file, jar, dag, "pre", step_config['datasets'])
-
-            if len(all_post_tests) > 0: # generate all post tests in subzone
-                post_test_sub_group = get_test_sub_group(zone, config_file, jar, dag, "post", step_config['datasets'])
+            if post_tests:
+                post_test_sub_group = qa_group.tests.override(group_id="post_tests")(
+                    post_tests, resource, zone, subzone, config_file, jar, dag)
 
             for conf in step_config['datasets']:
                 dataset_id = conf['dataset_id']
                 config_type = conf['cluster_type']
                 run_type = conf['run_type']
 
-                job = create_spark_job(dataset_id, zone, subzone, run_type, config_type, config_file, jar, dag, main_class,
+                job = create_spark_job(dataset_id, zone, subzone, run_type, config_type, config_file, jar, dag,
+                                       main_class,
                                        multiple_main_methods, version, spark_failure_msg, skip_task)
 
                 all_dependencies.extend(conf['dependencies'])
@@ -200,12 +140,12 @@ def setup_dag(dag: DAG,
                 for dependency in job['dependencies']:
                     jobs[dependency]['job'] >> job['job']
                 if len(job['dependencies']) == 0:
-                    if len(all_pre_tests) > 0:
+                    if pre_tests:
                         pre_test_sub_group >> start >> job['job']
                     else:
                         start >> job['job']
                 if dataset_id not in all_dependencies:
-                    if len(all_post_tests) > 0:
+                    if post_tests:
                         if publish is not None:
                             job['job'] >> end >> post_test_sub_group >> publish
                         else:
@@ -221,9 +161,10 @@ def setup_dag(dag: DAG,
     # Subzone task groups execution order
     if len(groups) > 1:
         for i in range(0, len(groups) - 1):
-            groups[i] >> groups[i+1]
+            groups[i] >> groups[i + 1]
     else:
         groups[0]
+
 
 def read_json(path: str):
     """
@@ -322,50 +263,4 @@ def create_spark_job(destination: str,
         spark_config=f"{cluster_type}-etl",
         dag=dag,
         skip=False if skip is None else skip
-    )
-
-def create_spark_test(destination: str,
-                      test: str,
-                      zone: str,
-                      cluster_type: str,
-                      config_file: str,
-                      jar: str,
-                      dag: DAG,
-                      spark_failure_msg: str):
-    """
-    create spark job operator
-    :param destination:
-    :param zone:
-    :param cluster_type:
-    :param config_file:
-    :param jar:
-    :param dag:
-    :param spark_failure_msg:
-    :return:
-    """
-    main_class = "bio.ferlab.ui.etl.qa.Main"
-    steps = "skip"
-    app_name = test + "_" + destination
-
-    args = [
-        test,
-        "--config", config_file,
-        "--steps", steps,
-        "--app-name", app_name,
-        "--destination", destination
-    ]
-
-    task_id = test + "_" + sanitize_string(destination, "_")
-    name = test + "-" + sanitize_string(destination[:40], '-')
-
-    return SparkOperator(
-        task_id=task_id,
-        name=name,
-        zone=zone,
-        arguments=args,
-        spark_class=main_class,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config=f"{cluster_type}-etl",
-        dag=dag
     )

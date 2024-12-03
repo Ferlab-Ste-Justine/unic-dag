@@ -10,8 +10,8 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "datasets":
-      [
+      "pre_tests": [],
+      "datasets": [
         {"dataset_id": "anonymized_cnn_admission"                 , "cluster_type": "xsmall" , "run_type": "initial" , "cluster_specs": {} , "dependencies": [] , "pre_tests": [] , "post_tests": ["lower_or_equal_null_counts" , "equal_counts"]} ,
         {"dataset_id": "anonymized_cnn_admissionchart"            , "cluster_type": "xsmall" , "run_type": "initial" , "cluster_specs": {} , "dependencies": [] , "pre_tests": [] , "post_tests": ["lower_or_equal_null_counts" , "equal_counts"]} ,
         {"dataset_id": "anonymized_cnn_antenatalintervention"     , "cluster_type": "xsmall" , "run_type": "initial" , "cluster_specs": {} , "dependencies": [] , "pre_tests": [] , "post_tests": ["lower_or_equal_null_counts" , "equal_counts"]} ,
@@ -49,6 +49,10 @@
         {"dataset_id": "anonymized_cnn_resuscitation"             , "cluster_type": "xsmall" , "run_type": "initial" , "cluster_specs": {} , "dependencies": [] , "pre_tests": [] , "post_tests": ["lower_or_equal_null_counts" , "equal_counts"]} ,
         {"dataset_id": "anonymized_cnn_rop"                       , "cluster_type": "xsmall" , "run_type": "initial" , "cluster_specs": {} , "dependencies": [] , "pre_tests": [] , "post_tests": ["lower_or_equal_null_counts" , "equal_counts"]} ,
         {"dataset_id": "anonymized_cnn_snap"                      , "cluster_type": "xsmall" , "run_type": "initial" , "cluster_specs": {} , "dependencies": [] , "pre_tests": [] , "post_tests": ["lower_or_equal_null_counts" , "equal_counts"]} 
+      ],
+      "post_tests": [
+        {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_cnn_*"]},
+        {"name": "equal_counts", "destinations": ["anonymized_cnn_*"]}
       ]
     }]
 }

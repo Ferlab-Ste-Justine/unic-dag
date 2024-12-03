@@ -10,9 +10,13 @@
         "multiple_main_methods": false,
         "publish_class": "",
         "schemas": [],
-        "datasets":
-        [
-          {"dataset_id": "anonymized_unite_des_naissances_registre"    , "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]}
+        "pre_tests": [],
+        "datasets": [
+          {"dataset_id": "anonymized_unite_des_naissances_registre", "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+        ],
+        "post_tests": [
+          {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_unite_des_naissances_registre"]},
+          {"name": "equal_counts", "destinations": ["anonymized_unite_des_naissances_registre"]}
         ]
       }]
   }
