@@ -39,6 +39,6 @@ def test(test_name: str, destinations: List[str], resource: str, zone: str, subz
         spark_class=qa_test_main_class,
         spark_jar=jar,
         spark_failure_msg=qa_test_spark_failure_msg,
-        spark_config=qa_test_default_cluster_type,
+        spark_config=f"{qa_test_default_cluster_type}-etl",
         dag=dag
     )
