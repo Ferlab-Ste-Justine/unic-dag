@@ -10,10 +10,11 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "datasets":
-      [
-        {"dataset_id":"enriched_spitzai_participant_index", "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
-      ]
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id":"enriched_spitzai_participant_index", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "post_tests": []
     }
   ]
 }

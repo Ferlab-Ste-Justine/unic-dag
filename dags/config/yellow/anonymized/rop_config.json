@@ -9,10 +9,14 @@
     "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
-    "datasets":
-    [
-      {"dataset_id": "anonymized_rop_table_patient", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_rop_table_examen" , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]}
+    "pre_tests": [],
+    "datasets": [
+      {"dataset_id": "anonymized_rop_table_patient", "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_rop_table_examen" , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+    ],
+    "post_tests": [
+      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_rop_*"]},
+      {"name": "equal_counts", "destinations": ["anonymized_rop_*"]}
     ]
   }]
 }

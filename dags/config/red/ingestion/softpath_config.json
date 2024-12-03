@@ -9,25 +9,26 @@
     "multiple_main_methods": true,
     "publish_class": "",
     "schemas": ["softpath"],
-    "datasets":
-    [
-      {"dataset_id":"raw_softpath_v_p_pat_auxilarydoctor"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_diagnosistext"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_dxadeqprobothercodes", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_gyncase"             , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_patcase"             , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_stay"], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_patcasetestdxcodes"  , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_stay"], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_patcasewithslides"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_patcasewithtest"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_patientdemographic"  , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_stay"], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_report"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_slide"               , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_specimen"            , "cluster_type": "large" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_specimenblock"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_specimendxadeq"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_stay"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"raw_softpath_v_p_pat_test"                , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"], "pre_tests": [], "post_tests": []}
-    ]
+    "pre_tests": [],
+    "datasets": [
+      {"dataset_id":"raw_softpath_v_p_pat_auxilarydoctor"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"raw_softpath_v_p_pat_diagnosistext"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
+      {"dataset_id":"raw_softpath_v_p_pat_dxadeqprobothercodes", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
+      {"dataset_id":"raw_softpath_v_p_pat_gyncase"             , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"raw_softpath_v_p_pat_patcase"             , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_stay"]},
+      {"dataset_id":"raw_softpath_v_p_pat_patcasetestdxcodes"  , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_stay"]},
+      {"dataset_id":"raw_softpath_v_p_pat_patcasewithslides"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"raw_softpath_v_p_pat_patcasewithtest"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"raw_softpath_v_p_pat_patientdemographic"  , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_stay"]},
+      {"dataset_id":"raw_softpath_v_p_pat_report"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
+      {"dataset_id":"raw_softpath_v_p_pat_slide"               , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
+      {"dataset_id":"raw_softpath_v_p_pat_specimen"            , "cluster_type": "large" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
+      {"dataset_id":"raw_softpath_v_p_pat_specimenblock"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
+      {"dataset_id":"raw_softpath_v_p_pat_specimendxadeq"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"raw_softpath_v_p_pat_stay"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"raw_softpath_v_p_pat_test"                , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]}
+    ],
+    "post_tests": []
     },
     {
       "destination_zone": "red",
@@ -36,45 +37,53 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "datasets":
-      [
-        {"dataset_id":"curated_softpath_v_p_pat_gyncase"           , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softpath_v_p_pat_patcase"           , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softpath_v_p_pat_patcasetestdxcodes", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softpath_v_p_pat_patcasewithtest"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softpath_v_p_pat_patientdemographic", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softpath_v_p_pat_report"            , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softpath_v_p_pat_specimen"          , "cluster_type": "large" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softpath_v_p_pat_specimenblock"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softpath_v_p_pat_stay"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []},
-        {"dataset_id":"curated_softpath_v_p_pat_test"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []}
-      ]
+      "pre_tests": [{"name": "greater_partition_counts", "destinations": ["curated_softpath_*"]}],
+      "datasets": [
+        {"dataset_id":"curated_softpath_v_p_pat_gyncase"           , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"curated_softpath_v_p_pat_patcase"           , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"curated_softpath_v_p_pat_patcasetestdxcodes", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"curated_softpath_v_p_pat_patcasewithtest"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"curated_softpath_v_p_pat_patientdemographic", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"curated_softpath_v_p_pat_report"            , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"curated_softpath_v_p_pat_specimen"          , "cluster_type": "large" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"curated_softpath_v_p_pat_specimenblock"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"curated_softpath_v_p_pat_stay"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"curated_softpath_v_p_pat_test"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "post_tests": []
     },
     {
-    "destination_zone": "yellow",
-    "destination_subzone": "anonymized",
-    "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+      "destination_zone": "yellow",
+      "destination_subzone": "anonymized",
+      "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
       "multiple_main_methods": false,
-    "publish_class": "",
-    "schemas": [],
-    "datasets":
-    [
-      {"dataset_id":"anonymized_softpath_v_p_pat_auxilarydoctor"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_diagnosistext"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_dxadeqprobothercodes", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_gyncase"             , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_patcase"             , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_patcasetestdxcodes"  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_patcasewithslides"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_patcasewithtest"     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_patientdemographic"  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_report"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_slide"               , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_specimen"            , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_specimenblock"       , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_specimendxadeq"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_stay"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id":"anonymized_softpath_v_p_pat_test"                , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]}
-    ]
-  }]
+      "publish_class": "",
+      "schemas": [],
+      "pre_tests": [{"name": "greater_partition_counts", "destinations": [
+        "anonymized_softpath_v_p_pat_auxilarydoctor", "anonymized_softpath_v_p_pat_d*", "anonymized_softpath_v_p_pat_patcasewithslides",
+        "anonymized_softpath_v_p_pat_slide", "anonymized_softpath_v_p_pat_specimendxadeq"
+      ]}],
+      "datasets": [
+        {"dataset_id":"anonymized_softpath_v_p_pat_auxilarydoctor"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_diagnosistext"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_dxadeqprobothercodes", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_gyncase"             , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_patcase"             , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_patcasetestdxcodes"  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_patcasewithslides"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_patcasewithtest"     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_patientdemographic"  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_report"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_slide"               , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_specimen"            , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_specimenblock"       , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_specimendxadeq"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_stay"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"anonymized_softpath_v_p_pat_test"                , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "post_tests": [
+        {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_softpath_*"]},
+        {"name": "equal_counts", "destinations": ["anonymized_softpath_*"]}
+      ]
+    }]
 }

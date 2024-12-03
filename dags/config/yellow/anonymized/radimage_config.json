@@ -9,20 +9,34 @@
     "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
-    "datasets":
-    [
-       {"dataset_id":"anonymized_radimage_c*"                     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-       {"dataset_id":"anonymized_radimage_employee"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-       {"dataset_id":"anonymized_radimage_examen*"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-       {"dataset_id":"anonymized_radimage_i*"                     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-       {"dataset_id":"anonymized_radimage_modificateur"           , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-       {"dataset_id":"anonymized_radimage_medecin"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-       {"dataset_id":"anonymized_radimage_patient*"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-       {"dataset_id":"anonymized_radimage_provenance*"            , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-       {"dataset_id":"anonymized_radimage_periodes_financieres"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-       {"dataset_id":"anonymized_radimage_requete*"               , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-       {"dataset_id":"anonymized_radimage_responsabilite_paiement", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-       {"dataset_id":"anonymized_radimage_s*"                     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]}
+    "pre_tests": [
+      {"name": "greater_or_equal_partition_counts", "destinations": [
+        "anonymized_radimage_examen*","anonymized_radimage_modificateur", "anonymized_radimage_provenance*",
+        "anonymized_radimage_periodes_financieres", "anonymized_radimage_responsabilite_paiement",
+        "anonymized_radimage_s*"
+      ]},
+      {"name": "greater_partition_counts", "destinations": [
+        "anonymized_radimage_c*", "anonymized_radimage_employee", "anonymized_radimage_i*", 
+        "anonymized_radimage_medecin", "anonymized_radimage_patient*", "anonymized_radimage_requete*"
+      ]}
+    ],
+    "datasets": [
+       {"dataset_id":"anonymized_radimage_c*"                     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+       {"dataset_id":"anonymized_radimage_employee"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+       {"dataset_id":"anonymized_radimage_examen*"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+       {"dataset_id":"anonymized_radimage_i*"                     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+       {"dataset_id":"anonymized_radimage_modificateur"           , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+       {"dataset_id":"anonymized_radimage_medecin"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+       {"dataset_id":"anonymized_radimage_patient*"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+       {"dataset_id":"anonymized_radimage_provenance*"            , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+       {"dataset_id":"anonymized_radimage_periodes_financieres"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+       {"dataset_id":"anonymized_radimage_requete*"               , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+       {"dataset_id":"anonymized_radimage_responsabilite_paiement", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+       {"dataset_id":"anonymized_radimage_s*"                     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
+    ],
+    "post_tests": [
+      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_radimage_*"]},
+      {"name": "equal_counts", "destinations": ["anonymized_radimage_*"]}
     ]
   }]
 }

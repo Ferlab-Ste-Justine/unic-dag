@@ -10,28 +10,27 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "datasets":
-      [
-        {"dataset_id":"enriched_bronchiolite_consultation_complication" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index", "enriched_bronchiolite_medication_wards", "enriched_bronchiolite_respiratory_care"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_consultation_other"        , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_consultation_complication"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_culture_results"           , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_episode_of_care_wards"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_episode_of_care_emergency" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_episode_of_care_wards", "enriched_bronchiolite_physician_index"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_episode_of_care_wards"     , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index", "enriched_bronchiolite_patient_diagnosis", "enriched_bronchiolite_medication_wards"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_follow_up_diagnosis"       , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_follow_up"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_follow_up"                 , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_episode_of_care_wards"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_imaging"                   , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index", "enriched_bronchiolite_episode_of_care_wards"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_laboratory_results"        , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_episode_of_care_wards", "enriched_bronchiolite_episode_of_care_emergency", "enriched_bronchiolite_physician_index"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_medication_emergency"      , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_episode_of_care_emergency"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_medication_wards"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index", "enriched_bronchiolite_physician_index"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_participant_index"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_patient"                   , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_patient_diagnosis"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_physician_index"           , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_bronchiolite_respiratory_care"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index"], "pre_tests": [], "post_tests": []}
-
-      ]
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id":"enriched_bronchiolite_consultation_complication" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index", "enriched_bronchiolite_medication_wards", "enriched_bronchiolite_respiratory_care"]},
+        {"dataset_id":"enriched_bronchiolite_consultation_other"        , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_consultation_complication"]},
+        {"dataset_id":"enriched_bronchiolite_culture_results"           , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_episode_of_care_wards"]},
+        {"dataset_id":"enriched_bronchiolite_episode_of_care_emergency" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_episode_of_care_wards", "enriched_bronchiolite_physician_index"]},
+        {"dataset_id":"enriched_bronchiolite_episode_of_care_wards"     , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index", "enriched_bronchiolite_patient_diagnosis", "enriched_bronchiolite_medication_wards"]},
+        {"dataset_id":"enriched_bronchiolite_follow_up_diagnosis"       , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_follow_up"]},
+        {"dataset_id":"enriched_bronchiolite_follow_up"                 , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_episode_of_care_wards"]},
+        {"dataset_id":"enriched_bronchiolite_imaging"                   , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index", "enriched_bronchiolite_episode_of_care_wards"]},
+        {"dataset_id":"enriched_bronchiolite_laboratory_results"        , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_episode_of_care_wards", "enriched_bronchiolite_episode_of_care_emergency", "enriched_bronchiolite_physician_index"]},
+        {"dataset_id":"enriched_bronchiolite_medication_emergency"      , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_episode_of_care_emergency"]},
+        {"dataset_id":"enriched_bronchiolite_medication_wards"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index", "enriched_bronchiolite_physician_index"]},
+        {"dataset_id":"enriched_bronchiolite_participant_index"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"enriched_bronchiolite_patient"                   , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index"]},
+        {"dataset_id":"enriched_bronchiolite_patient_diagnosis"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index"]},
+        {"dataset_id":"enriched_bronchiolite_physician_index"           , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
+        {"dataset_id":"enriched_bronchiolite_respiratory_care"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index"]}
+      ],
+      "post_tests": []
     },
-
     {
       "destination_zone": "green",
       "destination_subzone": "released",
@@ -39,25 +38,25 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "datasets":
-      [
-        {"dataset_id":"released_bronchiolite_consultation_complication" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_bronchiolite_consultation_other"        , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_bronchiolite_culture_results"           , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_bronchiolite_episode_of_care_emergency" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_bronchiolite_episode_of_care_wards"     , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_bronchiolite_follow_up_diagnosis"       , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_bronchiolite_follow_up"                 , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_bronchiolite_imaging"                   , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_bronchiolite_laboratory_results"        , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_bronchiolite_medication_emergency"      , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_bronchiolite_medication_wards"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_bronchiolite_patient"                   , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_bronchiolite_patient_diagnosis"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_bronchiolite_respiratory_care"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
-      ]      
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id":"released_bronchiolite_consultation_complication" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"released_bronchiolite_consultation_other"        , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"released_bronchiolite_culture_results"           , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"released_bronchiolite_episode_of_care_emergency" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"released_bronchiolite_episode_of_care_wards"     , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"released_bronchiolite_follow_up_diagnosis"       , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"released_bronchiolite_follow_up"                 , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"released_bronchiolite_imaging"                   , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"released_bronchiolite_laboratory_results"        , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"released_bronchiolite_medication_emergency"      , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"released_bronchiolite_medication_wards"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"released_bronchiolite_patient"                   , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"released_bronchiolite_patient_diagnosis"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"released_bronchiolite_respiratory_care"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+      ],
+      "post_tests": []      
     },
-
     {
       "destination_zone": "green",
       "destination_subzone": "published",
@@ -65,23 +64,24 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "datasets":
-      [
-        {"dataset_id":"published_bronchiolite_consultation_complication" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_bronchiolite_consultation_other"        , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_bronchiolite_culture_results"           , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_bronchiolite_episode_of_care_emergency" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_bronchiolite_episode_of_care_wards"     , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_bronchiolite_follow_up_diagnosis"       , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_bronchiolite_follow_up"                 , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_bronchiolite_imaging"                   , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_bronchiolite_laboratory_results"        , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_bronchiolite_medication_emergency"      , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_bronchiolite_medication_wards"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_bronchiolite_patient"                   , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_bronchiolite_patient_diagnosis"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_bronchiolite_respiratory_care"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
-      ]
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id":"published_bronchiolite_consultation_complication" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"published_bronchiolite_consultation_other"        , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"published_bronchiolite_culture_results"           , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"published_bronchiolite_episode_of_care_emergency" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"published_bronchiolite_episode_of_care_wards"     , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"published_bronchiolite_follow_up_diagnosis"       , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"published_bronchiolite_follow_up"                 , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"published_bronchiolite_imaging"                   , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"published_bronchiolite_laboratory_results"        , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"published_bronchiolite_medication_emergency"      , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"published_bronchiolite_medication_wards"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"published_bronchiolite_patient"                   , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"published_bronchiolite_patient_diagnosis"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
+        {"dataset_id":"published_bronchiolite_respiratory_care"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+      ],
+      "post_tests": []
     }
   ]
 }

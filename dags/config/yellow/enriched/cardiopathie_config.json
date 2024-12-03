@@ -10,15 +10,16 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "datasets":
-      [
-        {"dataset_id":"enriched_cardiopathie_bebe"                 , "cluster_type": "small"  , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}                             ,
-        {"dataset_id":"enriched_cardiopathie_hospitalisation_bebe" , "cluster_type": "small"  , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_cardiopathie_bebe"], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"enriched_cardiopathie_laboratoire"          , "cluster_type": "medium" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_cardiopathie_bebe"], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"enriched_cardiopathie_analyses_sommaire"    , "cluster_type": "medium" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_cardiopathie_bebe", "enriched_cardiopathie_laboratoire", "enriched_cardiopathie_imagerie", "enriched_cardiopathie_pathologie"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_cardiopathie_imagerie"             , "cluster_type": "medium" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_cardiopathie_bebe"], "pre_tests": [], "post_tests": []},
-        {"dataset_id":"enriched_cardiopathie_pathologie"           , "cluster_type": "medium" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_cardiopathie_bebe"], "pre_tests": [], "post_tests": []}
-      ]
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id":"enriched_cardiopathie_analyses_sommaire"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_cardiopathie_bebe", "enriched_cardiopathie_laboratoire", "enriched_cardiopathie_imagerie", "enriched_cardiopathie_pathologie"]},
+        {"dataset_id":"enriched_cardiopathie_bebe"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_cardiopathie_hospitalisation_bebe", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_cardiopathie_bebe"]},
+        {"dataset_id":"enriched_cardiopathie_imagerie"            , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_cardiopathie_bebe"]},
+        {"dataset_id":"enriched_cardiopathie_laboratoire"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_cardiopathie_bebe"]},
+        {"dataset_id":"enriched_cardiopathie_pathologie"          , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_cardiopathie_bebe"]}
+      ],
+      "post_tests": []
     },
     {
       "destination_zone": "green",
@@ -27,15 +28,16 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "datasets":
-      [
-        {"dataset_id":"released_cardiopathie_bebe"                 , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_cardiopathie_analyses_sommaire"    , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_cardiopathie_hospitalisation_bebe" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_cardiopathie_imagerie"             , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_cardiopathie_laboratoire"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"released_cardiopathie_pathologie"           , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
-      ]
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id":"released_cardiopathie_analyses_sommaire"   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_cardiopathie_bebe"                , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_cardiopathie_hospitalisation_bebe", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_cardiopathie_imagerie"            , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_cardiopathie_laboratoire"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_cardiopathie_pathologie"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "post_tests": []
     },
     {
       "destination_zone": "green",
@@ -44,15 +46,16 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "datasets":
-      [
-        {"dataset_id":"published_cardiopathie_bebe"                 , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_cardiopathie_hospitalisation_bebe" , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_cardiopathie_analyses_sommaire"    , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_cardiopathie_imagerie"             , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_cardiopathie_laboratoire"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []} ,
-        {"dataset_id":"published_cardiopathie_pathologie"           , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": [], "pre_tests": [], "post_tests": []}
-      ]
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id":"published_cardiopathie_analyses_sommaire"   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_cardiopathie_bebe"                , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_cardiopathie_hospitalisation_bebe", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_cardiopathie_imagerie"            , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_cardiopathie_laboratoire"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_cardiopathie_pathologie"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "post_tests": []
     }
   ]
 }

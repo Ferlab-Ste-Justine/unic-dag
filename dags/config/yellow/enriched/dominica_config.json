@@ -10,18 +10,18 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "datasets":
-      [
-      {"dataset_id":"enriched_dominica_participant_index"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []                                     , "pre_tests": [], "post_tests": []},
-      {"dataset_id":"enriched_dominica_hospitalisation"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_dominica_participant_index"], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"enriched_dominica_laboratory"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_dominica_participant_index"], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"enriched_dominica_medication"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_dominica_participant_index"], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"enriched_dominica_patient_info"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_dominica_participant_index"], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"enriched_dominica_patient_medical_history", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_dominica_participant_index"], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"enriched_dominica_vemf_cvf"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_dominica_participant_index"], "pre_tests": [], "post_tests": []}
-      ]
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id":"enriched_dominica_participant_index"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_dominica_hospitalisation"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_dominica_participant_index"]},
+        {"dataset_id":"enriched_dominica_laboratory"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_dominica_participant_index"]},
+        {"dataset_id":"enriched_dominica_medication"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_dominica_participant_index"]},
+        {"dataset_id":"enriched_dominica_patient_info"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_dominica_participant_index"]},
+        {"dataset_id":"enriched_dominica_patient_medical_history", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_dominica_participant_index"]},
+        {"dataset_id":"enriched_dominica_vemf_cvf"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_dominica_participant_index"]}
+      ],
+      "post_tests": []
     },
-
     {
       "destination_zone": "green",
       "destination_subzone": "released",
@@ -29,17 +29,17 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "datasets":
-      [
-      {"dataset_id":"released_dominica_hospitalisation"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"released_dominica_laboratory"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"released_dominica_medication"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"released_dominica_patient_info"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"released_dominica_patient_medical_history", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"released_dominica_vemf_cvf"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
-      ]
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id":"released_dominica_hospitalisation"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_dominica_laboratory"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_dominica_medication"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_dominica_patient_info"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_dominica_patient_medical_history", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_dominica_vemf_cvf"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "post_tests": []
     },
-
     {
       "destination_zone": "green",
       "destination_subzone": "published",
@@ -47,15 +47,16 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "datasets":
-      [
-      {"dataset_id":"published_dominica_hospitalisation"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"published_dominica_laboratory"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"published_dominica_medication"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"published_dominica_patient_info"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"published_dominica_patient_medical_history", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []},
-      {"dataset_id":"published_dominica_vemf_cvf"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": [], "post_tests": []}
-      ]
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id":"published_dominica_hospitalisation"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_dominica_laboratory"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_dominica_medication"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_dominica_patient_info"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_dominica_patient_medical_history", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_dominica_vemf_cvf"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "post_tests": []
     }
   ]
 }

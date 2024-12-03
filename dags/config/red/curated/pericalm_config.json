@@ -9,10 +9,13 @@
       "multiple_main_methods": true,
       "publish_class": "",
       "schemas": [],
-      "datasets":
-      [
-        {"dataset_id": "curated_pericalm_patientcards", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []}
-      ]
+      "pre_tests": [
+        {"name": "greater_partition_counts", "destinations": ["curated_pericalm_patientcards"]}
+      ],
+      "datasets": [
+        {"dataset_id": "curated_pericalm_patientcards", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "post_tests": []
     },
     {
       "destination_zone": "yellow",
@@ -21,32 +24,38 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "datasets":
-      [
-         {"dataset_id": "anonymized_pericalm_a*"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_c*"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_en_custombirthlog"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_extractionevents"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_extractionlastattempt"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_extractionlog"            , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_extractversion"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_f*"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_helper_*"                 , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_i*"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_l*"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_m*"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_n*"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_o*"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_patientcards"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_patients"                 , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_patterncontractions"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_patternevent"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_personalhealthinformation", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_pregnancy"                , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_r*"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_s*"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-         {"dataset_id": "anonymized_pericalm_v*"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]}
-
+      "pre_tests": [
+        {"name": "greater_or_equal_partition_counts", "destinations": [
+          "anonymized_pericalm_a*", "anonymized_pericalm_c*", "anonymized_pericalm_extractversion",
+          "anonymized_pericalm_i*", "anonymized_pericalm_s*"
+        ]},
+        {"name": "greater_partition_counts", "destinations": [
+          "anonymized_pericalm_en_custombirthlog", "anonymized_pericalm_extraction*", "anonymized_pericalm_f*",
+          "anonymized_pericalm_helper_*", "anonymized_pericalm_l*", "anonymized_pericalm_m*", "anonymized_pericalm_n*",
+          "anonymized_pericalm_o*", "anonymized_pericalm_patients", "anonymized_pericalm_pattern*",
+          "anonymized_pericalm_personalhealthinformation", "anonymized_pericalm_pregnancy", "anonymized_pericalm_r*",
+          "anonymized_pericalm_v*"
+        ]}
+      ],
+      "datasets": [
+        {"dataset_id": "anonymized_pericalm_a*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_c*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_e*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_f*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_helper_*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_i*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_l*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_m*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_n*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_o*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_p*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_r*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_s*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_v*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "post_tests": [
+        {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_pericalm_*"]},
+        {"name": "equal_counts", "destinations": ["anonymized_pericalm_*"]}
       ]
     }
   ]

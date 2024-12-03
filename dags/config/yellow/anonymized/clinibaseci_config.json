@@ -10,25 +10,40 @@
     "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
-    "datasets":
-    [
-      {"dataset_id": "anonymized_clinibaseci_benempl"           , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_beneficiaire_tx"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": []                                   , "post_tests": []},
-      {"dataset_id": "anonymized_clinibaseci_beneficiaire_tb"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_benef_infection_tb", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_bendeces_tb"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_diagnostic"        , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_lit_tb"            , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_sejclin_tb"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_sejhospbebe_tb"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_sejhospmed_tb"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_sejhosplit_tb"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_sejhosp_tb"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_sejhospconge_tb"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_sejour*"           , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"]         , "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_service"           , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_typesoins"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]},
-      {"dataset_id": "anonymized_clinibaseci_unitesoins"        , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_or_equal_partition_counts"], "post_tests": ["lower_or_equal_null_counts", "equal_counts"]}
+    "pre_tests": [
+      {"name": "greater_or_equal_partition_counts", "destinations": [
+        "anonymized_clinibaseci_benef_infection_tb", "anonymized_clinibaseci_bendeces_tb", "anonymized_clinibaseci_diagnostic",
+        "anonymized_clinibaseci_lit_tb", "anonymized_clinibaseci_sejhospconge_tb", "anonymized_clinibaseci_service",
+        "anonymized_clinibaseci_typesoins", "anonymized_clinibaseci_unitesoins"
+      ]},
+      {"name": "greater_partition_counts", "destinations": [
+        "anonymized_clinibaseci_benempl", "anonymized_clinibaseci_beneficiaire_tb", "anonymized_clinibaseci_sejclin_tb",
+        "anonymized_clinibaseci_sejhospbebe_tb", "anonymized_clinibaseci_sejhospmed_tb", "anonymized_clinibaseci_sejhosplit_tb",
+        "anonymized_clinibaseci_sejhosp_tb", "anonymized_clinibaseci_sejour*"
+      ]}
+    ],
+    "datasets": [
+      {"dataset_id": "anonymized_clinibaseci_ben*"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_clinibaseci_diagnostic", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_clinibaseci_lit_tb"    , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_clinibaseci_sejclin_tb", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_clinibaseci_sejhosp*"  , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_clinibaseci_sejour*"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_clinibaseci_service"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_clinibaseci_typesoins" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_clinibaseci_unitesoins", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
+    ],
+    "post_tests": [
+      {"name": "lower_or_equal_null_counts", "destinations": [
+        "anonymized_clinibaseci_benempl", "anonymized_clinibaseci_beneficiaire_tb", "anonymized_clinibaseci_benef_infection_tb",
+        "anonymized_clinibaseci_bendeces_tb", "anonymized_clinibaseci_diagnostic", "anonymized_clinibaseci_lit_tb",
+        "anonymized_clinibaseci_s*", "anonymized_clinibaseci_typesoins", "anonymized_clinibaseci_unitesoins"
+      ]},
+      {"name": "equal_counts", "destinations": [
+        "anonymized_clinibaseci_benempl", "anonymized_clinibaseci_beneficiaire_tb", "anonymized_clinibaseci_benef_infection_tb",
+        "anonymized_clinibaseci_bendeces_tb", "anonymized_clinibaseci_diagnostic", "anonymized_clinibaseci_lit_tb",
+        "anonymized_clinibaseci_s*", "anonymized_clinibaseci_typesoins", "anonymized_clinibaseci_unitesoins"
+      ]}
     ]
   }]
 }
