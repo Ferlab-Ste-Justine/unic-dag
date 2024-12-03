@@ -111,7 +111,7 @@
     ]}],
     "datasets": [
       {"dataset_id": "anonymized_centro_atoe_*"  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_centro_chusj_*" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_centro_chusj_*" , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_centro_cirene_*", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_centro_der_*"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_centro_dev_*"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
