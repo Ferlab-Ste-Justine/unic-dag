@@ -76,7 +76,7 @@ with dag:
 
         def enriched_arguments(destination: str) -> List[str]:
             # !!! Do not set to initial, otherwise the participant index will be re-generated !!!
-            return ["config/prod.conf", "default", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
+            return ["config/prod.conf", "default", destination, "2012-01-01T00:00:00+00", "{{ data_interval_end }}"] # reset after fix
 
 
         enriched_participant_index = SparkOperator(
