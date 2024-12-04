@@ -47,5 +47,6 @@ os_port = '9200'
 
 # QA tests config
 qa_test_main_class = "bio.ferlab.ui.etl.qa.Main"
-qa_test_default_cluster_type = "xsmall"
+qa_test_cluster_type = "xsmall"
 qa_test_spark_failure_msg = "Spark test job failed"
+qa_test_retries = 0
