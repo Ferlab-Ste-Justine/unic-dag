@@ -13,7 +13,10 @@
     "datasets": [
       {"dataset_id":"curated_unic_patient_index", "cluster_type": "large", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
-    "post_tests": [{"name": "patient_index_valid_counts", "destinations": ["curated_unic_patient_index"]}]
+    "post_tests": [
+      {"name": "patient_index_valid_counts", "destinations": ["curated_unic_patient_index"]},
+      {"name": "patient_index_greater_or_equal_counts", "destinations": ["curated_unic_patient_index"]}
+    ]
   }, {
     "destination_zone": "yellow",
     "destination_subzone": "anonymized",
@@ -21,7 +24,7 @@
     "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
-    "pre_tests": [{"name": "patient_index_greater_or_equal_counts", "destinations": ["anonymized_unic_patient_index"]}],
+    "pre_tests": [],
     "datasets": [
       {"dataset_id":"anonymized_unic_patient_index", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
