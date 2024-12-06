@@ -89,7 +89,7 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "pre_tests": [{"name": "greater_partition_counts", "destinations": ["curated_centro_*"]}],
+      "pre_tests": [{"name": "greater_or_equal_partition_counts", "destinations": ["curated_centro_*"]}],
       "datasets": [
         {"dataset_id":"curated_centro_atoe_*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"curated_centro_gas_*" , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -105,10 +105,7 @@
     "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
-    "pre_tests": [{"name": "greater_partition_counts", "destinations": [
-      "anonymized_centro_c*", "anonymized_centro_d*", "anonymized_centro_n*", "anonymized_centro_p*",
-      "anonymized_centro_scol_*", "anonymized_centro_tel_*"
-    ]}],
+    "pre_tests": [{"name": "greater_or_equal_partition_counts", "destinations": ["anonymized_centro_*"]}],
     "datasets": [
       {"dataset_id": "anonymized_centro_atoe_*"  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_centro_chusj_*" , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
