@@ -16,13 +16,13 @@
         "anonymized_radimage_s*"
       ]},
       {"name": "greater_partition_counts", "destinations": [
-        "anonymized_radimage_c*", "anonymized_radimage_employee", "anonymized_radimage_i*", 
+        "anonymized_radimage_c*", "anonymized_radimage_employe", "anonymized_radimage_i*",
         "anonymized_radimage_medecin", "anonymized_radimage_patient*", "anonymized_radimage_requete*"
       ]}
     ],
     "datasets": [
        {"dataset_id":"anonymized_radimage_c*"                     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-       {"dataset_id":"anonymized_radimage_employee"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+       {"dataset_id":"anonymized_radimage_employe"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
        {"dataset_id":"anonymized_radimage_examen*"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
        {"dataset_id":"anonymized_radimage_i*"                     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
        {"dataset_id":"anonymized_radimage_modificateur"           , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
