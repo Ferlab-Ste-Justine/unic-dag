@@ -28,14 +28,6 @@ class SparkOpenSearchOperator(SparkOperator):
             skip: Optional[bool] = False,
             **kwargs,
     ) -> None:
-        super().__init__(
-            spark_class=self.spark_class,
-            spark_jar=self.spark_jar,
-            spark_failure_msg=self.spark_failure_msg,
-            zone=self.zone,
-            spark_config=self.spark_config,
-            **kwargs
-        )
         self.spark_class = spark_class
         self.spark_jar = spark_jar
         self.spark_failure_msg = spark_failure_msg
@@ -44,6 +36,14 @@ class SparkOpenSearchOperator(SparkOperator):
         self.os_credentials_secret_name = os_credentials_secret_name
         self.os_cert_secret_name = os_cert_secret_name
         self.skip = skip
+        super().__init__(
+            spark_class=self.spark_class,
+            spark_jar=self.spark_jar,
+            spark_failure_msg=self.spark_failure_msg,
+            zone=self.zone,
+            spark_config=self.spark_config,
+            **kwargs
+        )
 
     def execute(self, **kwargs):
         if self.skip:
