@@ -11,7 +11,6 @@ class SparkOpenSearchOperator(SparkOperator):
     template_fields = SparkOperator.template_fields + (
         'spark_class',
         'spark_jar',
-        'ca_pod_template',
         'spark_failure_msg',
         'zone',
         'spark_config',
