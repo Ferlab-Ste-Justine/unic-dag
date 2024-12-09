@@ -36,7 +36,7 @@ def load_index_arguments(release_id: str, template_filename: str, alias: str) ->
 def publish_index_arguments(release_id: str, alias: str) -> List[str]:
     return [
         "--osurl", os_url,
-        "--port", os_port,
+        "--osport", os_port,
         "--release-id", release_id,
         "--alias", alias
     ]
