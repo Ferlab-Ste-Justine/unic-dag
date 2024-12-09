@@ -27,7 +27,7 @@ def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
     )
 
 def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
-          zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.es.Indexer') -> SparkOperator:
+          zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.os.index.Main') -> SparkOperator:
 
     return SparkOperator(
         task_id=task_id,
@@ -42,7 +42,7 @@ def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, 
     )
 
 def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
-               zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.es.Publisher') -> SparkOperator:
+               zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.os.publish.Main') -> SparkOperator:
 
     return SparkOpenSearchOperator(
         task_id=task_id,
