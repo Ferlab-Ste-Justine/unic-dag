@@ -1,13 +1,13 @@
 from typing import List
 
 from airflow import DAG
-from airflow.decorators import task_group
+from airflow.decorators import task
 
 from lib.config import optimization_main_class, optimization_cluster_type, optimization_spark_failure_msg, \
     optimization_retries
 from lib.operators.spark import SparkOperator
 
-@task_group(group_id="optimize")
+@task(task_id='optimize')
 def optimize(destinations: List[str], resource: str, zone: str, subzone: str,
          config_file: str, jar: str, dag: DAG) -> SparkOperator:
     """
