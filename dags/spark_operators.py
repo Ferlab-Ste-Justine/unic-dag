@@ -10,7 +10,7 @@ from airflow import DAG
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.tasks.optimize import optimize
+# from lib.tasks.optimize import optimize
 from lib.groups.qa import tests as qa_group
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
