@@ -20,6 +20,7 @@
         {"dataset_id": "enriched_monchemin_surgery"             , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "enriched_monchemin_visit_clinic"        , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_monchemin_surgery"]}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -39,6 +40,7 @@
         {"dataset_id": "released_monchemin_surgery"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "released_monchemin_visit_clinic"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -58,6 +60,7 @@
         {"dataset_id": "published_monchemin_surgery"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "published_monchemin_visit_clinic"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     }
   ]

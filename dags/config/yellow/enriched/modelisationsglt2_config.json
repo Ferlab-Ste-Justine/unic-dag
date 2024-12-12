@@ -21,6 +21,7 @@
         {"dataset_id": "enriched_modelisationsglt2_laboratory"               , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_modelisationsglt2_participant_index"]                                         },
         {"dataset_id": "enriched_modelisationsglt2_diagnosis"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_modelisationsglt2_participant_index"]                                         }
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -40,6 +41,7 @@
         {"dataset_id": "released_modelisationsglt2_laboratory"               , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "released_modelisationsglt2_diagnosis"                , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -59,6 +61,7 @@
         {"dataset_id": "published_modelisationsglt2_laboratory"               , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "published_modelisationsglt2_diagnosis"                , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     }
   ]

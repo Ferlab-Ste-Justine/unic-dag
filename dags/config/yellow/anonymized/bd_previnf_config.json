@@ -18,6 +18,7 @@
          {"dataset_id":"anonymized_bd_previnf_tab_parametrescalculsindicateurs" , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
          {"dataset_id":"anonymized_bd_previnf_tab_unites"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize" : [],
       "post_tests": []
     }]
   }

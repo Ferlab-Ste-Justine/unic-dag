@@ -37,6 +37,7 @@
         {"dataset_id":"enriched_mfm_second_and_third_trimester_prenatal_ultrasound"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_mfm_participant_index"]},
         {"dataset_id":"enriched_mfm_sociodemographic_information"                      , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_mfm_participant_index"]}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -66,6 +67,7 @@
         {"dataset_id":"released_mfm_second_and_third_trimester_prenatal_ultrasound"    , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"released_mfm_sociodemographic_information"                      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -95,6 +97,7 @@
         {"dataset_id":"published_mfm_second_and_third_trimester_prenatal_ultrasound"    , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_mfm_sociodemographic_information"                      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     }
   ]

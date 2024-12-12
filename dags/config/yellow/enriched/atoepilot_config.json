@@ -19,6 +19,7 @@
         {"dataset_id": "enriched_atoepilot_patient_weight"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_atoepilot_participant_index", "enriched_atoepilot_surgery"]},
         {"dataset_id": "enriched_atoepilot_surgery"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_atoepilot_participant_index"]}
       ],
+      "optimize" : [],
       "post_tests": []
     },
     {
@@ -36,6 +37,7 @@
         {"dataset_id": "released_atoepilot_patient_weight"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "released_atoepilot_surgery"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize" : [],
       "post_tests": []
     },
     {
@@ -53,6 +55,7 @@
         {"dataset_id": "published_atoepilot_patient_weight"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "published_atoepilot_surgery"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize" : [],
       "post_tests": []
     }
   ]

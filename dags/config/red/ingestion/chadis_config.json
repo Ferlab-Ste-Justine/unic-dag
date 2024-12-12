@@ -23,6 +23,7 @@
       {"dataset_id": "raw_chadis_response*"                    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_chadis_visit*"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
+    "optimize" : [],
     "post_tests": []
   }, {
     "destination_zone": "yellow",
@@ -44,6 +45,7 @@
       {"dataset_id": "anonymized_chadis_response*"                    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_chadis_visit*"                       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
+    "optimize" : [],
     "post_tests": [
       {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_chadis_*"]},
       {"name": "equal_counts", "destinations": ["anonymized_chadis_*"]}

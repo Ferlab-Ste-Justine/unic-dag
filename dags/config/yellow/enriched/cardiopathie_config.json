@@ -19,6 +19,7 @@
         {"dataset_id":"enriched_cardiopathie_laboratoire"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_cardiopathie_bebe"]},
         {"dataset_id":"enriched_cardiopathie_pathologie"          , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_cardiopathie_bebe"]}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -37,6 +38,7 @@
         {"dataset_id":"released_cardiopathie_laboratoire"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"released_cardiopathie_pathologie"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -55,6 +57,7 @@
         {"dataset_id":"published_cardiopathie_laboratoire"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_cardiopathie_pathologie"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     }
   ]

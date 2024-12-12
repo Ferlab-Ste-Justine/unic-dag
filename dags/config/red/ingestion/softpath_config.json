@@ -28,6 +28,7 @@
       {"dataset_id":"raw_softpath_v_p_pat_stay"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"raw_softpath_v_p_pat_test"                , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]}
     ],
+    "optimize" : [],
     "post_tests": []
     },
     {
@@ -50,7 +51,8 @@
         {"dataset_id":"curated_softpath_v_p_pat_stay"              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"curated_softpath_v_p_pat_test"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
-      "post_tests": []
+    "optimize" : [],
+    "post_tests": []
     },
     {
       "destination_zone": "yellow",
@@ -81,6 +83,7 @@
         {"dataset_id":"anonymized_softpath_v_p_pat_stay"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"anonymized_softpath_v_p_pat_test"                , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize" : [],
       "post_tests": [
         {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_softpath_*"]},
         {"name": "equal_counts", "destinations": ["anonymized_softpath_*"]}

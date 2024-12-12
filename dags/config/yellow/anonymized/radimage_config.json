@@ -34,6 +34,7 @@
        {"dataset_id":"anonymized_radimage_responsabilite_paiement", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
        {"dataset_id":"anonymized_radimage_s*"                     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
+    "optimize" : [],
     "post_tests": [
       {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_radimage_*"]},
       {"name": "equal_counts", "destinations": ["anonymized_radimage_*"]}

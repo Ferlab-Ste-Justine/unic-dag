@@ -15,6 +15,7 @@
         {"dataset_id":"enriched_pragmatiq_participant_index"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"enriched_pragmatiq_hospitalization_follow_up", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_pragmatiq_participant_index"]}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -29,6 +30,7 @@
         {"dataset_id":"released_pragmatiq_participant_index"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"released_pragmatiq_hospitalization_follow_up", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -43,6 +45,7 @@
         {"dataset_id":"published_pragmatiq_participant_index"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_pragmatiq_hospitalization_follow_up", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     }
   ]

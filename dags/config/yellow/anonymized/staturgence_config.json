@@ -37,6 +37,7 @@
       {"dataset_id":"anonymized_staturgence_recherche_quest_raison_visite" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_staturgence_recherche_test"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
+    "optimize" : [],
     "post_tests": [
       {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_staturgence_*"]},
       {"name": "equal_counts", "destinations": ["anonymized_staturgence_*"]}

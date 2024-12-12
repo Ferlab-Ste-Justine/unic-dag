@@ -21,6 +21,7 @@
         {"dataset_id":"enriched_picaso_microbiology_test_non_sterile", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_picaso_hospitalisation"]},
         {"dataset_id":"enriched_picaso_microbiology_test_sterile"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_picaso_hospitalisation"]}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -40,6 +41,7 @@
         {"dataset_id":"released_picaso_microbiology_test_non_sterile", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"released_picaso_microbiology_test_sterile"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -59,6 +61,7 @@
         {"dataset_id":"published_picaso_microbiology_test_non_sterile", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_picaso_microbiology_test_sterile"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     }
   ]

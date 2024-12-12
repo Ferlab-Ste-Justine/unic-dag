@@ -31,6 +31,7 @@
       {"dataset_id": "warehouse_sociodemographics_employement_history" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "warehouse_transfusions"                          , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
-    "post_tests": []
+      "optimize": [],
+      "post_tests": []
   }]
 }

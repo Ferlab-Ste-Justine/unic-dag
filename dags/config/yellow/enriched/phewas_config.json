@@ -22,6 +22,7 @@
         {"dataset_id": "enriched_phewas_participant_index"                 , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []                                                                                                                                                                                                                                                                                                },
         {"dataset_id": "enriched_phewas_sample_clinical_data"              , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_phewas_participant_index" , "enriched_phewas_external_clinic_cirene_development", "enriched_phewas_external_clinic_cirene_header", "enriched_phewas_external_clinic_cirene_neonatalogy", "enriched_phewas_external_clinic_cirene_neurology", "enriched_phewas_external_clinic_genetic"]}
       ],
+      "optimize": [],
       "post_tests": []
     }
   ]

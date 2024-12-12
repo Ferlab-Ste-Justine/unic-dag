@@ -39,6 +39,7 @@
 
         {"dataset_id": "curated_chartmaxx_cmformcapture_dossier_obstetrical", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["curated_chartmaxx_cmformcapture", "curated_chartmaxx_dossier*"]}
       ],
+      "optimize" : [],
       "post_tests": []
     },
     {
@@ -56,6 +57,7 @@
         {"dataset_id": "anonymized_chartmaxx_form_name_vw"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "anonymized_chartmaxx_dossier_obstetrical_1", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize" : [],
       "post_tests": []
     }
   ]

@@ -29,6 +29,7 @@
       {"dataset_id": "anonymized_viewpoint_u*", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_viewpoint_v*", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
     ],
+    "optimize" : [],
     "post_tests": [
       {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_viewpoint_*"]},
       {"name": "equal_counts", "destinations": ["anonymized_viewpoint_*"]}

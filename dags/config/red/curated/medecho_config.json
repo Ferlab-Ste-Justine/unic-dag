@@ -13,6 +13,7 @@
     "datasets": [
       {"dataset_id": "curated_medecho_mep_vue_diagnostic", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
+    "optimize" : [],
     "post_tests": []
   },
   {
@@ -40,6 +41,7 @@
       {"dataset_id": "anonymized_medecho_mep_vue_service"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_medecho_mep_vue_unitesoins"   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
+    "optimize" : [],
     "post_tests": [
       {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_medecho_*"]},
       {"name": "equal_counts", "destinations": ["anonymized_medecho_*"]}
