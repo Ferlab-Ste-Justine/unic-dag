@@ -113,7 +113,6 @@ def setup_dag(dag: DAG,
 
             jobs = {}
             all_dependencies = []
-            optimize_tables = step_config['optimize']
             pre_tests = step_config['pre_tests']
             post_tests = step_config['post_tests']
             pre_test_sub_group = None
@@ -126,9 +125,6 @@ def setup_dag(dag: DAG,
             if post_tests:
                 post_test_sub_group = qa_group.tests.override(group_id="post_tests")(
                     post_tests, resource, zone, subzone, config_file, jar, dag)
-
-            if optimize_tables:
-                optimize_sub_group = optimize(optimize_tables, resource, zone, subzone, config_file, jar, dag)
 
             for conf in step_config['datasets']:
                 dataset_id = conf['dataset_id']
@@ -151,21 +147,11 @@ def setup_dag(dag: DAG,
                     else:
                         start >> job['job']
                 if dataset_id not in all_dependencies:
-                    if post_tests and optimize_tables:
-                        if publish is not None:
-                            job['job'] >> end >> optimize_sub_group >> post_test_sub_group >> publish
-                        else:
-                            job['job'] >> end >> optimize_sub_group >> post_test_sub_group
-                    elif not post_tests and optimize_tables:
+                    if post_tests:
                         if publish is not None:
                             job['job'] >> end >> post_test_sub_group >> publish
                         else:
                             job['job'] >> end >> post_test_sub_group
-                    elif post_tests and not optimize_tables:
-                        if publish is not None:
-                            job['job'] >> end >> optimize_sub_group >> publish
-                        else:
-                            job['job'] >> end >> optimize_sub_group
                     else:
                         if publish is not None:
                             job['job'] >> end >> publish
@@ -180,7 +166,6 @@ def setup_dag(dag: DAG,
             groups[i] >> groups[i + 1]
     else:
         groups[0]
-
 
 def read_json(path: str):
     """
