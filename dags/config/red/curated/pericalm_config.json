@@ -15,6 +15,7 @@
       "datasets": [
         {"dataset_id": "curated_pericalm_patientcards", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize" : [],
       "post_tests": []
     },
     {
@@ -53,6 +54,7 @@
         {"dataset_id": "anonymized_pericalm_s*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "anonymized_pericalm_v*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize" : [],
       "post_tests": [
         {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_pericalm_*"]},
         {"name": "equal_counts", "destinations": ["anonymized_pericalm_*"]}

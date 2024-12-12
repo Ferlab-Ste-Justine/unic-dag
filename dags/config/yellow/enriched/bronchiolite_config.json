@@ -29,6 +29,7 @@
         {"dataset_id":"enriched_bronchiolite_physician_index"           , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
         {"dataset_id":"enriched_bronchiolite_respiratory_care"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": ["enriched_bronchiolite_participant_index"]}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -55,7 +56,8 @@
         {"dataset_id":"released_bronchiolite_patient_diagnosis"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
         {"dataset_id":"released_bronchiolite_respiratory_care"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
       ],
-      "post_tests": []      
+      "optimize": [],
+      "post_tests": []
     },
     {
       "destination_zone": "green",
@@ -81,6 +83,7 @@
         {"dataset_id":"published_bronchiolite_patient_diagnosis"         , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []} ,
         {"dataset_id":"published_bronchiolite_respiratory_care"          , "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     }
   ]

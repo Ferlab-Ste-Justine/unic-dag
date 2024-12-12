@@ -80,6 +80,7 @@
       {"dataset_id": "raw_centro_urg_*"     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_centro_uro_*"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
+    "optimize" : [],
     "post_tests": [{"name": "equal_counts", "destinations": ["raw_centro_*"]}]
     },
     {
@@ -96,6 +97,7 @@
         {"dataset_id":"curated_centro_gen_*" , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"curated_centro_hem_*" , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize" : [],
       "post_tests": []
     },
     {
@@ -123,9 +125,10 @@
       {"dataset_id": "anonymized_centro_scol_*"  , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_centro_tel_*"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
+    "optimize" : [],
     "post_tests": [
       {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_centro_*"]},
       {"name": "equal_counts", "destinations": ["anonymized_centro_*"]}
-    ]
+      ]
   }]
 }

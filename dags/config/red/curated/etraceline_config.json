@@ -15,6 +15,7 @@
     "datasets": [
       {"dataset_id": "curated_etraceline_patient", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []}
     ],
+    "optimize" : [],
     "post_tests": []
   },
   {
@@ -53,6 +54,7 @@
       {"dataset_id": "anonymized_etraceline_t*"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_etraceline_unit_poso"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
+    "optimize" : [],
     "post_tests": [
       {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_etraceline_*"]},
       {"name": "equal_counts", "destinations": ["anonymized_etraceline_*"]}

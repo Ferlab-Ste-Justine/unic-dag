@@ -34,6 +34,7 @@
       {"dataset_id": "anonymized_laboratoire_systeme_v_s_mic_*"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_laboratoire_systeme_v_s_pat_*"                        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
+    "optimize" : [],
     "post_tests": [
       {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_laboratoire_systeme_v_s_*"]},
       {"name": "equal_counts", "destinations": ["anonymized_laboratoire_systeme_v_s_*"]}

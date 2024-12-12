@@ -27,6 +27,7 @@
       {"dataset_id": "raw_icca_ptsitecare"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_icca_pttreatment"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
+    "optimize" : [],
     "post_tests": []
   }, {
     "destination_zone": "yellow",
@@ -53,6 +54,7 @@
       {"dataset_id": "anonymized_icca_ptsitecare"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_icca_pttreatment"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
+    "optimize" : [],
     "post_tests": []
   }]
 }

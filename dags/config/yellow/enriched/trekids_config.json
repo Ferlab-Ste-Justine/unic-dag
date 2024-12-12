@@ -21,6 +21,7 @@
         {"dataset_id":"enriched_trekids_patient_info"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"]},
         {"dataset_id":"enriched_trekids_patient_medical_history"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"]}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -40,6 +41,7 @@
         {"dataset_id":"released_trekids_patient_info"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"released_trekids_patient_medical_history"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -59,6 +61,7 @@
         {"dataset_id":"published_trekids_patient_info"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_trekids_patient_medical_history"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     }
   ]

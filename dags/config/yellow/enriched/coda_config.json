@@ -23,6 +23,7 @@
         {"dataset_id":"enriched_coda_participant_index"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_observation_pcr"]},
         {"dataset_id":"enriched_coda_patient"                  , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_coda_participant_index"]}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -44,6 +45,7 @@
         {"dataset_id":"released_coda_observation_vent"         , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"released_coda_patient"                  , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     },
     {
@@ -65,6 +67,7 @@
         {"dataset_id":"published_coda_observation_vent"         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_coda_patient"                  , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
       ],
+      "optimize": [],
       "post_tests": []
     }
   ]
