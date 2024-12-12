@@ -158,6 +158,11 @@ def setup_dag(dag: DAG,
                             job['job'] >> end >> optimize_sub_group >> post_test_sub_group
                     elif not post_tests and optimize_tables:
                         if publish is not None:
+                            job['job'] >> end >> post_test_sub_group >> publish
+                        else:
+                            job['job'] >> end >> post_test_sub_group
+                    elif post_tests and not optimize_tables:
+                        if publish is not None:
                             job['job'] >> end >> optimize_sub_group >> publish
                         else:
                             job['job'] >> end >> optimize_sub_group
