@@ -153,14 +153,14 @@ def setup_dag(dag: DAG,
                 if dataset_id not in all_dependencies:
                     if post_tests and optimize_tables:
                         if publish is not None:
-                            job['job'] >> optimize_sub_group >> end >> post_test_sub_group >> publish
+                            job['job'] >> end >> optimize_sub_group >> post_test_sub_group >> publish
                         else:
-                            job['job'] >> optimize_sub_group >> end >> post_test_sub_group
+                            job['job'] >> end >> optimize_sub_group >> post_test_sub_group
                     elif not post_tests and optimize_tables:
                         if publish is not None:
-                            job['job'] >> optimize_sub_group >> end >> publish
+                            job['job'] >> end >> optimize_sub_group >> publish
                         else:
-                            job['job'] >> optimize_sub_group >> end
+                            job['job'] >> end >> optimize_sub_group
                     else:
                         if publish is not None:
                             job['job'] >> end >> publish
