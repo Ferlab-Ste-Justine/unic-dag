@@ -40,7 +40,7 @@
       {"dataset_id": "anonymized_clinibaseci_v*"        , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
   
     ],
-    "optimize" : [],
+    "optimize" : ["anonymized_clinibaseci_beneficiaire_tx"],
     "post_tests": [
       {"name": "lower_or_equal_null_counts", 
        "destinations": [

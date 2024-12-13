@@ -13,6 +13,7 @@ from airflow.decorators import task_group
 from airflow.models import Param
 from airflow.operators.empty import EmptyOperator
 
+from lib.tasks.optimize import optimize
 from lib.config import default_params, default_args, spark_failure_msg, jar
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
@@ -47,6 +48,7 @@ QUANUM_CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.quanum.Main"
 QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
 QUANUMCHARTMAXX_CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.quanumchartmaxx.Main"
 QUANUM_CURATED_NEW_FORM_CHECKER_CLASS = "bio.ferlab.ui.etl.script.QuanumNewFormChecker"
+CONFIG = "config/prod.conf"
 
 LOCAL_TZ = pendulum.timezone("America/Montreal")
 
@@ -81,7 +83,7 @@ def generate_spark_arguments(destination: str, pass_date: bool, steps: str = "de
     Generate Spark task arguments for the ETL process.
     """
     arguments = [
-        "--config", "config/prod.conf",
+        "--config", CONFIG,
         "--steps", steps,
         "--app-name", destination,
         "--destination", destination,
@@ -185,9 +187,12 @@ with dag:
             dag=dag
         ) for task_name, cluster_size in curated_quanum_config]
 
+        curated_quanum_optimization_task = optimize(['curated_quanum_form_metadata_vw', 'curated_quanum_form_name_vw']
+                                                    , "quanum", QUANUM_CURATED_ZONE, "curated", CONFIG, jar, dag)
+
         [curated_quanum_form_data_vw_task, curated_quanum_form_metadata_vw_task,
          curated_quanum_form_name_vw_task] >> curated_quanum_new_form_checker_task >> start_quanum_forms_task
-        start_quanum_forms_task >> curated_quanum_tasks
+        start_quanum_forms_task >> curated_quanum_tasks >> curated_quanum_optimization_task
 
 
     @task_group(group_id="curated_quanumchartmaxx")
@@ -214,7 +219,7 @@ with dag:
             ("curated_quanum_chartmaxx_v*", "small-etl")
         ]
 
-        [SparkOperator(
+        curated_quanum_chartmaxx_tasks = [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
             arguments=generate_spark_arguments(task_name, pass_date=False, steps=run_type()),
@@ -226,16 +231,30 @@ with dag:
             dag=dag
         ) for task_name, cluster_size in curated_quanumchartmaxx_config]
 
+        curated_quanum_chartmaxx_optimization_task = optimize(
+            ["curated_quanum_chartmaxx_a*", "curated_quanum_chartmaxx_b*", "curated_quanum_chartmaxx_c*",
+             "curated_quanum_chartmaxx_d*",
+             "curated_quanum_chartmaxx_e*", "curated_quanum_chartmaxx_fibrose_kystique_depistage_neonatal",
+             "curated_quanum_chartmaxx_fkp_depistage_neonat_1ere_consultation",
+             "curated_quanum_chartmaxx_g*", "curated_quanum_chartmaxx_i*", "curated_quanum_chartmaxx_l*",
+             "curated_quanum_chartmaxx_maladie*", "curated_quanum_chartmaxx_n*",
+             "curated_quanum_chartmaxx_o*", "curated_quanum_chartmaxx_p*", "curated_quanum_chartmaxx_q*",
+             "curated_quanum_chartmaxx_r*", "curated_quanum_chartmaxx_s*",
+             "curated_quanum_chartmaxx_t*", "curated_quanum_chartmaxx_urogynecologie*", "curated_quanum_chartmaxx_v*"],
+            "quanum_chartmaxx", QUANUMCHARTMAXX_CURATED_ZONE, "curated", CONFIG, jar, dag)
+
+        curated_quanum_chartmaxx_tasks >> curated_quanum_chartmaxx_optimization_task
+
 
     @task_group(group_id="anonymized_quanum")
     def anonymized_quanum():
         anonymized_quanum_config = [
-            ("anonymized_clinique_de_pneumologie_suivi", "small-etl"),
-            ("anonymized_dossier_obstetrical_*", "small-etl"),
-            ("anonymized_pneumologie_consultation_initiale", "small-etl"),
+            ("anonymized_quanum_clinique_de_pneumologie_suivi", "small-etl"),
+            ("anonymized_quanum_dossier_obstetrical_*", "small-etl"),
+            ("anonymized_quanum_pneumologie_consultation_initiale", "small-etl"),
         ]
 
-        [SparkOperator(
+        anonymized_quanum_tasks = [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
             arguments=["config/prod.conf", run_type(), task_name],
@@ -246,6 +265,11 @@ with dag:
             spark_config=cluster_size,
             dag=dag
         ) for task_name, cluster_size in anonymized_quanum_config]
+
+        anonymized_quanum_optimization_tasks = optimize(['anonymized_quanum_*'], "quanum",
+                                                        QUANUMCHARTMAXX_ANONYMIZED_ZONE, "anonymized", CONFIG, jar, dag)
+
+        anonymized_quanum_tasks >> anonymized_quanum_optimization_tasks
 
 
     @task_group(group_id="anonymized_quanumchartmaxx")
@@ -258,7 +282,7 @@ with dag:
             ("anonymized_quanum_chartmaxx_clinique_*", "medium-etl")
         ]
 
-        [SparkOperator(
+        anonymized_quanum_chartmaxx_tasks = [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
             arguments=["config/prod.conf", run_type(), task_name],
@@ -269,6 +293,12 @@ with dag:
             spark_config=cluster_size,
             dag=dag
         ) for task_name, cluster_size in anonymized_quanumchartmaxx_config]
+
+        anonymized_quanum_chartmaxx_optimization_tasks = optimize(
+            ['anonymized_quanum_chartmaxx*'], "quanum_chartmaxx", QUANUMCHARTMAXX_ANONYMIZED_ZONE, "anonymized",
+            CONFIG, jar, dag)
+
+        anonymized_quanum_chartmaxx_tasks >> anonymized_quanum_chartmaxx_optimization_tasks
 
 
     start() >> curated_quanum() >> curated_quanumchartmaxx() >> anonymized_quanum() >> anonymized_quanumchartmaxx() >> end()

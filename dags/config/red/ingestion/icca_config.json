@@ -54,7 +54,12 @@
       {"dataset_id": "anonymized_icca_ptsitecare"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_icca_pttreatment"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
-    "optimize" : [],
+    "optimize" : [
+      "anonymized_icca_blood_gas",
+      "anonymized_icca_d*",
+      "anonymized_icca_lits",
+      "anonymized_icca_p*"
+    ],
     "post_tests": []
   }]
 }
