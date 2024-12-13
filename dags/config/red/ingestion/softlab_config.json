@@ -1,6 +1,6 @@
 {
   "concurrency": 3,
-  "schedule": "0 8 * * 2",
+  "schedule": "0 7 * * 1",
   "timeout_hours": 8,
   "steps": [{
     "destination_zone": "red",
@@ -8,54 +8,14 @@
     "main_class": "bio.ferlab.ui.etl.red.raw.softlab.Main",
     "multiple_main_methods": true,
     "publish_class": "",
-    "schemas": ["softlab", "softmic"],
+    "schemas": ["softlab"],
     "pre_tests": [],
     "datasets": [
-      {"dataset_id": "raw_softlab_v_p_genindex_hisaux" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_softlab_v_p_lab_message"     , "cluster_type": "large" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_test_result", "raw_softlab_v_p_lab_patient", "raw_softlab_v_p_lab_stay", "raw_softlab_v_p_lab_order"]},
-      {"dataset_id": "raw_softlab_v_p_lab_order"       , "cluster_type": "large" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_stay"]},
-      {"dataset_id": "raw_softlab_v_p_lab_ordered_test", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_softlab_v_p_lab_patient"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_stay"]},
-      {"dataset_id": "raw_softlab_v_p_lab_specimen"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_order"]},
-      {"dataset_id": "raw_softlab_v_p_lab_stay"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "raw_softlab_v_p_lab_test_result" , "cluster_type": "large" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_order"]},
-
-      {"dataset_id": "raw_softmic_v_p_mic_active_order", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softlab_v_p_lab_patient"]},
-      {"dataset_id": "raw_softmic_v_p_mic_comm"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softmic_v_p_mic_active_order"]},
-      {"dataset_id": "raw_softmic_v_p_mic_isocomm"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softmic_v_p_mic_isolate"]},
-      {"dataset_id": "raw_softmic_v_p_mic_isolate"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softmic_v_p_mic_active_order"]},
-      {"dataset_id": "raw_softmic_v_p_mic_media"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softmic_v_p_mic_test"]},
-      {"dataset_id": "raw_softmic_v_p_mic_mediacomm"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softmic_v_p_mic_media"]},
-      {"dataset_id": "raw_softmic_v_p_mic_order_comm"  , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softmic_v_p_mic_active_order"]},
-      {"dataset_id": "raw_softmic_v_p_mic_sensi"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softmic_v_p_mic_isolate"]},
-      {"dataset_id": "raw_softmic_v_p_mic_test"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softmic_v_p_mic_active_order"]},
-      {"dataset_id": "raw_softmic_v_p_mic_testcomm"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softmic_v_p_mic_test"]}
+      {"dataset_id": "raw_softlab_v_p_lab_test_result", "cluster_type": "large", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
     "optimize" : [],
     "post_tests": []
   },
-    {
-      "destination_zone": "red",
-      "destination_subzone": "curated",
-      "main_class": "bio.ferlab.ui.etl.red.curated.sil.Main",
-      "multiple_main_methods": false,
-      "publish_class": "",
-      "schemas": [],
-      "pre_tests": [{"name": "greater_partition_counts", "destinations": ["curated_softmic_*"]}],
-      "datasets": [
-        {"dataset_id":"curated_softmic_v_p_mic_active_order", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"curated_softmic_v_p_mic_isocomm"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"curated_softmic_v_p_mic_isolate"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"curated_softmic_v_p_mic_media"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"curated_softmic_v_p_mic_mediacomm"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"curated_softmic_v_p_mic_order_comm"  , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"curated_softmic_v_p_mic_sensi"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"curated_softmic_v_p_mic_test"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"curated_softmic_v_p_mic_testcomm"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
-      ],
-      "optimize" : [],
-      "post_tests": []
-    },
     {
       "destination_zone": "yellow",
       "destination_subzone": "anonymized",
@@ -64,7 +24,11 @@
       "publish_class": "",
       "schemas": [],
       "pre_tests": [{"name": "greater_partition_counts", "destinations": [
-        "anonymized_softlab_v_p_genindex_hisaux", "anonymized_softlab_v_p_lab_order", "anonymized_softlab_v_p_lab_patient",
+        "anonymized_softlab_v_p_genindex_hisaux",
+        "anonymized_softlab_v_p_lab_message",
+        "anonymized_softlab_v_p_lab_order",
+        "anonymized_softlab_v_p_lab_ordered_test",
+        "anonymized_softlab_v_p_lab_patient",
         "anonymized_softlab_v_p_lab_s*"
       ]}],
       "datasets": [
@@ -74,26 +38,25 @@
         {"dataset_id": "anonymized_softlab_v_p_lab_ordered_test", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "anonymized_softlab_v_p_lab_patient"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id": "anonymized_softlab_v_p_lab_s*"          , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_softlab_v_p_lab_test_result" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_softmic_v_p_mic_active_order", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_softmic_v_p_mic_comm*"       , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_softmic_v_p_mic_isocomm"     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_softmic_v_p_mic_isolate"     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_softmic_v_p_mic_media*"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_softmic_v_p_mic_order_comm"  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_softmic_v_p_mic_sensi"       , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_softmic_v_p_mic_test"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_softmic_v_p_mic_testcomm"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "anonymized_softlab_v_p_lab_test_result" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
       "optimize" : ["anonymized_softlab_v_p_lab_test_result"],
       "post_tests": [
         {"name": "lower_or_equal_null_counts", "destinations": [
-          "anonymized_softlab_v_p_genindex_hisaux", "anonymized_softlab_v_p_lab_order", "anonymized_softlab_v_p_lab_patient",
-          "anonymized_softlab_v_p_lab_s*", "anonymized_softmic_*"
+          "anonymized_softlab_v_p_genindex_hisaux",
+          "anonymized_softlab_v_p_lab_message",
+          "anonymized_softlab_v_p_lab_order",
+          "anonymized_softlab_v_p_lab_ordered_test",
+          "anonymized_softlab_v_p_lab_patient",
+          "anonymized_softlab_v_p_lab_s*"
         ]},
         {"name": "equal_counts", "destinations": [
-          "anonymized_softlab_v_p_genindex_hisaux", "anonymized_softlab_v_p_lab_order", "anonymized_softlab_v_p_lab_patient",
-          "anonymized_softlab_v_p_lab_s*", "anonymized_softmic_*"
+          "anonymized_softlab_v_p_genindex_hisaux",
+          "anonymized_softlab_v_p_lab_message",
+          "anonymized_softlab_v_p_lab_order",
+          "anonymized_softlab_v_p_lab_ordered_test",
+          "anonymized_softlab_v_p_lab_patient",
+          "anonymized_softlab_v_p_lab_s*"
         ]}
       ]
     }]
