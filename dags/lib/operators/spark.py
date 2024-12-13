@@ -8,7 +8,8 @@ from lib.cleanup import Cleanup
 class SparkOperator(KubernetesPodOperator):
     template_fields = KubernetesPodOperator.template_fields + (
         'spark_jar',
-        'skip'
+        'skip',
+        'spark_config'
     )
 
     def __init__(
