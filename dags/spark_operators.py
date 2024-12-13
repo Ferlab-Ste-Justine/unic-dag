@@ -10,7 +10,7 @@ from airflow import DAG
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-# from lib.tasks.optimize import optimize
+from lib.tasks.optimize import optimize
 from lib.groups.qa import tests as qa_group
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
@@ -113,6 +113,7 @@ def setup_dag(dag: DAG,
 
             jobs = {}
             all_dependencies = []
+            optimize_tables = step_config['optimize']
             pre_tests = step_config['pre_tests']
             post_tests = step_config['post_tests']
             pre_test_sub_group = None
@@ -125,6 +126,10 @@ def setup_dag(dag: DAG,
             if post_tests:
                 post_test_sub_group = qa_group.tests.override(group_id="post_tests")(
                     post_tests, resource, zone, subzone, config_file, jar, dag)
+
+            if optimize_tables:
+                optimize_task = optimize.override(task_id=f"{subzone}_{resource}_optimization")(
+                    optimize_tables, resource, zone, subzone, config_file, jar, dag)
 
             for conf in step_config['datasets']:
                 dataset_id = conf['dataset_id']
@@ -147,7 +152,17 @@ def setup_dag(dag: DAG,
                     else:
                         start >> job['job']
                 if dataset_id not in all_dependencies:
-                    if post_tests:
+                    if post_tests and optimize_tables:
+                        if publish is not None:
+                            job['job'] >> optimize_task >> end >> post_test_sub_group >> publish
+                        else:
+                            job['job'] >> optimize_task >> end >> post_test_sub_group
+                    elif not post_tests and optimize_tables:
+                        if publish is not None:
+                            job['job'] >> optimize_task >> end >> publish
+                        else:
+                            job['job'] >> optimize_task >> end
+                    elif post_tests and not optimize_tables:
                         if publish is not None:
                             job['job'] >> end >> post_test_sub_group >> publish
                         else:
