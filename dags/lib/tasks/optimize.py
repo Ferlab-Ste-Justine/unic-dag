@@ -1,13 +1,11 @@
 from typing import List
 
 from airflow import DAG
-from airflow.decorators import task
 
 from lib.config import optimization_main_class, optimization_cluster_type, optimization_spark_failure_msg, \
     optimization_retries
 from lib.operators.spark import SparkOperator
 
-@task(task_id='optimize')
 def optimize(destinations: List[str], resource: str, zone: str, subzone: str,
          config_file: str, jar: str, dag: DAG) -> SparkOperator:
     """
@@ -20,7 +18,7 @@ def optimize(destinations: List[str], resource: str, zone: str, subzone: str,
     :param config_file: Path of the ETL configuration file.
     :param jar: Path of the Spark jar.
     :param dag: Reference to the DAG.
-    :return: SparkOperator task instance of the optmization.
+    :return: SparkOperator task instance of the optimization.
     """
     task_id = "_".join([subzone, resource, "optimization"])
 
