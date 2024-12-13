@@ -187,7 +187,7 @@ with dag:
         ) for task_name, cluster_size in curated_quanum_config]
 
         curated_quanum_optimization_task = optimize(['curated_quanum_form_metadata_vw', 'curated_quanum_form_name_vw']
-                                                    , "quanum", QUANUM_CURATED_ZONE, "curated", CONFIG, jar, dag)
+                                                    , "quanum", QUANUM_CURATED_ZONE, "curated", config_file, jar, dag)
 
         [curated_quanum_form_data_vw_task, curated_quanum_form_metadata_vw_task,
          curated_quanum_form_name_vw_task] >> curated_quanum_new_form_checker_task >> start_quanum_forms_task
@@ -240,7 +240,7 @@ with dag:
              "curated_quanum_chartmaxx_o*", "curated_quanum_chartmaxx_p*", "curated_quanum_chartmaxx_q*",
              "curated_quanum_chartmaxx_r*", "curated_quanum_chartmaxx_s*",
              "curated_quanum_chartmaxx_t*", "curated_quanum_chartmaxx_urogynecologie*", "curated_quanum_chartmaxx_v*"],
-            "quanum_chartmaxx", QUANUMCHARTMAXX_CURATED_ZONE, "curated", CONFIG, jar, dag)
+            "quanum_chartmaxx", QUANUMCHARTMAXX_CURATED_ZONE, "curated", config_file, jar, dag)
 
         curated_quanum_chartmaxx_tasks >> curated_quanum_chartmaxx_optimization_task
 
@@ -266,7 +266,7 @@ with dag:
         ) for task_name, cluster_size in anonymized_quanum_config]
 
         anonymized_quanum_optimization_tasks = optimize(['anonymized_quanum_*'], "quanum",
-                                                        QUANUMCHARTMAXX_ANONYMIZED_ZONE, "anonymized", CONFIG, jar, dag)
+                                                        QUANUMCHARTMAXX_ANONYMIZED_ZONE, "anonymized", config_file, jar, dag)
 
         anonymized_quanum_tasks >> anonymized_quanum_optimization_tasks
 
