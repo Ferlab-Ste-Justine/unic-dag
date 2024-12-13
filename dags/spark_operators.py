@@ -128,8 +128,7 @@ def setup_dag(dag: DAG,
                     post_tests, resource, zone, subzone, config_file, jar, dag)
 
             if optimize_tables:
-                optimize_task = optimize.override(task_id=f"{subzone}_{resource}_optimization")(
-                    optimize_tables, resource, zone, subzone, config_file, jar, dag)
+                optimize_task = optimize(optimize_tables, resource, zone, subzone, config_file, jar, dag)
 
             for conf in step_config['datasets']:
                 dataset_id = conf['dataset_id']
