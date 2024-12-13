@@ -1,36 +1,8 @@
 {
   "concurrency": 4,
-  "schedule": "0 10 * * 1",
+  "schedule": "0 1 * * 1",
   "timeout_hours": 8,
-  "steps": [{
-    "destination_zone": "red",
-    "destination_subzone": "raw",
-    "main_class": "bio.ferlab.ui.etl.red.raw.softpath.Main",
-    "multiple_main_methods": true,
-    "publish_class": "",
-    "schemas": ["softpath"],
-    "pre_tests": [],
-    "datasets": [
-      {"dataset_id":"raw_softpath_v_p_pat_auxilarydoctor"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_softpath_v_p_pat_diagnosistext"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
-      {"dataset_id":"raw_softpath_v_p_pat_dxadeqprobothercodes", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
-      {"dataset_id":"raw_softpath_v_p_pat_gyncase"             , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_softpath_v_p_pat_patcase"             , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_stay"]},
-      {"dataset_id":"raw_softpath_v_p_pat_patcasetestdxcodes"  , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_stay"]},
-      {"dataset_id":"raw_softpath_v_p_pat_patcasewithslides"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_softpath_v_p_pat_patcasewithtest"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_softpath_v_p_pat_patientdemographic"  , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_stay"]},
-      {"dataset_id":"raw_softpath_v_p_pat_report"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
-      {"dataset_id":"raw_softpath_v_p_pat_slide"               , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
-      {"dataset_id":"raw_softpath_v_p_pat_specimen"            , "cluster_type": "large" , "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
-      {"dataset_id":"raw_softpath_v_p_pat_specimenblock"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]},
-      {"dataset_id":"raw_softpath_v_p_pat_specimendxadeq"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_softpath_v_p_pat_stay"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"raw_softpath_v_p_pat_test"                , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["raw_softpath_v_p_pat_patcase"]}
-    ],
-    "optimize" : [],
-    "post_tests": []
-    },
+  "steps": [
     {
       "destination_zone": "red",
       "destination_subzone": "curated",
@@ -62,8 +34,11 @@
       "publish_class": "",
       "schemas": [],
       "pre_tests": [{"name": "greater_partition_counts", "destinations": [
-        "anonymized_softpath_v_p_pat_auxilarydoctor", "anonymized_softpath_v_p_pat_d*", "anonymized_softpath_v_p_pat_patcasewithslides",
-        "anonymized_softpath_v_p_pat_slide", "anonymized_softpath_v_p_pat_specimendxadeq"
+        "anonymized_softpath_v_p_pat_auxilarydoctor",
+        "anonymized_softpath_v_p_pat_d*",
+        "anonymized_softpath_v_p_pat_patcasewithslides",
+        "anonymized_softpath_v_p_pat_slide",
+        "anonymized_softpath_v_p_pat_specimendxadeq"
       ]}],
       "datasets": [
         {"dataset_id":"anonymized_softpath_v_p_pat_auxilarydoctor"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
