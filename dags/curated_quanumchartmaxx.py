@@ -14,7 +14,7 @@ from airflow.models import Param
 from airflow.operators.empty import EmptyOperator
 
 from lib.tasks.optimize import optimize
-from lib.config import default_params, default_args, spark_failure_msg, jar
+from lib.config import default_params, default_args, spark_failure_msg, jar, config_file
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -48,7 +48,6 @@ QUANUM_CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.quanum.Main"
 QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
 QUANUMCHARTMAXX_CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.quanumchartmaxx.Main"
 QUANUM_CURATED_NEW_FORM_CHECKER_CLASS = "bio.ferlab.ui.etl.script.QuanumNewFormChecker"
-CONFIG = "config/prod.conf"
 
 LOCAL_TZ = pendulum.timezone("America/Montreal")
 
@@ -83,7 +82,7 @@ def generate_spark_arguments(destination: str, pass_date: bool, steps: str = "de
     Generate Spark task arguments for the ETL process.
     """
     arguments = [
-        "--config", CONFIG,
+        "--config", config_file,
         "--steps", steps,
         "--app-name", destination,
         "--destination", destination,
@@ -296,7 +295,7 @@ with dag:
 
         anonymized_quanum_chartmaxx_optimization_tasks = optimize(
             ['anonymized_quanum_chartmaxx*'], "quanum_chartmaxx", QUANUMCHARTMAXX_ANONYMIZED_ZONE, "anonymized",
-            CONFIG, jar, dag)
+            config_file, jar, dag)
 
         anonymized_quanum_chartmaxx_tasks >> anonymized_quanum_chartmaxx_optimization_tasks
 

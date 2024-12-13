@@ -9,7 +9,7 @@ import pendulum
 from airflow import DAG
 
 from lib.tasks.optimize import optimize
-from lib.config import default_params, default_args, spark_failure_msg, jar
+from lib.config import default_params, default_args, spark_failure_msg, jar, config_file
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -30,7 +30,6 @@ RAW_ZONE = "red"
 RAW_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.icca.iccaHtr.Main"
 ANONYMIZED_ZONE = "yellow"
 ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.highresolution.Main"
-CONFIG = "config/prod.conf"
 
 args = default_args.copy()
 args.update({
@@ -60,7 +59,7 @@ def arguments(destination: str, steps: str = "default") -> List[str]:
     Generate Spark task arguments for the ETL process
     """
     return [
-        "--config", CONFIG,
+        "--config", config_file,
         "--steps", steps,
         "--app-name", destination,
         "--destination", destination,
@@ -94,6 +93,6 @@ with dag:
     )
 
     anonymized_icca_htr_optimization = optimize(['anonymized_icca_icca_htr'], "icca_htr",
-                                                ANONYMIZED_ZONE, "anonymized", CONFIG, jar, dag)
+                                                ANONYMIZED_ZONE, "anonymized", config_file, jar, dag)
 
     start("start_ingestion_icca_htr") >> raw_icca_htr >> anonymized_icca_htr >> anonymized_icca_htr_optimization >> end("end_ingestion_icca_htr")
