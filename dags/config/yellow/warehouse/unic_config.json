@@ -13,6 +13,7 @@
     "datasets": [
       {"dataset_id": "warehouse_diagnostic_reference"                  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "warehouse_fetal_ultrasound"                      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "warehouse_hospitalisation_diagnosis"             , "cluster_type": "medium" ,"run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "warehouse_intervention_reference"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "warehouse_lab_results"                           , "cluster_type": "medium" ,"run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "warehouse_maternal_family_medical_history"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
