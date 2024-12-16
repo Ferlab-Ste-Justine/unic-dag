@@ -87,7 +87,7 @@ with dag:
 
     spark_tasks = [create_spark_task(destination, cluster_size) for destination, cluster_size in spark_task_configs]
 
-    optimization_task = optimize(['curated_philips_sip_external_patient', 'curated_philips_neo_external_patient']
-                                  , "phillips", ZONE, "curated", config_file, jar, dag)
+    optimization_task = optimize(['curated_philips_sip_external_patient', 'curated_philips_neo_external_patient'],
+                                 "phillips", ZONE, "curated", config_file, jar, dag)
 
     start('start_curated_philips') >> spark_tasks >> optimization_task >> end('end_curated_philips')
