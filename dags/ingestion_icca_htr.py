@@ -8,7 +8,8 @@ from typing import List
 import pendulum
 from airflow import DAG
 
-from lib.config import default_params, default_args, spark_failure_msg, jar
+from lib.tasks.optimize import optimize
+from lib.config import default_params, default_args, spark_failure_msg, jar, config_file
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -58,7 +59,7 @@ def arguments(destination: str, steps: str = "default") -> List[str]:
     Generate Spark task arguments for the ETL process
     """
     return [
-        "--config", "config/prod.conf",
+        "--config", config_file,
         "--steps", steps,
         "--app-name", destination,
         "--destination", destination,
@@ -91,4 +92,7 @@ with dag:
         dag=dag
     )
 
-    start("start_ingestion_icca_htr") >> raw_icca_htr >> anonymized_icca_htr >> end("end_ingestion_icca_htr")
+    anonymized_icca_htr_optimization = optimize(['anonymized_icca_icca_htr'], "icca_htr",
+                                                ANONYMIZED_ZONE, "anonymized", config_file, jar, dag)
+
+    start("start_ingestion_icca_htr") >> raw_icca_htr >> anonymized_icca_htr >> anonymized_icca_htr_optimization >> end("end_ingestion_icca_htr")

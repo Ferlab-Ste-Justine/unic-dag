@@ -8,7 +8,8 @@ from datetime import datetime, timedelta
 import pendulum
 from airflow import DAG
 
-from lib.config import default_args, spark_failure_msg, jar, default_params
+from lib.tasks.optimize import optimize
+from lib.config import default_args, spark_failure_msg, jar, default_params, config_file
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -58,7 +59,7 @@ def create_spark_task(destination, cluster_size):
     """
 
     args = [
-        "--config", "config/prod.conf",
+        "--config", config_file,
         "--steps", "initial",
         "--app-name", destination,
         "--destination", destination,
@@ -86,4 +87,7 @@ with dag:
 
     spark_tasks = [create_spark_task(destination, cluster_size) for destination, cluster_size in spark_task_configs]
 
-    start('start_curated_philips') >> spark_tasks >> end('end_curated_philips')
+    optimization_task = optimize(['curated_philips_sip_external_patient', 'curated_philips_neo_external_patient'],
+                                 "phillips", ZONE, "curated", config_file, jar, dag)
+
+    start('start_curated_philips') >> spark_tasks >> optimization_task >> end('end_curated_philips')
