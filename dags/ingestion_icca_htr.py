@@ -8,7 +8,6 @@ from typing import List
 import pendulum
 from airflow import DAG
 
-from lib.tasks.optimize import optimize
 from lib.config import default_params, default_args, spark_failure_msg, jar, config_file
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
@@ -92,7 +91,4 @@ with dag:
         dag=dag
     )
 
-    anonymized_icca_htr_optimization = optimize(['anonymized_icca_icca_htr'], "icca_htr",
-                                                ANONYMIZED_ZONE, "anonymized", config_file, jar, dag)
-
-    start("start_ingestion_icca_htr") >> raw_icca_htr >> anonymized_icca_htr >> anonymized_icca_htr_optimization >> end("end_ingestion_icca_htr")
+    start("start_ingestion_icca_htr") >> raw_icca_htr >> anonymized_icca_htr >> end("end_ingestion_icca_htr")
