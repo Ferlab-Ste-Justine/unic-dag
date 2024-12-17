@@ -8,7 +8,6 @@ from datetime import datetime, timedelta
 import pendulum
 from airflow import DAG
 
-from lib.tasks.optimize import optimize
 from lib.config import default_args, spark_failure_msg, jar, default_params, config_file
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
