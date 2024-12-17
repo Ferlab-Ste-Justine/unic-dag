@@ -92,7 +92,4 @@ with dag:
         dag=dag
     )
 
-    anonymized_icca_htr_optimization = optimize(['anonymized_icca_icca_htr'], "icca_htr",
-                                                ANONYMIZED_ZONE, "anonymized", config_file, jar, dag)
-
-    start("start_ingestion_icca_htr") >> raw_icca_htr >> anonymized_icca_htr >> anonymized_icca_htr_optimization >> end("end_ingestion_icca_htr")
+    start("start_ingestion_icca_htr") >> raw_icca_htr >> anonymized_icca_htr >> end("end_ingestion_icca_htr")
