@@ -36,7 +36,7 @@ dag = DAG(
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,
     is_paused_upon_creation=True,
-    catchup=True,
+    catchup=False,
     max_active_runs=1,
     max_active_tasks=2,
     tags=["enriched"],
