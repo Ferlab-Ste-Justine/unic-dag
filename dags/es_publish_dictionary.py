@@ -2,6 +2,8 @@
 Génération des DAGs pour le publication du dictionnaire d'un projet dans le Portail de l'UNIC.
 Un DAG par environnement postgres est généré.
 """
+import json
+import re
 # pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned
 
 from datetime import datetime
@@ -10,10 +12,13 @@ from typing import List
 from airflow import DAG
 from airflow.decorators import task, task_group
 from airflow.exceptions import AirflowFailException
-from airflow.models import Param
+from airflow.models import Param, DagRun, Variable
+from airflow.operators.python import get_current_context
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from airflow.utils.trigger_rule import TriggerRule
+from sqlalchemy import JSON
 
+from lib.tasks.publish import released_to_published
 from lib.hooks.postgresca import PostgresCaHook
 from lib.tasks.excel import parquet_to_excel
 from lib.tasks.notify import start, end
@@ -31,18 +36,6 @@ MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
 GREEN_BUCKET = "green-prd"
 env_name = None
 conn_id = None
-
-def get_resource_code() -> str:
-    return "{{ params.resource_code or '' }}"
-
-def get_dict_version() -> str:
-    return "{{ params.dict_version or '' }}"
-
-def get_version_to_publish() -> str:
-    return "{{ params.version_to_publish or '' }}"
-
-def get_release_id() -> str:
-    return '{{ params.release_id or "" }}'
 
 # Update default args
 dag_args = default_args.copy()
@@ -104,7 +97,6 @@ for env in PostgresEnv:
     with DAG(
             dag_id=f"es_publish_{env_name}_dictionary",
             params={
-                "branch": Param("master", type="string"),
                 "resource_code": Param("", type="string", description="Resource to publish."),
                 "dict_version": Param("", type="string", description="Version of dictionary. Use semantic versioning. Ex: v1.0.0"),
                 "version_to_publish": Param("", type="string", description="Date to publish. Ex: 2001-01-01"),
@@ -114,92 +106,122 @@ for env in PostgresEnv:
             doc_md=doc,
             start_date=datetime(2024, 12, 16),
             is_paused_upon_creation=False,
+            render_template_as_native_obj=True,
             schedule_interval=None,
             tags=["postgresql", "published", "opensearch"],
             on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
-        cur_dict_version = get_dict_version()
-        resource_code = get_resource_code()
-        version_to_publish = get_version_to_publish()
-        # pg_hook = PostgresCaHook(postgres_conn_id=conn_id, ca_path=postgres_vlan2_ca_path,
-        #                          ca_filename=postgres_ca_filename, ca_cert=postgres_vlan2_ca_cert)
+        @task
+        def get_resource_code(ti=None) -> str:
+            dag_run: DagRun = ti.dag_run
+            return dag_run.conf['resource_code']
 
-        # @task(task_id='get_dict_current_version')
-        # def get_dict_current_version() -> str:
-        #     if resource_code == "":
-        #         raise AirflowFailException("DAG param 'resource_code' is required.")
-        #     else:
-        #         try:
-        #             res = pg_hook.get_first(sql=f"""SELECT dict_current_version FROM catalog.resource WHERE code={resource_code}""")
-        #             return res[0]
-        #         except Exception as e:
-        #             raise AirflowFailException(f"Failed to get current dict version: {e}")
-        #
-        # @task(task_id='validate_version')
-        # def validate_version(prev_dict_version : str) -> bool:
-        #     if cur_dict_version == "":
-        #         raise AirflowFailException("DAG param 'dict_version' is required.")
-        #     elif Version(prev_dict_version) > Version(cur_dict_version):
-        #         raise AirflowFailException(
-        #         f"DAG param 'dict_version' must be larger or equal to previous dict version: {prev_dict_version}")
-        #     elif Version(prev_dict_version) == Version(cur_dict_version):
-        #         # Publish without updating Dictionary
-        #         return False
-        #     else:
-        #         # Publish data, Dictionary, and Re-Index OpenSearch
-        #         return True
-        #
-        # @task(task_id='update_dict_current_version')
-        # def update_dict_current_version() -> None:
-        #     query = f"""
-        #         UPDATE catalog.resource
-        #         SET dict_current_version = {cur_dict_version}
-        #         WHERE course_id = {resource_code};
-        #     """
-        #     try:
-        #         pg_hook.run(query)
-        #     except Exception as error:
-        #         print("failed: ")
-        #         print (error)
-        #
-        # def publish_dictionary_task(publish : bool) -> None:
-        #     if publish:
-        #         publish_dictionary.override(task_id=f"publish_dictionary_{resource_code}")(
-        #             pg_hook,
-        #             get_resource_code(),
-        #             f"published/{resource_code}/{resource_code}_dictionary_{cur_dict_version}.xlsx",
-        #             GREEN_BUCKET
-        #         )
+        @task
+        def get_dict_version(ti=None) -> str:
+            dag_run: DagRun = ti.dag_run
+            return dag_run.conf['dict_version']
 
-        @task_group(group_id="publish_tables")
-        def publish_tables() -> None:
-            s3 = S3Hook(aws_conn_id=green_minio_conn_id)
+        @task
+        def get_version_to_publish(ti=None) -> str:
+            dag_run: DagRun = ti.dag_run
+            return dag_run.conf['version_to_publish']
 
-            keys = s3.list_keys(bucket_name=GREEN_BUCKET, prefix=f"released/{resource_code}/{version_to_publish}/")
-
-            publish_tasks = [
-                parquet_to_excel.override(task_id=f"publish_{resource_code}_{key}")(
-                    GREEN_BUCKET,
-                    f"released/{resource_code}/{version_to_publish}/{key}",
-                    GREEN_BUCKET,
-                    f"published/{resource_code}/{version_to_publish}/{key}.xlsx"
-            ) for key in keys]
-
-            publish_tasks
+        @task
+        def get_release_id(ti=None) -> str:
+            dag_run: DagRun = ti.dag_run
+            return dag_run.conf['release_id']
 
 
+        pg_hook = PostgresCaHook(postgres_conn_id=conn_id, ca_path=postgres_vlan2_ca_path,
+                                 ca_filename=postgres_ca_filename, ca_cert=postgres_vlan2_ca_cert)
 
-        # get_dict_current_version_task = get_dict_current_version
-        # validate_version_task = validate_version(prev_dict_version=get_dict_current_version_task)
-        #
-        # start("start_es_publish_dictionary") >> get_dict_current_version_task \
-        # >> validate_version_task(prev_dict_version=get_dict_current_version_task) \
-        # >> publish_dictionary_task(publish=validate_version_task) \
-        # >> end("end_es_publish_dictionary")
+        @task(task_id='get_dict_prev_version')
+        def get_dict_prev_version(resource_code=str) -> str:
+            if resource_code == "":
+                raise AirflowFailException("DAG param 'resource_code' is required.")
+            else:
+                try:
+                    res = pg_hook.get_first(sql=f"""SELECT dict_current_version FROM catalog.resource WHERE code={resource_code}""")
+                    return res[0]
+                except Exception as e:
+                    raise AirflowFailException(f"Failed to get prev dict version: {e}")
 
-        start("start_es_publish_dictionary") \
-        >> publish_tables() \
-        >> end("end_es_publish_dictionary")
+        @task(task_id='validate_version')
+        def validate_version(prev_dict_version : str, cur_dict_version : str) -> bool:
+            if cur_dict_version == "":
+                raise AirflowFailException("DAG param 'dict_version' is required.")
+            elif Version(prev_dict_version) > Version(cur_dict_version):
+                raise AirflowFailException(
+                f"DAG param 'dict_version' must be larger or equal to previous dict version: {prev_dict_version}")
+            elif Version(prev_dict_version) == Version(cur_dict_version):
+                # Publish without updating Dictionary
+                return False
+            else:
+                # Publish data, Dictionary, and Re-Index OpenSearch
+                return True
+
+        @task(task_id='update_dict_current_version')
+        def update_dict_current_version(cur_dict_version : str, resource_code : str) -> None:
+            query = f"""
+                UPDATE catalog.resource
+                SET dict_current_version = {cur_dict_version}
+                WHERE course_id = {resource_code};
+            """
+            try:
+                pg_hook.run(query)
+            except Exception as error:
+                print("failed: ")
+                print (error)
+
+        @task.branch(task_id="dict_to_be_updated")
+        def dict_to_be_updated(publish : bool):
+            if publish:
+                return "publish_dictionary"
+
+            return "released_to_published"
+
+        @task(task_id="publish_dictionary")
+        def publish_dictionary_task(cur_dict_version : str, resource_code : str):
+            return publish_dictionary(
+                pg_hook,
+                get_resource_code(),
+                f"published/{resource_code}/{resource_code}_dictionary_{cur_dict_version}.xlsx",
+                GREEN_BUCKET
+            )
+
+        @task(task_id="released_to_published")
+        def released_to_published_task(cur_dict_version : str, resource_code : str, version_to_be_published : str):
+            return released_to_published(
+                resource_code,
+                version_to_be_published,
+                cur_dict_version,
+                GREEN_BUCKET
+            )
+
+        get_resource_code_task = get_resource_code()
+        get_dict_version_task = get_dict_version()
+        get_version_to_publish_task = get_version_to_publish()
+        # get_release_id_task = get_release_id()
+
+        get_dict_prev_version_task = get_dict_prev_version(resource_code=get_resource_code_task)
+        validate_version_task = validate_version(prev_dict_version=get_dict_prev_version_task, cur_dict_version=get_dict_version_task)
+        publish_dictionary_task = publish_dictionary_task(cur_dict_version=get_dict_version_task, resource_code=get_resource_code_task)
+        released_to_published_task = released_to_published_task(
+            cur_dict_version=get_dict_version_task, resource_code=get_resource_code_task, version_to_be_published=get_version_to_publish_task
+        )
+
+        start("start_es_publish_dictionary") >> [get_resource_code_task, get_dict_version_task, get_version_to_publish_task] \
+        >> get_dict_prev_version_task \
+        >> validate_version_task \
+        >> dict_to_be_updated(publish=validate_version_task) \
+        >> [publish_dictionary_task, released_to_published_task]
+
+        publish_dictionary_task >> released_to_published_task
+
+        released_to_published_task >> end("end_es_publish_dictionary")
+
+
+
 
 
 

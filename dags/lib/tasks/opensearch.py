@@ -64,7 +64,6 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
         dag=dag
     )
 
-@task(task_id="publish_dictionary")
 def publish_dictionary(
         pg_hook: PostgresCaHook,
         resource_code : str,
