@@ -27,9 +27,9 @@ Cet ETL génère un rapport aux 2 semaines afin d'identifier les patients ayant 
 de leur visite à l'urgence. Un premier rapport historique du 1er septembre au 30 novembre 2024 doit être généré.
 
 ### Horaire
-* __Date de début__ - 1 septembre 2024
+* __Date de début__ - 30 octobre 2024
 * __Date de fin__ - aucune
-* __Jour et heure__ - Vendredi, 8h heure de Montréal
+* __Jour et heure__ - Mercredi, 14h heure de Montréal
 * __Intervalle__ - Chaque 2 semaines
 
 ### Configuration
@@ -50,7 +50,7 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_promptbolus",
     doc_md=DOC,
-    start_date=datetime(2024, 9, 1, 8, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2024, 8, 28, 14, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=2),
     params=params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
