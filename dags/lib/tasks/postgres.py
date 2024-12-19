@@ -1,5 +1,6 @@
 from enum import Enum
 
+from airflow.decorators import task
 from lib.operators.postgresca import PostgresCaOperator
 from lib.postgres import postgres_bi_ca_path, postgres_ca_filename, postgres_bi_ca_cert, postgres_bi_conn_id
 
@@ -8,7 +9,6 @@ class PostgresResource(Enum):
     SCHEMA = "schema"
     TYPES = "types"
     INDEXES = "indexes"
-
 
 def create_resource(postgres_resource: PostgresResource, sql_config: dict, conn_id: str = postgres_bi_conn_id,
                     ca_path: str = postgres_bi_ca_path, ca_cert: str = postgres_bi_ca_cert) -> PostgresCaOperator:

@@ -1,14 +1,22 @@
 import logging
+import os
+
 import requests
+import pandas as pd
 
 from airflow import DAG
 from typing import List
 
 from airflow.decorators import task
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from lib.operators.spark import SparkOperator
 from lib.operators.spark_opensearch import SparkOpenSearchOperator
-from airflow.exceptions import AirflowSkipException
+from airflow.exceptions import AirflowSkipException, AirflowFailException
 from lib.config import os_url
+
+from lib.hooks.postgresca import PostgresCaHook
+
+
 
 def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,
                   dag: DAG, zone: str = "yellow",
