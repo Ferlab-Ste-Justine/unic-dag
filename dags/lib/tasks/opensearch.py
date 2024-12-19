@@ -1,20 +1,15 @@
 import logging
-import os
 
 import requests
-import pandas as pd
 
 from airflow import DAG
 from typing import List
 
 from airflow.decorators import task
-from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from lib.operators.spark import SparkOperator
 from lib.operators.spark_opensearch import SparkOpenSearchOperator
-from airflow.exceptions import AirflowSkipException, AirflowFailException
+from airflow.exceptions import AirflowSkipException
 from lib.config import os_url
-
-from lib.hooks.postgresca import PostgresCaHook
 
 
 

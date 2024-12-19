@@ -5,6 +5,7 @@ import pandas as pd
 from airflow.decorators import task
 from airflow.exceptions import AirflowFailException
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+from lib.hooks.postgresca import PostgresCaHook
 
 def publish_dictionary(
         pg_hook: PostgresCaHook,
