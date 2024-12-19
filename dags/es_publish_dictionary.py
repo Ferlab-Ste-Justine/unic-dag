@@ -2,25 +2,20 @@
 Génération des DAGs pour le publication du dictionnaire d'un projet dans le Portail de l'UNIC.
 Un DAG par environnement postgres est généré.
 """
-import json
-import re
-# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned
+
+# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, raise-missing-from, cell-var-from-loop
 
 from datetime import datetime
 from typing import List
 
 from airflow import DAG
-from airflow.decorators import task, task_group
+from airflow.decorators import task
 from airflow.exceptions import AirflowFailException
-from airflow.models import Param, DagRun, Variable
-from airflow.operators.python import get_current_context
-from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
-from sqlalchemy import JSON
 
 from lib.tasks.publish import released_to_published
 from lib.hooks.postgresca import PostgresCaHook
-from lib.tasks.excel import parquet_to_excel
 from lib.tasks.notify import start, end
 from lib.tasks.opensearch import publish_dictionary
 from lib.config import default_args, os_url, os_port, green_minio_conn_id
@@ -74,7 +69,7 @@ def publish_index_arguments(release_id: str, alias: str) -> List[str]:
 
 for env in PostgresEnv:
     env_name = env.value
-    conn_id = unic_postgres_vlan2_conn_id(env)
+    pg_conn_id = unic_postgres_vlan2_conn_id(env)
 
     doc = f"""
     # Publish table to Unic Portal
@@ -132,33 +127,35 @@ for env in PostgresEnv:
             return dag_run.conf['release_id']
 
 
-        pg_hook = PostgresCaHook(postgres_conn_id=conn_id, ca_path=postgres_vlan2_ca_path,
+        pg_hook = PostgresCaHook(postgres_conn_id=pg_conn_id, ca_path=postgres_vlan2_ca_path,
                                  ca_filename=postgres_ca_filename, ca_cert=postgres_vlan2_ca_cert)
 
         @task(task_id='get_dict_prev_version')
         def get_dict_prev_version(resource_code=str) -> str:
             if resource_code == "":
                 raise AirflowFailException("DAG param 'resource_code' is required.")
-            else:
-                try:
-                    res = pg_hook.get_first(sql=f"""SELECT dict_current_version FROM catalog.resource WHERE code={resource_code}""")
-                    return res[0]
-                except Exception as e:
-                    raise AirflowFailException(f"Failed to get prev dict version: {e}")
+
+            try:
+                res = pg_hook.get_first(sql=f"""SELECT dict_current_version FROM catalog.resource WHERE code={resource_code}""")
+                return res[0]
+            except Exception as e:
+                raise AirflowFailException(f"Failed to get prev dict version: {e}")
 
         @task(task_id='validate_version')
         def validate_version(prev_dict_version : str, cur_dict_version : str) -> bool:
             if cur_dict_version == "":
                 raise AirflowFailException("DAG param 'dict_version' is required.")
-            elif Version(prev_dict_version) > Version(cur_dict_version):
+
+            if Version(prev_dict_version) > Version(cur_dict_version):
                 raise AirflowFailException(
                 f"DAG param 'dict_version' must be larger or equal to previous dict version: {prev_dict_version}")
-            elif Version(prev_dict_version) == Version(cur_dict_version):
+
+            if Version(prev_dict_version) == Version(cur_dict_version):
                 # Publish without updating Dictionary
                 return False
-            else:
-                # Publish data, Dictionary, and Re-Index OpenSearch
-                return True
+
+            # Publish data, Dictionary, and Re-Index OpenSearch
+            return True
 
         @task(task_id='update_dict_current_version')
         def update_dict_current_version(cur_dict_version : str, resource_code : str) -> None:
@@ -167,11 +164,9 @@ for env in PostgresEnv:
                 SET dict_current_version = {cur_dict_version}
                 WHERE course_id = {resource_code};
             """
-            try:
-                pg_hook.run(query)
-            except Exception as error:
-                print("failed: ")
-                print (error)
+
+            pg_hook.run(query)
+
 
         @task.branch(task_id="dict_to_be_updated")
         def dict_to_be_updated(publish : bool):
@@ -186,7 +181,8 @@ for env in PostgresEnv:
                 pg_hook,
                 get_resource_code(),
                 f"published/{resource_code}/{resource_code}_dictionary_{cur_dict_version}.xlsx",
-                GREEN_BUCKET
+                GREEN_BUCKET,
+                minio_conn_id=green_minio_conn_id
             )
 
         @task(task_id="released_to_published")
@@ -219,12 +215,3 @@ for env in PostgresEnv:
         publish_dictionary_task >> released_to_published_task
 
         released_to_published_task >> end("end_es_publish_dictionary")
-
-
-
-
-
-
-
-
-
