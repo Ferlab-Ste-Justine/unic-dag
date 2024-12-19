@@ -14,10 +14,9 @@ from airflow.exceptions import AirflowFailException
 from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.tasks.publish import released_to_published
+from lib.tasks.publish import released_to_published, publish_dictionary
 from lib.hooks.postgresca import PostgresCaHook
 from lib.tasks.notify import start, end
-from lib.tasks.opensearch import publish_dictionary
 from lib.config import default_args, os_url, os_port, green_minio_conn_id
 from lib.postgres import postgres_vlan2_ca_path, postgres_vlan2_ca_cert, PostgresEnv, unic_postgres_vlan2_conn_id, \
     postgres_ca_filename
@@ -90,7 +89,7 @@ for env in PostgresEnv:
     """
 
     with DAG(
-            dag_id=f"es_publish_{env_name}_dictionary",
+            dag_id=f"os_publish_{env_name}_dictionary",
             params={
                 "resource_code": Param("", type="string", description="Resource to publish."),
                 "dict_version": Param("", type="string", description="Version of dictionary. Use semantic versioning. Ex: v1.0.0"),
@@ -136,8 +135,7 @@ for env in PostgresEnv:
                 raise AirflowFailException("DAG param 'resource_code' is required.")
 
             try:
-                res = pg_hook.get_first(sql=f"""SELECT dict_current_version FROM catalog.resource WHERE code={resource_code}""")
-                return res[0]
+                return pg_hook.get_first(sql=f"""SELECT dict_current_version FROM catalog.resource WHERE code={resource_code}""")
             except Exception as e:
                 raise AirflowFailException(f"Failed to get prev dict version: {e}")
 
@@ -206,7 +204,7 @@ for env in PostgresEnv:
             cur_dict_version=get_dict_version_task, resource_code=get_resource_code_task, version_to_be_published=get_version_to_publish_task
         )
 
-        start("start_es_publish_dictionary") >> [get_resource_code_task, get_dict_version_task, get_version_to_publish_task] \
+        start("start_os_publish_dictionary") >> [get_resource_code_task, get_dict_version_task, get_version_to_publish_task] \
         >> get_dict_prev_version_task \
         >> validate_version_task \
         >> dict_to_be_updated(publish=validate_version_task) \
@@ -214,4 +212,4 @@ for env in PostgresEnv:
 
         publish_dictionary_task >> released_to_published_task
 
-        released_to_published_task >> end("end_es_publish_dictionary")
+        released_to_published_task >> end("end_os_publish_dictionary")
