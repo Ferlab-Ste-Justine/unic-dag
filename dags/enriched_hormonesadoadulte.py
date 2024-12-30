@@ -53,7 +53,7 @@ with dag:
 
         def enriched_arguments(destination: str) -> List[str]:
             # !!! Do not set to initial, otherwise the participant index will be re-generated !!!
-            return ["config/prod.conf", "initial", destination, "{{ data_interval_end }}"]
+            return ["config/prod.conf", "default", destination, "{{ data_interval_end }}"]
 
         enriched_hormonesadoadulte_participant_index = SparkOperator(
             task_id="enriched_hormonesadoadulte_participant_index",
