@@ -53,7 +53,7 @@ with dag:
 
         def enriched_arguments(destination: str) -> List[str]:
             # !!! Do not set to initial, otherwise the participant index will be re-generated !!!
-            return ["config/prod.conf", "default", destination, "{{ data_interval_end }}"]
+            return ["config/prod.conf", "initial", destination, "{{ data_interval_end }}"]
 
         enriched_hormonesadoadulte_participant_index = SparkOperator(
             task_id="enriched_hormonesadoadulte_participant_index",
@@ -71,6 +71,30 @@ with dag:
             task_id="enriched_hormonesadoadulte_clinic_appointment",
             name="enriched-hormonesadoadulte-clinic_appointment",
             arguments=enriched_arguments("enriched_hormonesadoadulte_clinic_appointment"),
+            zone=ENRICHED_ZONE,
+            spark_class=ENRICHED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag
+        )
+
+        enriched_hormonesadoadulte_visited_clinic = SparkOperator(
+            task_id="enriched_hormonesadoadulte_visited_clinic",
+            name="enriched-hormonesadoadulte-visited_clinic",
+            arguments=enriched_arguments("enriched_hormonesadoadulte_visited_clinic"),
+            zone=ENRICHED_ZONE,
+            spark_class=ENRICHED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="small-etl",
+            dag=dag
+        )
+
+        enriched_hormonesadoadulte_selected_patients = SparkOperator(
+            task_id="enriched_hormonesadoadulte_selected_patients",
+            name="enriched-hormonesadoadulte-selected_patients",
+            arguments=enriched_arguments("enriched_hormonesadoadulte_selected_patients"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -103,20 +127,7 @@ with dag:
             dag=dag
         )
 
-        enriched_hormonesadoadulte_visited_clinic = SparkOperator(
-            task_id="enriched_hormonesadoadulte_visited_clinic",
-            name="enriched-hormonesadoadulte-visited_clinic",
-            arguments=enriched_arguments("enriched_hormonesadoadulte_visited_clinic"),
-            zone=ENRICHED_ZONE,
-            spark_class=ENRICHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
-            spark_config="small-etl",
-            dag=dag
-        )
-
-        enriched_hormonesadoadulte_participant_index >> [enriched_hormonesadoadulte_clinic_appointment,
-                                                         enriched_hormonesadoadulte_gestational_age,
-                                                         enriched_hormonesadoadulte_medication] >> enriched_hormonesadoadulte_visited_clinic
+        enriched_hormonesadoadulte_participant_index >> enriched_hormonesadoadulte_clinic_appointment >> enriched_hormonesadoadulte_visited_clinic >> enriched_hormonesadoadulte_selected_patients >> [enriched_hormonesadoadulte_gestational_age,
+                                                                                                                                                                                                       enriched_hormonesadoadulte_medication]
 
     start("start_enriched_hormonesadoadulte") >> enriched >> end("end_enriched_hormonesadoadulte")
