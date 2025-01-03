@@ -40,6 +40,7 @@ dag = DAG(
     dag_id="anonymized_philips",
     doc_md=DOC,
     start_date=datetime(2023, 8, 15, tzinfo=LOCAL_TZ),
+    end_date=datetime(2025, 1, 3, tzinfo=LOCAL_TZ),
     schedule_interval="@daily",
     params=default_params,
     dagrun_timeout=timedelta(hours=8),

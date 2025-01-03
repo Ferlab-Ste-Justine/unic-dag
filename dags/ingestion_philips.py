@@ -31,8 +31,47 @@ la run du 15 Aout 2023 ingère les données du 14 Aout 2023  dans le lac.
 * __Jour et heure__ - Chaque jour, 3h heure de Montréal
 """
 
-ZONE = "red"
-MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.philips.Main"
+def create_spark_task(destination: str, cluster_size: str, main_class: str, zone: str, steps: str = "default") -> SparkOperator:
+    """
+    Create tasks for the ETL process
+
+    Args:
+        destination (str): name of the destination data to be processed
+        cluster_size (str): size of cluster used
+        main_class (str): Main class to use for Spark job
+        zone (str): red-yellow
+    Returns:
+        SparkOperator
+    """
+
+    spark_args = [
+        "--config", "config/prod.conf",
+        "--steps", steps,
+        "--app-name", destination,
+        "--destination", destination,
+        "--date", "{{ds}}"
+    ]
+
+    return SparkOperator(
+        task_id=destination,
+        name=destination,
+        arguments=spark_args,
+        zone=zone,
+        spark_class=main_class,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config=cluster_size,
+        dag=dag
+    )
+
+RAW_ZONE = "red"
+CURATED_ZONE = "red"
+ANONYMIZED_ZONE = "yellow"
+TAGS = ['raw', 'curated', 'anonymized']
+INGESTION_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.philips.Main"
+CURATED_MAIN_CLASS = 'bio.ferlab.ui.etl.red.curated.philips.Main'
+ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.philips.Main"
+
 args = default_args.copy()
 args.update({
     'start_date': datetime(2023, 8, 15, 3, tzinfo=pendulum.timezone("America/Montreal")),
@@ -46,13 +85,13 @@ dag = DAG(
     start_date=datetime(2023, 8, 15, 3, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),  # everyday at 3am timezone montreal
     params=default_params,
-    dagrun_timeout=timedelta(hours=8),
+    dagrun_timeout=timedelta(hours=12),
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=1,
     max_active_tasks=2,
-    tags=["raw"],
+    tags=TAGS,
     on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
 )
 
@@ -65,14 +104,35 @@ with dag:
             "--destination", destination,
             "--date", "{{ data_interval_end | ds }}"
         ]
+    
+    philips_curated_tasks_config = [
+        ('curated_philips_sip_external_patient', 'medium-etl'),
+        ('curated_philips_neo_external_patient', 'medium-etl'),
+    ]
 
+    philips_anonymized_tasks_config = [
+        ("anonymized_philips_sip_alert"        , "small-etl") ,
+        ("anonymized_philips_neo_alert"        , "small-etl") ,
+        ("anonymized_philips_neo_numeric_data" , "large-etl") ,
+        ("anonymized_philips_sip_numeric_data" , "large-etl") ,
+        ("anonymized_philips_neo_signal_data"  , "large-etl") ,
+        ("anonymized_philips_sip_signal_data"  , "large-etl") ,
+        ("anonymized_philips_neo_patient_data" , "large-etl") ,
+        ("anonymized_philips_sip_patient_data" , "large-etl") ,
+    ]
+
+    curated_spark_tasks = [create_spark_task(destination, cluster_size, CURATED_MAIN_CLASS, CURATED_ZONE)
+                             for destination, cluster_size in philips_curated_tasks_config]
+
+    anonymized_spark_tasks = [create_spark_task(destination, cluster_size, ANONYMIZED_MAIN_CLASS, ANONYMIZED_ZONE)
+                              for destination, cluster_size in philips_anonymized_tasks_config]
 
     philips_external_numeric = SparkOperator(
         task_id="raw_philips_external_numeric",
         name="raw-philips-external-numeric",
         arguments=arguments("raw_philips_external_numeric"),
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
+        zone=RAW_ZONE,
+        spark_class=INGESTION_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config="medium-etl",
@@ -83,8 +143,8 @@ with dag:
         task_id="raw_philips_external_patient",
         name="raw-philips-external-patient",
         arguments=arguments("raw_philips_external_patient"),
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
+        zone=RAW_ZONE,
+        spark_class=INGESTION_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config="medium-etl",
@@ -95,8 +155,8 @@ with dag:
         task_id="raw_philips_external_patientdateattribute",
         name="raw-philips-external-patientdateattribute",
         arguments=arguments("raw_philips_external_patientdateattribute"),
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
+        zone=RAW_ZONE,
+        spark_class=INGESTION_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config="xsmall-etl",
@@ -107,8 +167,8 @@ with dag:
         task_id="raw_philips_external_patientstringattribute",
         name="raw-philips-external-patientstringattribute",
         arguments=arguments("raw_philips_external_patientstringattribute"),
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
+        zone=RAW_ZONE,
+        spark_class=INGESTION_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config="xsmall-etl",
@@ -119,8 +179,8 @@ with dag:
         task_id="raw_philips_external_wave",
         name="raw-philips-external-wave",
         arguments=arguments("raw_philips_external_wave"),
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
+        zone=RAW_ZONE,
+        spark_class=INGESTION_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config="medium-etl",
@@ -131,8 +191,8 @@ with dag:
         task_id="raw_philips_external_numericvalue",
         name="raw-philips-external-numericvalue",
         arguments=arguments("raw_philips_external_numericvalue"),
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
+        zone=RAW_ZONE,
+        spark_class=INGESTION_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config="medium-etl",
@@ -143,8 +203,8 @@ with dag:
         task_id="raw_philips_external_wavesample",
         name="raw-philips-external-wavvesample",
         arguments=arguments("raw_philips_external_wavesample"),
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
+        zone=RAW_ZONE,
+        spark_class=INGESTION_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config="medium-etl",
@@ -155,8 +215,8 @@ with dag:
         task_id="raw_philips_external_alert",
         name="raw-philips-external-alert",
         arguments=arguments("raw_philips_external_alert"),
-        zone=ZONE,
-        spark_class=MAIN_CLASS,
+        zone=RAW_ZONE,
+        spark_class=INGESTION_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config="medium-etl",
@@ -167,4 +227,5 @@ with dag:
                                          philips_external_numericvalue, philips_external_wavesample,
                                          philips_external_alert,
                                          philips_external_patientdateattribute,
-                                         philips_external_patientstringattribute] >> end("end_ingestion_philips")
+                                         philips_external_patientstringattribute
+                                        ] >> start('start_curated_philips') >> curated_spark_tasks  >> start('start_anonymized_philips') >> anonymized_spark_tasks >> end('end_anonymized_philips')
