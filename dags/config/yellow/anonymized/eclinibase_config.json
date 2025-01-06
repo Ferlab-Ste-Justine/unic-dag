@@ -34,6 +34,7 @@
         "anonymized_eclinibase_v_province",
         "anonymized_eclinibase_v_raison*",
         "anonymized_eclinibase_v_religion",
+        "anonymized_eclinibase_v_rendez_vous_autre_ressource",
         "anonymized_eclinibase_v_rens_divers",
         "anonymized_eclinibase_v_responsabilite_paiement",
         "anonymized_eclinibase_v_ressource",
@@ -62,7 +63,8 @@
         "anonymized_eclinibase_v_interv_act_raison",
         "anonymized_eclinibase_v_intervenant",
         "anonymized_eclinibase_v_intervention_activite",
-        "anonymized_eclinibase_v_rendez_vous*",
+        "anonymized_eclinibase_v_rendez_vous",
+        "anonymized_eclinibase_v_rendez_vous_rens_divers",
         "anonymized_eclinibase_v_resume_episode*"
       ]}
     ],

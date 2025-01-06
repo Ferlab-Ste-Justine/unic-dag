@@ -12,6 +12,7 @@
     "pre_tests": [
       {"name": "greater_or_equal_partition_counts", "destinations": [
         "anonymized_opera_vschariot",
+        "anonymized_opera_vschariot_verifie",
         "anonymized_opera_vscondition_prealable",
         "anonymized_opera_*_ref",
         "anonymized_opera_*referentiel_*",
@@ -24,8 +25,10 @@
         "anonymized_opera_vsni_surveillance",
         "anonymized_opera_vso*",
         "anonymized_opera_vsparametres_opera",
+        "anonymized_opera_vspatient_non_disponibilite",
         "anonymized_opera_vspo*",
         "anonymized_opera_vsproduit",
+        "anonymized_opera_vsproduit_verifie",
         "anonymized_opera_vsproduit_fournisseur",
         "anonymized_opera_vsproduit_manufacturier",
         "anonymized_opera_vsraison_bt_changement_cap",
@@ -34,7 +37,6 @@
       {"name": "greater_partition_counts", "destinations": [
         "anonymized_opera_vsa*",
         "anonymized_opera_vscdj",
-        "anonymized_opera_vschariot_verifie",
         "anonymized_opera_vsdelta_requete*",
         "anonymized_opera_vsetats",
         "anonymized_opera_vshoraire_salles",
@@ -67,10 +69,8 @@
         "anonymized_opera_vsni_transfert_salle_operation_via",
         "anonymized_opera_vsni_via",
         "anonymized_opera_vsnotes_particulieres",
-        "anonymized_opera_vspatient_non_disponibilite",
         "anonymized_opera_vsper*",
         "anonymized_opera_vspre*",
-        "anonymized_opera_vsproduit_verifie",
         "anonymized_opera_vsprogramme_verrouille",
         "anonymized_opera_vsrequete*",
         "anonymized_opera_vsressource_requise",

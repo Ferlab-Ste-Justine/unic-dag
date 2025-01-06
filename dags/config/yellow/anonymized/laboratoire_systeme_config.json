@@ -13,11 +13,12 @@
       {"name": "greater_or_equal_partition_counts", "destinations": [
         "anonymized_laboratoire_systeme_v_s_lab_c*", "anonymized_laboratoire_systeme_v_s_lab_department",
         "anonymized_laboratoire_systeme_v_s_lab_environment", "anonymized_laboratoire_systeme_v_s_lab_location",
-        "anonymized_laboratoire_systeme_v_s_lab_specimen", "anonymized_laboratoire_systeme_v_s_lab_workstation",
-        "anonymized_laboratoire_systeme_v_s_mic_*", "anonymized_laboratoire_systeme_v_s_pat_*"
+        "anonymized_laboratoire_systeme_v_s_lab_specimen", "anonymized_laboratoire_systeme_v_s_lab_test",
+        "anonymized_laboratoire_systeme_v_s_lab_workstation", "anonymized_laboratoire_systeme_v_s_mic_*",
+        "anonymized_laboratoire_systeme_v_s_pat_*"
       ]},
       {"name": "greater_partition_counts", "destinations": [
-        "anonymized_laboratoire_systeme_v_s_lab_doctor", "anonymized_laboratoire_systeme_v_s_lab_test"
+        "anonymized_laboratoire_systeme_v_s_lab_doctor"
       ]}
     ],
     "datasets": [
