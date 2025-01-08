@@ -140,10 +140,10 @@ with dag:
             return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
 
 
-        released_respiratory_pathogen_diagnostics = SparkOperator(
-            task_id="released_respiratory_pathogen_diagnostics",
-            name="released-respiratory-pathogen-diagnostics",
-            arguments=released_arguments("released_respiratory_pathogen_diagnostics"),
+        released_sprintkid_respiratory_pathogen_diagnostics = SparkOperator(
+            task_id="released_sprintkid_respiratory_pathogen_diagnostics",
+            name="released-sprintkid-respiratory-pathogen-diagnostics",
+            arguments=released_arguments("released_sprintkid_respiratory_pathogen_diagnostics"),
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
@@ -152,10 +152,10 @@ with dag:
             dag=dag,
         )
 
-        released_stream_2_aefi_screening = SparkOperator(
-            task_id="released_stream_2_aefi_screening",
-            name="released-stream-2-aefi-screening",
-            arguments=released_arguments("released_stream_2_aefi_screening"),
+        released_sprintkid_stream_2_aefi_screening = SparkOperator(
+            task_id="released_sprintkid_stream_2_aefi_screening",
+            name="released-sprintkid-stream-2-aefi-screening",
+            arguments=released_arguments("released_sprintkid_stream_2_aefi_screening"),
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
@@ -173,10 +173,10 @@ with dag:
             return ["config/prod.conf", "default", destination, version]
 
 
-        published_respiratory_pathogen_diagnostics = SparkOperator(
-            task_id="published_respiratory_pathogen_diagnostics",
-            name="published-respiratory-pathogen-diagnostics",
-            arguments=published_arguments("published_respiratory_pathogen_diagnostics"),
+        published_sprintkid_respiratory_pathogen_diagnostics = SparkOperator(
+            task_id="published_sprintkid_respiratory_pathogen_diagnostics",
+            name="published-sprintkid-respiratory-pathogen-diagnostics",
+            arguments=published_arguments("published_sprintkid_respiratory_pathogen_diagnostics"),
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -185,10 +185,10 @@ with dag:
             dag=dag
         )
 
-        published_stream_2_aefi_screening = SparkOperator(
-            task_id="published_stream_2_aefi_screening",
-            name="published-stream-2-aefi-screening",
-            arguments=published_arguments("published_stream_2_aefi_screening"),
+        published_sprintkid_stream_2_aefi_screening = SparkOperator(
+            task_id="published_sprintkid_stream_2_aefi_screening",
+            name="published-sprintkid-stream-2-aefi-screening",
+            arguments=published_arguments("published_sprintkid_stream_2_aefi_screening"),
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
