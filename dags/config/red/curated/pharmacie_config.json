@@ -56,6 +56,7 @@
         ]}
       ],
       "datasets": [
+         {"dataset_id":"anonymized_pharmacie_g*"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
          {"dataset_id":"anonymized_pharmacie_phfadmin*"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
          {"dataset_id":"anonymized_pharmacie_phfchamb"          , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
          {"dataset_id":"anonymized_pharmacie_phfchtir"          , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
