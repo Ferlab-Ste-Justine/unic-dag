@@ -4,6 +4,21 @@
   "timeout_hours": 6,
   "steps": [
     {
+      "destination_zone": "red",
+      "destination_subzone": "curated",
+      "main_class": "bio.ferlab.ui.etl.red.curated.pharmacie.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id":"curated_pharmacie_g*"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"curated_pharmacie_phf*" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "optimize" : [],
+      "post_tests": []
+    },
+    {
       "destination_zone": "yellow",
       "destination_subzone": "anonymized",
       "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
@@ -11,19 +26,28 @@
       "publish_class": "",
       "schemas": [],
       "pre_tests": [
-        {"name": "greater_or_equal_partition_counts", "destinations": [
-          "anonymized_pharmacie_phfch*", "anonymized_pharmacie_phfhora1", "anonymized_pharmacie_phfm*",
-          "anonymized_pharmacie_phfp*", "anonymized_pharmacie_phfraisoncessation", "anonymized_pharmacie_phftype_prep",
-          "anonymized_pharmacie_phfvoiad", "anonymized_pharmacie_phunite_mesure"
+        {"name": "greater_or_equal_partition_counts", 
+         "destinations": [
+          "anonymized_pharmacie_phfch*", 
+          "anonymized_pharmacie_phfhora1",
+          "anonymized_pharmacie_phfm*",
+          "anonymized_pharmacie_phfp*",
+          "anonymized_pharmacie_phfraisoncessation",
+          "anonymized_pharmacie_phftype_prep",
+          "anonymized_pharmacie_phfvoiad",
+          "anonymized_pharmacie_phunite_mesure"
         ]},
-        {"name": "greater_partition_counts", "destinations": [
-          "anonymized_pharmacie_g*", "anonymized_pharmacie_pharchive_*", "anonymized_pharmacie_phfadmin*",
-          "anonymized_pharmacie_phfsoreh", "anonymized_pharmacie_phlog_*", "anonymized_pharmacie_usager"
+        {"name": "greater_partition_counts", 
+         "destinations": [
+          "anonymized_pharmacie_g*",
+          "anonymized_pharmacie_phfadmin*",
+          "anonymized_pharmacie_phfsoreh",
+          "anonymized_pharmacie_phlog_*",
+          "anonymized_pharmacie_usager"
         ]}
       ],
       "datasets": [
          {"dataset_id":"anonymized_pharmacie_g*"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-         {"dataset_id":"anonymized_pharmacie_pharchive_*"       , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
          {"dataset_id":"anonymized_pharmacie_phfadmin*"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
          {"dataset_id":"anonymized_pharmacie_phfchamb"          , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
          {"dataset_id":"anonymized_pharmacie_phfchtir"          , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
