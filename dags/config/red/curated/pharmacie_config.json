@@ -10,7 +10,7 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "pre_tests": [],
+      "pre_tests": [{"name": "greater_partition_counts", "destinations": ["curated_pharmacie_*"]}],
       "datasets": [
         {"dataset_id":"curated_pharmacie_g*"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"curated_pharmacie_phf*" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
