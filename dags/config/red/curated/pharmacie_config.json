@@ -12,8 +12,8 @@
       "schemas": [],
       "pre_tests": [{"name": "greater_partition_counts", "destinations": ["curated_pharmacie_*"]}],
       "datasets": [
-        {"dataset_id":"curated_pharmacie_g*"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"curated_pharmacie_phf*" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"curated_pharmacie_g*"   , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"curated_pharmacie_phf*" , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
       ],
       "optimize" : [],
       "post_tests": []
@@ -30,20 +30,8 @@
          "destinations": [
           "anonymized_pharmacie_phfch*", 
           "anonymized_pharmacie_phfhora1",
-          "anonymized_pharmacie_phfmahfs",
-          "anonymized_pharmacie_phfmdepa",
-          "anonymized_pharmacie_phfmedic",
-          "anonymized_pharmacie_phfmgene",
-          "anonymized_pharmacie_phfmmede",
-          "anonymized_pharmacie_phfposol",
-          "anonymized_pharmacie_phfprescripteur_objetprecrivable",
-          "anonymized_pharmacie_phfprescripteur_objetprecrivable_champsadditionnels",
-          "anonymized_pharmacie_phfprescripteur_objetprecrivable_champsadditionnels_lstelement",
-          "anonymized_pharmacie_phfprescripteur_objetprecrivable_lien_medicament",
-          "anonymized_pharmacie_phfprescripteur_operations",
-          "anonymized_pharmacie_phfprescripteur_poso",
-          "anonymized_pharmacie_phfprescripteur_voie",
-          "anonymized_pharmacie_phfprescriptions_champsadditionnels_lien",
+          "anonymized_pharmacie_phfm*",
+          "anonymized_pharmacie_phfp*",
           "anonymized_pharmacie_phfraisoncessation",
           "anonymized_pharmacie_phftype_prep",
           "anonymized_pharmacie_phfvoiad",
