@@ -10,7 +10,7 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "pre_tests": [{"name": "greater_partition_counts", "destinations": ["curated_pharmacie_*"]}],
+      "pre_tests": [],
       "datasets": [
         {"dataset_id":"curated_pharmacie_g*"   , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"curated_pharmacie_phf*" , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
@@ -28,7 +28,7 @@
       "pre_tests": [
         {"name": "greater_or_equal_partition_counts", 
          "destinations": [
-          "anonymized_pharmacie_phfch*", 
+          "anonymized_pharmacie_phfch*",
           "anonymized_pharmacie_phfhora1",
           "anonymized_pharmacie_phfm*",
           "anonymized_pharmacie_phfp*",
@@ -39,6 +39,10 @@
         ]},
         {"name": "greater_partition_counts", 
          "destinations": [
+          "anonymized_pharmacie_g*",
+          "anonymized_pharmacie_pharchive_*",
+          "anonymized_pharmacie_phfadmin*",
+          "anonymized_pharmacie_phfsoreh",
           "anonymized_pharmacie_phlog_*",
           "anonymized_pharmacie_usager"
         ]}
