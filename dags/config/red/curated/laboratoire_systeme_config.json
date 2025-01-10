@@ -39,7 +39,7 @@
       {"dataset_id": "anonymized_laboratoire_systeme_v_s_lab_canned_message"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_laboratoire_systeme_v_s_lab_clinic"                   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_laboratoire_systeme_v_s_lab_department"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_laboratoire_systeme_v_s_lab_doctor"                   , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_laboratoire_systeme_v_s_lab_doctor"                   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_laboratoire_systeme_v_s_lab_environment"              , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_laboratoire_systeme_v_s_lab_location"                 , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_laboratoire_systeme_v_s_lab_specimen"                 , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
