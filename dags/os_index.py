@@ -73,7 +73,7 @@ for env in PostgresEnv:
     """
 
     with DAG(
-            dag_id=f"es_{env_name}_index",
+            dag_id=f"os_{env_name}_index",
             params={
                 "branch": Param("master", type="string"),
                 "release_id": Param("", type=["null", "string"])

@@ -68,7 +68,7 @@ Ce DAG load les index OpenSearch QA dans l'environnement Dev.
 """
 
 with DAG(
-        dag_id="es_qa_index",
+        dag_id="os_qa_index",
         params={
             "branch": Param("master", type="string"),
             "release_id": Param("", type=["null", "string"])
