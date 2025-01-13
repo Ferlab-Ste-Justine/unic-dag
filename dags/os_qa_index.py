@@ -53,7 +53,7 @@ args = {
     'trigger_rule': TriggerRule.NONE_FAILED
 }
 
-doc = f"""
+doc = """
 # Load DEV Index into OpenSeach QA 
 
 DAG pour le load des Index OpenSearch QA dans l'environnement Dev.
@@ -68,7 +68,7 @@ Ce DAG load les index OpenSearch QA dans l'environnement Dev.
 """
 
 with DAG(
-        dag_id=f"es_qa_index",
+        dag_id="es_qa_index",
         params={
             "branch": Param("master", type="string"),
             "release_id": Param("", type=["null", "string"])
