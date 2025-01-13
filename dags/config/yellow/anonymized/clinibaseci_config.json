@@ -37,7 +37,7 @@
       {"dataset_id": "anonymized_clinibaseci_s*"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_clinibaseci_t*"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_clinibaseci_unite*"    , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_clinibaseci_v*"        , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "anonymized_clinibaseci_v*"        , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
   
     ],
     "optimize" : ["anonymized_clinibaseci_beneficiaire_tx"],
