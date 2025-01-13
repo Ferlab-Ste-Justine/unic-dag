@@ -16,7 +16,7 @@ from lib.config import jar, spark_failure_msg, os_url, os_port
 from lib.postgres import PostgresEnv
 # from lib.slack import Slack
 from lib.tasks.notify import start, end
-from lib.tasks.opensearch import load_index, get_release_id, publish_index
+from lib.tasks.opensearch import load_index, get_release_id, publish_prod_index
 
 env_name = None
 
@@ -26,6 +26,7 @@ def load_index_arguments(release_id: str, template_filename: str, alias: str) ->
         "--env", env_name,
         "--osurl", os_url,
         "--osport", os_port,
+        "--osenv", "prod",
         "--release-id", release_id,
         "--template-filename", template_filename,
         "--alias", alias,
@@ -88,9 +89,9 @@ for env in PostgresEnv:
         @task_group(group_id="load_indexes")
         def load_index_group(release_id: str):
             es_load_index_conf = [
-                ("es_index_resource_centric", "resource_centric", "large-etl", "resource_centric_template.json"),
-                ("es_index_table_centric", "table_centric", "large-etl", "table_centric_template.json"),
-                ("es_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
+                ("os_index_resource_centric", "resource_centric", "large-etl", "resource_centric_template.json"),
+                ("os_index_table_centric", "table_centric", "large-etl", "table_centric_template.json"),
+                ("os_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
             ]
 
             [load_index(task_id, load_index_arguments(release_id, template_filename, alias),
@@ -100,19 +101,19 @@ for env in PostgresEnv:
 
         @task_group(group_id="publish_indexes")
         def publish_index_group(release_id: str):
-            es_publish_index_conf = [
-                ("es_publish_index_resource_centric", "resource_centric", "large-etl"),
-                ("es_publish_index_table_centric", "table_centric", "large-etl"),
-                ("es_publish_index_variable_centric", "variable_centric", "large-etl")
+            os_publish_index_conf = [
+                ("os_publish_index_resource_centric", "resource_centric", "large-etl"),
+                ("os_publish_index_table_centric", "table_centric", "large-etl"),
+                ("os_publish_index_variable_centric", "variable_centric", "large-etl")
             ]
 
-            [publish_index(task_id, publish_index_arguments(release_id, alias),
+            [publish_prod_index(task_id, publish_index_arguments(release_id, alias),
                            jar, spark_failure_msg, cluster_size, dag) for
-             task_id, alias, cluster_size in es_publish_index_conf]
+             task_id, alias, cluster_size in os_publish_index_conf]
 
 
         get_release_id_task = get_release_id(release_id(),
                                              "resource_centric")  # the release id will be the same for all indexes
 
-        start("start_es_prepare_index") >> get_release_id_task >> load_index_group(release_id=get_release_id_task) \
-        >> publish_index_group(release_id=get_release_id_task) >> end("end_postgres_prepare_index")
+        start("start_os_index") >> get_release_id_task >> load_index_group(release_id=get_release_id_task) \
+        >> publish_index_group(release_id=get_release_id_task) >> end("end_os_index")

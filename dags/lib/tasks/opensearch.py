@@ -11,6 +11,8 @@ from lib.operators.spark_opensearch import SparkOpenSearchOperator
 from airflow.exceptions import AirflowSkipException
 from lib.config import os_url
 
+from dags.lib.config import os_qa_credentials, os_qa_username, os_qa_password, os_qa_cert, os_credentials, os_username, \
+    os_password, os_cert
 
 
 def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,
@@ -44,7 +46,7 @@ def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, 
         dag=dag
     )
 
-def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
+def publish_prod_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
                zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.os.publish.Main') -> SparkOperator:
 
     return SparkOpenSearchOperator(
@@ -56,6 +58,29 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config=cluster_size,
+        os_credentials_secret_name=os_credentials,
+        os_credentials_username_name=os_username,
+        os_credentials_password_name=os_password,
+        os_cert_secret_name=os_cert,
+        dag=dag
+    )
+
+def publish_qa_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
+                  zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.os.publish.Main') -> SparkOperator:
+
+    return SparkOpenSearchOperator(
+        task_id=task_id,
+        name=task_id.replace("_", "-"),
+        zone=zone,
+        arguments=args,
+        spark_class=spark_class,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config=cluster_size,
+        os_credentials_secret_name=os_qa_credentials,
+        os_credentials_username_name=os_qa_username,
+        os_credentials_password_name=os_qa_password,
+        os_cert_secret_name=os_qa_cert,
         dag=dag
     )
 

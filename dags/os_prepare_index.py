@@ -54,7 +54,7 @@ for env in PostgresEnv:
     """
 
     with DAG(
-            dag_id=f"es_{env_name}_prepare_index",
+            dag_id=f"os_{env_name}_prepare_index",
             params=default_params,
             default_args=args,
             doc_md=doc,
@@ -66,14 +66,14 @@ for env in PostgresEnv:
     ) as dag:
         @task_group(group_id="prepare_indexes")
         def prepare_index_group():
-            es_prepare_index_conf = [
-                ("es_index_resource_centric", "large-etl"),
-                ("es_index_table_centric", "large-etl"),
-                ("es_index_variable_centric", "large-etl")
+            os_prepare_index_conf = [
+                ("os_index_resource_centric", "large-etl"),
+                ("os_index_table_centric", "large-etl"),
+                ("os_index_variable_centric", "large-etl")
             ]
 
             [prepare_index(task_id, arguments(task_id), jar, spark_failure_msg,
-                           cluster_size, dag) for task_id, cluster_size in es_prepare_index_conf]
+                           cluster_size, dag) for task_id, cluster_size in os_prepare_index_conf]
 
 
-        start("start_es_prepare_index") >> prepare_index_group() >> end("end_postgres_prepare_index")
+        start("start_os_prepare_index") >> prepare_index_group() >> end("end_os_prepare_index")
