@@ -12,28 +12,34 @@ from airflow.decorators import task_group
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import jar, spark_failure_msg, os_url, os_port
 from lib.postgres import PostgresEnv
+from lib.opensearch import OpensearchEnv, os_port, os_qa_url, os_prod_url
+from lib.config import jar, spark_failure_msg
 # from lib.slack import Slack
 from lib.tasks.notify import start, end
 from lib.tasks.opensearch import load_index, get_release_id, publish_index
 
-env_name = None
+env_dict = {
+    OpensearchEnv.QA : PostgresEnv.DEV,
+    OpensearchEnv.PROD : PostgresEnv.PROD
+}
 
+def load_index_arguments(release_id: str, os_url: str, template_filename: str, os_env_name: str, pg_env_name: str,
+                         alias: str) -> List[str]:
 
-def load_index_arguments(release_id: str, template_filename: str, alias: str) -> List[str]:
     return [
-        "--env", env_name,
+        "--env", pg_env_name,
         "--osurl", os_url,
         "--osport", os_port,
+        "--osenv", os_env_name,
         "--release-id", release_id,
         "--template-filename", template_filename,
         "--alias", alias,
         "--config", "config/prod.conf"
     ]
 
+def publish_index_arguments(release_id: str, os_url: str, alias: str) -> List[str]:
 
-def publish_index_arguments(release_id: str, alias: str) -> List[str]:
     return [
         "--osurl", os_url,
         "--osport", os_port,
@@ -41,10 +47,8 @@ def publish_index_arguments(release_id: str, alias: str) -> List[str]:
         "--alias", alias
     ]
 
-
 def release_id() -> str:
     return '{{ params.release_id or "" }}'
-
 
 # Update default args
 args = {
@@ -53,17 +57,18 @@ args = {
     'trigger_rule': TriggerRule.NONE_FAILED
 }
 
-for env in PostgresEnv:
-    env_name = env.value
+for os_env in OpensearchEnv:
+
+    os_env_name = os_env.value
+    pg_env_name = env_dict[os_env].value
 
     doc = f"""
-    # Load OpenSearch Index **{env_name}**
+    # Load {pg_env_name} Index into OpenSeach {os_env_name} 
     
-    DAG pour le load des Index OpenSearch dans l'environnement **{env_name}**.
+    DAG pour le load des Index {pg_env_name} dans OpenSearch {os_env_name}.
     
     ### Description
-    Ce DAG load les index OpenSearch dans l'environnement **{env_name}**. Ceci va ecentuallement faire parti du dag de publication.
-    Ce dag est pour tester cet étape.
+    Ce DAG load les index {pg_env_name} dans OpenSearch {os_env_name}.
     
     ## Indexs à Loader
     * resource centric
@@ -72,7 +77,7 @@ for env in PostgresEnv:
     """
 
     with DAG(
-            dag_id=f"es_{env_name}_index",
+            dag_id=f"os_{os_env_name}_index",
             params={
                 "branch": Param("master", type="string"),
                 "release_id": Param("", type=["null", "string"])
@@ -87,32 +92,36 @@ for env in PostgresEnv:
     ) as dag:
         @task_group(group_id="load_indexes")
         def load_index_group(release_id: str):
+            os_url = os_prod_url if os_env_name == OpensearchEnv.PROD.value else os_qa_url
+
             es_load_index_conf = [
-                ("es_index_resource_centric", "resource_centric", "large-etl", "resource_centric_template.json"),
-                ("es_index_table_centric", "table_centric", "large-etl", "table_centric_template.json"),
-                ("es_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
+                ("os_index_resource_centric", "resource_centric", "large-etl", "resource_centric_template.json"),
+                ("os_index_table_centric", "table_centric", "large-etl", "table_centric_template.json"),
+                ("os_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
             ]
 
-            [load_index(task_id, load_index_arguments(release_id, template_filename, alias),
+            [load_index(task_id, load_index_arguments(release_id, os_url, template_filename, os_env_name, pg_env_name, alias),
                         jar, spark_failure_msg, cluster_size, dag) for
              task_id, alias, cluster_size, template_filename in es_load_index_conf]
 
 
         @task_group(group_id="publish_indexes")
         def publish_index_group(release_id: str):
-            es_publish_index_conf = [
-                ("es_publish_index_resource_centric", "resource_centric", "large-etl"),
-                ("es_publish_index_table_centric", "table_centric", "large-etl"),
-                ("es_publish_index_variable_centric", "variable_centric", "large-etl")
+            os_url = os_prod_url if os_env_name == OpensearchEnv.PROD.value else os_qa_url
+
+            os_publish_index_conf = [
+                ("os_publish_index_resource_centric", "resource_centric", "large-etl"),
+                ("os_publish_index_table_centric", "table_centric", "large-etl"),
+                ("os_publish_index_variable_centric", "variable_centric", "large-etl")
             ]
 
-            [publish_index(task_id, publish_index_arguments(release_id, alias),
-                           jar, spark_failure_msg, cluster_size, dag) for
-             task_id, alias, cluster_size in es_publish_index_conf]
+            [publish_index(task_id, publish_index_arguments(release_id, os_url, alias),
+                           jar, spark_failure_msg, cluster_size, os_env, dag) for
+             task_id, alias, cluster_size in os_publish_index_conf]
 
 
         get_release_id_task = get_release_id(release_id(),
                                              "resource_centric")  # the release id will be the same for all indexes
 
-        start("start_es_prepare_index") >> get_release_id_task >> load_index_group(release_id=get_release_id_task) \
-        >> publish_index_group(release_id=get_release_id_task) >> end("end_postgres_prepare_index")
+        start("start_os_index") >> get_release_id_task >> load_index_group(release_id=get_release_id_task) \
+        >> publish_index_group(release_id=get_release_id_task) >> end("end_os_index")

@@ -14,10 +14,11 @@ from airflow.exceptions import AirflowFailException
 from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
 
+from lib.opensearch import os_prod_url, os_port
 from lib.tasks.publish import released_to_published, publish_dictionary
 from lib.hooks.postgresca import PostgresCaHook
 from lib.tasks.notify import start, end
-from lib.config import default_args, os_url, os_port, green_minio_conn_id
+from lib.config import default_args, green_minio_conn_id
 from lib.postgres import postgres_vlan2_ca_path, postgres_vlan2_ca_cert, PostgresEnv, unic_postgres_vlan2_conn_id, \
     postgres_ca_filename
 from lib.slack import Slack
@@ -49,7 +50,7 @@ def prepare_index_arguments(task_id: str) -> List[str]:
 def load_index_arguments(release_id: str, template_filename: str, alias: str) -> List[str]:
     return [
         "--env", env_name,
-        "--osurl", os_url,
+        "--osurl", os_prod_url,
         "--osport", os_port,
         "--release-id", release_id,
         "--template-filename", template_filename,
@@ -60,7 +61,7 @@ def load_index_arguments(release_id: str, template_filename: str, alias: str) ->
 
 def publish_index_arguments(release_id: str, alias: str) -> List[str]:
     return [
-        "--osurl", os_url,
+        "--osurl", os_prod_url,
         "--osport", os_port,
         "--release-id", release_id,
         "--alias", alias

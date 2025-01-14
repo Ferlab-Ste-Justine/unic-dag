@@ -42,9 +42,6 @@ yellow_minio_conn_id = "yellow_minio"
 green_minio_conn_id = "green_minio"
 mail_from = os.environ.get("AIRFLOW__SMTP__SMTP_MAIL_FROM")
 
-os_url = 'https://workers.opensearch.unic.sainte-justine.intranet'
-os_port = '9200'
-
 # QA tests config
 qa_test_main_class = "bio.ferlab.ui.etl.qa.Main"
 qa_test_cluster_type = "xsmall"
