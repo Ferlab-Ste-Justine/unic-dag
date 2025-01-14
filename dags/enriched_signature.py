@@ -126,18 +126,19 @@ with dag:
 
     with TaskGroup(group_id="released") as released:
         RELEASED_ZONE = "green"
-        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.versioned.Main"
-
-
-        def released_arguments(destination: str) -> List[str]:
-            # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
-            return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
-
+        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.Main"
+        RELEASED_MONTHLY_VISIT_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.signature.MonthlyVisitETL"
 
         released_last_visit_survey = SparkOperator(
             task_id="released_signature_last_visit_survey",
             name="released-signature-last-visit-survey",
-            arguments=released_arguments("released_signature_last_visit_survey"),
+            arguments=[
+                "--config", "config/prod.conf",
+                "--steps", "default",
+                "--app-name", "released_signature_last_visit_survey",
+                "--destination", "released_signature_last_visit_survey",
+                "--version", "{{ data_interval_end | ds }}"
+            ],
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
@@ -150,9 +151,14 @@ with dag:
         released_monthly_visit = SparkOperator(
             task_id="released_signature_monthly_visit",
             name="released-signature-monthly-visit",
-            arguments=released_arguments("released_signature_monthly_visit"),
+            arguments=[
+                "--config", "config/prod.conf",
+                "--steps", "default",
+                "--app-name", "released_signature_monthly_visit",
+                "--version", "{{ data_interval_end | ds }}"
+            ],
             zone=RELEASED_ZONE,
-            spark_class=RELEASED_MAIN_CLASS,
+            spark_class=RELEASED_MONTHLY_VISIT_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
             spark_config="small-etl",
