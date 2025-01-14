@@ -19,20 +19,17 @@ from lib.config import jar, spark_failure_msg
 from lib.tasks.notify import start, end
 from lib.tasks.opensearch import load_index, get_release_id, publish_index
 
-os_env_name = None
-pg_env_name = None
-
 env_dict = {
     OpensearchEnv.QA : PostgresEnv.DEV,
     OpensearchEnv.PROD : PostgresEnv.PROD
 }
 
-def load_index_arguments(release_id: str, template_filename: str, alias: str) -> List[str]:
-    url = os_prod_url if pg_env_name == OpensearchEnv.PROD else os_qa_url
+def load_index_arguments(release_id: str, os_url: str, template_filename: str, os_env_name: str, pg_env_name: str,
+                         alias: str) -> List[str]:
 
     return [
         "--env", pg_env_name,
-        "--osurl", url,
+        "--osurl", os_url,
         "--osport", os_port,
         "--osenv", os_env_name,
         "--release-id", release_id,
@@ -41,11 +38,10 @@ def load_index_arguments(release_id: str, template_filename: str, alias: str) ->
         "--config", "config/prod.conf"
     ]
 
-def publish_index_arguments(release_id: str, alias: str) -> List[str]:
-    url = os_prod_url if pg_env_name == OpensearchEnv.PROD else os_qa_url
+def publish_index_arguments(release_id: str, os_url: str, alias: str) -> List[str]:
 
     return [
-        "--osurl", url,
+        "--osurl", os_url,
         "--osport", os_port,
         "--release-id", release_id,
         "--alias", alias
@@ -64,7 +60,7 @@ args = {
 for os_env in OpensearchEnv:
 
     os_env_name = os_env.value
-    pg_env_name = env_dict[os_env]
+    pg_env_name = env_dict[os_env].value
 
     doc = f"""
     # Load {pg_env_name} Index into OpenSeach {os_env_name} 
@@ -96,26 +92,30 @@ for os_env in OpensearchEnv:
     ) as dag:
         @task_group(group_id="load_indexes")
         def load_index_group(release_id: str):
+            os_url = os_prod_url if os_env_name == OpensearchEnv.PROD.value else os_qa_url
+
             es_load_index_conf = [
                 ("os_index_resource_centric", "resource_centric", "large-etl", "resource_centric_template.json"),
                 ("os_index_table_centric", "table_centric", "large-etl", "table_centric_template.json"),
                 ("os_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
             ]
 
-            [load_index(task_id, load_index_arguments(release_id, template_filename, alias),
+            [load_index(task_id, load_index_arguments(release_id, os_url, template_filename, os_env_name, pg_env_name, alias),
                         jar, spark_failure_msg, cluster_size, dag) for
              task_id, alias, cluster_size, template_filename in es_load_index_conf]
 
 
         @task_group(group_id="publish_indexes")
         def publish_index_group(release_id: str):
+            os_url = os_prod_url if os_env_name == OpensearchEnv.PROD.value else os_qa_url
+
             os_publish_index_conf = [
                 ("os_publish_index_resource_centric", "resource_centric", "large-etl"),
                 ("os_publish_index_table_centric", "table_centric", "large-etl"),
                 ("os_publish_index_variable_centric", "variable_centric", "large-etl")
             ]
 
-            [publish_index(task_id, publish_index_arguments(release_id, alias),
+            [publish_index(task_id, publish_index_arguments(release_id, os_url, alias),
                            jar, spark_failure_msg, cluster_size, os_env, dag) for
              task_id, alias, cluster_size in os_publish_index_conf]
 

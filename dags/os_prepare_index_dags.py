@@ -15,9 +15,7 @@ from lib.slack import Slack
 from lib.tasks.notify import start, end
 from lib.tasks.opensearch import prepare_index
 
-# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, cell-var-from-loop, duplicate-code
-
-env_name = None
+# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, cell-var-from-loop, duplicate-code, redefined-outer-name
 
 # Update default args
 args = default_args.copy()
@@ -26,26 +24,26 @@ args.update({
     'on_failure_callback': Slack.notify_task_failure})
 
 
-def arguments(task_id: str) -> List[str]:
+def arguments(task_id: str, pg_env_name : str) -> List[str]:
     return [
         task_id,
         "--config", "config/prod.conf",
         "--steps", "default",
         "--app-name", f"prepare_{task_id}",
-        "--env", env_name
+        "--env", pg_env_name
     ]
 
 
-for env in PostgresEnv:
-    env_name = env.value
+for pg_env in PostgresEnv:
+    pg_env_name = pg_env.value
 
     doc = f"""
-    # Prepare OpenSearch Index **{env_name}**
+    # Prepare OpenSearch **{pg_env_name}** Index 
     
-    DAG pour la préparation des Index OpenSearch dans l'environnement **{env_name}**.
+    DAG pour la préparation des Index **{pg_env_name}** OpenSearch dans l'environnement.
     
     ### Description
-    Ce DAG prepare les index OpenSearch dans l'environnement **{env_name}** pour ensuite être implementé dans OpenSearch.
+    Ce DAG prepare les index **{pg_env_name}** OpenSearch pour ensuite être implementé dans OpenSearch.
     
     ## Indexs à Préparer
     * resource centric
@@ -54,7 +52,7 @@ for env in PostgresEnv:
     """
 
     with DAG(
-            dag_id=f"os_{env_name}_prepare_index",
+            dag_id=f"os_{pg_env_name}_prepare_index",
             params=default_params,
             default_args=args,
             doc_md=doc,
@@ -72,7 +70,7 @@ for env in PostgresEnv:
                 ("os_index_variable_centric", "large-etl")
             ]
 
-            [prepare_index(task_id, arguments(task_id), jar, spark_failure_msg,
+            [prepare_index(task_id, arguments(task_id, pg_env_name), jar, spark_failure_msg,
                            cluster_size, dag) for task_id, cluster_size in os_prepare_index_conf]
 
 
