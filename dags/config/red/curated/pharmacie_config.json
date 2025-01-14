@@ -12,8 +12,8 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"curated_pharmacie_g*"   , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"curated_pharmacie_phf*" , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"curated_pharmacie_g*"   , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"curated_pharmacie_phf*" , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
       "optimize" : [],
       "post_tests": []
