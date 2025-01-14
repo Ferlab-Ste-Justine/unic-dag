@@ -42,21 +42,6 @@ yellow_minio_conn_id = "yellow_minio"
 green_minio_conn_id = "green_minio"
 mail_from = os.environ.get("AIRFLOW__SMTP__SMTP_MAIL_FROM")
 
-# Opensearch prod configs
-os_url = 'https://workers.opensearch.unic.sainte-justine.intranet'
-os_port = '9200'
-os_credentials ='opensearch-dags-credentials',
-os_username='OS_USERNAME',
-os_password='OS_PASSWORD',
-os_cert='unic-prod-opensearch-ca-certificate',
-
-# Opensearch qa congigs
-os_qa_url = 'https://workers.opensearch.qa.unic.sainte-justine.intranet'
-os_qa_credentials ='opensearch-qa-dags-credentials',
-os_qa_username='OS_QA_USERNAME',
-os_qa_password='OS_QA_PASSWORD',
-os_qa_cert='unic-prod-opensearch-qa-ca-certificate',
-
 # QA tests config
 qa_test_main_class = "bio.ferlab.ui.etl.qa.Main"
 qa_test_cluster_type = "xsmall"

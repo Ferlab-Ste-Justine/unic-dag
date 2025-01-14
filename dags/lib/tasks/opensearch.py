@@ -9,10 +9,9 @@ from airflow.decorators import task
 from lib.operators.spark import SparkOperator
 from lib.operators.spark_opensearch import SparkOpenSearchOperator
 from airflow.exceptions import AirflowSkipException
-from lib.config import os_url
 
-from dags.lib.config import os_qa_credentials, os_qa_username, os_qa_password, os_qa_cert, os_credentials, os_username, \
-    os_password, os_cert
+from lib.opensearch import (OpensearchEnv, os_prod_url, os_prod_credentials, os_prod_username, os_prod_password,
+                            os_prod_cert, os_qa_credentials, os_qa_password, os_qa_cert, os_qa_username)
 
 
 def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,
@@ -46,43 +45,43 @@ def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, 
         dag=dag
     )
 
-def publish_prod_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
-               zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.os.publish.Main') -> SparkOperator:
+def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str, env: OpensearchEnv,
+                  dag: DAG, zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.os.publish.Main') -> SparkOperator:
 
-    return SparkOpenSearchOperator(
-        task_id=task_id,
-        name=task_id.replace("_", "-"),
-        zone=zone,
-        arguments=args,
-        spark_class=spark_class,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config=cluster_size,
-        os_credentials_secret_name=os_credentials,
-        os_credentials_username_name=os_username,
-        os_credentials_password_name=os_password,
-        os_cert_secret_name=os_cert,
-        dag=dag
-    )
-
-def publish_qa_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
-                  zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.os.publish.Main') -> SparkOperator:
-
-    return SparkOpenSearchOperator(
-        task_id=task_id,
-        name=task_id.replace("_", "-"),
-        zone=zone,
-        arguments=args,
-        spark_class=spark_class,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config=cluster_size,
-        os_credentials_secret_name=os_qa_credentials,
-        os_credentials_username_name=os_qa_username,
-        os_credentials_password_name=os_qa_password,
-        os_cert_secret_name=os_qa_cert,
-        dag=dag
-    )
+    if env == OpensearchEnv.PROD:
+        return SparkOpenSearchOperator(
+            task_id=task_id,
+            name=task_id.replace("_", "-"),
+            zone=zone,
+            arguments=args,
+            spark_class=spark_class,
+            spark_jar=jar,
+            spark_failure_msg=spark_failure_msg,
+            spark_config=cluster_size,
+            os_credentials_secret_name=os_prod_credentials,
+            os_credentials_username_name=os_prod_username,
+            os_credentials_password_name=os_prod_password,
+            os_cert_secret_name=os_prod_cert,
+            dag=dag
+        )
+    elif env == OpensearchEnv.QA:
+        return SparkOpenSearchOperator(
+            task_id=task_id,
+            name=task_id.replace("_", "-"),
+            zone=zone,
+            arguments=args,
+            spark_class=spark_class,
+            spark_jar=jar,
+            spark_failure_msg=spark_failure_msg,
+            spark_config=cluster_size,
+            os_credentials_secret_name=os_qa_credentials,
+            os_credentials_username_name=os_qa_username,
+            os_credentials_password_name=os_qa_password,
+            os_cert_secret_name=os_qa_cert,
+            dag=dag
+        )
+    else:
+        return None
 
 @task(task_id='get_release_id') # ne va pas marcher dans unic, le service est dans l'autre cluster.
 def get_release_id(release_id: str, index: str, increment: bool = True, skip: bool = False) -> str:
@@ -95,7 +94,7 @@ def get_release_id(release_id: str, index: str, increment: bool = True, skip: bo
 
     logging.info(f'No release id passed to DAG. Fetching release id from ES for all index {index}.')
     # Fetch current id from ES
-    url = f'{os_url}/{index}?&pretty'
+    url = f'{os_prod_url}/{index}?&pretty'
     response = requests.get(url)
     logging.info(f'ES response:\n{response.text}')
 
