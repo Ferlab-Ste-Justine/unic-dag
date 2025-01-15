@@ -14,7 +14,11 @@ class SparkOpenSearchOperator(SparkOperator):
         'spark_failure_msg',
         'zone',
         'spark_config',
-        'skip'
+        'skip',
+        'os_credentials_secret_name',
+        'os_credentials_username_name',
+        'os_credentials_password_name',
+        'os_cert_secret_name'
     )
     def __init__(
             self,
@@ -55,7 +59,7 @@ class SparkOpenSearchOperator(SparkOperator):
 
         new_env_vars = [
             k8s.V1EnvVar(
-                name='OS_USERNAME',
+                name=self.os_credentials_username_name,
                 value_from=k8s.V1EnvVarSource(
                     secret_key_ref=k8s.V1SecretKeySelector(
                         name=self.os_credentials_secret_name,
@@ -63,7 +67,7 @@ class SparkOpenSearchOperator(SparkOperator):
                 )
             ),
             k8s.V1EnvVar(
-                name='OS_PASSWORD',
+                name=self.os_credentials_password_name,
                 value_from=k8s.V1EnvVarSource(
                     secret_key_ref=k8s.V1SecretKeySelector(
                         name=self.os_credentials_secret_name,
@@ -81,7 +85,7 @@ class SparkOpenSearchOperator(SparkOperator):
             k8s.V1Volume(
                 name=self.os_cert_secret_name,
                 secret=k8s.V1SecretVolumeSource(
-                    secret_name='unic-prod-opensearch-qa-ca-certificate',
+                    secret_name=self.os_cert_secret_name,
                     default_mode=0o555
                 ),
             )
