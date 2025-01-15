@@ -202,7 +202,7 @@ def get_main_class(subzone: str, main_class: str):
         "raw": "bio.ferlab.ui.etl.red.raw.Main",
         "curated": "bio.ferlab.ui.etl.red.curated.Main",
         "anonymized": "bio.ferlab.ui.etl.yellow.anonymized.Main",
-        "released": "bio.ferlab.ui.etl.green.released.versioned.Main",
+        "released": "bio.ferlab.ui.etl.green.released.Main",
         "published": "bio.ferlab.ui.etl.green.published.Main",
     }
     if main_class != "":
@@ -248,7 +248,7 @@ def create_spark_job(destination: str,
     main_class = get_main_class(subzone, main_class)
     args = [config_file, run_type, destination]
 
-    if subzone in ["raw", "curated"]:
+    if subzone in ["raw", "curated", "released"]:
         if multiple_main_methods:
             args = [
                 destination,
@@ -265,7 +265,7 @@ def create_spark_job(destination: str,
             ]
 
     elif subzone in ["released", "published"]:
-        args.append(version)
+        args.extend(["--version", version])
 
     return SparkOperator(
         task_id=sanitize_string(destination, "_"),

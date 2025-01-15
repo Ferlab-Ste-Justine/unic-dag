@@ -145,12 +145,17 @@ with dag:
 
     with TaskGroup(group_id="released") as released:
         RELEASED_ZONE = "green"
-        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.sprintkid.Main"
+        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.sprintkid.LiveRegionV20ImportTemplateETL"
 
 
         def released_arguments(destination: str) -> List[str]:
             # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
-            return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
+            return [
+                "--config", "config/prod.conf",
+                "--steps", "default",
+                "--app-name", destination,
+                "--version", "{{ data_interval_end | ds }}"
+            ]
 
 
         released_sprintkid_live_region_v20_import_template = SparkOperator(
@@ -164,7 +169,6 @@ with dag:
             spark_config="medium-etl",
             dag=dag,
         )
-
 
     with TaskGroup(group_id="published") as published:
         PUBLISHED_ZONE = "green"
@@ -186,6 +190,5 @@ with dag:
             spark_config="xsmall-etl",
             dag=dag
         )
-
 
     start() >> enriched >> released >> published >> end()
