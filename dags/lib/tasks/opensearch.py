@@ -48,56 +48,34 @@ def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, 
 def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str, env_name: str,
                   dag: DAG, zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.os.publish.Main') -> SparkOperator:
 
-    return SparkOpenSearchOperator(
-        task_id=task_id,
-        name=task_id.replace("_", "-"),
-        zone=zone,
-        arguments=args,
-        spark_class=spark_class,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config=cluster_size,
-        os_credentials_secret_name=os_qa_credentials,
-        os_credentials_username_name=os_qa_username,
-        os_credentials_password_name=os_qa_password,
-        os_cert_secret_name=os_qa_cert,
-        dag=dag
-    )
-
-    # if env_name == OpensearchEnv.PROD.value:
-    #     return SparkOpenSearchOperator(
-    #         task_id=task_id,
-    #         name=task_id.replace("_", "-"),
-    #         zone=zone,
-    #         arguments=args,
-    #         spark_class=spark_class,
-    #         spark_jar=jar,
-    #         spark_failure_msg=spark_failure_msg,
-    #         spark_config=cluster_size,
-    #         os_credentials_secret_name=os_prod_credentials,
-    #         os_credentials_username_name=os_prod_username,
-    #         os_credentials_password_name=os_prod_password,
-    #         os_cert_secret_name=os_prod_cert,
-    #         dag=dag
-    #     )
-    # elif env_name == OpensearchEnv.QA.value:
-    #     return SparkOpenSearchOperator(
-    #         task_id=task_id,
-    #         name=task_id.replace("_", "-"),
-    #         zone=zone,
-    #         arguments=args,
-    #         spark_class=spark_class,
-    #         spark_jar=jar,
-    #         spark_failure_msg=spark_failure_msg,
-    #         spark_config=cluster_size,
-    #         os_credentials_secret_name=os_qa_credentials,
-    #         os_credentials_username_name=os_qa_username,
-    #         os_credentials_password_name=os_qa_password,
-    #         os_cert_secret_name=os_qa_cert,
-    #         dag=dag
-    #     )
-    # else:
-    #     return None
+    if env_name == OpensearchEnv.PROD.value:
+        return SparkOpenSearchOperator(
+            task_id=task_id,
+            name=task_id.replace("_", "-"),
+            zone=zone,
+            arguments=args,
+            spark_class=spark_class,
+            spark_jar=jar,
+            spark_failure_msg=spark_failure_msg,
+            spark_config=cluster_size,
+            os_cert_secret_name=os_prod_cert,
+            dag=dag
+        )
+    elif env_name == OpensearchEnv.QA.value:
+        return SparkOpenSearchOperator(
+            task_id=task_id,
+            name=task_id.replace("_", "-"),
+            zone=zone,
+            arguments=args,
+            spark_class=spark_class,
+            spark_jar=jar,
+            spark_failure_msg=spark_failure_msg,
+            spark_config=cluster_size,
+            os_cert_secret_name=os_qa_cert,
+            dag=dag
+        )
+    else:
+        return None
 
 @task(task_id='get_release_id') # ne va pas marcher dans unic, le service est dans l'autre cluster.
 def get_release_id(release_id: str, index: str, increment: bool = True, skip: bool = False) -> str:
