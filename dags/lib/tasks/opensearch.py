@@ -48,11 +48,6 @@ def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, 
 def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str, env_name: str,
                   dag: DAG, zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.os.publish.Main') -> SparkOperator:
 
-
-    print(f"CUR ENV: {env_name}")
-    print(f"PROD ENV: {OpensearchEnv.PROD.value}")
-    print(f"QA ENV: {OpensearchEnv.QA.value}")
-
     return SparkOpenSearchOperator(
         task_id=task_id,
         name=task_id.replace("_", "-"),

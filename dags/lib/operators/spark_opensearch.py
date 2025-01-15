@@ -55,7 +55,7 @@ class SparkOpenSearchOperator(SparkOperator):
 
         new_env_vars = [
             k8s.V1EnvVar(
-                name=self.os_credentials_username_name,
+                name='OS_USERNAME',
                 value_from=k8s.V1EnvVarSource(
                     secret_key_ref=k8s.V1SecretKeySelector(
                         name=self.os_credentials_secret_name,
@@ -63,7 +63,7 @@ class SparkOpenSearchOperator(SparkOperator):
                 )
             ),
             k8s.V1EnvVar(
-                name=self.os_credentials_password_name,
+                name='OS_PASSWORD',
                 value_from=k8s.V1EnvVarSource(
                     secret_key_ref=k8s.V1SecretKeySelector(
                         name=self.os_credentials_secret_name,
