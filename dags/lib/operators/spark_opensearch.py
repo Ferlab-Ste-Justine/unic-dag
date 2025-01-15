@@ -57,35 +57,35 @@ class SparkOpenSearchOperator(SparkOperator):
         if self.skip:
             raise AirflowSkipException()
 
-        new_env_vars = [
-            k8s.V1EnvVar(
-                name=self.os_credentials_username_name,
-                value_from=k8s.V1EnvVarSource(
-                    secret_key_ref=k8s.V1SecretKeySelector(
-                        name=self.os_credentials_secret_name,
-                        key='username')
-                )
-            ),
-            k8s.V1EnvVar(
-                name=self.os_credentials_password_name,
-                value_from=k8s.V1EnvVarSource(
-                    secret_key_ref=k8s.V1SecretKeySelector(
-                        name=self.os_credentials_secret_name,
-                        key='password')
-                )
-            ),
-        ]
-
-        if self.env_vars and self.os_credentials_secret_name:
-            self.env_vars += new_env_vars
-        else:
-            self.env_vars = new_env_vars
+        # new_env_vars = [
+        #     k8s.V1EnvVar(
+        #         name=self.os_credentials_username_name,
+        #         value_from=k8s.V1EnvVarSource(
+        #             secret_key_ref=k8s.V1SecretKeySelector(
+        #                 name=self.os_credentials_secret_name,
+        #                 key='username')
+        #         )
+        #     ),
+        #     k8s.V1EnvVar(
+        #         name=self.os_credentials_password_name,
+        #         value_from=k8s.V1EnvVarSource(
+        #             secret_key_ref=k8s.V1SecretKeySelector(
+        #                 name=self.os_credentials_secret_name,
+        #                 key='password')
+        #         )
+        #     ),
+        # ]
+        #
+        # if self.env_vars and self.os_credentials_secret_name:
+        #     self.env_vars += new_env_vars
+        # else:
+        #     self.env_vars = new_env_vars
 
         new_volumes = [
             k8s.V1Volume(
                 name=self.os_cert_secret_name,
                 secret=k8s.V1SecretVolumeSource(
-                    secret_name=self.os_cert_secret_name,
+                    secret_name='unic-prod-opensearch-qa-ca-certificate',
                     default_mode=0o555
                 ),
             )
