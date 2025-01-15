@@ -116,7 +116,7 @@ for os_env in OpensearchEnv:
             ]
 
             [publish_index(task_id, publish_index_arguments(release_id, os_url, alias),
-                           jar, spark_failure_msg, cluster_size, os_env, dag) for
+                           jar, spark_failure_msg, cluster_size, os_env_name, dag) for
              task_id, alias, cluster_size in os_publish_index_conf]
 
 

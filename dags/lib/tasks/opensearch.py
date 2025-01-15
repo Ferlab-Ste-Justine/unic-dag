@@ -45,10 +45,10 @@ def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, 
         dag=dag
     )
 
-def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str, env: OpensearchEnv,
+def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str, env_name: str,
                   dag: DAG, zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.os.publish.Main') -> SparkOperator:
 
-    if env == OpensearchEnv.PROD:
+    if env_name == OpensearchEnv.PROD.value:
         return SparkOpenSearchOperator(
             task_id=task_id,
             name=task_id.replace("_", "-"),
@@ -64,7 +64,7 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
             os_cert_secret_name=os_prod_cert,
             dag=dag
         )
-    elif env == OpensearchEnv.QA:
+    elif env_name == OpensearchEnv.QA.value:
         return SparkOpenSearchOperator(
             task_id=task_id,
             name=task_id.replace("_", "-"),
