@@ -11,7 +11,7 @@ from airflow import DAG
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg, version
+from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -129,21 +129,34 @@ with dag:
             dag=dag,
         )
 
-        [enriched_respiratory_pathogen_diagnostics, enriched_stream_2_aefi_screening] >> enriched_participant_index
+        enriched_live_region_v20_import_template = SparkOperator(
+            task_id="enriched_sprintkid_live_region_v20_import_template",
+            name="enriched-sprintkid-live-region-v20-import-template",
+            arguments=enriched_arguments("enriched_sprintkid_live_region_v20_import_template"),
+            zone=ENRICHED_ZONE,
+            spark_class=ENRICHED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="medium-etl",
+            dag=dag,
+        )
+
+        [enriched_respiratory_pathogen_diagnostics, enriched_stream_2_aefi_screening] >> enriched_participant_index >> enriched_live_region_v20_import_template
 
     with TaskGroup(group_id="released") as released:
         RELEASED_ZONE = "green"
         RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.sprintkid.Main"
+
 
         def released_arguments(destination: str) -> List[str]:
             # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
             return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
 
 
-        released_sprintkid_respiratory_pathogen_diagnostics = SparkOperator(
-            task_id="released_sprintkid_respiratory_pathogen_diagnostics",
-            name="released-sprintkid-respiratory-pathogen-diagnostics",
-            arguments=released_arguments("released_sprintkid_respiratory_pathogen_diagnostics"),
+        released_sprintkid_live_region_v20_import_template = SparkOperator(
+            task_id="released_sprintkid_live_region_v20_import_template",
+            name="released-sprintkid-live-region-v20-import-template",
+            arguments=released_arguments("released_sprintkid_live_region_v20_import_template"),
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
@@ -152,17 +165,6 @@ with dag:
             dag=dag,
         )
 
-        released_sprintkid_stream_2_aefi_screening = SparkOperator(
-            task_id="released_sprintkid_stream_2_aefi_screening",
-            name="released-sprintkid-stream-2-aefi-screening",
-            arguments=released_arguments("released_sprintkid_stream_2_aefi_screening"),
-            zone=RELEASED_ZONE,
-            spark_class=RELEASED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
-            spark_config="medium-etl",
-            dag=dag,
-        )
 
     with TaskGroup(group_id="published") as published:
         PUBLISHED_ZONE = "green"
@@ -170,13 +172,13 @@ with dag:
 
 
         def published_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination, version]
+            return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
 
 
-        published_sprintkid_respiratory_pathogen_diagnostics = SparkOperator(
-            task_id="published_sprintkid_respiratory_pathogen_diagnostics",
-            name="published-sprintkid-respiratory-pathogen-diagnostics",
-            arguments=published_arguments("published_sprintkid_respiratory_pathogen_diagnostics"),
+        published_sprintkid_live_region_v20_import_template = SparkOperator(
+            task_id="published_sprintkid_live_region_v20_import_template",
+            name="published-sprintkid-live-region-v20-import-template",
+            arguments=published_arguments("published_sprintkid_live_region_v20_import_template"),
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -185,16 +187,5 @@ with dag:
             dag=dag
         )
 
-        published_sprintkid_stream_2_aefi_screening = SparkOperator(
-            task_id="published_sprintkid_stream_2_aefi_screening",
-            name="published-sprintkid-stream-2-aefi-screening",
-            arguments=published_arguments("published_sprintkid_stream_2_aefi_screening"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
-            spark_config="xsmall-etl",
-            dag=dag
-        )
 
     start() >> enriched >> released >> published >> end()
