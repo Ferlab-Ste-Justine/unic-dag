@@ -14,11 +14,7 @@ class SparkOpenSearchOperator(SparkOperator):
         'spark_failure_msg',
         'zone',
         'spark_config',
-        'skip',
-        'os_credentials_secret_name',
-        'os_credentials_username_name',
-        'os_credentials_password_name',
-        'os_cert_secret_name'
+        'skip'
     )
     def __init__(
             self,
@@ -26,9 +22,6 @@ class SparkOpenSearchOperator(SparkOperator):
             spark_jar: str,
             spark_failure_msg: str,
             zone: str,
-            os_credentials_secret_name: str,
-            os_credentials_username_name: str,
-            os_credentials_password_name: str,
             os_cert_secret_name: str,
             spark_config: Optional[str] = '',
             skip: Optional[bool] = False,
@@ -39,9 +32,6 @@ class SparkOpenSearchOperator(SparkOperator):
         self.spark_failure_msg = spark_failure_msg
         self.zone = zone
         self.spark_config = spark_config
-        self.os_credentials_secret_name = os_credentials_secret_name
-        self.os_credentials_username_name = os_credentials_username_name
-        self.os_credentials_password_name = os_credentials_password_name
         self.os_cert_secret_name = os_cert_secret_name
         self.skip = skip
         super().__init__(
@@ -57,35 +47,11 @@ class SparkOpenSearchOperator(SparkOperator):
         if self.skip:
             raise AirflowSkipException()
 
-        # new_env_vars = [
-        #     k8s.V1EnvVar(
-        #         name=self.os_credentials_username_name,
-        #         value_from=k8s.V1EnvVarSource(
-        #             secret_key_ref=k8s.V1SecretKeySelector(
-        #                 name=self.os_credentials_secret_name,
-        #                 key='username')
-        #         )
-        #     ),
-        #     k8s.V1EnvVar(
-        #         name=self.os_credentials_password_name,
-        #         value_from=k8s.V1EnvVarSource(
-        #             secret_key_ref=k8s.V1SecretKeySelector(
-        #                 name=self.os_credentials_secret_name,
-        #                 key='password')
-        #         )
-        #     ),
-        # ]
-        #
-        # if self.env_vars and self.os_credentials_secret_name:
-        #     self.env_vars += new_env_vars
-        # else:
-        #     self.env_vars = new_env_vars
-
         new_volumes = [
             k8s.V1Volume(
-                name='unic-prod-opensearch-qa-ca-certificate',
+                name=self.os_cert_secret_name,
                 secret=k8s.V1SecretVolumeSource(
-                    secret_name='unic-prod-opensearch-qa-ca-certificate',
+                    secret_name=self.os_cert_secret_name,
                     default_mode=0o555
                 ),
             )

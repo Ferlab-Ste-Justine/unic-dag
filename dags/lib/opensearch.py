@@ -18,4 +18,4 @@ os_qa_url = 'https://workers.opensearch.qa.unic.sainte-justine.intranet'
 os_qa_credentials ='opensearch-qa-dags-credentials',
 os_qa_username='OS_QA_USERNAME',
 os_qa_password='OS_QA_PASSWORD',
-os_qa_cert='unic-prod-opensearch-qa-ca-certificate',
+os_qa_cert='unic-prod-opensearch-qa-ca-certificate'
