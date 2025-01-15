@@ -83,7 +83,7 @@ class SparkOpenSearchOperator(SparkOperator):
 
         new_volumes = [
             k8s.V1Volume(
-                name=self.os_cert_secret_name,
+                name='unic-prod-opensearch-qa-ca-certificate',
                 secret=k8s.V1SecretVolumeSource(
                     secret_name='unic-prod-opensearch-qa-ca-certificate',
                     default_mode=0o555
