@@ -6,7 +6,7 @@
     "destination_zone": "red",
     "destination_subzone": "curated",
     "main_class": "bio.ferlab.ui.etl.red.curated.opera.Main",
-    "multiple_main_methods": true,
+    "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
     "pre_tests": [{
