@@ -10,11 +10,11 @@ from airflow import DAG
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.tasks.optimize import optimize
 from lib.groups.qa import tests as qa_group
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks import notify
+from lib.tasks.optimize import optimize
 
 
 def sanitize_string(string: str, replace_by: str):
@@ -181,6 +181,7 @@ def setup_dag(dag: DAG,
     else:
         groups[0]
 
+
 def read_json(path: str):
     """
     read json file
@@ -264,8 +265,11 @@ def create_spark_job(destination: str,
                 "--destination", destination
             ]
 
-    if subzone in ["released", "published"]:
+    if subzone in ["released"]:
         args.extend(["--version", version])
+
+    elif subzone in ["published"]:
+        args.append(version)
 
     return SparkOperator(
         task_id=sanitize_string(destination, "_"),
