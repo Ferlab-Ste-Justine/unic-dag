@@ -1,0 +1,49 @@
+{
+  "concurrency": 1,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [
+    {
+      "destination_zone": "yellow",
+      "destination_subzone": "enriched",
+      "main_class": "bio.ferlab.ui.etl.yellow.enriched.empyeme.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "pre_tests": [],
+      "datasets": [
+         {"dataset_id":"enriched_empyeme_admission_per_unit", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "optimize": [],
+      "post_tests": []
+    },
+    {
+      "destination_zone": "green",
+      "destination_subzone": "released",
+      "main_class": "bio.ferlab.ui.etl.green.released.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "pre_tests": [],
+      "datasets": [
+      {"dataset_id":"released_empyeme_admission_per_unit", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "optimize": [],
+      "post_tests": []
+    },
+    {
+      "destination_zone": "green",
+      "destination_subzone": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "pre_tests": [],
+      "datasets": [
+      {"dataset_id":"published_empyeme_admission_per_unit", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "optimize": [],
+      "post_tests": []
+    }
+  ]
+}
