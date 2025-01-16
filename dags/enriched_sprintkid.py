@@ -88,7 +88,7 @@ with dag:
         ENRICHED_ZONE = "yellow"
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.sprintkid.Main"
 
-        def enriched_arguments(destination: str) -> List[str]:
+        def enriched_arguments(destination: str, run_type: str = "default" ) -> List[str]:
             # !!! Do not set to initial, otherwise the participant index will be re-generated !!!
             return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
 
@@ -96,7 +96,7 @@ with dag:
         enriched_respiratory_pathogen_diagnostics = SparkOperator(
             task_id="enriched_sprintkid_respiratory_pathogen_diagnostics",
             name="enriched-sprintkid-respiratory-pathogen-diagnostics",
-            arguments=enriched_arguments("enriched_sprintkid_respiratory_pathogen_diagnostics"),
+            arguments=enriched_arguments("enriched_sprintkid_respiratory_pathogen_diagnostics", "initial"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -108,7 +108,7 @@ with dag:
         enriched_stream_2_aefi_screening = SparkOperator(
             task_id="enriched_sprintkid_stream_2_aefi_screening",
             name="enriched-sprintkid-stream-2-aefi-screening",
-            arguments=enriched_arguments("enriched_sprintkid_stream_2_aefi_screening"),
+            arguments=enriched_arguments("enriched_sprintkid_stream_2_aefi_screening", "initial"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
