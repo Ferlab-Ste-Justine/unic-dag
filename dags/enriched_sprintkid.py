@@ -96,7 +96,7 @@ with dag:
         enriched_respiratory_pathogen_diagnostics = SparkOperator(
             task_id="enriched_sprintkid_respiratory_pathogen_diagnostics",
             name="enriched-sprintkid-respiratory-pathogen-diagnostics",
-            arguments=enriched_arguments("enriched_sprintkid_respiratory_pathogen_diagnostics", "initial"),
+            arguments=enriched_arguments("enriched_sprintkid_respiratory_pathogen_diagnostics"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -108,7 +108,7 @@ with dag:
         enriched_stream_2_aefi_screening = SparkOperator(
             task_id="enriched_sprintkid_stream_2_aefi_screening",
             name="enriched-sprintkid-stream-2-aefi-screening",
-            arguments=enriched_arguments("enriched_sprintkid_stream_2_aefi_screening", "initial"),
+            arguments=enriched_arguments("enriched_sprintkid_stream_2_aefi_screening"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -120,7 +120,7 @@ with dag:
         enriched_participant_index = SparkOperator(
             task_id="enriched_sprintkid_participant_index",
             name="enriched-sprintkid-participant-index",
-            arguments=enriched_arguments("enriched_sprintkid_participant_index"),
+            arguments=enriched_arguments("enriched_sprintkid_participant_index", "initial"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
