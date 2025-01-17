@@ -28,7 +28,7 @@ def arguments(task_id: str, pg_env_name : str) -> List[str]:
     return [
         task_id,
         "--config", "config/prod.conf",
-        "--steps", "default",
+        "--steps", "initial",
         "--app-name", f"prepare_{task_id}",
         "--env", pg_env_name
     ]
