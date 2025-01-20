@@ -120,7 +120,7 @@ with dag:
         enriched_participant_index = SparkOperator(
             task_id="enriched_sprintkid_participant_index",
             name="enriched-sprintkid-participant-index",
-            arguments=enriched_arguments("enriched_sprintkid_participant_index", "initial"),
+            arguments=enriched_arguments("enriched_sprintkid_participant_index", "default"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
