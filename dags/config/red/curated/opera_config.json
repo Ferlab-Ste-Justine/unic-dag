@@ -23,7 +23,7 @@
       {"dataset_id": "curated_opera_vsinterventions_sec",   "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "curated_opera_vsliste_verification",  "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "curated_opera_vsniveau_priorite_ref", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "curated_opera_vsoperation",           "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "curated_opera_vsoperation",           "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "curated_opera_vsproduit_verifie",     "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "curated_opera_vstype_visite_ref",     "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
@@ -143,7 +143,7 @@
       {"dataset_id":"anonymized_opera_vsni_via"                          , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_opera_vsniveau_priorite_ref"             , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_opera_vsno*"                             , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_opera_vso*"                              , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"anonymized_opera_vso*"                              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_opera_vsp*"                              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_opera_vsr*"                              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_opera_vss*"                              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
