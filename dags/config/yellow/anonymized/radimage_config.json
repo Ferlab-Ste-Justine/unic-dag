@@ -14,11 +14,11 @@
         "anonymized_radimage_examen*","anonymized_radimage_modificateur", "anonymized_radimage_provenance*",
         "anonymized_radimage_periodes_financieres", "anonymized_radimage_responsabilite_paiement",
         "anonymized_radimage_s*"
-      ]},
+      ], "cluster_type" : "xsmall"},
       {"name": "greater_partition_counts", "destinations": [
         "anonymized_radimage_c*", "anonymized_radimage_employe", "anonymized_radimage_i*",
         "anonymized_radimage_medecin", "anonymized_radimage_patient*", "anonymized_radimage_requete*"
-      ]}
+      ], "cluster_type" : "xsmall"}
     ],
     "datasets": [
        {"dataset_id":"anonymized_radimage_c*"                     , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -36,8 +36,8 @@
     ],
     "optimize" : [],
     "post_tests": [
-      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_radimage_*"]},
-      {"name": "equal_counts", "destinations": ["anonymized_radimage_*"]}
+      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_radimage_*"], "cluster_type" : "xsmall"},
+      {"name": "equal_counts", "destinations": ["anonymized_radimage_*"], "cluster_type" : "xsmall"}
     ]
   }]
 }

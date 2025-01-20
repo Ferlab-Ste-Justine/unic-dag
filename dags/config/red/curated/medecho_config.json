@@ -28,7 +28,7 @@
         "anonymized_medecho_mep_vue_accident", "anonymized_medecho_mep_vue_c*", "anonymized_medecho_mep_vue_destination",
         "anonymized_medecho_mep_vue_e*", "anonymized_medecho_mep_vue_intervention", "anonymized_medecho_mep_vue_merenouveaune",
         "anonymized_medecho_mep_vue_p*", "anonymized_medecho_mep_vue_service", "anonymized_medecho_mep_vue_unitesoins"
-      ]}
+      ], "cluster_type" : "xsmall"}
     ],
     "datasets": [
       {"dataset_id": "anonymized_medecho_mep_vue_accident"     , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -43,8 +43,8 @@
     ],
     "optimize" : [],
     "post_tests": [
-      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_medecho_*"]},
-      {"name": "equal_counts", "destinations": ["anonymized_medecho_*"]}
+      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_medecho_*"], "cluster_type" : "xsmall"},
+      {"name": "equal_counts", "destinations": ["anonymized_medecho_*"], "cluster_type" : "xsmall"}
     ]
   }]
 }

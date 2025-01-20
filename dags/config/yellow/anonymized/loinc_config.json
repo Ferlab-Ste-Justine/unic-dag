@@ -9,7 +9,7 @@
     "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
-    "pre_tests": [{"name": "greater_partition_counts", "destinations": ["anonymized_loinc_*"]}],
+    "pre_tests": [{"name": "greater_partition_counts", "destinations": ["anonymized_loinc_*"], "cluster_type" : "xsmall"}],
     "datasets": [
       {"dataset_id":"anonymized_loinc_code_mapping"   , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_loinc_dsq_table_codes", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
@@ -18,8 +18,8 @@
     ],
     "optimize" : [],
     "post_tests": [
-      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_loinc_*"]},
-      {"name": "equal_counts", "destinations": ["anonymized_loinc_*"]}
+      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_loinc_*"], "cluster_type" : "xsmall"},
+      {"name": "equal_counts", "destinations": ["anonymized_loinc_*"], "cluster_type" : "xsmall"}
     ]
   }]
 

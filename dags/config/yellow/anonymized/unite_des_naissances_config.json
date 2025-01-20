@@ -16,8 +16,8 @@
         ],
         "optimize" : [],
         "post_tests": [
-          {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_unite_des_naissances_registre"]},
-          {"name": "equal_counts", "destinations": ["anonymized_unite_des_naissances_registre"]}
+          {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_unite_des_naissances_registre"], "cluster_type" : "xsmall"},
+          {"name": "equal_counts", "destinations": ["anonymized_unite_des_naissances_registre"], "cluster_type" : "xsmall"}
         ]
       }]
   }

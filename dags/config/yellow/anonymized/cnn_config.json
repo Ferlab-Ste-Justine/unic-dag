@@ -52,8 +52,8 @@
       ],
       "optimize" : [],
       "post_tests": [
-        {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_cnn_*"]},
-        {"name": "equal_counts", "destinations": ["anonymized_cnn_*"]}
+        {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_cnn_*"], "cluster_type" : "xsmall"},
+        {"name": "equal_counts", "destinations": ["anonymized_cnn_*"], "cluster_type" : "xsmall"}
       ]
     }]
 }

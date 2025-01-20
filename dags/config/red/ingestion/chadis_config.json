@@ -10,7 +10,7 @@
     "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
     "schemas": ["chadis_conners_report", "chadis_diagnosis", "chadis_patient", "chadis_profile", "chadis_question", "chadis_questionnaire",
       "chadis_refusal", "chadis_report", "chadis_response", "chadis_response_response", "chadis_visit"],
-    "pre_tests": [{"name": "equal_counts", "destinations": ["raw_chadis_*"]}],
+    "pre_tests": [{"name": "equal_counts", "destinations": ["raw_chadis_*"], "cluster_type" : "xsmall"}],
     "datasets": [
       {"dataset_id": "raw_chadis_conners_report_conners_report", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "raw_chadis_diagnosis*"                   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -32,7 +32,7 @@
     "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
-    "pre_tests": [{"name": "greater_partition_counts", "destinations": ["anonymized_chadis_*"]}],
+    "pre_tests": [{"name": "greater_partition_counts", "destinations": ["anonymized_chadis_*"], "cluster_type" : "xsmall"}],
     "datasets": [
       {"dataset_id": "anonymized_chadis_conners_report_conners_report", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_chadis_diagnosis*"                   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -47,8 +47,8 @@
     ],
     "optimize" : [],
     "post_tests": [
-      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_chadis_*"]},
-      {"name": "equal_counts", "destinations": ["anonymized_chadis_*"]}
+      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_chadis_*"], "cluster_type" : "xsmall"},
+      {"name": "equal_counts", "destinations": ["anonymized_chadis_*"], "cluster_type" : "xsmall"}
     ]
   }]
 

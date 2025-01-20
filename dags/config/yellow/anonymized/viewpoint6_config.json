@@ -13,11 +13,11 @@
         {"name": "greater_or_equal_partition_counts", "destinations": [
           "anonymized_viewpoint6_query_fetus_iutentries", "anonymized_viewpoint6_query_fetus_ptentries", 
           "anonymized_viewpoint6_query_fetus_shunt"
-        ]},
+        ], "cluster_type" : "xsmall"},
         {"name": "greater_partition_counts", "destinations": [
           "anonymized_viewpoint6_query_exam", "anonymized_viewpoint6_query_fetus", 
           "anonymized_viewpoint6_query_fetus_placenta_details", "anonymized_viewpoint6_query_patient"
-        ]}
+        ], "cluster_type" : "xsmall"}
       ],
       "datasets": [
         {"dataset_id": "anonymized_viewpoint6_query_exam"                  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -30,8 +30,8 @@
       ],
       "optimize" : [],
       "post_tests": [
-        {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_viewpoint6_*"]},
-        {"name": "equal_counts", "destinations": ["anonymized_viewpoint6_*"]}
+        {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_viewpoint6_*"], "cluster_type" : "xsmall"},
+        {"name": "equal_counts", "destinations": ["anonymized_viewpoint6_*"], "cluster_type" : "xsmall"}
       ]
     }]
   }
