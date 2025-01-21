@@ -16,7 +16,7 @@
         "anonymized_clinibaseci_sejclin_tb",
         "anonymized_clinibaseci_sejhosp_tb",
         "anonymized_clinibaseci_sejhosplit_tb"
-      ]}
+      ], "cluster_type" : "xsmall"}
     ],
     "datasets": [
       {"dataset_id": "anonymized_clinibaseci_a*"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -158,7 +158,7 @@
         "anonymized_clinibaseci_unite*",
         "anonymized_clinibaseci_version_cim_tb",
         "anonymized_clinibaseci_vueident"
-      ]},
+      ], "cluster_type" : "xsmall"},
       {"name": "equal_counts", 
        "destinations": [
         "anonymized_clinibaseci_adm_rsup1",
@@ -275,7 +275,7 @@
         "anonymized_clinibaseci_unite*",
         "anonymized_clinibaseci_version_cim_tb",
         "anonymized_clinibaseci_vueident"
-      ]}
+      ], "cluster_type" : "xsmall"}
     ]
   }]
 }

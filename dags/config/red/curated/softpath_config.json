@@ -10,7 +10,7 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "pre_tests": [{"name": "greater_partition_counts", "destinations": ["curated_softpath_*"]}],
+      "pre_tests": [{"name": "greater_partition_counts", "destinations": ["curated_softpath_*"], "cluster_type" : "xsmall"}],
       "datasets": [
         {"dataset_id":"curated_softpath_v_p_pat_gyncase"           , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"curated_softpath_v_p_pat_patcase"           , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -39,7 +39,7 @@
         "anonymized_softpath_v_p_pat_patcasewithslides",
         "anonymized_softpath_v_p_pat_slide",
         "anonymized_softpath_v_p_pat_specimendxadeq"
-      ]}],
+      ], "cluster_type" : "xsmall"}],
       "datasets": [
         {"dataset_id":"anonymized_softpath_v_p_pat_auxilarydoctor"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"anonymized_softpath_v_p_pat_diagnosistext"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -60,8 +60,8 @@
       ],
       "optimize" : [],
       "post_tests": [
-        {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_softpath_*"]},
-        {"name": "equal_counts", "destinations": ["anonymized_softpath_*"]}
+        {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_softpath_*"], "cluster_type" : "xsmall"},
+        {"name": "equal_counts", "destinations": ["anonymized_softpath_*"], "cluster_type" : "xsmall"}
       ]
     }]
 }

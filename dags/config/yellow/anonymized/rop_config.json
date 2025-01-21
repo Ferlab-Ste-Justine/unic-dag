@@ -16,8 +16,8 @@
     ],
     "optimize" : [],
     "post_tests": [
-      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_rop_*"]},
-      {"name": "equal_counts", "destinations": ["anonymized_rop_*"]}
+      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_rop_*"], "cluster_type" : "xsmall"},
+      {"name": "equal_counts", "destinations": ["anonymized_rop_*"], "cluster_type" : "xsmall"}
     ]
   }]
 }

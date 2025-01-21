@@ -8,7 +8,7 @@ from lib.operators.spark import SparkOperator
 
 
 def test(test_name: str, destinations: List[str], resource: str, zone: str, subzone: str,
-         config_file: str, jar: str, dag: DAG) -> SparkOperator:
+         config_file: str, jar: str, dag: DAG, cluster_type : str = qa_test_cluster_type) -> SparkOperator:
     """
     Create QA test task.
 
@@ -40,7 +40,7 @@ def test(test_name: str, destinations: List[str], resource: str, zone: str, subz
         spark_class=qa_test_main_class,
         spark_jar=jar,
         spark_failure_msg=qa_test_spark_failure_msg,
-        spark_config=f"{qa_test_cluster_type}-etl",
+        spark_config=f"{cluster_type}-etl",
         retries=qa_test_retries,
         dag=dag
     )

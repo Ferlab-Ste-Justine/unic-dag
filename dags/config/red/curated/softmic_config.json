@@ -10,7 +10,7 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "pre_tests": [{"name": "greater_partition_counts", "destinations": ["curated_softmic_*"]}],
+      "pre_tests": [{"name": "greater_partition_counts", "destinations": ["curated_softmic_*"], "cluster_type" : "xsmall"}],
       "datasets": [
         {"dataset_id":"curated_softmic_v_p_mic_active_order", "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"curated_softmic_v_p_mic_isocomm"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -46,8 +46,8 @@
       ],
       "optimize" : [],
       "post_tests": [
-        {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_softmic_*"]},
-        {"name": "equal_counts", "destinations": ["anonymized_softmic_*"]}
+        {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_softmic_*"], "cluster_type" : "xsmall"},
+        {"name": "equal_counts", "destinations": ["anonymized_softmic_*"], "cluster_type" : "xsmall"}
       ]
     }]
 }

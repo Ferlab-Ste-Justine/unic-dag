@@ -81,7 +81,7 @@
       {"dataset_id": "raw_centro_uro_*"     , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
     "optimize" : [],
-    "post_tests": [{"name": "equal_counts", "destinations": ["raw_centro_*"]}]
+    "post_tests": [{"name": "equal_counts", "destinations": ["raw_centro_*"], "cluster_type" : "large"}]
     },
     {
       "destination_zone": "red",
@@ -90,7 +90,7 @@
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
-      "pre_tests": [{"name": "greater_or_equal_partition_counts", "destinations": ["curated_centro_*"]}],
+      "pre_tests": [{"name": "greater_or_equal_partition_counts", "destinations": ["curated_centro_*"], "cluster_type" : "large"}],
       "datasets": [
         {"dataset_id":"curated_centro_atoe_*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"curated_centro_gas_*" , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -107,7 +107,7 @@
     "multiple_main_methods": false,
     "publish_class": "",
     "schemas": [],
-    "pre_tests": [{"name": "greater_or_equal_partition_counts", "destinations": ["anonymized_centro_*"]}],
+    "pre_tests": [{"name": "greater_or_equal_partition_counts", "destinations": ["anonymized_centro_*"], "cluster_type" : "large"}],
     "datasets": [
       {"dataset_id": "anonymized_centro_atoe_*"  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_centro_chusj_*" , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
@@ -127,8 +127,8 @@
     ],
     "optimize" : [],
     "post_tests": [
-      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_centro_*"]},
-      {"name": "equal_counts", "destinations": ["anonymized_centro_*"]}
+      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_centro_*"], "cluster_type" : "large"},
+      {"name": "equal_counts", "destinations": ["anonymized_centro_*"], "cluster_type" : "large"}
       ]
   }]
 }

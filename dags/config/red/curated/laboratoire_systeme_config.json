@@ -10,7 +10,7 @@
     "publish_class": "",
     "schemas": [],
     "pre_tests": [
-      {"name": "greater_partition_counts", "destinations": ["curated_laboratoire_systeme_v_s_lab_doctor"]}
+      {"name": "greater_partition_counts", "destinations": ["curated_laboratoire_systeme_v_s_lab_doctor"], "cluster_type" : "xsmall"}
     ],
     "datasets": [
       {"dataset_id": "curated_laboratoire_systeme_v_s_lab_doctor", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": [], "pre_tests": ["greater_partition_counts"], "post_tests": []}
@@ -32,7 +32,7 @@
         "anonymized_laboratoire_systeme_v_s_lab_specimen", "anonymized_laboratoire_systeme_v_s_lab_test",
         "anonymized_laboratoire_systeme_v_s_lab_workstation", "anonymized_laboratoire_systeme_v_s_mic_*",
         "anonymized_laboratoire_systeme_v_s_pat_*"
-      ]}
+      ], "cluster_type" : "xsmall"}
     ],
     "datasets": [
       {"dataset_id": "anonymized_laboratoire_systeme_dictionnaire_analyses_hors_quebec", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -50,8 +50,8 @@
     ],
     "optimize" : [],
     "post_tests": [
-      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_laboratoire_systeme_v_s_*"]},
-      {"name": "equal_counts", "destinations": ["anonymized_laboratoire_systeme_v_s_*"]}
+      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_laboratoire_systeme_v_s_*"], "cluster_type" : "xsmall"},
+      {"name": "equal_counts", "destinations": ["anonymized_laboratoire_systeme_v_s_*"], "cluster_type" : "xsmall"}
     ]
   }]
 }

@@ -17,8 +17,7 @@
         "curated_opera_vsoperation",
         "curated_opera_vsproduit_verifie",
         "curated_opera_vstype_visite_ref"
-      ]
-    }],
+      ], "cluster_type" : "xsmall"}],
     "datasets": [
       {"dataset_id": "curated_opera_vsinterventions_sec",   "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "curated_opera_vsliste_verification",  "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -69,7 +68,7 @@
         "anonymized_opera_vsspecialite_ref",
         "anonymized_opera_vssuivi_ref",
         "anonymized_opera_vsutilisateur"
-      ]},
+      ], "cluster_type" : "xsmall"},
       {"name": "greater_partition_counts", "destinations": [
         "anonymized_opera_vsa*",
         "anonymized_opera_vscdj",
@@ -113,7 +112,7 @@
         "anonymized_opera_vsstatut_programme",
         "anonymized_opera_vstemps_operatoires",
         "anonymized_opera_vsusager"
-      ]}
+      ], "cluster_type" : "xsmall"}
     ],
     "datasets": [
       {"dataset_id":"anonymized_opera_vsa*"                              , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
@@ -152,8 +151,8 @@
     ],
     "optimize" : [],
     "post_tests": [
-      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_opera_*"]},
-      {"name": "equal_counts", "destinations": ["anonymized_opera_*"]}
+      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_opera_*"], "cluster_type" : "xsmall"},
+      {"name": "equal_counts", "destinations": ["anonymized_opera_*"], "cluster_type" : "xsmall"}
     ]
   }]
 }
