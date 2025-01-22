@@ -31,7 +31,13 @@
           "anonymized_pharmacie_phfch*",
           "anonymized_pharmacie_phfhora1",
           "anonymized_pharmacie_phfm*",
-          "anonymized_pharmacie_phfp*",
+          "pharmacie_phfprescripteur_objetprecrivable",
+          "pharmacie_phfprescripteur_objetprecrivable_champsadditionnels",
+          "pharmacie_phfprescripteur_objetprecrivable_lien_medicament",
+          "pharmacie_phfprescripteur_operations",
+          "pharmacie_phfprescripteur_poso",
+          "pharmacie_phfprescripteur_voie",
+          "pharmacie_phfprescriptions*",
           "anonymized_pharmacie_phfraisoncessation",
           "anonymized_pharmacie_phftype_prep",
           "anonymized_pharmacie_phfvoiad",
@@ -43,7 +49,6 @@
           "anonymized_pharmacie_pharchive_*",
           "anonymized_pharmacie_phfadmin*",
           "anonymized_pharmacie_phfsoreh",
-          "anonymized_pharmacie_phlog_*",
           "anonymized_pharmacie_usager"
         ], "cluster_type" : "xsmall"}
       ],
