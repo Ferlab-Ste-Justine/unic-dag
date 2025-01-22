@@ -31,13 +31,14 @@
           "anonymized_pharmacie_phfch*",
           "anonymized_pharmacie_phfhora1",
           "anonymized_pharmacie_phfm*",
-          "pharmacie_phfprescripteur_objetprecrivable",
-          "pharmacie_phfprescripteur_objetprecrivable_champsadditionnels",
-          "pharmacie_phfprescripteur_objetprecrivable_lien_medicament",
-          "pharmacie_phfprescripteur_operations",
-          "pharmacie_phfprescripteur_poso",
-          "pharmacie_phfprescripteur_voie",
-          "pharmacie_phfprescriptions*",
+          "anonymized_pharmacie_phfposol",
+          "anonymized_pharmacie_phfprescripteur_objetprecrivable",
+          "anonymized_pharmacie_phfprescripteur_objetprecrivable_champsadditionnels",
+          "anonymized_pharmacie_phfprescripteur_objetprecrivable_lien_medicament",
+          "anonymized_pharmacie_phfprescripteur_operations",
+          "anonymized_pharmacie_phfprescripteur_poso",
+          "anonymized_pharmacie_phfprescripteur_voie",
+          "anonymized_pharmacie_phfprescriptions*",
           "anonymized_pharmacie_phfraisoncessation",
           "anonymized_pharmacie_phftype_prep",
           "anonymized_pharmacie_phfvoiad",
@@ -72,7 +73,28 @@
       "optimize" : [],
       "post_tests": [
         {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_pharmacie_*"], "cluster_type" : "xsmall"},
-        {"name": "equal_counts", "destinations": ["anonymized_pharmacie_*"], "cluster_type" : "xsmall"}
+        {"name": "equal_counts", "destinations": [
+          "anonymized_pharmacie_glite_protocole",
+          "anonymized_pharmacie_phfa*",
+          "anonymized_pharmacie_phfc*",
+          "anonymized_pharmacie_phfhora1",
+          "anonymized_pharmacie_phfm*",
+          "anonymized_pharmacie_phfposol",
+          "anonymized_pharmacie_phfprescripteur_objetprecrivable",
+          "anonymized_pharmacie_phfprescripteur_objetprecrivable_champsadditionnels",
+          "anonymized_pharmacie_phfprescripteur_objetprecrivable_lien_medicament",
+          "anonymized_pharmacie_phfprescripteur_operations",
+          "anonymized_pharmacie_phfprescripteur_poso",
+          "anonymized_pharmacie_phfprescripteur_voie",
+          "anonymized_pharmacie_phfprescriptions*",
+          "anonymized_pharmacie_phfraisoncessation",
+          "anonymized_pharmacie_phfsoreh",
+          "anonymized_pharmacie_phftype_prep",
+          "anonymized_pharmacie_phfvoiad",
+          "anonymized_pharmacie_phlog_*",
+          "anonymized_pharmacie_phunite_mesure",
+          "anonymized_pharmacie_usager*"
+        ], "cluster_type" : "xsmall"}
       ]
     }]
 }
