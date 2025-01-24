@@ -32,6 +32,7 @@ dag = DAG(
     dag_id="enriched_cpip",
     doc_md=DOC,
     start_date=datetime(2024, 7, 23, tzinfo=pendulum.timezone("America/Montreal")),
+    schedule=None,
     params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,
