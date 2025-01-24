@@ -34,7 +34,7 @@ Une mise à jour sera faite et d'autres rapports s'ajouteront lorsque le cherche
 ### Horaire
 * __Date de début__ - 10 novembre 2023
 * __Date de fin__ - aucune
-* __Jour et heure__ - Vendredi, 6h heure de Montréal
+* __Jour et heure__ - Mardi, 6h heure de Montréal
 * __Intervalle__ - Chaque semaine
 
 ### Fonctionnement
@@ -56,7 +56,7 @@ dag = DAG(
     dag_id="enriched_surveillancegermes",
     doc_md=DOC,
     start_date=datetime(2023, 11, 3, 6, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval="0 10 * * 3",  # Every wednesday at 10:00 AM
+    schedule_interval="0 6 * * 2",  # Every tuesday at 06:00 AM
     params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,

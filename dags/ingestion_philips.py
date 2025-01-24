@@ -74,7 +74,7 @@ ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.philips.Main"
 
 args = default_args.copy()
 args.update({
-    'start_date': datetime(2023, 8, 15, 3, tzinfo=pendulum.timezone("America/Montreal")),
+    'start_date': datetime(2023, 8, 15, 2, tzinfo=pendulum.timezone("America/Montreal")),
     'provide_context': True,  # to use date of ingested data as input in main
     'depends_on_past': True,
     'wait_for_downstream': True})
@@ -82,8 +82,8 @@ args.update({
 dag = DAG(
     dag_id="ingestion_philips",
     doc_md=DOC,
-    start_date=datetime(2023, 8, 15, 3, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval=timedelta(days=1),  # everyday at 3am timezone montreal
+    start_date=datetime(2023, 8, 15, 2, tzinfo=pendulum.timezone("America/Montreal")),
+    schedule_interval=timedelta(days=1),  # every day at 2am timezone montreal
     params=default_params,
     dagrun_timeout=timedelta(hours=12),
     default_args=args,
