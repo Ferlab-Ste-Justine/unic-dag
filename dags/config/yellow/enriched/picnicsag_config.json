@@ -1,0 +1,56 @@
+{
+  "concurrency": 1,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [
+    {
+      "destination_zone": "yellow",
+      "destination_subzone": "enriched",
+      "main_class": "bio.ferlab.ui.etl.yellow.enriched.picnicsag.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id": "enriched_picnicsag_hospitalization_diagnosis"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_picnicsag_positive_sterile_culture_strepto", "enriched_picnicsag_positive_nonsterile_culture_strepto"]},
+        {"dataset_id": "enriched_picnicsag_participant_index"                  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_picnicsag_positive_sterile_culture_strepto", "enriched_picnicsag_positive_nonsterile_culture_strepto"]},
+        {"dataset_id": "enriched_picnicsag_positive_sterile_culture_strepto"   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "enriched_picnicsag_positive_nonsterile_culture_strepto", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_picnicsag_positive_sterile_culture_strepto"]}
+      ],
+      "optimize": [],
+      "post_tests": []
+    },
+    {
+      "destination_zone": "green",
+      "destination_subzone": "released",
+      "main_class": "bio.ferlab.ui.etl.green.released.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id": "released_picnicsag_hospitalization_diagnosis"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "released_picnicsag_positive_sterile_culture_strepto"   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "released_picnicsag_positive_nonsterile_culture_strepto", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "optimize": [],
+      "post_tests": []
+    },
+    {
+      "destination_zone": "green",
+      "destination_subzone": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id": "published_picnicsag_hospitalization_diagnosis"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "published_picnicsag_positive_sterile_culture_strepto"   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "published_picnicsag_positive_nonsterile_culture_strepto", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "optimize": [],
+      "post_tests": []
+    }
+  ]
+}
