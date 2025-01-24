@@ -40,7 +40,7 @@ args.update({
 dag = DAG(
     dag_id="curated_softpath_hl7",
     doc_md=DOC,
-    start_date=datetime(1999, 12, 3, 7, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(1999, 12, 3, 1, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),
     params=default_params,
     dagrun_timeout=timedelta(hours=2),

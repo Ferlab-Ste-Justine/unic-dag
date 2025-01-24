@@ -32,8 +32,8 @@ Le rapport sera livré tous les lundi et mercredi le plus tôt possible.
 ### Horaire
 * __Date de début__ - 6 janvier 2025
 * __Date de fin__ - aucune
-* __Jour et heure__ - lundi et mercredi, 6h heure de Montréal
-* __Intervalle__ - 2 fois par semaine
+* __Jour et heure__ - mardi, 6h heure de Montréal
+* __Intervalle__ - chaque semaine
 
 ### Fonctionnement
 La date logique du DAG est envoyée comme argument à l'ETL enriched. L'intervalle est calculé à partir de cette date et 
@@ -70,7 +70,7 @@ dag = DAG(
     dag_id="enriched_sprintkid",
     doc_md=DOC,
     start_date=datetime(2024, 12, 29, 6, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval="0 6 * * 1,3",  # Every monday and wednesday at 6:00 AM
+    schedule_interval="0 6 * * 2",  # Every tuesday at 6:00 AM
     params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,

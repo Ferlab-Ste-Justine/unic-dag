@@ -30,7 +30,7 @@ après cette date, le rapport devient mensuel. Une mise à jour régulière de l
 ### Horaire
 * __Date de début__ - 29 septembre 2023
 * __Date de fin__ - aucune
-* __Jour et heure__ - Vendredi, 8h heure de Montréal
+* __Jour et heure__ - Vendredi, 7h heure de Montréal
 * __Intervalle__ - Chaque 4 semaine
 
 ### Configuration
@@ -53,7 +53,7 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_triceps",
     doc_md=DOC,
-    start_date=datetime(2023, 9, 29, 8, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2023, 9, 29, 7, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=4),
     params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),

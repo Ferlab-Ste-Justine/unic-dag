@@ -28,7 +28,7 @@ Cet ETL génère un rapport mensuel pour la santé mobile chez les enfants attei
 ### Horaire
 * __Date de début__ - 20 octobre 2023
 * __Date de fin__ - aucune
-* __Jour et heure__ - Vendredi, 8h heure de Montréal
+* __Jour et heure__ - Vendredi, 7h heure de Montréal
 * __Intervalle__ - Chaque 4 semaine
 
 ### Fonctionnement
@@ -49,7 +49,7 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_moka",
     doc_md=DOC,
-    start_date=datetime(2023, 10, 20, 8, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2023, 10, 20, 7, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=4),
     params=default_params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
