@@ -60,6 +60,7 @@ de ce DAG
 * anonymized_unic_patient_index
 * warehouse_lab_results (et ses dépendances)
 * warehouse_microbiology (et ses dépendances)
+* warehouse_sociodemographics (et ses dépendances)
 """
 
 # Update default args
@@ -108,7 +109,7 @@ with dag:
         enriched_stream_2_aefi_screening = SparkOperator(
             task_id="enriched_sprintkid_stream_2_aefi_screening",
             name="enriched-sprintkid-stream-2-aefi-screening",
-            arguments=enriched_arguments("enriched_sprintkid_stream_2_aefi_screening"),
+            arguments=enriched_arguments("enriched_sprintkid_stream_2_aefi_screening", "initial"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
