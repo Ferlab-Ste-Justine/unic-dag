@@ -27,15 +27,26 @@
     "schemas": [],
     "pre_tests": [
       {"name": "greater_or_equal_partition_counts", "destinations": [
-        "anonymized_etraceline_acte_produits", "anonymized_etraceline_etat_produit", "anonymized_etraceline_famp_supp",
-        "anonymized_etraceline_groupe", "anonymized_etraceline_mds_carac", "anonymized_etraceline_pl_type_pool",
-        "anonymized_etraceline_pldef_pool", "anonymized_etraceline_psl_carac", "anonymized_etraceline_ptdef_transform",
+        "anonymized_etraceline_acte_produits",
+        "anonymized_etraceline_etat_produit",
+        "anonymized_etraceline_famp_supp",
+        "anonymized_etraceline_groupe",
+        "anonymized_etraceline_mds_carac",
+        "anonymized_etraceline_pl_type_pool",
+        "anonymized_etraceline_pldef_pool",
+        "anonymized_etraceline_pl_final_prod",
+        "anonymized_etraceline_psl_carac",
+        "anonymized_etraceline_ptdef_transform",
         "anonymized_etraceline_unit_poso"
       ], "cluster_type" : "xsmall"},
       {"name": "greater_partition_counts", "destinations": [
-        "anonymized_etraceline_d*", "anonymized_etraceline_l*", "anonymized_etraceline_mds_produit",
-        "anonymized_etraceline_pl_final_prod", "anonymized_etraceline_psl_produit", "anonymized_etraceline_pt_*",
-        "anonymized_etraceline_s*", "anonymized_etraceline_t*"
+        "anonymized_etraceline_d*",
+        "anonymized_etraceline_l*",
+        "anonymized_etraceline_mds_produit",
+        "anonymized_etraceline_psl_produit",
+        "anonymized_etraceline_pt_*",
+        "anonymized_etraceline_s*",
+        "anonymized_etraceline_t*"
       ], "cluster_type" : "xsmall"}
     ],
     "datasets": [
