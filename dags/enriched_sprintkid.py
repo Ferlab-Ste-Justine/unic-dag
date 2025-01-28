@@ -133,7 +133,7 @@ with dag:
         enriched_live_region_v20_import_template = SparkOperator(
             task_id="enriched_sprintkid_live_region_v20_import_template",
             name="enriched-sprintkid-live-region-v20-import-template",
-            arguments=enriched_arguments("enriched_sprintkid_live_region_v20_import_template"),
+            arguments=enriched_arguments("enriched_sprintkid_live_region_v20_import_template", "initial"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
