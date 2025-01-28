@@ -28,12 +28,12 @@
     "datasets": [
       {"dataset_id":"anonymized_staturgence_recherche_activity"            , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_staturgence_recherche_d*"                  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_episode*"             , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_episode*"            , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_staturgence_recherche_generic"             , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_staturgence_recherche_location*"           , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_staturgence_recherche_logtransaction"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_staturgence_recherche_patientadt*"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_patientallergy"      , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_patientallergy"      , "cluster_type": "large", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_staturgence_recherche_pilotage"            , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_staturgence_recherche_quest_raison_visite" , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id":"anonymized_staturgence_recherche_test"                , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
