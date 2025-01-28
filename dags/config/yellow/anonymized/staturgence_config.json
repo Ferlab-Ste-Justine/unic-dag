@@ -40,8 +40,30 @@
     ],
     "optimize" : [],
     "post_tests": [
-      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_staturgence_*"], "cluster_type" : "xsmall"},
-      {"name": "equal_counts", "destinations": ["anonymized_staturgence_*"], "cluster_type" : "xsmall"}
+      {"name": "lower_or_equal_null_counts", "destinations": [
+        "anonymized_staturgence_recherche_activity",
+        "anonymized_staturgence_recherche_d*",
+        "anonymized_staturgence_recherche_episode*",
+        "anonymized_staturgence_recherche_generic",
+        "anonymized_staturgence_recherche_location*",
+        "anonymized_staturgence_recherche_logtransaction",
+        "anonymized_staturgence_recherche_patientadt*",
+        "anonymized_staturgence_recherche_pilotage",
+        "anonymized_staturgence_recherche_quest_raison_visite",
+        "anonymized_staturgence_recherche_test"
+      ], "cluster_type" : "xsmall"},
+      {"name": "equal_counts", "destinations": [
+        "anonymized_staturgence_recherche_activity",
+        "anonymized_staturgence_recherche_d*",
+        "anonymized_staturgence_recherche_episode*",
+        "anonymized_staturgence_recherche_generic",
+        "anonymized_staturgence_recherche_location*",
+        "anonymized_staturgence_recherche_logtransaction",
+        "anonymized_staturgence_recherche_patientadt*",
+        "anonymized_staturgence_recherche_pilotage",
+        "anonymized_staturgence_recherche_quest_raison_visite",
+        "anonymized_staturgence_recherche_test"
+      ], "cluster_type" : "xsmall"}
     ]
   }]
 }
