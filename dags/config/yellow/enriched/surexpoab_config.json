@@ -1,5 +1,5 @@
 {
-  "concurrency": 2,
+  "concurrency": 3,
   "schedule": null,
   "timeout_hours": 4,
   "steps": [
@@ -12,8 +12,10 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "enriched_surexpoab_participant_index", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "enriched_surexpoab_positive_culture", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_surexpoab_participant_index"]}
+        {"dataset_id": "enriched_surexpoab_participant_index"   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}                                         ,
+        {"dataset_id": "enriched_surexpoab_positive_culture"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_surexpoab_participant_index"]}   ,
+        {"dataset_id": "enriched_surexpoab_antibiotics_received", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_surexpoab_participant_index"]}   ,
+        {"dataset_id": "enriched_surexpoab_antibiotics_cycles"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_surexpoab_antibiotics_received"]}
 
       ],
       "optimize": [],
@@ -28,7 +30,9 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "released_surexpoab_positive_culture", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "released_surexpoab_positive_culture"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "released_surexpoab_antibiotics_received", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "released_surexpoab_antibiotics_cycles"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
@@ -42,7 +46,9 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "published_surexpoab_positive_culture", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "published_surexpoab_positive_culture"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "published_surexpoab_antibiotics_received", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "published_surexpoab_antibiotics_cycles"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
