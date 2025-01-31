@@ -51,7 +51,7 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_promptbolus",
     doc_md=DOC,
-    start_date=datetime(2024, 8, 28, 14, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2024, 8, 27, 7, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=2),
     params=params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
