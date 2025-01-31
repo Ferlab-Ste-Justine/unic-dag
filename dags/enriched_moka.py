@@ -70,14 +70,27 @@ with dag:
         ENRICHED_ZONE = "red"
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.red.enriched.moka.Main"
 
-        def enriched_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
+        def enriched_arguments(destination: str, start_date: bool, end_date: bool) -> List[str]:
+            arguments = [
+                destination,
+                "--config", "config/prod.conf",
+                "--steps", "default",
+                "--app-name", destination,
+            ]
+
+            if start_date:
+                arguments += ["--start-date", "{{ data_interval_start }}"]
+
+            if end_date:
+                arguments += ["--end-date", "{{ data_interval_end }}"]
+
+            return arguments
 
 
         enriched_moka_participant_index_emergency_department = SparkOperator(
             task_id="enriched_moka_participant_index_emergency_department",
             name="enriched-moka-participant-index-emergency-department",
-            arguments=enriched_arguments("enriched_moka_participant_index_emergency_department"),
+            arguments=enriched_arguments("enriched_moka_participant_index_emergency_department", start_date=True, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -89,7 +102,7 @@ with dag:
         enriched_moka_participant_index_external_clinic = SparkOperator(
             task_id="enriched_moka_participant_index_external_clinic",
             name="enriched-moka-participant-index-external-clinic",
-            arguments=enriched_arguments("enriched_moka_participant_index_external_clinic"),
+            arguments=enriched_arguments("enriched_moka_participant_index_external_clinic", start_date=True, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -101,7 +114,7 @@ with dag:
         enriched_moka_screening_external_clinic = SparkOperator(
             task_id="enriched_moka_screening_external_clinic",
             name="enriched-moka-screening-external-clinic",
-            arguments=enriched_arguments("enriched_moka_screening_external_clinic"),
+            arguments=enriched_arguments("enriched_moka_screening_external_clinic", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -113,7 +126,7 @@ with dag:
         enriched_moka_screening_emergency_department = SparkOperator(
             task_id="enriched_moka_screening_emergency_department",
             name="enriched-moka-screening-emergency-department",
-            arguments=enriched_arguments("enriched_moka_screening_emergency_department"),
+            arguments=enriched_arguments("enriched_moka_screening_emergency_department", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,

@@ -6,7 +6,7 @@
     {
       "destination_zone": "red",
       "destination_subzone": "enriched",
-      "main_class": "bio.ferlab.ui.etl.red.enriched.pollenasthme.Main",
+      "main_class": "bio.ferlab.ui.etl.red.enriched.pollenasthme.CodePostalETL",
       "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],

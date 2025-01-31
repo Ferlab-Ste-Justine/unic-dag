@@ -70,7 +70,13 @@ with dag:
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.promptbolus.Main"
 
         def enriched_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
+            return [
+                destination,
+                "--config", "config/prod.conf",
+                "--steps", "default",
+                "--app-name", destination,
+                "--date", "{{ ds }}"
+            ]
 
 
         enriched_participant_index = SparkOperator(

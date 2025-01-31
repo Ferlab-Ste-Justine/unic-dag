@@ -65,7 +65,12 @@ with dag:
         enriched_main_class = "bio.ferlab.ui.etl.yellow.enriched.indicateurssip.Main"
 
         def enriched_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "initial", destination, "{{ logical_date }}"]
+            return [
+                destination,
+                "--config", "config/prod.conf",
+                "--steps", "initial",
+                "--app-name", destination,
+            ]
 
 
         enriched_participant_index = SparkOperator(
@@ -179,7 +184,7 @@ with dag:
         enriched_infections = SparkOperator(
             task_id="enriched_indicateurssip_infections",
             name="enriched-indicateurssip-infections",
-            arguments=enriched_arguments("enriched_indicateurssip_infections"),
+            arguments=enriched_arguments("enriched_indicateurssip_infections") + ["--date", "{{ logical_date }}"],
             zone=enriched_zone,
             spark_class=enriched_main_class,
             spark_jar=JAR,

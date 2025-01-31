@@ -80,14 +80,27 @@ with dag:
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.signature.Main"
 
 
-        def enriched_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
+        def enriched_arguments(destination: str, start_date: bool, end_date: bool) -> List[str]:
+            arguments = [
+                destination,
+                "--config", "config/prod.conf",
+                "--steps", "default",
+                "--app-name", destination,
+            ]
+
+            if start_date:
+                arguments += ["--start-date", "{{ data_interval_start }}"]
+
+            if end_date:
+                arguments += ["--end-date", "{{ data_interval_end }}"]
+
+            return arguments
 
 
         enriched_participant_index = SparkOperator(
             task_id="enriched_signature_participant_index",
             name="enriched-signature-participant-index",
-            arguments=enriched_arguments("enriched_signature_participant_index"),
+            arguments=enriched_arguments("enriched_signature_participant_index", start_date=False, end_date=False),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -99,7 +112,7 @@ with dag:
         enriched_last_visit_survey = SparkOperator(
             task_id="enriched_signature_last_visit_survey",
             name="enriched-signature-last-visit-survey",
-            arguments=enriched_arguments("enriched_signature_last_visit_survey"),
+            arguments=enriched_arguments("enriched_signature_last_visit_survey", start_date=True, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -112,7 +125,7 @@ with dag:
         enriched_monthly_visit = SparkOperator(
             task_id="enriched_signature_monthly_visit",
             name="enriched-signature-monthly-visit",
-            arguments=enriched_arguments("enriched_signature_monthly_visit"),
+            arguments=enriched_arguments("enriched_signature_monthly_visit", start_date=True, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,

@@ -74,14 +74,28 @@ with dag:
         ENRICHED_ZONE = "yellow"
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.triceps.Main"
 
-        def enriched_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination, "{{ data_interval_start }}", "{{ data_interval_end }}"]
+
+        def enriched_arguments(destination: str, start_date: bool, end_date: bool) -> List[str]:
+            arguments = [
+                destination,
+                "--config", "config/prod.conf",
+                "--steps", "default",
+                "--app-name", destination,
+            ]
+
+            if start_date:
+                arguments += ["--start-date", "{{ data_interval_start }}"]
+
+            if end_date:
+                arguments += ["--end-date", "{{ data_interval_end }}"]
+
+            return arguments
 
 
         enriched_participant_index = SparkOperator(
             task_id="enriched_triceps_participant_index",
             name="enriched-triceps-participant-index",
-            arguments=enriched_arguments("enriched_triceps_participant_index"),
+            arguments=enriched_arguments("enriched_triceps_participant_index", start_date=False, end_date=False),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -93,7 +107,7 @@ with dag:
         enriched_appointment_information = SparkOperator(
             task_id="enriched_triceps_appointment_information",
             name="enriched-triceps-appointment-information",
-            arguments=enriched_arguments("enriched_triceps_appointment_information"),
+            arguments=enriched_arguments("enriched_triceps_appointment_information", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -105,7 +119,7 @@ with dag:
         enriched_consultation = SparkOperator(
             task_id="enriched_triceps_consultation",
             name="enriched-triceps-consultation",
-            arguments=enriched_arguments("enriched_triceps_consultation"),
+            arguments=enriched_arguments("enriched_triceps_consultation", start_date=True, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -117,7 +131,7 @@ with dag:
         enriched_laboratory_results = SparkOperator(
             task_id="enriched_triceps_laboratory_results",
             name="enriched-triceps-laboratory-results",
-            arguments=enriched_arguments("enriched_triceps_laboratory_results"),
+            arguments=enriched_arguments("enriched_triceps_laboratory_results", start_date=True, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -129,7 +143,7 @@ with dag:
         enriched_pathology_results = SparkOperator(
             task_id="enriched_triceps_pathology_results",
             name="enriched-triceps-pathology-results",
-            arguments=enriched_arguments("enriched_triceps_pathology_results"),
+            arguments=enriched_arguments("enriched_triceps_pathology_results", start_date=True, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -141,7 +155,7 @@ with dag:
         enriched_general_information_consultation = SparkOperator(
             task_id="enriched_triceps_general_information_consultation",
             name="enriched-triceps-general-information-consultation",
-            arguments=enriched_arguments("enriched_triceps_general_information_consultation"),
+            arguments=enriched_arguments("enriched_triceps_general_information_consultation", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -153,7 +167,7 @@ with dag:
         enriched_family_history = SparkOperator(
             task_id="enriched_triceps_family_history",
             name="enriched-triceps-family-history",
-            arguments=enriched_arguments("enriched_triceps_family_history"),
+            arguments=enriched_arguments("enriched_triceps_family_history", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -165,7 +179,7 @@ with dag:
         enriched_family_history_consultation = SparkOperator(
             task_id="enriched_triceps_family_history_consultation",
             name="enriched-triceps-family-history-consultation",
-            arguments=enriched_arguments("enriched_triceps_family_history_consultation"),
+            arguments=enriched_arguments("enriched_triceps_family_history_consultation", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -177,7 +191,7 @@ with dag:
         enriched_medical_history_consultation = SparkOperator(
             task_id="enriched_triceps_medical_history_consultation",
             name="enriched-triceps-medical-history-consultation",
-            arguments=enriched_arguments("enriched_triceps_medical_history_consultation"),
+            arguments=enriched_arguments("enriched_triceps_medical_history_consultation", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -189,7 +203,7 @@ with dag:
         enriched_personal_history_consultation = SparkOperator(
             task_id="enriched_triceps_personal_history_consultation",
             name="enriched-triceps-personal-history-consultation",
-            arguments=enriched_arguments("enriched_triceps_personal_history_consultation"),
+            arguments=enriched_arguments("enriched_triceps_personal_history_consultation", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -201,7 +215,7 @@ with dag:
         enriched_discussion_and_plan_consultation = SparkOperator(
             task_id="enriched_triceps_discussion_and_plan_consultation",
             name="enriched-triceps-discussion-and-plan-consultation",
-            arguments=enriched_arguments("enriched_triceps_discussion_and_plan_consultation"),
+            arguments=enriched_arguments("enriched_triceps_discussion_and_plan_consultation", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -213,7 +227,7 @@ with dag:
         enriched_personal_history_consultation_table = SparkOperator(
             task_id="enriched_triceps_personal_history_consultation_table",
             name="enriched-triceps-personal-history-consultation-table",
-            arguments=enriched_arguments("enriched_triceps_personal_history_consultation_table"),
+            arguments=enriched_arguments("enriched_triceps_personal_history_consultation_table", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -225,7 +239,7 @@ with dag:
         enriched_genetic_counseling_note = SparkOperator(
             task_id="enriched_triceps_genetic_counseling_note",
             name="enriched-triceps-genetic-counseling-note",
-            arguments=enriched_arguments("enriched_triceps_genetic_counseling_note"),
+            arguments=enriched_arguments("enriched_triceps_genetic_counseling_note", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -237,7 +251,7 @@ with dag:
         enriched_genetic_counseling_note_discussion_and_plan = SparkOperator(
             task_id="enriched_triceps_genetic_counseling_note_discussion_and_plan",
             name="enriched-triceps-genetic-counseling-note-discussion-and-plan",
-            arguments=enriched_arguments("enriched_triceps_genetic_counseling_note_discussion_and_plan"),
+            arguments=enriched_arguments("enriched_triceps_genetic_counseling_note_discussion_and_plan", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -249,7 +263,7 @@ with dag:
         enriched_genetic_counseling_follow_up_note = SparkOperator(
             task_id="enriched_triceps_genetic_counseling_follow_up_note",
             name="enriched-triceps-genetic-counseling-follow-up-note",
-            arguments=enriched_arguments("enriched_triceps_genetic_counseling_follow_up_note"),
+            arguments=enriched_arguments("enriched_triceps_genetic_counseling_follow_up_note", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -261,7 +275,7 @@ with dag:
         enriched_presence = SparkOperator(
             task_id="enriched_triceps_presence",
             name="enriched-triceps-presence",
-            arguments=enriched_arguments("enriched_triceps_presence"),
+            arguments=enriched_arguments("enriched_triceps_presence", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,

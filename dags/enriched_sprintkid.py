@@ -90,8 +90,14 @@ with dag:
         ENRICHED_ZONE = "yellow"
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.sprintkid.Main"
 
-        def enriched_arguments(destination: str, run_type: str = "default" ) -> List[str]:
-            return ["config/prod.conf", run_type, destination, "{{ data_interval_end | ds }}"]
+        def enriched_arguments(destination: str, run_type: str = "default") -> List[str]:
+            return [
+                destination,
+                "--config", "config/prod.conf",
+                "--steps", run_type,
+                "--app-name", destination,
+                "--date", "{{ ds }}"
+            ]
 
 
         enriched_respiratory_pathogen_diagnostics = SparkOperator(
