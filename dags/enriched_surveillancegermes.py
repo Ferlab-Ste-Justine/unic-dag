@@ -75,7 +75,13 @@ with dag:
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.sil.surveillancegermes.Main"
 
         def enriched_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
+            return [
+                destination,
+                "--config", "config/prod.conf",
+                "--steps", "default",
+                "--app-name", destination,
+                "--date", "{{ ds }}"
+            ]
 
 
         enriched_patient = SparkOperator(

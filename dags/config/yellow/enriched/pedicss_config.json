@@ -7,7 +7,7 @@
       "destination_zone": "yellow",
       "destination_subzone": "enriched",
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.pedicss.Main",
-      "multiple_main_methods": false,
+      "multiple_main_methods": true,
       "publish_class": "",
       "schemas": [],
       "pre_tests": [],

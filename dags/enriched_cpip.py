@@ -49,10 +49,15 @@ with dag:
 
     with TaskGroup(group_id="enriched") as enriched:
         ENRICHED_ZONE = "red"
-        ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.red.enriched.cpip.Main"
+        ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.red.enriched.cpip.ParticipantIndexETL"
 
         def enriched_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination, "{{ data_interval_end }}"]
+            return [
+                "--config", "config/prod.conf",
+                "--steps", "default",
+                "--app-name", destination,
+                "--date", "{{ ds }}"
+            ]
 
         enriched_cpip_participant_index = SparkOperator(
             task_id="enriched_cpip_participant_index",

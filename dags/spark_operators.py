@@ -249,27 +249,25 @@ def create_spark_job(destination: str,
     main_class = get_main_class(subzone, main_class)
     args = [config_file, run_type, destination]
 
-    if subzone in ["raw", "curated", "released"]:
-        if multiple_main_methods:
-            args = [
-                destination,
+    if subzone in ["raw", "curated", "released", "enriched"]:
+        args = [
                 "--config", config_file,
                 "--steps", run_type,
                 "--app-name", destination
             ]
-        else:
-            args = [
-                "--config", config_file,
-                "--steps", run_type,
-                "--app-name", destination,
-                "--destination", destination
-            ]
+
+        if multiple_main_methods:
+            args = [destination] + args
+
+        elif subzone != "enriched":
+            # There are no Mains that need destination arg in enriched
+            args = args + ["--destination", destination]
 
     if subzone in ["released"]:
-        args.extend(["--version", version])
+        args = args + ["--version", version]
 
     elif subzone in ["published"]:
-        args.append(version)
+        args = args + [version]
 
     return SparkOperator(
         task_id=sanitize_string(destination, "_"),

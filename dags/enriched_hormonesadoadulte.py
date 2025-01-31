@@ -52,12 +52,17 @@ with dag:
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.red.enriched.hormonesadoadulte.Main"
 
         def enriched_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination, "{{ data_interval_end }}"]
+            return [
+                destination,
+                "--config", "config/prod.conf",
+                "--steps", "default",
+                "--app-name", destination,
+            ]
 
         enriched_hormonesadoadulte_participant_index = SparkOperator(
             task_id="enriched_hormonesadoadulte_participant_index",
             name="enriched-hormonesadoadulte-participant-index",
-            arguments=enriched_arguments("enriched_hormonesadoadulte_participant_index"),
+            arguments=enriched_arguments("enriched_hormonesadoadulte_participant_index") + ["--date", "{{ data_interval_end }}"],
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,

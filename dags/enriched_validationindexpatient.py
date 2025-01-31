@@ -47,12 +47,14 @@ with dag:
 
     def enriched():
         enriched_zone = "red"
-        enriched_main_class = "bio.ferlab.ui.etl.red.enriched.validationindexpatient.Main"
+        enriched_main_class = "bio.ferlab.ui.etl.red.enriched.validationindexpatient.PatientsDupliquesETL"
 
         return SparkOperator(
             task_id="enriched_validationindexpatient_patients_dupliques",
             name="enriched-validationindexpatient-patients-dupliques",
-            arguments=["config/prod.conf", "default", "enriched_validationindexpatient_patients_dupliques"],
+            arguments=["--config", "config/prod.conf",
+                       "--steps", "default", "--app-name",
+                       "enriched_validationindexpatient_patients_dupliques"],
             zone=enriched_zone,
             spark_class=enriched_main_class,
             spark_jar=jar,
