@@ -16,6 +16,7 @@
     "optimize" : [],
     "post_tests": [
       {"name": "patient_index_valid_counts", "destinations": ["curated_unic_patient_index"], "cluster_type" : "xsmall"},
+      {"name": "patient_index_valid_num_occurences", "destinations": ["curated_unic_patient_index"], "cluster_type" : "xsmall"},
       {"name": "patient_index_greater_or_equal_counts", "destinations": ["curated_unic_patient_index"], "cluster_type" : "xsmall"}
     ]
   }, {
