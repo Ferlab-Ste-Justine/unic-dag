@@ -57,6 +57,7 @@ de ce DAG
 * anonymized_eclinibase_v_identification_adresse
 * anonymized_staturgence_recherche_episode
 * anonymized_staturgence_recherche_episode_diagnostic
+* anonymized_staturgence_recherche_episode_triage
 * anonymized_unic_patient_index
 * warehouse_lab_results (et ses dépendances)
 * warehouse_microbiology (et ses dépendances)
@@ -97,7 +98,7 @@ with dag:
         enriched_respiratory_pathogen_diagnostics = SparkOperator(
             task_id="enriched_sprintkid_respiratory_pathogen_diagnostics",
             name="enriched-sprintkid-respiratory-pathogen-diagnostics",
-            arguments=enriched_arguments("enriched_sprintkid_respiratory_pathogen_diagnostics"),
+            arguments=enriched_arguments("enriched_sprintkid_respiratory_pathogen_diagnostics", "initial"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -121,7 +122,31 @@ with dag:
         enriched_participant_index = SparkOperator(
             task_id="enriched_sprintkid_participant_index",
             name="enriched-sprintkid-participant-index",
-            arguments=enriched_arguments("enriched_sprintkid_participant_index", "default"),
+            arguments=enriched_arguments("enriched_sprintkid_participant_index", "initial"),
+            zone=ENRICHED_ZONE,
+            spark_class=ENRICHED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="medium-etl",
+            dag=dag,
+        )
+
+        enriched_patient_data = SparkOperator(
+            task_id="enriched_sprintkid_patient_data",
+            name="enriched-sprintkid-patient-data",
+            arguments=enriched_arguments("enriched_sprintkid_patient_data", "initial"),
+            zone=ENRICHED_ZONE,
+            spark_class=ENRICHED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="medium-etl",
+            dag=dag,
+        )
+
+        enriched_hospital_data = SparkOperator(
+            task_id="enriched_sprintkid_hospital_data",
+            name="enriched-sprintkid-hospital-data",
+            arguments=enriched_arguments("enriched_sprintkid_hospital_data", "initial"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -142,7 +167,7 @@ with dag:
             dag=dag,
         )
 
-        [enriched_respiratory_pathogen_diagnostics, enriched_stream_2_aefi_screening] >> enriched_participant_index >> enriched_live_region_v20_import_template
+        [enriched_respiratory_pathogen_diagnostics, enriched_stream_2_aefi_screening] >> [enriched_patient_data, enriched_hospital_data] >> enriched_participant_index >> enriched_live_region_v20_import_template
 
     with TaskGroup(group_id="released") as released:
         RELEASED_ZONE = "green"
