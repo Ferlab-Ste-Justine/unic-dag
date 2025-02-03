@@ -84,7 +84,7 @@ dag = DAG(
     on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
 )
 
-with dag:
+with (dag):
 
     with TaskGroup(group_id="enriched") as enriched:
         ENRICHED_ZONE = "yellow"
@@ -167,7 +167,9 @@ with dag:
             dag=dag,
         )
 
-        enriched_respiratory_pathogen_diagnostics >> enriched_stream_2_aefi_screening >> [enriched_patient_data, enriched_hospital_data] >> enriched_participant_index >> enriched_live_region_v20_import_template
+        enriched_respiratory_pathogen_diagnostics >> [enriched_patient_data, enriched_hospital_data]
+        enriched_stream_2_aefi_screening >> [enriched_patient_data, enriched_hospital_data]
+        [enriched_patient_data, enriched_hospital_data] >> enriched_participant_index >> enriched_live_region_v20_import_template
 
     with TaskGroup(group_id="released") as released:
         RELEASED_ZONE = "green"
