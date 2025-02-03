@@ -90,7 +90,6 @@ with dag:
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.sprintkid.Main"
 
         def enriched_arguments(destination: str, run_type: str = "default" ) -> List[str]:
-            # !!! Do not set to initial, otherwise the participant index will be re-generated !!!
             return ["config/prod.conf", run_type, destination, "{{ data_interval_end | ds }}"]
 
 
