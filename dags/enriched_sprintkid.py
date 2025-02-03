@@ -84,7 +84,7 @@ dag = DAG(
     on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
 )
 
-with (dag):
+with dag:
 
     with TaskGroup(group_id="enriched") as enriched:
         ENRICHED_ZONE = "yellow"
