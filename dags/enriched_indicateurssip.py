@@ -65,7 +65,6 @@ with dag:
         enriched_main_class = "bio.ferlab.ui.etl.yellow.enriched.indicateurssip.Main"
 
         def enriched_arguments(destination: str) -> List[str]:
-            # !!! Do not set to initial, otherwise the participant index will be re-generated !!!
             return ["config/prod.conf", "initial", destination, "{{ logical_date }}"]
 
 
