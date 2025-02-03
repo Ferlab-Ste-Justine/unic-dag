@@ -12,13 +12,13 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"enriched_trekids_participant_index"        , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []                                    },
+        {"dataset_id":"enriched_trekids_participant_index"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []                                    },
         {"dataset_id":"enriched_trekids_hospitalisation"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"]},
         {"dataset_id":"enriched_trekids_diagnosis"                , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"]},
         {"dataset_id":"enriched_trekids_laboratory"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"]},
         {"dataset_id":"enriched_trekids_medication_visit"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"]},
         {"dataset_id":"enriched_trekids_medication_administration", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"]},
-        {"dataset_id":"enriched_trekids_patient_info"             , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"]},
+        {"dataset_id":"enriched_trekids_patient_info"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"]},
         {"dataset_id":"enriched_trekids_patient_medical_history"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_trekids_participant_index"]}
       ],
       "optimize": [],
@@ -38,7 +38,7 @@
         {"dataset_id":"released_trekids_laboratory"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"released_trekids_medication_visit"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"released_trekids_medication_administration", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_trekids_patient_info"             , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_trekids_patient_info"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"released_trekids_patient_medical_history"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
@@ -58,7 +58,7 @@
         {"dataset_id":"published_trekids_laboratory"               , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_trekids_medication_visit"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_trekids_medication_administration", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_trekids_patient_info"             , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_trekids_patient_info"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         {"dataset_id":"published_trekids_patient_medical_history"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
