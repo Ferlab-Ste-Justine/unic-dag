@@ -187,6 +187,7 @@ with dag:
                 "--config", "config/prod.conf",
                 "--steps", "default",
                 "--app-name", destination,
+                "--destination", destination,
                 "--version", "{{ data_interval_end | ds }}"
             ]
 
