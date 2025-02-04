@@ -43,13 +43,12 @@ dag = DAG(
 with dag:
     CURATED_ZONE = "red"
     CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.Main"
-    destination = "curated_unic_patient_index"
 
     args = [
-        destination,
+        "curated_unic_patient_index",
         "--config", config_file,
         "--steps", "default",
-        "--app-name", destination
+        "--app-name", "curated_unic_patient_index"
     ]
 
     test_curated_unic_patient_index = SparkOperator(
