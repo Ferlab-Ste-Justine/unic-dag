@@ -13,7 +13,7 @@ from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
 
-JAR = 's3a://spark-prd/jars/unic-etl-UNIC-PATIENTINDEX.jar'
+JAR = 's3a://spark-prd/jars/unic-etl-UNIC-PATIENT-INDEX.jar'
 
 DOC = """
 # Patient Index Debug DAG
