@@ -76,7 +76,7 @@ with dag:
                 "--config", "config/prod.conf",
                 "--steps", "default",
                 "--app-name", destination,
-                "--date", "{{ ds }}"
+                "--date", "{{ data_interval_end | ds }}"
             ]
 
 
