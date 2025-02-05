@@ -51,7 +51,7 @@ with dag:
     args = [
         "curated_unic_patient_index",
         "--config", config_file,
-        "--steps", "default",
+        "--steps", "initial",
         "--app-name", "curated_unic_patient_index"
     ]
 
