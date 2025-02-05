@@ -7,13 +7,13 @@ from datetime import datetime, timedelta
 import pendulum
 from airflow import DAG
 from airflow.utils.trigger_rule import TriggerRule
+from airflow.models import Param
 
-from lib.config import default_params, default_args, spark_failure_msg, config_file
+from lib.config import default_args, spark_failure_msg, config_file
 from lib.operators.spark import SparkOperator
-from lib.slack import Slack
 from lib.tasks.notify import end, start
 
-JAR = 's3a://spark-prd/jars/unic-etl-UNIC-PATIENT-INDEX.jar'
+JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
 DOC = """
 # Patient Index Debug DAG
@@ -26,18 +26,22 @@ Dag pour debugger le patient index. Ecrit dans s3a://red-test/curated/unic/patie
 args = default_args.copy()
 args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 
+params = {
+    "branch": Param("UNIC-PATIENT-INDEX", type="string"),
+    "version": Param("latest", type="string")
+}
+
 dag = DAG(
     dag_id="debug_patient_index",
     schedule_interval=None,
-    params=default_params,
+    params=params,
     default_args=args,
     start_date=datetime(2025, 2, 1, tzinfo=pendulum.timezone("America/Montreal")),
     concurrency=1,
     catchup=False,
     tags=["curated"],
     dagrun_timeout=timedelta(hours=1),
-    is_paused_upon_creation=True,
-    on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
+    is_paused_upon_creation=True
 )
 
 with dag:
