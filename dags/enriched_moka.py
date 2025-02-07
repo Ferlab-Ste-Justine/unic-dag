@@ -82,7 +82,7 @@ with dag:
                 arguments += ["--start-date", "{{ data_interval_start }}"]
 
             if end_date:
-                arguments += ["--end-date", "{{ data_interval_end }}"]
+                arguments += ["--end-date", "{{ data_interval_end | ds }}"]
 
             return arguments
 
