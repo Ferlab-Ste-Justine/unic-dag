@@ -103,7 +103,7 @@ with dag:
         enriched_respiratory_pathogen_diagnostics = SparkOperator(
             task_id="enriched_sprintkid_respiratory_pathogen_diagnostics",
             name="enriched-sprintkid-respiratory-pathogen-diagnostics",
-            arguments=enriched_arguments("enriched_sprintkid_respiratory_pathogen_diagnostics", "initial"),
+            arguments=enriched_arguments("enriched_sprintkid_respiratory_pathogen_diagnostics", "default"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -115,7 +115,7 @@ with dag:
         enriched_stream_2_aefi_screening = SparkOperator(
             task_id="enriched_sprintkid_stream_2_aefi_screening",
             name="enriched-sprintkid-stream-2-aefi-screening",
-            arguments=enriched_arguments("enriched_sprintkid_stream_2_aefi_screening", "initial"),
+            arguments=enriched_arguments("enriched_sprintkid_stream_2_aefi_screening", "default"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -127,7 +127,7 @@ with dag:
         enriched_participant_index = SparkOperator(
             task_id="enriched_sprintkid_participant_index",
             name="enriched-sprintkid-participant-index",
-            arguments=enriched_arguments("enriched_sprintkid_participant_index", "initial"),
+            arguments=enriched_arguments("enriched_sprintkid_participant_index", "default"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -139,7 +139,7 @@ with dag:
         enriched_patient_data = SparkOperator(
             task_id="enriched_sprintkid_patient_data",
             name="enriched-sprintkid-patient-data",
-            arguments=enriched_arguments("enriched_sprintkid_patient_data", "initial"),
+            arguments=enriched_arguments("enriched_sprintkid_patient_data", "default"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -151,7 +151,7 @@ with dag:
         enriched_hospital_data = SparkOperator(
             task_id="enriched_sprintkid_hospital_data",
             name="enriched-sprintkid-hospital-data",
-            arguments=enriched_arguments("enriched_sprintkid_hospital_data", "initial"),
+            arguments=enriched_arguments("enriched_sprintkid_hospital_data", "default"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -163,7 +163,7 @@ with dag:
         enriched_live_region_v20_import_template = SparkOperator(
             task_id="enriched_sprintkid_live_region_v20_import_template",
             name="enriched-sprintkid-live-region-v20-import-template",
-            arguments=enriched_arguments("enriched_sprintkid_live_region_v20_import_template", "initial"),
+            arguments=enriched_arguments("enriched_sprintkid_live_region_v20_import_template", "default"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
