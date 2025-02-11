@@ -7,6 +7,7 @@ from typing import List
 
 import pendulum
 from airflow import DAG
+from airflow.timetables.trigger import CronTriggerTimetable
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
@@ -52,7 +53,7 @@ dag = DAG(
     dag_id="enriched_promptbolus",
     doc_md=DOC,
     start_date=datetime(2024, 8, 27, 7, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval=timedelta(weeks=2),
+    schedule=CronTriggerTimetable(cron="0 7 * * 2", timezone=pendulum.timezone("America/Montreal"), interval=timedelta(weeks=2)),
     params=params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,
