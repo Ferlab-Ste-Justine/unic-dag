@@ -75,7 +75,7 @@ with dag:
             return [
                 destination,
                 "--config", "config/prod.conf",
-                "--steps", "initial",
+                "--steps", "default",
                 "--app-name", destination,
                 "--date", "{{ data_interval_end | ds }}"
             ]

@@ -54,7 +54,7 @@ with dag:
         def enriched_arguments(destination: str) -> List[str]:
             return [
                 "--config", "config/prod.conf",
-                "--steps", "initial",
+                "--steps", "default",
                 "--app-name", destination,
                 "--date", "{{ data_interval_end | ds }}"
             ]
