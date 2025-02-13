@@ -184,7 +184,7 @@ with dag:
         )
 
     with TaskGroup(group_id="published") as published:
-        DATE = '{{ ds | replace("-", "_") }}'
+        DATE = '{{ data_interval_end | ds | replace("-", "_") }}'
 
         published_patients = parquet_to_excel.override(task_id="published_promptbolus_patients")(
             parquet_bucket_name='green-prd',
