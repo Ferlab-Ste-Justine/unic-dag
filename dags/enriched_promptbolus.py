@@ -184,13 +184,14 @@ with dag:
         )
 
     with TaskGroup(group_id="published") as published:
-        DATE = '{{ data_interval_end | ds | replace("-", "_") }}'
+        DATE = '{{ data_interval_end | ds }}'
+        DATE_WITH_UNDERSCORES = '{{ data_interval_end | ds | replace("-", "_") }}'
 
         published_patients = parquet_to_excel.override(task_id="published_promptbolus_patients")(
             parquet_bucket_name='green-prd',
             parquet_dir_key=f'released/promptbolus/{DATE}/patients',
             excel_bucket_name='green-prd',
-            excel_output_key=f'published/promptbolus/{DATE}/patients/patients_{DATE}.xlsx',
+            excel_output_key=f'published/promptbolus/{DATE}/patients/patients_{DATE_WITH_UNDERSCORES}.xlsx',
             minio_conn_id=green_minio_conn_id
         )
 
@@ -198,7 +199,7 @@ with dag:
             parquet_bucket_name='green-prd',
             parquet_dir_key=f'released/promptbolus/{DATE}/antibiotics_received',
             excel_bucket_name='green-prd',
-            excel_output_key=f'published/promptbolus/{DATE}/antibiotics_received/antibiotics_received_{DATE}.xlsx',
+            excel_output_key=f'published/promptbolus/{DATE}/antibiotics_received/antibiotics_received_{DATE_WITH_UNDERSCORES}.xlsx',
             minio_conn_id=green_minio_conn_id
         )
 
@@ -206,7 +207,7 @@ with dag:
             parquet_bucket_name='green-prd',
             parquet_dir_key=f'released/promptbolus/{DATE}/bolus_received',
             excel_bucket_name='green-prd',
-            excel_output_key=f'published/promptbolus/{DATE}/bolus_received/bolus_received_{DATE}.xlsx',
+            excel_output_key=f'published/promptbolus/{DATE}/bolus_received/bolus_received_{DATE_WITH_UNDERSCORES}.xlsx',
             minio_conn_id=green_minio_conn_id
         )
 
