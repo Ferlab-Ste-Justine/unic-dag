@@ -139,7 +139,6 @@ with dag:
     with TaskGroup(group_id="released") as released:
         RELEASED_ZONE = "green"
         RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.Main"
-        RELEASED_MONTHLY_VISIT_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.signature.MonthlyVisitETL"
 
         released_last_visit_survey = SparkOperator(
             task_id="released_signature_last_visit_survey",
@@ -170,7 +169,7 @@ with dag:
                 "--version", "{{ data_interval_end | ds }}"
             ],
             zone=RELEASED_ZONE,
-            spark_class=RELEASED_MONTHLY_VISIT_MAIN_CLASS,
+            spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=spark_failure_msg,
             spark_config="small-etl",
