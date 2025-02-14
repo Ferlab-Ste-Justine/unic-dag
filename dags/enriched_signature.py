@@ -166,6 +166,7 @@ with dag:
                 "--config", "config/prod.conf",
                 "--steps", "default",
                 "--app-name", "released_signature_monthly_visit",
+                "--destination", "released_signature_monthly_visit",
                 "--version", "{{ data_interval_end | ds }}"
             ],
             zone=RELEASED_ZONE,
