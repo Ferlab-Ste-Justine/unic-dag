@@ -90,7 +90,7 @@
       {"dataset_id": "anonymized_eclinibase_v_identification_per_res"      , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_eclinibase_v_identification_employeur"    , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_eclinibase_v_identification_autre_nom"    , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_eclinibase_v_identification_autre_dossier", "cluster_type": "large" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_eclinibase_v_identification_autre_dossier", "cluster_type": "large" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_eclinibase_v_identification_adresse"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_eclinibase_v_identification"              , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_eclinibase_v_ident_doss_allergie"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
