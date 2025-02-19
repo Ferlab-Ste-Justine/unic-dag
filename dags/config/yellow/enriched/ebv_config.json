@@ -1,0 +1,65 @@
+{
+  "concurrency": 4,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [
+    {
+      "destination_zone": "yellow",
+      "destination_subzone": "enriched",
+      "main_class": "bio.ferlab.ui.etl.yellow.enriched.ebv.Main",
+      "multiple_main_methods": true,
+      "publish_class": "",
+      "schemas": [],
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id": "enriched_ebv_participant_index"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "enriched_ebv_bcell_therapies"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_ebv_participant_index"]},
+        {"dataset_id": "enriched_ebv_cmv_infection"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_ebv_participant_index", "enriched_ebv_ebv_infection"]},
+        {"dataset_id": "enriched_ebv_ebv_infection"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_ebv_participant_index"]},
+        {"dataset_id": "enriched_ebv_ebv_replication_episodes", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_ebv_participant_index"]},
+        {"dataset_id": "enriched_ebv_patient_profile"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_ebv_participant_index"]},
+        {"dataset_id": "enriched_ebv_rejection_episodes"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_ebv_participant_index"]}
+      ],
+      "optimize": [],
+      "post_tests": []
+    },
+    {
+      "destination_zone": "green",
+      "destination_subzone": "released",
+      "main_class": "bio.ferlab.ui.etl.green.released.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id": "released_ebv_bcell_therapies"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "released_ebv_cmv_infection"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "released_ebv_ebv_infection"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "released_ebv_ebv_replication_episodes", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "released_ebv_patient_profile"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "released_ebv_rejection_episodes"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "optimize": [],
+      "post_tests": []
+    },
+    {
+      "destination_zone": "green",
+      "destination_subzone": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "multiple_main_methods": false,
+      "publish_class": "",
+      "schemas": [],
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id": "published_ebv_bcell_therapies"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "published_ebv_cmv_infection"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "published_ebv_ebv_infection"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "published_ebv_ebv_replication_episodes", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "published_ebv_patient_profile"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "published_ebv_rejection_episodes"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      ],
+      "optimize": [],
+      "post_tests": []
+    }
+  ]
+}
