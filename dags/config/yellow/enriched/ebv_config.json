@@ -13,7 +13,7 @@
       "pre_tests": [],
       "datasets": [
         {"dataset_id": "enriched_ebv_participant_index"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "enriched_ebv_bcell_therapies"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_ebv_participant_index"]},
+        {"dataset_id": "enriched_ebv_bcell_therapies"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_ebv_participant_index", "enriched_ebv_ebv_infection"]},
         {"dataset_id": "enriched_ebv_cmv_infection"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_ebv_participant_index", "enriched_ebv_ebv_infection"]},
         {"dataset_id": "enriched_ebv_ebv_infection"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_ebv_participant_index"]},
         {"dataset_id": "enriched_ebv_ebv_replication_episodes", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_ebv_participant_index"]},
