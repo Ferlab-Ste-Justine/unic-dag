@@ -37,7 +37,7 @@ config = {
             {"dataset_id": "anonymized_unic_participant_index_ivado_prf3_biopsie_foie2_2023"                      , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
             {"dataset_id": "anonymized_unic_participant_index_ivado_prf3_steatose_hepatique"                      , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
             {"dataset_id": "anonymized_unic_participant_index_monchemin"                                          , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-            {"dataset_id": "anonymized_unic_participant_mdc_atoe"                                                 , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+            {"dataset_id": "anonymized_unic_participant_index_mdc_atoe"                                           , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
             {"dataset_id": "anonymized_unic_participant_index_pedicss"                                            , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
             {"dataset_id": "anonymized_unic_participant_index_picaso"                                             , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
             {"dataset_id": "anonymized_unic_participant_index_picaso_inclusion_diagnosis_treatmentplan_2012_2022" , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
