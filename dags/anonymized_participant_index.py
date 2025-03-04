@@ -53,6 +53,8 @@ config = {
             {"dataset_id": "anonymized_unic_participant_index_signature"                                          , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
             {"dataset_id": "anonymized_unic_participant_index_signature_triceps"                                  , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
             {"dataset_id": "anonymized_unic_participant_index_simapp"                                             , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+
+            {"dataset_id": "anonymized_unic_physician_index_bronchiolite"                                         , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
         ],
         "optimize" : [],
         "post_tests": []
