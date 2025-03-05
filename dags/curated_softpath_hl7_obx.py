@@ -10,7 +10,6 @@ from airflow import DAG
 from lib.config import default_params, default_args, spark_failure_msg, jar
 # from core.slack import Slack
 from lib.operators.spark import SparkOperator
-from lib.slack import Slack
 from lib.tasks.notify import start, end
 
 DOC = """
@@ -46,7 +45,7 @@ dag = DAG(
     max_active_runs=5,
     max_active_tasks=5,
     tags=["curated"],
-    on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
+    # on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
 )
 
 with dag:
@@ -54,7 +53,7 @@ with dag:
         "--config", "config/prod.conf",
         "--steps", "default",
         "--app-name", "curated_softpath_hl7_oru_r01_obx",
-        "---destination", "curated_softpath_hl7_oru_r01_obx",
+        "--destination", "curated_softpath_hl7_oru_r01_obx",
         "--date", "{{ ds }}"
     ]
 
