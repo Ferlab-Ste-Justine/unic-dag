@@ -72,7 +72,7 @@ with dag:
         ("curated_softpath_hl7_oru_r01_pv1", "small-etl"),
         ("curated_softpath_hl7_oru_r01_orc", "small-etl"),
         ("curated_softpath_hl7_oru_r01_obr", "small-etl"),
-        ("curated_softpath_hl7_oru_r01_obx", "small-etl")
+        # ("curated_softpath_hl7_oru_r01_obx", "small-etl")
     ]
 
     softpath_hl7_curated = [SparkOperator(
