@@ -51,7 +51,7 @@ dag = DAG(
 with dag:
     arguments = [
         "--config", "config/prod.conf",
-        "--steps", "default",
+        "--steps", "initial",
         "--app-name", "curated_softpath_hl7_oru_r01_obx",
         "--destination", "curated_softpath_hl7_oru_r01_obx",
         "--date", "{{ ds }}"
