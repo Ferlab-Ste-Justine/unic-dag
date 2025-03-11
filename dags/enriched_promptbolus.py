@@ -7,7 +7,6 @@ from typing import List
 
 import pendulum
 from airflow import DAG
-from airflow.timetables.trigger import CronTriggerTimetable
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
@@ -25,14 +24,14 @@ DOC = """
 ETL enriched pour le projet Prompt Bolus. 
 
 ### Description
-Cet ETL génère un rapport aux 2 semaines afin d'identifier les patients ayant eu 1 antibiotiques et 2 bolus lors
+Cet ETL génère un rapport les premiers mardi du mois afin d'identifier les patients ayant eu 1 antibiotiques et 2 bolus lors
 de leur visite à l'urgence. Un premier rapport historique du 1er septembre au 30 novembre 2024 doit être généré.
 
 ### Horaire
 * __Date de début__ - 30 octobre 2024
 * __Date de fin__ - aucune
-* __Jour et heure__ - Mercredi, 14h heure de Montréal
-* __Intervalle__ - Chaque 2 semaines
+* __Jour et heure__ - Mardi, 7h heure de Montréal
+* __Intervalle__ - Chaque premier mardi du mois
 
 ### Configuration
 
@@ -52,8 +51,8 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_promptbolus",
     doc_md=DOC,
-    start_date=datetime(2024, 8, 27, 7, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule=CronTriggerTimetable(cron="0 7 * * 2", timezone=pendulum.timezone("America/Montreal"), interval=timedelta(weeks=2)),
+    start_date=datetime(2025, 3, 1, 8, tzinfo=pendulum.timezone("America/Montreal")),
+    schedule_interval="0 7 1-7 * 2",  # First tuesday of the month at 7:00 AM
     params=params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,
