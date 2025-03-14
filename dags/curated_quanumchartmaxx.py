@@ -116,7 +116,7 @@ with dag:
 
         curated_quanum_form_metadata_vw_task = SparkOperator(
             task_id="curated_quanum_form_metadata_vw",
-            name="curated_quanum_form_name_vw".replace("_", "-"),
+            name="curated_quanum_form_metadata_vw".replace("_", "-"),
             arguments=generate_spark_arguments("curated_quanum_form_metadata_vw", pass_date=True, steps=run_type()),
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_MAIN_CLASS,
