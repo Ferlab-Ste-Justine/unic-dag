@@ -7,7 +7,7 @@
       "destination_zone": "yellow",
       "destination_subzone": "enriched",
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.edinava.Main",
-      "multiple_main_methods": true,
+      "multiple_main_methods": false,
       "publish_class": "",
       "schemas": [],
       "pre_tests": [],
