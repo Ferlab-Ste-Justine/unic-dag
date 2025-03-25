@@ -161,6 +161,7 @@ with dag:
             ("curated_quanum_e*", "medium-etl"),
             ("curated_quanum_f*", "small-etl"),
             ("curated_quanum_g*", "small-etl"),
+            ("curated_quanum_i*", "small-etl"),
             ("curated_quanum_l*", "small-etl"),
             ("curated_quanum_maladie*", "medium-etl"),
             ("curated_quanum_n*", "small-etl"),
