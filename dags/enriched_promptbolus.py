@@ -52,7 +52,7 @@ dag = DAG(
     dag_id="enriched_promptbolus",
     doc_md=DOC,
     start_date=datetime(2025, 3, 1, 8, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval="0 7 1-7 * 2",  # First tuesday of the month at 7:00 AM
+    schedule="0 7 * * 2#1",  # First tuesday of the month at 7:00 AM
     params=params,
     dagrun_timeout=timedelta(hours=default_timeout_hours),
     default_args=args,
