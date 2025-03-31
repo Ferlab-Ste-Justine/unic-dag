@@ -12,22 +12,25 @@ from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
 from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg
+from lib.config import green_minio_conn_id
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
+from lib.tasks.excel import parquet_to_excel
 from lib.tasks.notify import start, end
 
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
 DOC = """
-# Enriched SPRINT KID DAG
+# Enriched SPRINT KID AND Surveillance Germes DAG
 
-ETL enriched pour le projet SPRINT KID. 
+ETL enriched pour le projet SPRINT KID/Surveillance Germes. 
 
 ### Description
-Cet ETL génère un rapport bihebdomadaire sur les patients ayant eu un test positif pour une liste de pathogènes ou un 
-diagnostic d'événement non désirable après la vaccination dans la dernière semaine, du dimanche au samedi.
+Cet ETL génère un rapport hebdomadaire sur les patients ayant eu un test positif pour une liste de pathogènes ou un 
+diagnostic d'événement non désirable après la vaccination dans la dernière semaine, du dimanche au samedi. Il regroupe
+les deux projets Sprint-Kid et Germes, qui sont en pratique, le même projet.
 
-Le rapport sera livré tous les lundi et mercredi le plus tôt possible. 
+Le rapport sera livré tous les mardi le plus tôt possible. 
 
 ### Horaire
 * __Date de début__ - 6 janvier 2025
@@ -44,10 +47,8 @@ Dans ce cas le 6 janvier 2025 est le end_date et correspond au moment de génér
 La date de livraison (la date logique du DAG) est envoyée comme argument à l'ETL released. Cette date est 
 utilisée comme version de la release.
 
-La livraison doit inclure les tables respiratory_pathogen_diagnostics et stream_2_aefi_screening de la zone verte. 
-La table participant_index de la zone enriched doit être désanonymisée entièrement et livrée dans la zone info nominative.
-Les données cliniques seront éventuellement poussées directement dans un RedCap et le participant_index sera transformé
-dans l'ETL vers la zone rouge automatiquement.
+La livraison doit inclure les tables weekly_summary (germes) et stream_2_aefi_screening (sprint-kid) de la zone verte. 
+La table participant_index (sprint-kid) de la zone enriched doit être désanonymisée entièrement et livrée dans la zone info nominative.
 
 ### PREREQUIS
 Les tables du lac suivantes doivent être mises à jour et avoir les données pour la période couverte avant chaque exécution 
@@ -98,6 +99,31 @@ with dag:
                 "--app-name", destination,
                 "--date", "{{ data_interval_end | ds }}"
             ]
+
+
+        enriched_patient = SparkOperator(
+            task_id="enriched_surveillancegermes_patient",
+            name="enriched-surveillancegermes-patient",
+            arguments=enriched_arguments("enriched_surveillancegermes_patient"),
+            zone=ENRICHED_ZONE,
+            spark_class=ENRICHED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="medium-etl",
+            dag=dag
+        )
+
+        enriched_weekly_summary = SparkOperator(
+            task_id="enriched_surveillancegermes_weekly_summary",
+            name="enriched-surveillancegermes-weekly-summary",
+            arguments=enriched_arguments("enriched_surveillancegermes_weekly_summary"),
+            zone=ENRICHED_ZONE,
+            spark_class=ENRICHED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="medium-etl",
+            dag=dag,
+        )
 
 
         enriched_respiratory_pathogen_diagnostics = SparkOperator(
@@ -172,6 +198,7 @@ with dag:
             dag=dag,
         )
 
+        enriched_patient >> enriched_weekly_summary
         enriched_respiratory_pathogen_diagnostics >> [enriched_patient_data, enriched_hospital_data]
         enriched_stream_2_aefi_screening >> [enriched_patient_data, enriched_hospital_data]
         [enriched_patient_data, enriched_hospital_data] >> enriched_participant_index >> enriched_live_region_v20_import_template
@@ -179,7 +206,6 @@ with dag:
     with TaskGroup(group_id="released") as released:
         RELEASED_ZONE = "green"
         RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.Main"
-
 
         def released_arguments(destination: str) -> List[str]:
             # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
@@ -191,6 +217,18 @@ with dag:
                 "--version", "{{ data_interval_end | ds }}"
             ]
 
+
+        released_weekly_summary = SparkOperator(
+            task_id="released_surveillancegermes_weekly_summary",
+            name="released-surveillancegermes-weekly-summary",
+            arguments=released_arguments("released_surveillancegermes_weekly_summary"),
+            zone=RELEASED_ZONE,
+            spark_class=RELEASED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=spark_failure_msg,
+            spark_config="medium-etl",
+            dag=dag,
+        )
 
         released_sprintkid_live_region_v20_import_template = SparkOperator(
             task_id="released_sprintkid_live_region_v20_import_template",
@@ -205,24 +243,23 @@ with dag:
         )
 
     with TaskGroup(group_id="published") as published:
-        PUBLISHED_ZONE = "green"
-        PUBLISHED_MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
 
+        FILEDATE ='{{ data_interval_end | ds | replace("-", "_") }}'
 
-        def published_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination, "{{ data_interval_end | ds }}"]
+        parquet_bucket_name= parquet_to_excel.override(task_id="published_sprintkid_live_region_v20_import_template")(
+            parquet_bucket_name='green-prd',
+            parquet_dir_key='released/sprintkid/latest/live_region_v20_import_template',
+            excel_bucket_name='green-prd',
+            excel_output_key=f'published/sprintkid/live_region_v20_import_template/live_region_v20_import_template_{FILEDATE}.xlsx',
+            minio_conn_id=green_minio_conn_id
+        )
 
-
-        published_sprintkid_live_region_v20_import_template = SparkOperator(
-            task_id="published_sprintkid_live_region_v20_import_template",
-            name="published-sprintkid-live-region-v20-import-template",
-            arguments=published_arguments("published_sprintkid_live_region_v20_import_template"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
-            spark_config="xsmall-etl",
-            dag=dag
+        parquet_bucket_name= parquet_to_excel.override(task_id="published_surveillancegermes_weekly_summary")(
+            parquet_bucket_name='green-prd',
+            parquet_dir_key='released/sprintkid/latest/weekly_summary',
+            excel_bucket_name='green-prd',
+            excel_output_key=f'published/sprintkid/weekly_summary/weekly_summary_{FILEDATE}.xlsx',
+            minio_conn_id=green_minio_conn_id
         )
 
     start() >> enriched >> released >> published >> end()
