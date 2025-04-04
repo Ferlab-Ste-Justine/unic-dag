@@ -243,22 +243,22 @@ with dag:
         )
 
     with TaskGroup(group_id="published") as published:
+        DATE = '{{ data_interval_end | ds }}'
+        FILEDATE = '{{ data_interval_end | ds | replace("-", "_") }}'
 
-        FILEDATE ='{{ data_interval_end | ds | replace("-", "_") }}'
-
-        parquet_bucket_name= parquet_to_excel.override(task_id="published_sprintkid_live_region_v20_import_template")(
+        published_live_region = parquet_to_excel.override(task_id="published_sprintkid_live_region_v20_import_template")(
             parquet_bucket_name='green-prd',
-            parquet_dir_key='released/sprintkid/latest/live_region_v20_import_template',
+            parquet_dir_key=f'released/sprintkid/{DATE}/live_region_v20_import_template',
             excel_bucket_name='green-prd',
-            excel_output_key=f'published/sprintkid/live_region_v20_import_template/live_region_v20_import_template_{FILEDATE}.xlsx',
+            excel_output_key=f'published/sprintkid/{DATE}/live_region_v20_import_template/live_region_v20_import_template_{FILEDATE}.xlsx',
             minio_conn_id=green_minio_conn_id
         )
 
-        parquet_bucket_name= parquet_to_excel.override(task_id="published_surveillancegermes_weekly_summary")(
+        published_weekly_summary = parquet_to_excel.override(task_id="published_surveillancegermes_weekly_summary")(
             parquet_bucket_name='green-prd',
-            parquet_dir_key='released/sprintkid/latest/weekly_summary',
+            parquet_dir_key=f'released/sprintkid/{DATE}/weekly_summary',
             excel_bucket_name='green-prd',
-            excel_output_key=f'published/sprintkid/weekly_summary/weekly_summary_{FILEDATE}.xlsx',
+            excel_output_key=f'published/sprintkid/{DATE}/weekly_summary/weekly_summary_{FILEDATE}.xlsx',
             minio_conn_id=green_minio_conn_id
         )
 
