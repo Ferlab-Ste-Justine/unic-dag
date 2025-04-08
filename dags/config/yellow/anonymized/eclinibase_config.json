@@ -54,7 +54,9 @@
       ], "cluster_type" : "xsmall"},
       {"name": "greater_partition_counts", "destinations": [
         "anonymized_eclinibase_v_assignation*",
-        "anonymized_eclinibase_v_horaire*",
+        "anonymized_eclinibase_v_horaire",
+        "anonymized_eclinibase_v_horaire_plage",
+        "anonymized_eclinibase_v_horaire_service_requis",
         "anonymized_eclinibase_v_identification_adresse",
         "anonymized_eclinibase_v_identification_employeur",
         "anonymized_eclinibase_v_identification",
