@@ -13,11 +13,24 @@
       {"name": "greater_or_equal_partition_counts", "destinations": ["anonymized_cscmed_*"], "cluster_type" : "large"}
     ],
     "datasets": [
-      {"dataset_id": "anonymized_cscmed_atoe*"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_cscmed_chusj*"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_cscmed_demographic"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_cscmed_jobs_sections", "cluster_type": "large", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_cscmed_pul*"         , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "anonymized_cscmed_atoe*"        , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_chusj*"       , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_cirene*"      , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_demographic"  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_der*"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_dev*"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_dia*"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_gas*"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_gen*"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_hem*"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_jobs_sections", "cluster_type": "large" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_neo*"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_neu*"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_psy*"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_pul*"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_pul*"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_scol*"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_tel*"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
     "optimize" : [],
     "post_tests": [
