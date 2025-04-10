@@ -28,7 +28,6 @@
       {"dataset_id": "anonymized_cscmed_neu*"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_cscmed_psy*"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_cscmed_pul*"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_cscmed_pul*"         , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_cscmed_scol*"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_cscmed_tel*"         , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
     ],
