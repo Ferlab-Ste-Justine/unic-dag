@@ -19,11 +19,6 @@ from lib.config import jar, spark_failure_msg
 from lib.tasks.notify import start, end
 from lib.tasks.opensearch import load_index, get_release_id, publish_index
 
-env_dict = {
-    OpensearchEnv.QA : PostgresEnv.DEV,
-    OpensearchEnv.PROD : PostgresEnv.PROD
-}
-
 def load_index_arguments(release_id: str, os_url: str, template_filename: str, os_env_name: str, pg_env_name: str,
                          alias: str) -> List[str]:
 
@@ -60,7 +55,7 @@ args = {
 for os_env in OpensearchEnv:
 
     os_env_name = os_env.value
-    pg_env_name = env_dict[os_env].value
+    pg_env_name = PostgresEnv.PROD
 
     doc = f"""
     # Load {pg_env_name} Index into OpenSeach {os_env_name} 
