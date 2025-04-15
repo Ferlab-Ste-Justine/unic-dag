@@ -74,7 +74,7 @@ with dag:
             arguments = [
                 destination,
                 "--config", "config/prod.conf",
-                "--steps", "default",
+                "--steps", "initial",
                 "--app-name", destination,
             ]
 
