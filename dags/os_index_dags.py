@@ -55,7 +55,7 @@ args = {
 for os_env in OpensearchEnv:
 
     os_env_name = os_env.value
-    pg_env_name = PostgresEnv.PROD
+    pg_env_name = PostgresEnv.PROD.value
 
     doc = f"""
     # Load {pg_env_name} Index into OpenSeach {os_env_name} 
