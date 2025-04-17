@@ -1,93 +1,46 @@
-from typing import Sequence, Callable
+import subprocess
+from typing import Callable, Sequence
 
 from airflow.exceptions import AirflowSkipException
 from airflow.operators.python import PythonOperator
-from kubernetes.client import models as k8s
 
 class PythonOpenSearchOperator(PythonOperator):
     """
     Execute Python with OpenSearch Connection
 
     :param: python_callable: The connection ID used to connect to Postgres
-    :param: os_cert_secret_name
-    :param: os_credentials_secret_name
-    :param: os_credentials_secret_key_username
-    :param: os_credentials_secret_key_password
+    :param ca_path: Filepath where ca certificate file will be located
+    :param ca_filename: Filename where ca certificate file will be written (.crt)
+    :param ca_cert: Ca certificate
     """
-    template_fields: Sequence[str] =  (*PythonOperator.template_fields, 'skip', 'python_callable')
-
+    template_fields: Sequence[str] = (*PythonOperator.template_fields, 'skip', 'python_callable', 'provide_context')
     def __init__(
             self,
             python_callable: Callable,
-            os_cert_secret_name: str,
-            os_credentials_secret_name: str,
-            os_credentials_secret_key_username: str,
-            os_credentials_secret_key_password: str,
+            ca_path: str,
+            ca_filename: str,
+            ca_cert: str,
+            provide_context:  bool = True,
             skip: bool = False,
             **kwargs) -> None:
         # python_callable has to be rendered before super class is instantiated
         self.python_callable = python_callable
-        self.os_cert_secret_name = os_cert_secret_name
-        self.os_credentials_secret_name = os_credentials_secret_name
-        self.os_credentials_secret_key_username = os_credentials_secret_key_username
-        self.os_credentials_secret_key_password = os_credentials_secret_key_password
+        self.ca_path = ca_path
+        self.ca_filename = ca_filename
+        self.ca_cert = ca_cert
+        self.provide_context = provide_context,
         self.skip = skip
-        super().__init__(python_callable=self.python_callable, **kwargs)
+        super().__init__(python_callable=self.python_callable, provide_context=self.provide_context, **kwargs)
 
     def execute(self, **kwargs):
         if self.skip:
             raise AirflowSkipException()
 
-        new_env_vars = [
-            k8s.V1EnvVar(
-                name='OS_USERNAME',
-                value_from=k8s.V1EnvVarSource(
-                    secret_key_ref=k8s.V1SecretKeySelector(
-                        name=self.os_credentials_secret_name,
-                        key=self.os_credentials_secret_key_username)
-                )
-            ),
-            k8s.V1EnvVar(
-                name='OS_PASSWORD',
-                value_from=k8s.V1EnvVarSource(
-                    secret_key_ref=k8s.V1SecretKeySelector(
-                        name=self.os_credentials_secret_name,
-                        key=self.os_credentials_secret_key_password)
-                )
-            )
-        ]
-
-        if self.env_vars and self.os_credentials_secret_name:
-            self.env_vars += new_env_vars
-        else:
-            self.env_vars = new_env_vars
-
-        new_volumes = [
-            k8s.V1Volume(
-                name=self.os_cert_secret_name,
-                secret=k8s.V1SecretVolumeSource(
-                    secret_name=self.os_cert_secret_name,
-                    default_mode=0o555
-                ),
-            )
-        ]
-
-        if self.volumes and self.os_cert_secret_name:
-            self.volumes += new_volumes
-        else:
-            self.volumes = new_volumes
-
-        new_volume_mounts = [
-            k8s.V1VolumeMount(
-                name=self.os_cert_secret_name,
-                mount_path='/opt/os-ca',
-                read_only=True,
-            )
-        ]
-
-        if self.volume_mounts and self.os_cert_secret_name:
-            self.volume_mounts += new_volume_mounts
-        else:
-            self.volume_mounts = new_volume_mounts
-
+        self.load_cert()
         super().execute(**kwargs)
+
+    def load_cert(self):
+        subprocess.run(["mkdir", "-p", self.ca_path])
+
+        with open(self.ca_path + self.ca_filename, "w") as outfile:
+            outfile.write(self.ca_cert)

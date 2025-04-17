@@ -10,9 +10,9 @@ from airflow.decorators import task
 from lib.operators.spark import SparkOperator
 from lib.operators.spark_opensearch import SparkOpenSearchOperator
 from lib.operators.python_opensearch import PythonOpenSearchOperator
-from lib.opensearch import (OpensearchEnv, os_credentials_username_key, os_credentials_password_key, os_prod_url, os_prod_credentials,
-                            os_prod_cert, os_qa_credentials, os_qa_cert)
-
+from lib.opensearch import (OpensearchEnv, os_credentials_username_key, os_credentials_password_key, os_prod_url, os_prod_credentials_secret,
+                            os_prod_cert_secret, os_qa_credentials_secret, os_qa_cert_secret, os_prod_cert_path,
+                            os_cert_filename, os_prod_cert, os_qa_cert_path, os_qa_cert, os_qa_username, os_qa_password, os_qa_cert_path, os_port)
 
 
 def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,
@@ -59,8 +59,8 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
             spark_jar=jar,
             spark_failure_msg=spark_failure_msg,
             spark_config=cluster_size,
-            os_cert_secret_name=os_prod_cert,
-            os_credentials_secret_name=os_prod_credentials,
+            os_cert_secret_name=os_prod_cert_secret,
+            os_credentials_secret_name=os_prod_credentials_secret,
             os_credentials_secret_key_username=os_credentials_username_key,
             os_credentials_secret_key_password=os_credentials_password_key,
             dag=dag
@@ -75,8 +75,8 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
             spark_jar=jar,
             spark_failure_msg=spark_failure_msg,
             spark_config=cluster_size,
-            os_cert_secret_name=os_qa_cert,
-            os_credentials_secret_name=os_qa_credentials,
+            os_cert_secret_name=os_qa_cert_secret,
+            os_credentials_secret_name=os_qa_credentials_secret,
             os_credentials_secret_key_username=os_credentials_username_key,
             os_credentials_secret_key_password=os_credentials_password_key,
             dag=dag
@@ -84,17 +84,16 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
     else:
         return None
 
-def get_release_id_callable(release_id: str, index: str, increment: bool) -> str:
+def get_release_id_callable(release_id: str, index: str, increment: bool, **context) -> str:
+    logging.info(f'RELEASE ID: {release_id}')
     if release_id:
         logging.info(f'Using release id passed to DAG: {release_id}')
         return release_id
 
     logging.info(f'No release id passed to DAG. Fetching release id from OS for all index {index}.')
     # Fetch current id from OS
-    url = f'{os_prod_url}/{index}?&pretty'
-    username = os.environ['OS_USERNAME']
-    password = os.environ['OS_PASSWORD']
-    response = requests.get(url, auth=(username, password), verify='/opt/os-ca/ca.crt')
+    url = f'{os_prod_url}:{os_port}/{index}?&pretty'
+    response = requests.get(url, auth=(os_qa_username, os_qa_password), verify=os_qa_cert_path) # change to accept qa or prod
     logging.info(f'OS response:\n{response.text}')
 
     # Parse current id
@@ -110,27 +109,28 @@ def get_release_id_callable(release_id: str, index: str, increment: bool) -> str
     else:
         return f're_{current_release_id}'
 
-@task(task_id='get_release_id')
-def get_release_id(env_name: str, release_id: str, index: str = 'resource_centric', increment: bool = True, skip: bool = False) -> PythonOpenSearchOperator:
+def get_release_id(task_id: str, env_name: str, release_id: str, index: str = 'resource_centric', increment: bool = True, skip: bool = False, **context) -> PythonOpenSearchOperator:
     if env_name == OpensearchEnv.PROD.value:
         return PythonOpenSearchOperator(
+            task_id=task_id,
             python_callable=get_release_id_callable,
             op_kwargs={'release_id': release_id, 'index': index, 'increment': increment},
-            os_cert_secret_name=os_qa_cert,
-            os_credentials_secret_name=os_qa_credentials,
-            os_credentials_secret_key_username=os_credentials_username_key,
-            os_credentials_secret_key_password=os_credentials_password_key,
+            ca_path = os_prod_cert_path,
+            ca_filename = os_cert_filename,
+            ca_cert = os_prod_cert,
+            provide_context=True,
             skip=skip
         )
 
     elif env_name == OpensearchEnv.QA.value:
         return PythonOpenSearchOperator(
+            task_id=task_id,
             python_callable=get_release_id_callable,
             op_kwargs={'release_id': release_id, 'index': index, 'increment': increment},
-            os_cert_secret_name=os_qa_cert,
-            os_credentials_secret_name=os_qa_credentials,
-            os_credentials_secret_key_username=os_credentials_username_key,
-            os_credentials_secret_key_password=os_credentials_password_key,
+            ca_path = os_qa_cert_path,
+            ca_filename = os_cert_filename,
+            ca_cert = os_qa_cert,
+            provide_context=True,
             skip=skip
         )
     else:
