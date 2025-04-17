@@ -66,18 +66,37 @@ for env in PostgresEnv:
     DAG pour le chargement dans le Catalogue **{env_name}** des métadonnées en scannant les données du lac.
     
     ### Description
-    Ce DAG scan les données d'une ressource pour en déduire les métadonnées puis les charge dans le Catalogue **{env_name}**.
+    Ce DAG scanne les données d'une ressource pour en extraire les métadonnées, puis les charge dans le Catalogue **{env_name}**.
+    > ⚠️ **Attention**  
+    > Ce DAG écrasera les métadonnées existantes dans le catalogue si la ressource existe déjà.
+    
+    #### Données scannées
+    Le DAG scanne les DatasetConf et les données dans Minio des zones suivantes :
+    
+    - `source_system`: anonymized  
+    - `research_project`: released (latest)  
+    - `eqp`: released (latest)
+    
+    #### Données chargées
+    Les colonnes suivantes sont chargées dans le catalogue pour la table `dict_table` :
+    - name
+    - to_be_published
+    - resource_id
+    
+    Les colonnes suivantes sont chargées dans le catalogue pour la table `variable` :
+    - name
+    - path
+    - value_type
+    - table_id
+    - to_be_published
+    - rolling_version
     
     ### Configuration
     * Paramètre `branch` : Branche du jar à utiliser.
     * Paramètre `resource_code` : Code de la ressource à charger.
     * Paramètre `resource_type` : Type de la ressource à charger parmi `source_system`, `research_project` ou `eqp`.
     * Paramètre `to_be_published` : Si les métadonnées de la ressource doivent être publiées dans le portail.
-    * Paramètre `tables` : Liste des tables à créer dans la base de données. Par défaut, crée toutes les tables.
-    
-    ## Tables à charger
-    * dict_table : Charge la table `dict_table`.
-    * variable : Charge la table `variable`.
+    * Paramètre `tables` : Liste des tables postgres dans lesquelles charger les métadonnées parmi `dict_table` et `variable`. Par défaut, les deux tables sont chargées.
     """
 
     with DAG(
