@@ -9,11 +9,10 @@ from typing import List
 from airflow.decorators import task
 from lib.operators.spark import SparkOperator
 from lib.operators.spark_opensearch import SparkOpenSearchOperator
-
+from lib.operators.python_opensearch import PythonOpenSearchOperator
 from lib.opensearch import (OpensearchEnv, os_credentials_username, os_credentials_password, os_prod_url, os_prod_credentials,
                             os_prod_cert, os_qa_credentials, os_qa_cert)
 
-from lib.operators.python_opensearch import PythonOpenSearchOperator
 
 
 def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,
