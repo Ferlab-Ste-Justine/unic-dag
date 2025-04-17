@@ -115,8 +115,7 @@ for os_env in OpensearchEnv:
              task_id, alias, cluster_size in os_publish_index_conf]
 
 
-        get_release_id_task = get_release_id(release_id(),
-                                             "resource_centric")  # the release id will be the same for all indexes
+        get_release_id_task = get_release_id(release_id(), os_env_name)
 
         start("start_os_index") >> get_release_id_task >> load_index_group(release_id=get_release_id_task) \
         >> publish_index_group(release_id=get_release_id_task) >> end("end_os_index")

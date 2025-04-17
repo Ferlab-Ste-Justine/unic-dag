@@ -1,53 +1,38 @@
-import subprocess
+from typing import Sequence, Callable
 
 from airflow.exceptions import AirflowSkipException
-
-from lib.operators.spark import SparkOperator
+from airflow.operators.python import PythonOperator
 from kubernetes.client import models as k8s
-from typing import Optional
 
+class PythonOpenSearchOperator(PythonOperator):
+    """
+    Execute Python with OpenSearch Connection
 
-class SparkOpenSearchOperator(SparkOperator):
-    template_fields = SparkOperator.template_fields + (
-        'spark_class',
-        'spark_jar',
-        'spark_failure_msg',
-        'zone',
-        'spark_config',
-        'skip'
-    )
+    :param: python_callable: The connection ID used to connect to Postgres
+    :param: os_cert_secret_name
+    :param: os_credentials_secret_name
+    :param: os_credentials_secret_key_username
+    :param: os_credentials_secret_key_password
+    """
+    template_fields: Sequence[str] =  (*PythonOperator.template_fields, 'skip', 'python_callable')
+
     def __init__(
             self,
-            spark_class: str,
-            spark_jar: str,
-            spark_failure_msg: str,
-            zone: str,
+            python_callable: Callable,
             os_cert_secret_name: str,
             os_credentials_secret_name: str,
             os_credentials_secret_key_username: str,
             os_credentials_secret_key_password: str,
-            spark_config: Optional[str] = '',
-            skip: Optional[bool] = False,
-            **kwargs,
-    ) -> None:
-        self.spark_class = spark_class
-        self.spark_jar = spark_jar
-        self.spark_failure_msg = spark_failure_msg
-        self.zone = zone
-        self.spark_config = spark_config
+            skip: bool = False,
+            **kwargs) -> None:
+        # python_callable has to be rendered before super class is instantiated
+        self.python_callable = python_callable
         self.os_cert_secret_name = os_cert_secret_name
         self.os_credentials_secret_name = os_credentials_secret_name
         self.os_credentials_secret_key_username = os_credentials_secret_key_username
         self.os_credentials_secret_key_password = os_credentials_secret_key_password
         self.skip = skip
-        super().__init__(
-            spark_class=self.spark_class,
-            spark_jar=self.spark_jar,
-            spark_failure_msg=self.spark_failure_msg,
-            zone=self.zone,
-            spark_config=self.spark_config,
-            **kwargs
-        )
+        super().__init__(python_callable=self.python_callable, **kwargs)
 
     def execute(self, **kwargs):
         if self.skip:
@@ -106,4 +91,3 @@ class SparkOpenSearchOperator(SparkOperator):
             self.volume_mounts = new_volume_mounts
 
         super().execute(**kwargs)
-
