@@ -5,8 +5,8 @@ class OpensearchEnv(Enum):
     PROD = 'prod'
 
 os_port = '9200'
-os_credentials_username='username'
-os_credentials_password='password'
+os_credentials_username_key='username'
+os_credentials_password_key='password'
 
 # Opensearch prod configs
 os_prod_url = 'https://workers.opensearch.unic.sainte-justine.intranet'
