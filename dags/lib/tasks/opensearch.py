@@ -85,14 +85,10 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
         return None
 
 def get_release_id_callable(release_id: str, index: str, increment: bool, **context) -> str:
-    task_instance = context['task_instance']
-
     logging.info(f'RELEASE ID: {release_id}')
     if release_id:
         logging.info(f'Using release id passed to DAG: {release_id}')
-        task_instance.xcom_push(key="release_id", value=release_id)
-
-
+        return release_id
 
     logging.info(f'No release id passed to DAG. Fetching release id from OS for all index {index}.')
     # Fetch current id from OS
@@ -109,9 +105,9 @@ def get_release_id_callable(release_id: str, index: str, increment: bool, **cont
         # Increment current id by 1
         new_release_id = f're_{str(int(current_release_id) + 1).zfill(4)}'
         logging.info(f'New release id: {new_release_id}')
-        task_instance.xcom_push(key="release_id", value=new_release_id)
+        return new_release_id
     else:
-        task_instance.xcom_push(key="release_id", value=f're_{current_release_id}')
+        return f're_{current_release_id}'
 
 def get_release_id(task_id: str, env_name: str, release_id: str, index: str = 'resource_centric', increment: bool = True, skip: bool = False, **context) -> PythonOpenSearchOperator:
     if env_name == OpensearchEnv.PROD.value:
