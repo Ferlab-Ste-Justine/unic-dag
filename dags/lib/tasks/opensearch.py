@@ -10,8 +10,8 @@ from lib.operators.spark import SparkOperator
 from lib.operators.spark_opensearch import SparkOpenSearchOperator
 from airflow.exceptions import AirflowSkipException
 
-from lib.opensearch import (OpensearchEnv, os_prod_url, os_prod_credentials, os_prod_username, os_prod_password,
-                            os_prod_cert, os_qa_credentials, os_qa_password, os_qa_cert, os_qa_username)
+from lib.opensearch import (OpensearchEnv, os_credentials_username, os_credentials_password, os_prod_url, os_prod_credentials,
+                            os_prod_cert, os_qa_credentials, os_qa_cert)
 
 
 def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,
@@ -59,6 +59,9 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
             spark_failure_msg=spark_failure_msg,
             spark_config=cluster_size,
             os_cert_secret_name=os_prod_cert,
+            os_credentials_secret_name=os_prod_credentials,
+            os_credentials_secret_key_username=os_credentials_username,
+            os_credentials_secret_key_password=os_credentials_password,
             dag=dag
         )
     elif env_name == OpensearchEnv.QA.value:
@@ -72,6 +75,9 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
             spark_failure_msg=spark_failure_msg,
             spark_config=cluster_size,
             os_cert_secret_name=os_qa_cert,
+            os_credentials_secret_name=os_qa_credentials,
+            os_credentials_secret_key_username=os_credentials_username,
+            os_credentials_secret_key_password=os_credentials_password,
             dag=dag
         )
     else:
