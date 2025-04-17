@@ -17,7 +17,7 @@ from lib.opensearch import OpensearchEnv, os_port, os_qa_url, os_prod_url
 from lib.config import jar, spark_failure_msg
 # from lib.slack import Slack
 from lib.tasks.notify import start, end
-from lib.tasks.opensearch import load_index, get_release_id, publish_index
+from lib.tasks.opensearch import load_index, publish_index
 
 def load_index_arguments(release_id: str, os_url: str, template_filename: str, os_env_name: str, pg_env_name: str,
                          alias: str) -> List[str]:
