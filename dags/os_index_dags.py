@@ -42,7 +42,7 @@ def publish_index_arguments(release_id: str, os_url: str, alias: str) -> List[st
         "--alias", alias
     ]
 
-def release_id() -> str:
+def get_release_id() -> str:
     return '{{ params.release_id or "" }}'
 
 # Update default args
@@ -86,7 +86,7 @@ for os_env in OpensearchEnv:
             # on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
         @task_group(group_id="load_indexes")
-        def load_index_group(release_id: str):
+        def load_index_group():
             os_url = os_prod_url if os_env_name == OpensearchEnv.PROD.value else os_qa_url
 
             es_load_index_conf = [
@@ -95,13 +95,13 @@ for os_env in OpensearchEnv:
                 ("os_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
             ]
 
-            [load_index(task_id, load_index_arguments(release_id, os_url, template_filename, os_env_name, pg_env_name, alias),
+            [load_index(task_id, load_index_arguments(get_release_id(), os_url, template_filename, os_env_name, pg_env_name, alias),
                         jar, spark_failure_msg, cluster_size, dag) for
              task_id, alias, cluster_size, template_filename in es_load_index_conf]
 
 
         @task_group(group_id="publish_indexes")
-        def publish_index_group(release_id: str):
+        def publish_index_group():
             os_url = os_prod_url if os_env_name == OpensearchEnv.PROD.value else os_qa_url
 
             os_publish_index_conf = [
@@ -110,12 +110,11 @@ for os_env in OpensearchEnv:
                 ("os_publish_index_variable_centric", "variable_centric", "large-etl")
             ]
 
-            [publish_index(task_id, publish_index_arguments(release_id, os_url, alias),
+            [publish_index(task_id, publish_index_arguments(get_release_id(), os_url, alias),
                            jar, spark_failure_msg, cluster_size, os_env_name, dag) for
              task_id, alias, cluster_size in os_publish_index_conf]
 
 
-        get_release_id_task = get_release_id(release_id(), os_env_name)
+        # get_release_id_task = get_release_id("os_get_release_id", os_env_name, release_id())
 
-        start("start_os_index") >> get_release_id_task >> load_index_group(release_id=get_release_id_task) \
-        >> publish_index_group(release_id=get_release_id_task) >> end("end_os_index")
+        start("start_os_index") >> load_index_group() >> publish_index_group() >> end("end_os_index")
