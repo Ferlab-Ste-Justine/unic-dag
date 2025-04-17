@@ -10,7 +10,7 @@ from airflow.decorators import task
 from lib.operators.spark import SparkOperator
 from lib.operators.spark_opensearch import SparkOpenSearchOperator
 from lib.operators.python_opensearch import PythonOpenSearchOperator
-from lib.opensearch import (OpensearchEnv, os_credentials_username, os_credentials_password, os_prod_url, os_prod_credentials,
+from lib.opensearch import (OpensearchEnv, os_credentials_username_key, os_credentials_password_key, os_prod_url, os_prod_credentials,
                             os_prod_cert, os_qa_credentials, os_qa_cert)
 
 
@@ -61,8 +61,8 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
             spark_config=cluster_size,
             os_cert_secret_name=os_prod_cert,
             os_credentials_secret_name=os_prod_credentials,
-            os_credentials_secret_key_username=os_credentials_username,
-            os_credentials_secret_key_password=os_credentials_password,
+            os_credentials_secret_key_username=os_credentials_username_key,
+            os_credentials_secret_key_password=os_credentials_password_key,
             dag=dag
         )
     elif env_name == OpensearchEnv.QA.value:
@@ -77,8 +77,8 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
             spark_config=cluster_size,
             os_cert_secret_name=os_qa_cert,
             os_credentials_secret_name=os_qa_credentials,
-            os_credentials_secret_key_username=os_credentials_username,
-            os_credentials_secret_key_password=os_credentials_password,
+            os_credentials_secret_key_username=os_credentials_username_key,
+            os_credentials_secret_key_password=os_credentials_password_key,
             dag=dag
         )
     else:
@@ -118,8 +118,8 @@ def get_release_id(env_name: str, release_id: str, index: str = 'resource_centri
             op_kwargs={'release_id': release_id, 'index': index, 'increment': increment},
             os_cert_secret_name=os_qa_cert,
             os_credentials_secret_name=os_qa_credentials,
-            os_credentials_secret_key_username=os_credentials_username,
-            os_credentials_secret_key_password=os_credentials_password,
+            os_credentials_secret_key_username=os_credentials_username_key,
+            os_credentials_secret_key_password=os_credentials_password_key,
             skip=skip
         )
 
@@ -129,8 +129,8 @@ def get_release_id(env_name: str, release_id: str, index: str = 'resource_centri
             op_kwargs={'release_id': release_id, 'index': index, 'increment': increment},
             os_cert_secret_name=os_qa_cert,
             os_credentials_secret_name=os_qa_credentials,
-            os_credentials_secret_key_username=os_credentials_username,
-            os_credentials_secret_key_password=os_credentials_password,
+            os_credentials_secret_key_username=os_credentials_username_key,
+            os_credentials_secret_key_password=os_credentials_password_key,
             skip=skip
         )
     else:
