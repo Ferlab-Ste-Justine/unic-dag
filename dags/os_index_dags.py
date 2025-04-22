@@ -12,16 +12,15 @@ from airflow.decorators import task_group
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.postgres import PostgresEnv
-from lib.opensearch import OpensearchEnv, os_port, os_qa_url, os_prod_url
 from lib.config import jar, spark_failure_msg
+from lib.opensearch import OpensearchEnv, os_port, os_qa_url, os_prod_url, os_env_pg_env_mapping
 # from lib.slack import Slack
 from lib.tasks.notify import start, end
 from lib.tasks.opensearch import load_index, publish_index
 
+
 def load_index_arguments(release_id: str, os_url: str, template_filename: str, os_env_name: str, pg_env_name: str,
                          alias: str) -> List[str]:
-
     return [
         "--env", pg_env_name,
         "--osurl", os_url,
@@ -33,8 +32,8 @@ def load_index_arguments(release_id: str, os_url: str, template_filename: str, o
         "--config", "config/prod.conf"
     ]
 
-def publish_index_arguments(release_id: str, os_url: str, alias: str) -> List[str]:
 
+def publish_index_arguments(release_id: str, os_url: str, alias: str) -> List[str]:
     return [
         "--osurl", os_url,
         "--osport", os_port,
@@ -42,8 +41,10 @@ def publish_index_arguments(release_id: str, os_url: str, alias: str) -> List[st
         "--alias", alias
     ]
 
+
 def get_release_id() -> str:
     return '{{ params.release_id or "" }}'
+
 
 # Update default args
 args = {
@@ -53,9 +54,8 @@ args = {
 }
 
 for os_env in OpensearchEnv:
-
-    os_env_name = os_env.value
-    pg_env_name = PostgresEnv.PROD.value
+    os_env_name: str = os_env.value
+    pg_env_name: str = os_env_pg_env_mapping[os_env].value
 
     doc = f"""
     # Load {pg_env_name} Index into OpenSeach {os_env_name} 
