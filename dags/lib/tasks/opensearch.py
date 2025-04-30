@@ -1,12 +1,10 @@
 import logging
-import time
 
 import requests
 
 from airflow import DAG
 from typing import List
 
-from airflow.decorators import task
 from lib.operators.spark import SparkOperator
 from lib.operators.spark_opensearch import SparkOpenSearchOperator
 from lib.operators.pythonca import PythonCaOperator
@@ -96,8 +94,6 @@ def get_release_id_callable(release_id: str, index: str, env: str, increment: bo
     # Fetch current id from OS
     host = os_config.get('url')
     url = f'{host}:{os_port}/{index}?&pretty'
-
-    time.sleep(300)
 
     response = requests.get(url, auth=(os_config.get('username'), os_config.get('password')), verify=os_config.get('ca_path'))
     logging.info(f'OS response:\n{response.text}')
