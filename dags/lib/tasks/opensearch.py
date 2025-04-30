@@ -95,7 +95,7 @@ def get_release_id_callable(release_id: str, index: str, env: str, increment: bo
     # Fetch current id from OS
     host = os_config.get('url')
     url = f'{host}:{os_port}/{index}?&pretty'
-    response = requests.get(url, auth=(os_config.get('username'), os_config.get('password')), verify=os_config.get('ca_path')) # change to accept qa or prod
+    response = requests.get(url, auth=(os_config.get('username'), os_config.get('password')), verify=os_config.get('ca_path'))
     logging.info(f'OS response:\n{response.text}')
 
     # Parse current id
