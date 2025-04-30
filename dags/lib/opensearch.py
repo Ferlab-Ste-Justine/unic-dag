@@ -40,3 +40,19 @@ os_qa_username = Variable.get('os_qa_username', None)
 os_qa_password = Variable.get('os_qa_password', None)
 os_qa_cert = Variable.get('os_qa_ca_certificate', None)
 os_qa_cert_path = '/tmp/ca/os/qa/'
+
+# Config map for simple retrieval
+os_env_config = {
+    'prod': {
+        'username': os_prod_username,
+        'password': os_prod_password,
+        'ca_path': os_prod_cert_path,
+        'url' : os_prod_url
+    },
+    'qa': {
+        'username': os_qa_username,
+        'password': os_qa_password,
+        'ca_path': os_qa_cert_path,
+        'url' : os_qa_url
+    }
+}

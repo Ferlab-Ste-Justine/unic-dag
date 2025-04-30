@@ -1,7 +1,6 @@
 import logging
 
 import requests
-import os
 
 from airflow import DAG
 from typing import List
@@ -9,10 +8,10 @@ from typing import List
 from airflow.decorators import task
 from lib.operators.spark import SparkOperator
 from lib.operators.spark_opensearch import SparkOpenSearchOperator
-from lib.operators.python_opensearch import PythonOpenSearchOperator
-from lib.opensearch import (OpensearchEnv, os_credentials_username_key, os_credentials_password_key, os_prod_url, os_prod_credentials_secret,
-                            os_prod_cert_secret, os_qa_credentials_secret, os_qa_cert_secret, os_prod_cert_path,
-                            os_cert_filename, os_prod_cert, os_qa_cert_path, os_qa_cert, os_qa_username, os_qa_password, os_qa_cert_path, os_port)
+from lib.operators.pythonca import PythonCaOperator
+from lib.opensearch import (OpensearchEnv, os_credentials_username_key, os_credentials_password_key, os_prod_credentials_secret,
+                            os_prod_cert_secret, os_qa_credentials_secret, os_qa_cert_secret, os_env_config, os_port,
+                            os_prod_cert_path, os_cert_filename, os_prod_cert, os_qa_cert_path, os_qa_cert)
 
 
 def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,
@@ -84,7 +83,9 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
     else:
         return None
 
-def get_release_id_callable(release_id: str, index: str, increment: bool, **context) -> str:
+def get_release_id_callable(release_id: str, index: str, env: str, increment: bool) -> str:
+    os_config = os_env_config.get(env)
+
     logging.info(f'RELEASE ID: {release_id}')
     if release_id:
         logging.info(f'Using release id passed to DAG: {release_id}')
@@ -92,8 +93,9 @@ def get_release_id_callable(release_id: str, index: str, increment: bool, **cont
 
     logging.info(f'No release id passed to DAG. Fetching release id from OS for all index {index}.')
     # Fetch current id from OS
-    url = f'{os_prod_url}:{os_port}/{index}?&pretty'
-    response = requests.get(url, auth=(os_qa_username, os_qa_password), verify=os_qa_cert_path) # change to accept qa or prod
+    host = os_config.get('url')
+    url = f'{host}:{os_port}/{index}?&pretty'
+    response = requests.get(url, auth=(os_config.get('username'), os_config.get('password')), verify=os_config.get('ca_path'))
     logging.info(f'OS response:\n{response.text}')
 
     # Parse current id
@@ -109,12 +111,12 @@ def get_release_id_callable(release_id: str, index: str, increment: bool, **cont
     else:
         return f're_{current_release_id}'
 
-def get_release_id(task_id: str, env_name: str, release_id: str, index: str = 'resource_centric', increment: bool = True, skip: bool = False, **context) -> PythonOpenSearchOperator:
+def get_release_id(task_id: str, env_name: str, release_id: str, index: str = 'resource_centric', increment: bool = True, skip: bool = False) -> PythonCaOperator:
     if env_name == OpensearchEnv.PROD.value:
-        return PythonOpenSearchOperator(
+        return PythonCaOperator(
             task_id=task_id,
             python_callable=get_release_id_callable,
-            op_kwargs={'release_id': release_id, 'index': index, 'increment': increment},
+            op_kwargs={'release_id': release_id, 'index': index, 'env': env_name, 'increment': increment},
             ca_path = os_prod_cert_path,
             ca_filename = os_cert_filename,
             ca_cert = os_prod_cert,
@@ -123,10 +125,10 @@ def get_release_id(task_id: str, env_name: str, release_id: str, index: str = 'r
         )
 
     elif env_name == OpensearchEnv.QA.value:
-        return PythonOpenSearchOperator(
+        return PythonCaOperator(
             task_id=task_id,
             python_callable=get_release_id_callable,
-            op_kwargs={'release_id': release_id, 'index': index, 'increment': increment},
+            op_kwargs={'release_id': release_id, 'index': index, 'env': env_name, 'increment': increment},
             ca_path = os_qa_cert_path,
             ca_filename = os_cert_filename,
             ca_cert = os_qa_cert,

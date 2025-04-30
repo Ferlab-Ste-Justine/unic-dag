@@ -4,11 +4,11 @@ from typing import Callable, Sequence
 from airflow.exceptions import AirflowSkipException
 from airflow.operators.python import PythonOperator
 
-class PythonOpenSearchOperator(PythonOperator):
+class PythonCaOperator(PythonOperator):
     """
-    Execute Python with OpenSearch Connection
+    Execute Python with CA certificate
 
-    :param: python_callable: The connection ID used to connect to Postgres
+    :param python_callable: A reference to an object that is callable
     :param ca_path: Filepath where ca certificate file will be located
     :param ca_filename: Filename where ca certificate file will be written (.crt)
     :param ca_cert: Ca certificate
