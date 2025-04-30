@@ -46,13 +46,13 @@ os_env_config = {
     'prod': {
         'username': os_prod_username,
         'password': os_prod_password,
-        'ca_path': os_prod_cert_path,
+        'ca_path': os_prod_cert_path + os_cert_filename,
         'url' : os_prod_url
     },
     'qa': {
         'username': os_qa_username,
         'password': os_qa_password,
-        'ca_path': os_qa_cert_path,
+        'ca_path': os_qa_cert_path + os_cert_filename,
         'url' : os_qa_url
     }
 }
