@@ -17,7 +17,7 @@ from lib.opensearch import OpensearchEnv, os_port, os_qa_url, os_prod_url
 from lib.postgres import PostgresEnv
 # from lib.slack import Slack
 from lib.tasks.notify import start, end
-from lib.tasks.opensearch import load_index, publish_index, get_release_id
+from lib.tasks.opensearch import load_index, publish_index, pull_release_id, push_release_id
 
 
 def load_index_arguments(release_id: str, os_url: str, template_filename: str, os_env_name: str, pg_env_name: str,
@@ -45,7 +45,6 @@ def publish_index_arguments(release_id: str, os_url: str, alias: str) -> List[st
 
 def release_id() -> str:
     return '{{ params.release_id or "" }}'
-
 
 # Update default args
 args = {
@@ -116,8 +115,9 @@ for os_env in OpensearchEnv:
                            jar, spark_failure_msg, cluster_size, os_env_name, dag) for
              task_id, alias, cluster_size in os_publish_index_conf]
 
+        push_release_id_task = push_release_id(os_env_name, release_id())
+        pull_release_id_task = pull_release_id()
 
-        get_release_id_task = get_release_id("os_get_release_id", os_env_name, release_id())
-
-        start("start_os_index") >> get_release_id_task >> load_index_group(release_id=get_release_id_task) \
-        >> publish_index_group(release_id=get_release_id_task) >> end("end_os_index")
+        start("start_os_index") >> push_release_id_task >> pull_release_id_task \
+        >> load_index_group(release_id=pull_release_id_task) >> publish_index_group(release_id=pull_release_id_task) \
+        >> end("end_os_index")

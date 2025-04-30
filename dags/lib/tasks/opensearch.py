@@ -3,9 +3,9 @@ import logging
 import requests
 
 from airflow import DAG
-from airflow.decorators import task
 from typing import List
 
+from airflow.decorators import task
 from lib.operators.spark import SparkOperator
 from lib.operators.spark_opensearch import SparkOpenSearchOperator
 from lib.operators.pythonca import PythonCaOperator
@@ -83,7 +83,7 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
     else:
         return None
 
-def get_release_id_callable(release_id: str, index: str, env: str, increment: bool) -> str:
+def get_release_id(release_id: str, index: str, env: str, increment: bool) -> str:
     os_config = os_env_config.get(env)
 
     logging.info(f'RELEASE ID: {release_id}')
@@ -112,12 +112,11 @@ def get_release_id_callable(release_id: str, index: str, env: str, increment: bo
     else:
         return f're_{current_release_id}'
 
-@task(task_id='get_release_id')
-def get_release_id(task_id: str, env_name: str, release_id: str, index: str = 'resource_centric', increment: bool = True, skip: bool = False) -> PythonCaOperator:
+def push_release_id(env_name: str, release_id: str, task_id: str = "push_release_id", index: str = 'resource_centric', increment: bool = True, skip: bool = False) -> PythonCaOperator:
     if env_name == OpensearchEnv.PROD.value:
         return PythonCaOperator(
             task_id=task_id,
-            python_callable=get_release_id_callable,
+            python_callable=get_release_id,
             op_kwargs={'release_id': release_id, 'index': index, 'env': env_name, 'increment': increment},
             ca_path = os_prod_cert_path,
             ca_filename = os_cert_filename,
@@ -129,7 +128,7 @@ def get_release_id(task_id: str, env_name: str, release_id: str, index: str = 'r
     elif env_name == OpensearchEnv.QA.value:
         return PythonCaOperator(
             task_id=task_id,
-            python_callable=get_release_id_callable,
+            python_callable=get_release_id,
             op_kwargs={'release_id': release_id, 'index': index, 'env': env_name, 'increment': increment},
             ca_path = os_qa_cert_path,
             ca_filename = os_cert_filename,
@@ -139,3 +138,9 @@ def get_release_id(task_id: str, env_name: str, release_id: str, index: str = 'r
         )
     else:
         return None
+
+@task(task_id='pull_release_id')
+def pull_release_id(ti=None):
+    release_id = ti.xcom_pull(task_ids="push_release_id")
+    logging.info(f"Release id : {release_id}")
+    return release_id
