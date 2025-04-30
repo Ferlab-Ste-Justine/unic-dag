@@ -3,6 +3,7 @@ import logging
 import requests
 
 from airflow import DAG
+from airflow.decorators import task
 from typing import List
 
 from lib.operators.spark import SparkOperator
@@ -111,6 +112,7 @@ def get_release_id_callable(release_id: str, index: str, env: str, increment: bo
     else:
         return f're_{current_release_id}'
 
+@task(task_id='get_release_id')
 def get_release_id(task_id: str, env_name: str, release_id: str, index: str = 'resource_centric', increment: bool = True, skip: bool = False) -> PythonCaOperator:
     if env_name == OpensearchEnv.PROD.value:
         return PythonCaOperator(
