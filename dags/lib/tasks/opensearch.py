@@ -1,5 +1,6 @@
 import logging
 import subprocess
+import time
 
 import requests
 
@@ -150,6 +151,9 @@ def get_next_release_id(env_name: str, release_id: str, index: str = 'resource_c
         os_config = os_env_config.get(env_name)
 
     logging.info(f'RELEASE ID: {release_id}')
+
+    time.sleep(240)
+
     if release_id:
         logging.info(f'Using release id passed to DAG: {release_id}')
         return release_id
