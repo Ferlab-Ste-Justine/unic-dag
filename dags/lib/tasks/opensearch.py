@@ -1,6 +1,5 @@
 import logging
 import subprocess
-import time
 
 import requests
 
@@ -85,62 +84,6 @@ def publish_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
     else:
         return None
 
-# def get_next_release_id_callable(release_id: str, index: str, env: str, increment: bool) -> str:
-#     os_config = os_env_config.get(env)
-#
-#     logging.info(f'RELEASE ID: {release_id}')
-#     if release_id:
-#         logging.info(f'Using release id passed to DAG: {release_id}')
-#         return release_id
-#
-#     logging.info(f'No release id passed to DAG. Fetching release id from OS for all index {index}.')
-#     # Fetch current id from OS
-#     host = os_config.get('url')
-#     url = f'{host}:{os_port}/{index}?&pretty'
-#
-#     response = requests.get(url, auth=(os_config.get('username'), os_config.get('password')), verify=os_config.get('ca_path'))
-#     logging.info(f'OS response:\n{response.text}')
-#
-#     # Parse current id
-#     current_full_release_id = list(response.json())[0]  # {index}_re_00xx
-#     current_release_id = current_full_release_id.split('_')[-1]  # 00xx
-#     logging.info(f'Current release id: re_{current_release_id}')
-#
-#     if increment:
-#         # Increment current id by 1
-#         new_release_id = f're_{str(int(current_release_id) + 1).zfill(4)}'
-#         logging.info(f'New release id: {new_release_id}')
-#         return new_release_id
-#     else:
-#         return f're_{current_release_id}'
-#
-# def get_next_release_id(env_name: str, release_id: str, task_id: str = "push_release_id", index: str = 'resource_centric', increment: bool = True, skip: bool = False) -> PythonCaOperator:
-#     if env_name == OpensearchEnv.PROD.value:
-#         return PythonCaOperator(
-#             task_id=task_id,
-#             python_callable=get_next_release_id,
-#             op_kwargs={'release_id': release_id, 'index': index, 'env': env_name, 'increment': increment},
-#             ca_path = os_prod_cert_path,
-#             ca_filename = os_cert_filename,
-#             ca_cert = os_prod_cert,
-#             provide_context=True,
-#             skip=skip
-#         )
-#
-#     elif env_name == OpensearchEnv.QA.value:
-#         return PythonCaOperator(
-#             task_id=task_id,
-#             python_callable=get_next_release_id,
-#             op_kwargs={'release_id': release_id, 'index': index, 'env': env_name, 'increment': increment},
-#             ca_path = os_qa_cert_path,
-#             ca_filename = os_cert_filename,
-#             ca_cert = os_qa_cert,
-#             provide_context=True,
-#             skip=skip
-#         )
-#     else:
-#         return None
-
 @task(task_id='get_next_release_id')
 def get_next_release_id(env_name: str, release_id: str, index: str = 'resource_centric', increment: bool = True) -> PythonCaOperator:
     subprocess.run(["mkdir", "-p", os_qa_cert_path])
@@ -151,8 +94,6 @@ def get_next_release_id(env_name: str, release_id: str, index: str = 'resource_c
         os_config = os_env_config.get(env_name)
 
     logging.info(f'RELEASE ID: {release_id}')
-
-    time.sleep(240)
 
     if release_id:
         logging.info(f'Using release id passed to DAG: {release_id}')
