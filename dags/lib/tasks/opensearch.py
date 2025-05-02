@@ -84,8 +84,8 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
     alias_info = os_client.indices.get_alias(name=alias)
     prev_index = list(alias_info.keys())[0]
 
-    print(f"Previous Index: {prev_index}")
-    print(f"New Index: {new_index}")
+    logging.info(f"Previous Index: {prev_index}")
+    logging.info(f"New Index: {new_index}")
 
     actions = [
         {"remove": {"index": prev_index, "alias": alias}},
@@ -93,7 +93,7 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
     ]
 
     response = os_client.indices.update_aliases(body={"actions": actions})
-    print("Alias updated:", response)
+    logging.info("Alias updated:", response)
 
 @task(task_id='get_next_release_id')
 def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_centric', increment: bool = True) -> str:
@@ -115,7 +115,7 @@ def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_c
     if increment:
         # Increment current id by 1
         new_release_id = f're_{str(int(current_release_id) + 1).zfill(4)}'
-        print(f'New release id: {new_release_id}')
+        logging.info(f'New release id: {new_release_id}')
         return new_release_id
     else:
         return f're_{current_release_id}'
