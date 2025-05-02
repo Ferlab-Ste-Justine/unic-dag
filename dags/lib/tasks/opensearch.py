@@ -82,13 +82,13 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
     new_index = f"{alias}_{release_id}"
 
     alias_info = os_client.indices.get_alias(name=alias)
-    prev_index = list(alias_info.keys())[0]
+    current_index = list(alias_info.keys())[0]
 
-    logging.info(f"Previous Index: {prev_index}")
+    logging.info(f"Current Index: {current_index}")
     logging.info(f"New Index: {new_index}")
 
     actions = [
-        {"remove": {"index": prev_index, "alias": alias}},
+        {"remove": {"index": current_index, "alias": alias}},
         {"add": {"index": new_index, "alias": alias}}
     ]
 
