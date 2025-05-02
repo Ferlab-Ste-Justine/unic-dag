@@ -103,17 +103,10 @@ for os_env in OpensearchEnv:
 
         @task_group(group_id="publish_indexes")
         def publish_index_group(release_id: str):
-            os_url = os_prod_url if os_env_name == OpensearchEnv.PROD.value else os_qa_url
+            aliases = ["resource_centric", "table_centric", "variable_centric"]
 
-            os_publish_index_conf = [
-                ("os_publish_index_resource_centric", "resource_centric", "xsmall-etl"),
-                ("os_publish_index_table_centric", "table_centric", "xsmall-etl"),
-                ("os_publish_index_variable_centric", "variable_centric", "xsmall-etl")
-            ]
-
-            [publish_index(task_id, publish_index_arguments(release_id, os_url, alias),
-                           jar, spark_failure_msg, cluster_size, os_env_name, dag) for
-             task_id, alias, cluster_size in os_publish_index_conf]
+            for alias in aliases:
+                publish_index.override(task_id=f"publish_index_{alias}")(os_env_name, release_id, alias)
 
         get_next_release_id_task = get_next_release_id(os_env_name, get_release_id())
 

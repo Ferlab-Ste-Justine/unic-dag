@@ -44,15 +44,17 @@ os_qa_cert_path = '/tmp/ca/os/qa/'
 # Config map for simple retrieval
 os_env_config = {
     'prod': {
+        'url' : os_prod_url,
         'username': os_prod_username,
         'password': os_prod_password,
-        'ca_path': os_prod_cert_path + os_cert_filename,
-        'url' : os_prod_url
+        'ca_path': os_prod_cert_path,
+        'ca_cert': os_prod_cert
     },
     'qa': {
+        'url' : os_qa_url,
         'username': os_qa_username,
         'password': os_qa_password,
-        'ca_path': os_qa_cert_path + os_cert_filename,
-        'url' : os_qa_url
+        'ca_path': os_qa_cert_path,
+        'ca_cert': os_qa_cert
     }
 }
