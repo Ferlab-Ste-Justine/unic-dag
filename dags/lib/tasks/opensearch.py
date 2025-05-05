@@ -1,16 +1,8 @@
-import logging
-import subprocess
-
 from airflow import DAG
 from typing import List
 
 from airflow.decorators import task
 from lib.operators.spark import SparkOperator
-from lib.operators.spark_opensearch import SparkOpenSearchOperator
-from lib.opensearch import (OpensearchEnv, os_credentials_username_key, os_credentials_password_key, os_prod_credentials_secret,
-                            os_prod_cert_secret, os_qa_credentials_secret, os_qa_cert_secret, os_env_config, os_port,
-                            os_prod_cert_path, os_cert_filename, os_prod_cert, os_qa_cert_path, os_qa_cert)
-
 
 def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,
                   dag: DAG, zone: str = "yellow",
@@ -56,30 +48,13 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
     :return: None
     """
     import logging
-
-    from opensearchpy import OpenSearch
-    from lib.opensearch import os_env_config, os_port, load_cert
-
-    os_config = os_env_config.get(env_name)
+    from lib.opensearch import load_cert, get_opensearch_client
 
     # Load the os ca-certificate into task
     load_cert(env_name)
 
-    # Create the OpenSearch client
-    host = os_config.get('url')
-    auth = (os_config.get('username'), os_config.get('password'))
-    ca_certs_path = os_config.get('ca_path')
-
-    os_client = OpenSearch(
-        hosts = [{'host': host, 'port': os_port}],
-        http_compress = True,
-        http_auth = auth,
-        use_ssl = True,
-        verify_certs = True,
-        ssl_assert_hostname = False,
-        ssl_show_warn = False,
-        ca_certs = ca_certs_path
-    )
+    # Get OpenSearch client
+    os_client = get_opensearch_client(env_name)
 
     new_index = f"{alias}_{release_id}"
 
@@ -111,30 +86,13 @@ def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_c
     :return: The next release_id
     """
     import logging
-
-    from opensearchpy import OpenSearch
-    from lib.opensearch import os_env_config, os_port, load_cert
-
-    os_config = os_env_config.get(env_name)
+    from lib.opensearch import os_env_config, load_cert, get_opensearch_client
 
     # Load the os ca-certificate into task
     load_cert(env_name)
 
-    # Create the OpenSearch client
-    host = os_config.get('url')
-    auth = (os_config.get('username'), os_config.get('password'))
-    ca_certs_path = os_config.get('ca_path')
-
-    os_client = OpenSearch(
-        hosts = [{'host': host, 'port': os_port}],
-        http_compress = True,
-        http_auth = auth,
-        use_ssl = True,
-        verify_certs = True,
-        ssl_assert_hostname = False,
-        ssl_show_warn = False,
-        ca_certs = ca_certs_path
-    )
+    # Get OpenSearch client
+    os_client = get_opensearch_client(env_name)
 
     logging.info(f'RELEASE ID: {release_id}')
 
