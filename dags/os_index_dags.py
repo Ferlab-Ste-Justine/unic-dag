@@ -17,7 +17,7 @@ from lib.opensearch import OpensearchEnv, os_port, os_qa_url, os_prod_url
 from lib.postgres import PostgresEnv
 # from lib.slack import Slack
 from lib.tasks.notify import start, end
-from lib.tasks.opensearch import load_index
+from lib.tasks.opensearch import load_index, publish_index, get_next_release_id
 
 
 def load_index_arguments(release_id: str, os_url: str, template_filename: str, os_env_name: str, pg_env_name: str,
@@ -87,7 +87,7 @@ for os_env in OpensearchEnv:
             # on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
         @task_group(group_id="load_indexes")
-        def load_index_group():
+        def load_index_group(release_id: str):
             os_url = os_prod_url if os_env_name == OpensearchEnv.PROD.value else os_qa_url
 
             es_load_index_conf = [
@@ -96,21 +96,18 @@ for os_env in OpensearchEnv:
                 ("os_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
             ]
 
-            [load_index(task_id, load_index_arguments(get_release_id(), os_url, template_filename, os_env_name, pg_env_name, alias),
+            [load_index(task_id, load_index_arguments(release_id, os_url, template_filename, os_env_name, pg_env_name, alias),
                         jar, spark_failure_msg, cluster_size, dag) for
              task_id, alias, cluster_size, template_filename in es_load_index_conf]
 
+        @task_group(group_id="publish_indexes")
+        def publish_index_group(release_id: str):
+            aliases = ["resource_centric", "table_centric", "variable_centric"]
 
-        # @task_group(group_id="publish_indexes")
-        # def publish_index_group(release_id: str):
-        #     aliases = ["resource_centric", "table_centric", "variable_centric"]
-        #
-        #     for alias in aliases:
-        #         publish_index.override(task_id=f"publish_index_{alias}")(os_env_name, release_id, alias)
-        #
-        # get_next_release_id_task = get_next_release_id(os_env_name, get_release_id())
+            for alias in aliases:
+                publish_index.override(task_id=f"publish_index_{alias}")(os_env_name, release_id, alias)
 
-        # start("start_os_index") >> get_next_release_id_task >> load_index_group(release_id=get_next_release_id_task) \
-        # >> publish_index_group(release_id=get_next_release_id_task) >> end("end_os_index")
+        get_next_release_id_task = get_next_release_id(os_env_name, get_release_id())
 
-        start("start_os_index") >> load_index_group() >> end("end_os_index")
+        start("start_os_index") >> get_next_release_id_task >> load_index_group(release_id=get_next_release_id_task) \
+        >> publish_index_group(release_id=get_next_release_id_task) >> end("end_os_index")
