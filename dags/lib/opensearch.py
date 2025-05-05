@@ -1,3 +1,4 @@
+import subprocess
 from enum import Enum
 
 from airflow.models import Variable
@@ -58,3 +59,14 @@ os_env_config = {
         'ca_cert': os_qa_cert
     }
 }
+
+def load_cert(env_name: str) -> None:
+    """
+    Load the os ca-certificate into task
+    """
+    os_config = os_env_config.get(env_name)
+
+    subprocess.run(["mkdir", "-p", os_config.get('ca_path')])
+
+    with open(os_config.get('ca_path') + os_cert_filename, "w") as outfile:
+        outfile.write(os_config.get('ca_cert'))

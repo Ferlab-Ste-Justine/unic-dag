@@ -44,19 +44,26 @@ def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, 
     )
 
 @task.virtualenv(
-    task_id="publish_index", requirements=["opensearch-py==2.8.0"], system_site_packages=False
+    task_id="publish_index", requirements=["opensearch-py==2.8.0"]
 )
 def publish_index(env_name: str, release_id: str, alias: str) -> None:
+    """
+    Publish index by updating alias.
+
+    :param env_name: OpenSearch environment name (e.g. 'prod', 'qa')
+    :param release_id: Release ID to use.
+    :param alias: Specify alias of OpenSearch index to publish.
+    :return: None
+    """
+    import logging
+
     from opensearchpy import OpenSearch
-    from lib.opensearch import os_env_config
+    from lib.opensearch import os_env_config, os_port, load_cert
 
     os_config = os_env_config.get(env_name)
 
     # Load the os ca-certificate into task
-    subprocess.run(["mkdir", "-p", os_config.get('ca_path')])
-
-    with open(os_config.get('ca_path') + os_cert_filename, "w") as outfile:
-        outfile.write(os_config.get('ca_cert'))
+    load_cert(env_name)
 
     # Create the OpenSearch client
     host = os_config.get('url')
@@ -106,15 +113,12 @@ def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_c
     import logging
 
     from opensearchpy import OpenSearch
-    from lib.opensearch import os_env_config
+    from lib.opensearch import os_env_config, os_port, load_cert
 
     os_config = os_env_config.get(env_name)
 
     # Load the os ca-certificate into task
-    subprocess.run(["mkdir", "-p", os_config.get('ca_path')])
-
-    with open(os_config.get('ca_path') + os_cert_filename, "w") as outfile:
-        outfile.write(os_config.get('ca_cert'))
+    load_cert(env_name)
 
     # Create the OpenSearch client
     host = os_config.get('url')
