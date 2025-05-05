@@ -17,7 +17,7 @@ from lib.opensearch import (OpensearchEnv, os_credentials_username_key, os_crede
 
 def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,
                   dag: DAG, zone: str = "yellow",
-                  spark_class: str = 'bio.ferlab.ui.etl.catalog.os.PrepareIndex') -> SparkOperator:
+                  spark_class: str = 'bio.ferlab.ui.etl.catalog.os.prepare.Main') -> SparkOperator:
 
     return SparkOperator(
         task_id=task_id,
