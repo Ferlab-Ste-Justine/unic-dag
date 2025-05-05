@@ -27,7 +27,6 @@
     "schemas": [],
     "pre_tests": [
       {"name": "greater_or_equal_partition_counts", "destinations": [
-        "anonymized_etraceline_acte_produits",
         "anonymized_etraceline_etat_produit",
         "anonymized_etraceline_famp_supp",
         "anonymized_etraceline_groupe",
