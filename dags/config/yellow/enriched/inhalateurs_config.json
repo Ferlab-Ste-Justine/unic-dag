@@ -30,10 +30,10 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "released_inhalateurs_emergency_patients"       , "cluster_type": "small", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_inhalateurs_external_clinics_patients", "cluster_type": "small", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_inhalateurs_hospitalised_patients"    , "cluster_type": "small", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_inhalateurs_plan_action_asthme"       , "cluster_type": "small", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "released_inhalateurs_emergency_patients"       , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "released_inhalateurs_external_clinics_patients", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "released_inhalateurs_hospitalised_patients"    , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "released_inhalateurs_plan_action_asthme"       , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
@@ -47,10 +47,10 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "published_inhalateurs_emergency_patients"       , "cluster_type": "small", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_inhalateurs_external_clinics_patients", "cluster_type": "small", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_inhalateurs_hospitalised_patients"    , "cluster_type": "small", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_inhalateurs_plan_action_asthme"       , "cluster_type": "small", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "published_inhalateurs_emergency_patients"       , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "published_inhalateurs_external_clinics_patients", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "published_inhalateurs_hospitalised_patients"    , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "published_inhalateurs_plan_action_asthme"       , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
