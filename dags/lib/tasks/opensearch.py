@@ -70,7 +70,7 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
     ]
 
     response = os_client.indices.update_aliases(body={"actions": actions})
-    logging.info("Alias updated:", response)
+    logging.info(f"Alias updated: {response}")
 
 @task.virtualenv(
     task_id="get_next_release_id", requirements=["opensearch-py==2.8.0"]
@@ -80,9 +80,9 @@ def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_c
     Get release id for openseach index.
 
     :param env_name: OpenSearch environment name (e.g. 'prod', 'qa')
-    :param release_id: Release ID to use. If not provided, the current release ID will be fetched from OpenSearch and incrimented by 1.
+    :param release_id: Release ID to use. If not provided, the current release ID will be fetched from OpenSearch and incremented by 1.
     :param alias: Specify alias of OpenSearch index to get release_id from. Default is 'resource_centric'.
-    :param increment: Specify weather to increment release_id. Default is True.
+    :param increment: Specify whether to increment release_id. Default is True.
     :return: The next release_id
     """
     import logging
