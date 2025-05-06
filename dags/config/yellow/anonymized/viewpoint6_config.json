@@ -20,13 +20,13 @@
         ], "cluster_type" : "xsmall"}
       ],
       "datasets": [
-        {"dataset_id": "anonymized_viewpoint6_query_exam"                  , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_viewpoint6_query_fetus"                 , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_viewpoint6_query_fetus_iutentries"      , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_viewpoint6_query_fetus_placenta_details", "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_viewpoint6_query_fetus_ptentries"       , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_viewpoint6_query_fetus_shunt"           , "cluster_type": "xsmall", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_viewpoint6_query_patient"               , "cluster_type": "small" , "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "anonymized_viewpoint6_query_exam"                  , "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_viewpoint6_query_fetus"                 , "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_viewpoint6_query_fetus_iutentries"      , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_viewpoint6_query_fetus_placenta_details", "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_viewpoint6_query_fetus_ptentries"       , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_viewpoint6_query_fetus_shunt"           , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_viewpoint6_query_patient"               , "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize" : [],
       "post_tests": [

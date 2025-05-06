@@ -12,14 +12,14 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"enriched_picaso_participant_index"            , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"enriched_picaso_patient_medical_record"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_picaso_participant_index"]},
-        {"dataset_id":"enriched_picaso_patient_cancer_profile"       , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_picaso_participant_index"]},
-        {"dataset_id":"enriched_picaso_hospitalisation"              , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_picaso_participant_index"]},
-        {"dataset_id":"enriched_picaso_betadglucan_test"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_picaso_hospitalisation"]},
-        {"dataset_id":"enriched_picaso_galactomanane_test"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_picaso_hospitalisation"]},
-        {"dataset_id":"enriched_picaso_microbiology_test_non_sterile", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_picaso_hospitalisation"]},
-        {"dataset_id":"enriched_picaso_microbiology_test_sterile"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_picaso_hospitalisation"]}
+        {"dataset_id":"enriched_picaso_participant_index"            , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_picaso_patient_medical_record"       , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_picaso_participant_index"]},
+        {"dataset_id":"enriched_picaso_patient_cancer_profile"       , "cluster_type": "small", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_picaso_participant_index"]},
+        {"dataset_id":"enriched_picaso_hospitalisation"              , "cluster_type": "small", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_picaso_participant_index"]},
+        {"dataset_id":"enriched_picaso_betadglucan_test"             , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_picaso_hospitalisation"]},
+        {"dataset_id":"enriched_picaso_galactomanane_test"           , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_picaso_hospitalisation"]},
+        {"dataset_id":"enriched_picaso_microbiology_test_non_sterile", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_picaso_hospitalisation"]},
+        {"dataset_id":"enriched_picaso_microbiology_test_sterile"    , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_picaso_hospitalisation"]}
       ],
       "optimize": [],
       "post_tests": []
@@ -33,13 +33,13 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"released_picaso_patient_medical_record"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_picaso_patient_cancer_profile"       , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_picaso_hospitalisation"              , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_picaso_betadglucan_test"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_picaso_galactomanane_test"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_picaso_microbiology_test_non_sterile", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_picaso_microbiology_test_sterile"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"released_picaso_patient_medical_record"       , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_picaso_patient_cancer_profile"       , "cluster_type": "small", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_picaso_hospitalisation"              , "cluster_type": "small", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_picaso_betadglucan_test"             , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_picaso_galactomanane_test"           , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_picaso_microbiology_test_non_sterile", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_picaso_microbiology_test_sterile"    , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
@@ -53,13 +53,13 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"published_picaso_patient_medical_record"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_picaso_patient_cancer_profile"       , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_picaso_hospitalisation"              , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_picaso_betadglucan_test"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_picaso_galactomanane_test"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_picaso_microbiology_test_non_sterile", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_picaso_microbiology_test_sterile"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"published_picaso_patient_medical_record"       , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_picaso_patient_cancer_profile"       , "cluster_type": "small", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_picaso_hospitalisation"              , "cluster_type": "small", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_picaso_betadglucan_test"             , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_picaso_galactomanane_test"           , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_picaso_microbiology_test_non_sterile", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_picaso_microbiology_test_sterile"    , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []

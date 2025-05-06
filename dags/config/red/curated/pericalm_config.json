@@ -13,7 +13,7 @@
         {"name": "greater_partition_counts", "destinations": ["curated_pericalm_patientcards"], "cluster_type" : "xsmall"}
       ],
       "datasets": [
-        {"dataset_id": "curated_pericalm_patientcards", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "curated_pericalm_patientcards", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize" : [],
       "post_tests": []
@@ -39,20 +39,20 @@
         ], "cluster_type" : "xsmall"}
       ],
       "datasets": [
-        {"dataset_id": "anonymized_pericalm_a*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_pericalm_c*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_pericalm_e*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_pericalm_f*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_pericalm_helper_*", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_pericalm_i*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_pericalm_l*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_pericalm_m*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_pericalm_n*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_pericalm_o*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_pericalm_p*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_pericalm_r*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_pericalm_s*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "anonymized_pericalm_v*"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "anonymized_pericalm_a*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_c*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_e*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_f*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_helper_*", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_i*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_l*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_m*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_n*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_o*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_p*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_r*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_s*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_v*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize" : [],
       "post_tests": [

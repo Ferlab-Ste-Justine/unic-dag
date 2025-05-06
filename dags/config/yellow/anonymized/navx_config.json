@@ -12,8 +12,8 @@
         "schemas": [],
         "pre_tests": [],
         "datasets": [
-          {"dataset_id": "anonymized_navx_base_donnees_patients_harmonized"  , "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-          {"dataset_id": "anonymized_navx_photos_medicales_export_harmonized", "cluster_type": "xsmall", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+          {"dataset_id": "anonymized_navx_base_donnees_patients_harmonized"  , "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+          {"dataset_id": "anonymized_navx_photos_medicales_export_harmonized", "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []}
         ],
         "optimize" : [],
         "post_tests": [
