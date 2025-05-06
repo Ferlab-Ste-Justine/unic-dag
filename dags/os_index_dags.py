@@ -80,7 +80,7 @@ for os_env in OpensearchEnv:
         def load_index_group(release_id: str):
             os_config = os_env_config.get(os_env_name)
 
-            os_url = os_config.get('url')
+            os_url = f"https://{os_config.get('url')}"
             os_port = os_config.get('port')
 
             es_load_index_conf = [

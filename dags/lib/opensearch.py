@@ -24,7 +24,7 @@ OpenSearch environment configuration map
 """
 os_env_config = {
     OpensearchEnv.PROD.value : {
-        'url': 'https://workers.opensearch.unic.sainte-justine.intranet',
+        'host': 'workers.opensearch.unic.sainte-justine.intranet',
         'port': '9200',
         'username': Variable.get('os_prod_username', None),
         'password': Variable.get('os_prod_password', None),
@@ -33,7 +33,7 @@ os_env_config = {
         'ca_filename': 'ca.crt'
     },
     OpensearchEnv.QA.value : {
-        'url': 'https://workers.opensearch.qa.unic.sainte-justine.intranet',
+        'host': 'workers.opensearch.qa.unic.sainte-justine.intranet',
         'port': '9200',
         'username': Variable.get('os_qa_username', None),
         'password': Variable.get('os_qa_password', None),
@@ -62,13 +62,13 @@ def get_opensearch_client(env_name: str):
 
     os_config = os_env_config.get(env_name)
 
-    url = os_config.get('url')
+    host = os_config.get('host')
     port = os_config.get('port')
     auth = (os_config.get('username'), os_config.get('password'))
     ca_certs_path = os_config.get('ca_path') + os_config.get('ca_filename')
 
     client = OpenSearch(
-        hosts = [{'host': url, 'port': port}],
+        hosts = [{'host': host, 'port': port}],
         http_compress = True,
         http_auth = auth,
         use_ssl = True,
