@@ -78,20 +78,10 @@ for os_env in OpensearchEnv:
     ) as dag:
         @task_group(group_id="load_indexes")
         def load_index_group(release_id: str):
-            os_config = os_env_config.get(os_env_name)
+            aliases = ["resource_centric", "table_centric", "variable_centric"]
 
-            os_url = f"https://{os_config.get('host')}"
-            os_port = os_config.get('port')
-
-            es_load_index_conf = [
-                ("os_index_resource_centric", "resource_centric", "large-etl", "resource_centric_template.json"),
-                ("os_index_table_centric", "table_centric", "large-etl", "table_centric_template.json"),
-                ("os_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
-            ]
-
-            [load_index(task_id, load_index_arguments(release_id, os_url, os_port, template_filename, os_env_name, pg_env_name, alias),
-                        jar, spark_failure_msg, cluster_size, dag) for
-             task_id, alias, cluster_size, template_filename in es_load_index_conf]
+            for alias in aliases:
+                load_index.override(task_id=f"load_index_{alias}")(os_env_name, release_id, alias)
 
         @task_group(group_id="publish_indexes")
         def publish_index_group(release_id: str):
@@ -102,5 +92,7 @@ for os_env in OpensearchEnv:
 
         get_next_release_id_task = get_next_release_id(os_env_name, get_release_id())
 
-        start("start_os_index") >> get_next_release_id_task >> load_index_group(release_id=get_next_release_id_task) \
-        >> publish_index_group(release_id=get_next_release_id_task) >> end("end_os_index")
+        # start("start_os_index") >> get_next_release_id_task >> load_index_group(release_id=get_next_release_id_task) \
+        # >> publish_index_group(release_id=get_next_release_id_task) >> end("end_os_index")
+
+        start("start_os_index") >> get_next_release_id_task >> load_index_group(release_id=get_next_release_id_task) >> end("end_os_index")

@@ -20,20 +20,52 @@ def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
         dag=dag
     )
 
-def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
-          zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.os.index.Main') -> SparkOperator:
+@task.virtualenv(
+    task_id="load_index", requirements=["opensearch-py==2.8.0"]
+)
+def load_index(env_name: str, release_id: str, alias: str) -> None:
 
-    return SparkOperator(
-        task_id=task_id,
-        name=task_id.replace("_", "-"),
-        zone=zone,
-        arguments=args,
-        spark_class=spark_class,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
-        spark_config=cluster_size,
-        dag=dag
-    )
+    """
+    Publish index by updating alias.
+
+    :param env_name: OpenSearch environment name (e.g. 'prod', 'qa')
+    :param release_id: Release ID to use.
+    :param alias: Specify alias of OpenSearch index to publish.
+    :return: None
+    """
+    import logging
+    import pandas as pd
+    from io import BytesIO
+
+    from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+
+    from lib.opensearch import load_cert, get_opensearch_client
+    from lib.config import minio_conn_id
+
+
+    # Load the os ca-certificate into task
+    load_cert(env_name)
+
+    # Get OpenSearch client
+    os_client = get_opensearch_client(env_name)
+
+    # Get s3 client
+    s3 = S3Hook(aws_conn_id="minio")
+
+    keys = s3.list_keys(bucket_name="yellow-prd", prefix="catalog/prod/os_index/resource_centric")
+    logging.info(f"KEYS: {keys}")
+
+    if len(keys) != 1:
+        raise Exception(f"More than one index found for {alias} in S3.")
+    else:
+        index_key = keys[0]
+        s3_response = s3.get_key(key=index_key, bucket_name="yellow-prd")
+
+        parquet_bytes = s3_response.get()['Body'].read()
+
+        index_df = pd.read_parquet(BytesIO(parquet_bytes)).to_dict('index')
+
+
 
 @task.virtualenv(
     task_id="publish_index", requirements=["opensearch-py==2.8.0"]
