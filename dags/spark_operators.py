@@ -264,8 +264,9 @@ def create_spark_job(destination: str,
         if subzone == "enriched" and pass_date:
             args = args + ["--date", "{{ data_interval_end | ds }}"]
 
-        elif subzone != "enriched":
-            # There are no Mains that need destination arg in enriched
+        # There are no Mains that need destination arg in enriched
+        # If there are multiple main methods, we don't need to pass a destination arg
+        elif subzone != "enriched" and not multiple_main_methods:
             args = args + ["--destination", destination]
 
     if subzone in ["released"]:
