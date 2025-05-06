@@ -12,10 +12,10 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"enriched_polycythemie_hematology_clinic_visit"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_polycythemie_participant_index"]},
-        {"dataset_id":"enriched_polycythemie_hospitalisation_diagnosis", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_polycythemie_participant_index"]},
-        {"dataset_id":"enriched_polycythemie_laboratory_results"       , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_polycythemie_participant_index"]},
-        {"dataset_id":"enriched_polycythemie_participant_index"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"enriched_polycythemie_hematology_clinic_visit"  , "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_polycythemie_participant_index"]},
+        {"dataset_id":"enriched_polycythemie_hospitalisation_diagnosis", "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_polycythemie_participant_index"]},
+        {"dataset_id":"enriched_polycythemie_laboratory_results"       , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_polycythemie_participant_index"]},
+        {"dataset_id":"enriched_polycythemie_participant_index"        , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
        ],
       "optimize": [],
       "post_tests": []
@@ -29,9 +29,9 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"released_polycythemie_hematology_clinic_visit"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_polycythemie_hospitalisation_diagnosis", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_polycythemie_laboratory_results"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"released_polycythemie_hematology_clinic_visit"  , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_polycythemie_hospitalisation_diagnosis", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_polycythemie_laboratory_results"       , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
@@ -45,9 +45,9 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"published_polycythemie_hematology_clinic_visit"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_polycythemie_hospitalisation_diagnosis", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_polycythemie_laboratory_results"       , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"published_polycythemie_hematology_clinic_visit"  , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_polycythemie_hospitalisation_diagnosis", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_polycythemie_laboratory_results"       , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []

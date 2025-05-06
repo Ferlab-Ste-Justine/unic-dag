@@ -12,13 +12,13 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"enriched_indicateurs_baby"             , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index", "enriched_indicateurs_physician_index", "enriched_indicateurs_init_baby"]},
-        {"dataset_id":"enriched_indicateurs_complications"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index", "enriched_indicateurs_physician_index"]},
-        {"dataset_id":"enriched_indicateurs_delivery"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index", "enriched_indicateurs_physician_index", "enriched_indicateurs_init_baby"]},
-        {"dataset_id":"enriched_indicateurs_participant_index", "cluster_type": "large" , "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"enriched_indicateurs_physician_index"  , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"]},
-        {"dataset_id":"enriched_indicateurs_pregnancy"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index", "enriched_indicateurs_physician_index"]},
-        {"dataset_id":"enriched_indicateurs_init_baby"        , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"]}
+        {"dataset_id":"enriched_indicateurs_baby"             , "cluster_type": "medium", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index", "enriched_indicateurs_physician_index", "enriched_indicateurs_init_baby"]},
+        {"dataset_id":"enriched_indicateurs_complications"    , "cluster_type": "medium", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index", "enriched_indicateurs_physician_index"]},
+        {"dataset_id":"enriched_indicateurs_delivery"         , "cluster_type": "medium", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index", "enriched_indicateurs_physician_index", "enriched_indicateurs_init_baby"]},
+        {"dataset_id":"enriched_indicateurs_participant_index", "cluster_type": "large" , "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_indicateurs_physician_index"  , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"]},
+        {"dataset_id":"enriched_indicateurs_pregnancy"        , "cluster_type": "medium", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index", "enriched_indicateurs_physician_index"]},
+        {"dataset_id":"enriched_indicateurs_init_baby"        , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_indicateurs_participant_index"]}
       ],
       "optimize": [],
       "post_tests": []
@@ -32,10 +32,10 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"released_indicateurs_baby"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_indicateurs_complications", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_indicateurs_delivery"     , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_indicateurs_pregnancy"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"released_indicateurs_baby"         , "cluster_type": "medium", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_indicateurs_complications", "cluster_type": "medium", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_indicateurs_delivery"     , "cluster_type": "medium", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_indicateurs_pregnancy"    , "cluster_type": "medium", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
@@ -49,10 +49,10 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"published_indicateurs_baby"         , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_indicateurs_complications", "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_indicateurs_delivery"     , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_indicateurs_pregnancy"    , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"published_indicateurs_baby"         , "cluster_type": "medium", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_indicateurs_complications", "cluster_type": "medium", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_indicateurs_delivery"     , "cluster_type": "medium", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_indicateurs_pregnancy"    , "cluster_type": "medium", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []

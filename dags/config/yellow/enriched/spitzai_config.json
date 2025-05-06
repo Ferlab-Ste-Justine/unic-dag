@@ -12,7 +12,7 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"enriched_spitzai_participant_index", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"enriched_spitzai_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []

@@ -134,10 +134,10 @@ def setup_dag(dag: DAG,
                 dataset_id = conf['dataset_id']
                 config_type = conf['cluster_type']
                 run_type = conf['run_type']
+                pass_date = conf['pass_date']
 
-                job = create_spark_job(dataset_id, zone, subzone, run_type, config_type, config_file, jar, dag,
-                                       main_class,
-                                       multiple_main_methods, version, spark_failure_msg, skip_task)
+                job = create_spark_job(dataset_id, zone, subzone, run_type, pass_date, config_type, config_file, jar,
+                                       dag, main_class, multiple_main_methods, version, spark_failure_msg, skip_task)
 
                 all_dependencies.extend(conf['dependencies'])
                 jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
@@ -220,6 +220,7 @@ def create_spark_job(destination: str,
                      zone: str,
                      subzone: str,
                      run_type: str,
+                     pass_date: bool,
                      cluster_type: str,
                      config_file: str,
                      jar: str,
@@ -235,6 +236,7 @@ def create_spark_job(destination: str,
     :param zone:
     :param subzone:
     :param run_type:
+    :param pass_date: True to pass --date arg to the main class. The date passed is the end date of the DAG run.
     :param cluster_type:
     :param config_file:
     :param jar:
@@ -258,6 +260,9 @@ def create_spark_job(destination: str,
 
         if multiple_main_methods:
             args = [destination] + args
+
+        if subzone == "enriched" and pass_date:
+            args = args + ["--date", "{{ data_interval_end | ds }}"]
 
         elif subzone != "enriched":
             # There are no Mains that need destination arg in enriched

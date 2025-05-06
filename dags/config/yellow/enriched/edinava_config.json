@@ -12,7 +12,7 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "enriched_edinava_participant_index", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "enriched_edinava_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
@@ -26,7 +26,7 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-          {"dataset_id": "released_edinava_participant_index", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+          {"dataset_id": "released_edinava_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
@@ -40,7 +40,7 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "published_edinava_participant_index", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "published_edinava_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []

@@ -11,7 +11,7 @@
     "schemas": [],
     "pre_tests": [],
     "datasets": [
-      {"dataset_id": "curated_medecho_mep_vue_diagnostic", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "curated_medecho_mep_vue_diagnostic", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
     ],
     "optimize" : [],
     "post_tests": []
@@ -31,15 +31,15 @@
       ], "cluster_type" : "xsmall"}
     ],
     "datasets": [
-      {"dataset_id": "anonymized_medecho_mep_vue_accident"     , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_medecho_mep_vue_c*"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_medecho_mep_vue_d*"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_medecho_mep_vue_e*"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_medecho_mep_vue_intervention" , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_medecho_mep_vue_merenouveaune", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_medecho_mep_vue_p*"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_medecho_mep_vue_service"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_medecho_mep_vue_unitesoins"   , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "anonymized_medecho_mep_vue_accident"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_medecho_mep_vue_c*"           , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_medecho_mep_vue_d*"           , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_medecho_mep_vue_e*"           , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_medecho_mep_vue_intervention" , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_medecho_mep_vue_merenouveaune", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_medecho_mep_vue_p*"           , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_medecho_mep_vue_service"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_medecho_mep_vue_unitesoins"   , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
     ],
     "optimize" : [],
     "post_tests": [
