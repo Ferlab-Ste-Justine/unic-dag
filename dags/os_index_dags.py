@@ -92,7 +92,5 @@ for os_env in OpensearchEnv:
 
         get_next_release_id_task = get_next_release_id(os_env_name, get_release_id())
 
-        # start("start_os_index") >> get_next_release_id_task >> load_index_group(release_id=get_next_release_id_task) \
-        # >> publish_index_group(release_id=get_next_release_id_task) >> end("end_os_index")
-
-        start("start_os_index") >> get_next_release_id_task >> load_index_group(release_id=get_next_release_id_task) >> end("end_os_index")
+        start("start_os_index") >> get_next_release_id_task >> load_index_group(release_id=get_next_release_id_task) \
+        >> publish_index_group(release_id=get_next_release_id_task) >> end("end_os_index")

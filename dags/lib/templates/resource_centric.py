@@ -1,6 +1,9 @@
+import json
+
+RESOURCE_CENTRIC = """
 {
   "index_patterns": [
-    "table_centric_*"
+    "resource_centric_*"
   ],
   "template": {
     "settings": {
@@ -25,78 +28,90 @@
         }
       }
     },
-    "mappings" : {
+    "mappings": {
       "properties": {
-        "tab_id": {
+        "rs_id": {
           "type": "integer"
         },
-        "tab_created_at": {
-          "type": "date"
+        "rs_system_collection_starting_year": {
+          "type": "integer"
         },
-        "tab_domain": {
+        "rs_type": {
           "type": "keyword"
         },
-        "tab_domain_en": {
-          "type": "keyword",
-          "normalizer" : "custom_normalizer"
-        },
-        "tab_domain_fr": {
-          "type": "keyword",
-          "normalizer" : "custom_normalizer"
-        },
-        "tab_entity_type": {
+        "rs_dict_current_version": {
           "type": "keyword"
         },
-        "tab_label_en": {
-          "type": "keyword",
-          "normalizer" : "custom_normalizer"
+        "rs_system_database_type": {
+          "type": "keyword"
         },
-        "tab_label_fr": {
-          "type": "keyword",
-          "normalizer" : "custom_normalizer"
-        },
-        "tab_last_update": {
+        "rs_project_creation_date": {
           "type": "date"
         },
-        "tab_name": {
+        "rs_project_completion_date": {
+          "type": "date"
+        },
+        "rs_last_update": {
+          "type": "date"
+        },
+        "rs_project_approval_date": {
+          "type": "date"
+        },
+        "rs_project_approved": {
+          "type": "boolean"
+        },
+        "rs_project_folder": {
+          "type": "keyword"
+        },
+        "rs_project_status": {
+          "type": "keyword"
+        },
+        "rs_project_erb_id": {
           "type": "keyword",
           "normalizer" : "custom_normalizer"
         },
-        "tab_row_filter": {
+        "rs_project_pi": {
           "type": "keyword",
-          "index": false
+          "normalizer" : "custom_normalizer"
         },
-        "resource": {
-          "properties": {
-            "rs_id": {
-              "type": "integer"
-            },
-            "rs_code": {
-              "type": "keyword"
-            },
-            "rs_is_project": {
-              "type": "boolean"
-            },
-            "rs_description_en": {
-              "type": "keyword"
-            },
-            "rs_description_fr": {
-              "type": "keyword"
-            },
-            "rs_type": {
-              "type": "keyword"
-            },
-            "rs_name": {
-              "type": "keyword"
-            },
-            "rs_title": {
-              "type": "keyword"
-            }
-          }
+        "rs_description_en": {
+          "type": "keyword",
+          "normalizer" : "custom_normalizer"
+        },
+        "rs_description_fr": {
+          "type": "keyword",
+          "normalizer" : "custom_normalizer"
+        },
+        "rs_title": {
+          "type": "keyword",
+          "normalizer" : "custom_normalizer"
+        },
+        "rs_name": {
+          "type": "keyword",
+          "normalizer" : "custom_normalizer"
+        },
+        "rs_code": {
+          "type": "keyword",
+          "normalizer" : "custom_normalizer"
+        },
+        "rs_is_project": {
+          "type": "boolean"
         },
         "stat_etl": {
           "properties": {
+            "project_count": {
+              "type": "long"
+            },
+            "domain_count": {
+              "type": "long"
+            },
+            "source_system_count": {
+              "type": "long"
+            },
             "variable_count": {
+              "type": "long"
+            },
+            "table_count": {
               "type": "long"
             }
           }
@@ -124,7 +139,7 @@
                 },
                 "var_name": {
                   "type": "keyword",
-                  "index": "false"
+                  "index": false
                 },
                 "published": {
                   "type": "boolean",
@@ -149,8 +164,42 @@
                 "published": {
                   "type": "boolean",
                   "index": false
+                },
+                "stat_etl": {
+                  "properties": {
+                    "variable_count": {
+                      "type": "long"
+                    }
+                  }
                 }
               }
+            }
+          }
+        },
+        "tables": {
+          "type": "nested",
+          "properties": {
+            "tab_id": {
+              "type": "integer"
+            },
+            "tab_name": {
+              "type": "keyword"
+            },
+            "tab_label_fr": {
+              "type": "keyword"
+            },
+            "tab_label_en": {
+              "type": "keyword"
+            }
+          }
+        },
+        "rs_analyst": {
+          "properties": {
+            "analyst_id": {
+              "type": "integer"
+            },
+            "analyst_name": {
+              "type": "keyword"
             }
           }
         }
@@ -158,3 +207,7 @@
     }
   }
 }
+"""
+
+# Load JSON into a Python dictionary
+resource_centric_template = json.loads(RESOURCE_CENTRIC)

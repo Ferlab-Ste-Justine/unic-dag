@@ -1,3 +1,6 @@
+import json
+
+VARIABLE_CENTRIC = """
 {
   "index_patterns": [
     "variable_centric_*"
@@ -220,3 +223,7 @@
     }
   }
 }
+"""
+
+# Load JSON into a Python dictionary
+variable_centric_template = json.loads(VARIABLE_CENTRIC)
