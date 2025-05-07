@@ -1,7 +1,4 @@
-import json
-
-TABLE_CENTRIC = """
-{
+table_centric_template = {
   "index_patterns": [
     "table_centric_*"
   ],
@@ -67,7 +64,7 @@ TABLE_CENTRIC = """
         },
         "tab_row_filter": {
           "type": "keyword",
-          "index": false
+          "index": False
         },
         "resource": {
           "properties": {
@@ -143,15 +140,15 @@ TABLE_CENTRIC = """
                 },
                 "rs_code": {
                   "type": "keyword",
-                  "index": false
+                  "index": False
                 },
                 "rs_name": {
                   "type": "keyword",
-                  "index": false
+                  "index": False
                 },
                 "published": {
                   "type": "boolean",
-                  "index": false
+                  "index": False
                 }
               }
             }
@@ -161,7 +158,3 @@ TABLE_CENTRIC = """
     }
   }
 }
-"""
-
-# Load JSON into a Python dictionary
-table_centric_template = json.loads(TABLE_CENTRIC)

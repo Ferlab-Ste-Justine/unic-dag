@@ -1,7 +1,4 @@
-import json
-
-RESOURCE_CENTRIC = """
-{
+resource_centric_template = {
   "index_patterns": [
     "resource_centric_*"
   ],
@@ -139,11 +136,11 @@ RESOURCE_CENTRIC = """
                 },
                 "var_name": {
                   "type": "keyword",
-                  "index": false
+                  "index": False
                 },
                 "published": {
                   "type": "boolean",
-                  "index": false
+                  "index": False
                 }
               }
             },
@@ -155,15 +152,15 @@ RESOURCE_CENTRIC = """
                 },
                 "rs_code": {
                   "type": "keyword",
-                  "index": false
+                  "index": False
                 },
                 "rs_name": {
                   "type": "keyword",
-                  "index": false
+                  "index": False
                 },
                 "published": {
                   "type": "boolean",
-                  "index": false
+                  "index": False
                 },
                 "stat_etl": {
                   "properties": {
@@ -207,7 +204,3 @@ RESOURCE_CENTRIC = """
     }
   }
 }
-"""
-
-# Load JSON into a Python dictionary
-resource_centric_template = json.loads(RESOURCE_CENTRIC)

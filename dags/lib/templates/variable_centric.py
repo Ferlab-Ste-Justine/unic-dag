@@ -1,7 +1,4 @@
-import json
-
-VARIABLE_CENTRIC = """
-{
+variable_centric_template = {
   "index_patterns": [
     "variable_centric_*"
   ],
@@ -49,7 +46,7 @@ VARIABLE_CENTRIC = """
         },
         "var_derivation_algorithm": {
           "type": "keyword",
-          "index": false
+          "index": False
         },
         "var_name": {
           "type": "keyword",
@@ -57,7 +54,7 @@ VARIABLE_CENTRIC = """
         },
         "var_notes": {
           "type": "keyword",
-          "index": false
+          "index": False
         },
         "var_path": {
           "type": "keyword"
@@ -131,11 +128,11 @@ VARIABLE_CENTRIC = """
             },
             "rs_name": {
               "type": "keyword",
-              "index": false
+              "index": False
             },
             "published": {
               "type": "boolean",
-              "index": false
+              "index": False
             }
           }
         },
@@ -150,7 +147,7 @@ VARIABLE_CENTRIC = """
             },
             "published": {
               "type": "boolean",
-              "index": false
+              "index": False
             },
             "resource": {
               "type": "nested",
@@ -195,11 +192,11 @@ VARIABLE_CENTRIC = """
             },
             "vs_description_en": {
               "type": "keyword",
-              "index": false
+              "index": False
             },
             "vs_description_fr": {
               "type": "keyword",
-              "index": false
+              "index": False
             },
             "values": {
               "type": "nested",
@@ -209,11 +206,11 @@ VARIABLE_CENTRIC = """
                 },
                 "vsval_label_en": {
                   "type": "keyword",
-                  "index": false
+                  "index": False
                 },
                 "vsval_label_fr": {
                   "type": "keyword",
-                  "index": false
+                  "index": False
                 }
               }
             }
@@ -223,7 +220,3 @@ VARIABLE_CENTRIC = """
     }
   }
 }
-"""
-
-# Load JSON into a Python dictionary
-variable_centric_template = json.loads(VARIABLE_CENTRIC)
