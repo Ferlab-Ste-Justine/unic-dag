@@ -56,7 +56,7 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
     template_name = f"{alias}_template"
 
     # get index key from minio
-    keys = s3.list_keys(bucket_name=src_bucket, prefix=f"{src_path}/{alias}/")
+    keys = s3.list_keys(bucket_name=src_bucket, prefix=f"{src_path}{alias}/")
     logging.info(f"KEYS: {keys}")
 
     if len(keys) != 1:
