@@ -54,6 +54,7 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
     from io import BytesIO
 
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+    from airflow.exceptions import AirflowFailException
 
     from lib.opensearch import load_cert, get_opensearch_client, os_templates
     from lib.config import yellow_minio_conn_id
@@ -71,18 +72,31 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
     index_name = f"{alias}_{release_id}"
     template_name = f"{alias}_template"
 
-    # get index key from minio
-    keys = s3.list_keys(bucket_name=src_bucket, prefix=f"{src_path}{alias}/")
-    logging.info(f"KEYS: {keys}")
+    # List all the files for a given dir in Minio
+    try:
+        # get index key from minio
+        keys = s3.list_keys(bucket_name=src_bucket, prefix=f"{src_path}{alias}/")
+        if not keys:
+            raise AirflowFailException(f"No files found in: {src_bucket}/{src_path}")
+    except Exception as e:
+        raise AirflowFailException(f"Failed to list the files from: {src_bucket}/{src_path}: {e}")
 
-    if len(keys) != 1:
-        raise Exception(f"Should only have one index for {alias} in S3.")
-    else:
-        # get index data from minio
-        index_key = keys[0]
-        s3_response = s3.get_key(key=index_key, bucket_name=src_bucket)
-        index_bytes = s3_response.get()['Body'].read()
+    # get index data from minio
+    parquet_files = []
+    for key in keys:
+        if key.endswith('.parquet'):
+            try:
+                s3_response = s3.get_key(key=key, bucket_name=src_bucket)
+                parquet_files.append(s3_response.get()['Body'].read())
+            except Exception as e:
+                raise AirflowFailException(f"Failed to download the file: {src_bucket}/{key}: {e}")
 
+    try:
+        df = pd.concat([pd.read_parquet(BytesIO(file)) for file in parquet_files], ignore_index=True)
+    except Exception as e:
+        raise AirflowFailException(f"Failed to combine parquet files into single df: {e}")
+
+    try:
         # delete index if already exists
         logging.info(f"Deleting index: {index_name}")
         os_client.indices.delete(index=index_name, allow_no_indices=True)
@@ -93,10 +107,12 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
 
         # create index
         logging.info(f"Loading data into {index_name}")
-        index_body = pd.read_parquet(BytesIO(index_bytes)).to_json()
+        index_body = df.to_json()
         response = os_client.index(index=index_name, body=index_body)
 
         logging.info(f"Index created: {response}")
+    except Exception as e:
+        raise AirflowFailException(f"Failed to load index in Opensearch: {e}")
 
 
 @task.virtualenv(
@@ -113,6 +129,7 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
     """
     import logging
     from lib.opensearch import load_cert, get_opensearch_client
+    from airflow.exceptions import AirflowFailException
 
     # Load the os ca-certificate into task
     load_cert(env_name)
@@ -133,8 +150,11 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
         {"add": {"index": new_index, "alias": alias}}
     ]
 
-    response = os_client.indices.update_aliases(body={"actions": actions})
-    logging.info(f"Alias updated: {response}")
+    try:
+        response = os_client.indices.update_aliases(body={"actions": actions})
+        logging.info(f"Alias updated: {response}")
+    except Exception as e:
+        raise AirflowFailException(f"Failed to update Alias in Opensearch: {e}")
 
 @task.virtualenv(
     task_id="get_next_release_id", requirements=["opensearch-py==2.8.0"]
@@ -151,6 +171,7 @@ def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_c
     """
     import logging
     from lib.opensearch import os_env_config, load_cert, get_opensearch_client
+    from airflow.exceptions import AirflowFailException
 
     # Load the os ca-certificate into task
     load_cert(env_name)
@@ -164,11 +185,14 @@ def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_c
         logging.info(f'Using release id passed to DAG: {release_id}')
         return release_id
 
-    logging.info(f'No release id passed to DAG. Fetching release id from OS for all index {alias}.')
-    # Fetch current id from OS
-    alias_info = os_client.indices.get_alias(name=alias)
-    current_index = list(alias_info.keys())[0]
-    current_release_id = current_index.split('_')[-1]
+    try:
+        logging.info(f'No release id passed to DAG. Fetching release id from OS for all index {alias}.')
+        # Fetch current id from OS
+        alias_info = os_client.indices.get_alias(name=alias)
+        current_index = list(alias_info.keys())[0]
+        current_release_id = current_index.split('_')[-1]
+    except Exception as e:
+        raise AirflowFailException(f"Failed to retrieve current release id from Opensearch: {e}")
 
     if increment:
         # Increment current id by 1
