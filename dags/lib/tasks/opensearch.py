@@ -56,7 +56,7 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
     from lib.opensearch import load_cert, get_opensearch_client, os_templates
-    from lib.config import minio_conn_id
+    from lib.config import yellow_minio_conn_id
 
 
     # Load the os ca-certificate into task
@@ -66,7 +66,7 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
     os_client = get_opensearch_client(env_name)
 
     # Get s3 client
-    s3 = S3Hook(aws_conn_id=minio_conn_id)
+    s3 = S3Hook(aws_conn_id=yellow_minio_conn_id)
 
     index_name = f"{alias}_{release_id}"
     template_name = f"{alias}_template"
