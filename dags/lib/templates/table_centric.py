@@ -124,11 +124,11 @@ table_centric_template = {
                 },
                 "var_name": {
                   "type": "keyword",
-                  "index": "false"
+                  "index": False
                 },
                 "published": {
                   "type": "boolean",
-                  "index": false
+                  "index": False
                 }
               }
             },

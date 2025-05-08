@@ -20,6 +20,22 @@ def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
         dag=dag
     )
 
+def load_index_spark(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
+               zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.os.index.Main') -> SparkOperator:
+
+    return SparkOperator(
+        task_id=task_id,
+        name=task_id.replace("_", "-"),
+        zone=zone,
+        arguments=args,
+        spark_class=spark_class,
+        spark_jar=jar,
+        spark_failure_msg=spark_failure_msg,
+        spark_config=cluster_size,
+        dag=dag
+    )
+
+
 @task.virtualenv(
     task_id="load_index", requirements=["opensearch-py==2.8.0"]
 )
