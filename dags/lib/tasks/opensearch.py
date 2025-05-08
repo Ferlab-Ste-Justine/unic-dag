@@ -20,8 +20,8 @@ def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: st
         dag=dag
     )
 
-def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
-          zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.os.index.Main') -> SparkOperator:
+def load_index_spark(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,dag: DAG,
+               zone: str = "yellow", spark_class: str = 'bio.ferlab.ui.etl.catalog.os.index.Main') -> SparkOperator:
 
     return SparkOperator(
         task_id=task_id,
@@ -34,6 +34,70 @@ def load_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, 
         spark_config=cluster_size,
         dag=dag
     )
+
+
+@task.virtualenv(
+    task_id="load_index", requirements=["opensearch-py==2.8.0"]
+)
+def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "yellow-prd", src_path: str = "catalog/prod/os_index/") -> None:
+
+    """
+    Load index in Opensearch.
+
+    :param env_name: OpenSearch environment name (e.g. 'prod', 'qa')
+    :param release_id: Release ID to use.
+    :param alias: Specify alias of OpenSearch index to publish.
+    :return: None
+    """
+    import logging
+    import pandas as pd
+    from io import BytesIO
+
+    from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+
+    from lib.opensearch import load_cert, get_opensearch_client, os_templates
+    from lib.config import minio_conn_id
+
+
+    # Load the os ca-certificate into task
+    load_cert(env_name)
+
+    # Get OpenSearch client
+    os_client = get_opensearch_client(env_name)
+
+    # Get s3 client
+    s3 = S3Hook(aws_conn_id="minio")
+
+    index_name = f"{alias}_{release_id}"
+    template_name = f"{alias}_template"
+
+    # get index key from minio
+    keys = s3.list_keys(bucket_name=src_bucket, prefix=f"{src_path}{alias}/")
+    logging.info(f"KEYS: {keys}")
+
+    if len(keys) != 1:
+        raise Exception(f"Should only have one index for {alias} in S3.")
+    else:
+        # get index data from minio
+        index_key = keys[0]
+        s3_response = s3.get_key(key=index_key, bucket_name=src_bucket)
+        index_bytes = s3_response.get()['Body'].read()
+
+        # delete index if already exists
+        logging.info(f"Deleting index: {index_name}")
+        os_client.indices.delete(index=index_name, allow_no_indices=True)
+
+        # load template
+        logging.info(f"Creating Template: {template_name}")
+        os_client.indices.create(name=template_name, body=os_templates.get(alias))
+
+        # create index
+        logging.info(f"Loading data into {index_name}")
+        index_body = pd.read_parquet(BytesIO(index_bytes)).to_json()
+        response = os_client.index(index=index_name, body=index_body)
+
+        logging.info(f"Index created: {response}")
+
 
 @task.virtualenv(
     task_id="publish_index", requirements=["opensearch-py==2.8.0"]

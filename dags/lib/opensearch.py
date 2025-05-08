@@ -4,6 +4,9 @@ from enum import Enum
 from airflow.models import Variable
 
 from lib.postgres import PostgresEnv
+from lib.templates.resource_centric import resource_centric_template
+from lib.templates.table_centric import table_centric_template
+from lib.templates.variable_centric import variable_centric_template
 
 
 class OpensearchEnv(Enum):
@@ -17,6 +20,15 @@ Opensearch environment to Postgres environment mapping
 os_env_pg_env_mapping: dict = {
     OpensearchEnv.PROD: PostgresEnv.PROD,
     OpensearchEnv.QA: PostgresEnv.DEV
+}
+
+"""
+Opensearch index templates
+"""
+os_templates: dict = {
+    "resource_centric": resource_centric_template,
+    "table_centric": table_centric_template,
+    "variable_centric": variable_centric_template
 }
 
 """

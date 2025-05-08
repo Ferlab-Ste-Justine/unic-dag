@@ -12,12 +12,12 @@ from airflow.decorators import task_group
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import jar, spark_failure_msg
+from lib.config import spark_failure_msg, jar
 from lib.opensearch import OpensearchEnv, os_env_config
 from lib.postgres import PostgresEnv
 # from lib.slack import Slack
 from lib.tasks.notify import start, end
-from lib.tasks.opensearch import load_index, publish_index, get_next_release_id
+from lib.tasks.opensearch import load_index, load_index_spark, publish_index, get_next_release_id
 
 
 def load_index_arguments(release_id: str, os_url: str, os_port: str, template_filename: str, os_env_name: str, pg_env_name: str,
@@ -78,20 +78,27 @@ for os_env in OpensearchEnv:
     ) as dag:
         @task_group(group_id="load_indexes")
         def load_index_group(release_id: str):
-            os_config = os_env_config.get(os_env_name)
+            if os_env_name == OpensearchEnv.QA.value:
+                aliases = ["resource_centric", "table_centric", "variable_centric"]
 
-            os_url = f"https://{os_config.get('host')}"
-            os_port = os_config.get('port')
+                for alias in aliases:
+                    load_index.override(task_id=f"load_index_{alias}")(os_env_name, release_id, alias)
 
-            es_load_index_conf = [
-                ("os_index_resource_centric", "resource_centric", "large-etl", "resource_centric_template.json"),
-                ("os_index_table_centric", "table_centric", "large-etl", "table_centric_template.json"),
-                ("os_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
-            ]
+            elif os_env_name == OpensearchEnv.PROD.value:
+                os_config = os_env_config.get(os_env_name)
 
-            [load_index(task_id, load_index_arguments(release_id, os_url, os_port, template_filename, os_env_name, pg_env_name, alias),
-                        jar, spark_failure_msg, cluster_size, dag) for
-             task_id, alias, cluster_size, template_filename in es_load_index_conf]
+                os_url = f"https://{os_config.get('host')}"
+                os_port = os_config.get('port')
+
+                es_load_index_conf = [
+                    ("os_index_resource_centric", "resource_centric", "large-etl", "resource_centric_template.json"),
+                    ("os_index_table_centric", "table_centric", "large-etl", "table_centric_template.json"),
+                    ("os_index_variable_centric", "variable_centric", "large-etl", "variable_centric_template.json")
+                ]
+
+                [load_index_spark(task_id, load_index_arguments(release_id, os_url, os_port, template_filename, os_env_name, pg_env_name, alias),
+                            jar, spark_failure_msg, cluster_size, dag) for
+                 task_id, alias, cluster_size, template_filename in es_load_index_conf]
 
         @task_group(group_id="publish_indexes")
         def publish_index_group(release_id: str):
