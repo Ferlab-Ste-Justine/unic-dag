@@ -102,14 +102,14 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
         os_client.indices.delete(index=index_name, ignore=404)
         # load template
         logging.info(f"Creating Template: {template_name}")
-        os_client.indices.create(name=template_name, body=os_templates.get(alias))
+        os_client.indices.put_index_template(name=template_name, body=os_templates.get(alias))
 
         # create index
         logging.info(f"Loading data into {index_name}")
-        index_body = df.to_json()
-        response = os_client.index(index=index_name, body=index_body)
+        os_client.indices.create(index=index_name)
 
-        logging.info(f"Index created: {response}")
+        index_body = df.to_json()
+        os_client.index(index=index_name, body=index_body)
     except Exception as e:
         raise AirflowFailException(f"Failed to load index in Opensearch: {e}")
 
