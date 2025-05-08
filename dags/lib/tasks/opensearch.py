@@ -66,7 +66,7 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
     os_client = get_opensearch_client(env_name)
 
     # Get s3 client
-    s3 = S3Hook(aws_conn_id="minio")
+    s3 = S3Hook(aws_conn_id=minio_conn_id)
 
     index_name = f"{alias}_{release_id}"
     template_name = f"{alias}_template"
