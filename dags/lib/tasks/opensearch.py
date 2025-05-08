@@ -99,8 +99,7 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
     try:
         # delete index if already exists
         logging.info(f"Deleting index: {index_name}")
-        os_client.indices.delete(index=index_name, allow_no_indices=True)
-
+        os_client.indices.delete(index=index_name, ignore=404)
         # load template
         logging.info(f"Creating Template: {template_name}")
         os_client.indices.create(name=template_name, body=os_templates.get(alias))
