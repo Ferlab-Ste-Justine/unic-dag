@@ -16,7 +16,7 @@
       {"dataset_id": "anonymized_cscmed_atoe*"        , "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_cscmed_chusj*"       , "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_cscmed_cirene*"      , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_cscmed_demographic"  , "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_demographic"  , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_cscmed_der*"         , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_cscmed_dev*"         , "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_cscmed_dia*"         , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
