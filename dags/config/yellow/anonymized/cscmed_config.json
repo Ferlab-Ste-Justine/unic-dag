@@ -21,7 +21,7 @@
       {"dataset_id": "anonymized_cscmed_dev*"         , "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_cscmed_dia*"         , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_cscmed_gas*"         , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_cscmed_gen*"         , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+      {"dataset_id": "anonymized_cscmed_ge*"          , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_cscmed_hem*"         , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_cscmed_jobs_sections", "cluster_type": "large" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
       {"dataset_id": "anonymized_cscmed_neo*"         , "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
