@@ -47,8 +47,8 @@ dag = DAG(
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
-    max_active_runs=15,
-    max_active_tasks=10,
+    max_active_runs=5,
+    max_active_tasks=5,
     tags=["curated"],
     on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
 )
