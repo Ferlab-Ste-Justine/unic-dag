@@ -12,11 +12,11 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "enriched_inhalateurs_emergency_patients"       , "cluster_type": "small", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "enriched_inhalateurs_external_clinics_patients", "cluster_type": "small", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "enriched_inhalateurs_hospitalised_patients"    , "cluster_type": "small", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "enriched_inhalateurs_participant_index"        , "cluster_type": "small", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": ["enriched_inhalateurs_emergency_patients", "enriched_inhalateurs_external_clinics_patients", "enriched_inhalateurs_hospitalised_patients", "enriched_inhalateurs_plan_action_asthme"]},
-        {"dataset_id": "enriched_inhalateurs_plan_action_asthme"       , "cluster_type": "small", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "enriched_inhalateurs_emergency_patients"       , "cluster_type": "small", "run_type": "initial", "pass_date": true, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "enriched_inhalateurs_external_clinics_patients", "cluster_type": "small", "run_type": "initial", "pass_date": true, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "enriched_inhalateurs_hospitalised_patients"    , "cluster_type": "small", "run_type": "initial", "pass_date": true, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id": "enriched_inhalateurs_participant_index"        , "cluster_type": "small", "run_type": "initial", "pass_date": true, "cluster_specs": {}, "dependencies": ["enriched_inhalateurs_emergency_patients", "enriched_inhalateurs_external_clinics_patients", "enriched_inhalateurs_hospitalised_patients", "enriched_inhalateurs_plan_action_asthme"]},
+        {"dataset_id": "enriched_inhalateurs_plan_action_asthme"       , "cluster_type": "small", "run_type": "initial", "pass_date": true, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
