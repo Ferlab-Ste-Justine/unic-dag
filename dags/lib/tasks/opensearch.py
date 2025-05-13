@@ -52,6 +52,7 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
     import logging
     import pandas as pd
     from io import BytesIO
+    import json
 
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
     from airflow.exceptions import AirflowFailException
@@ -105,11 +106,18 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
         os_client.indices.put_index_template(name=template_name, body=os_templates.get(alias))
 
         # create index
-        logging.info(f"Loading data into {index_name}")
-        os_client.indices.create(index=index_name)
+        data = []
+        for i in json.loads(df.to_json(orient='records')):
+            data.append({"index": {"_index": index_name, "_id": i.get("rs_id")}}) #pass id
+            data.append(i)
 
-        index_body = df.to_json()
-        os_client.index(index=index_name, body=index_body)
+        rc = os_client.bulk(data)  # pylint: disable=invalid-name
+        if rc["errors"]:
+            print("There were errors:")
+            for item in rc["items"]:
+                print(f"{item['index']['status']}: {item['index']['error']['type']}")
+        else:
+            print(f"Bulk-inserted {len(rc['items'])} items.")
     except Exception as e:
         raise AirflowFailException(f"Failed to load index in Opensearch: {e}")
 
