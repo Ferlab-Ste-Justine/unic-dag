@@ -29,7 +29,7 @@ dag = DAG(
     dag_id="anonymized_softpath_hl7_obx",
     doc_md=DOC,
     start_date=datetime(2021, 1, 1, 0, tzinfo=pendulum.timezone("America/Montreal")),
-    end_date=datetime(2022, 1, 1, 0, tzinfo=pendulum.timezone("America/Montreal")),
+    end_date=datetime(2026, 5, 20, 0, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),
     params=default_params,
     dagrun_timeout=timedelta(hours=2),
