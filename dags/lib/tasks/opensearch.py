@@ -109,7 +109,7 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
         # load index data
         data = []
         for record in json.loads(df.to_json(orient='records')):
-            data.append({"index": {"_index": index_name, "_id": os_id_columns.get(alias)}})
+            data.append({"index": {"_index": index_name, "_id": record.get(os_id_columns.get(alias))}})
             data.append(record)
 
         bulk_response = os_client.bulk(data)
