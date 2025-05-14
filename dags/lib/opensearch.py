@@ -13,6 +13,11 @@ class OpensearchEnv(Enum):
     QA = 'qa'
     PROD = 'prod'
 
+class OpensearchAlias(Enum):
+    RESOURCE = 'resouce_centric'
+    TABLE = 'table_centric'
+    VARIABLE = 'variable_centric'
+
 
 """
 Opensearch environment to Postgres environment mapping
@@ -26,9 +31,18 @@ os_env_pg_env_mapping: dict = {
 Opensearch index templates
 """
 os_templates: dict = {
-    "resource_centric": resource_centric_template,
-    "table_centric": table_centric_template,
-    "variable_centric": variable_centric_template
+    OpensearchAlias.RESOURCE.value: resource_centric_template,
+    OpensearchAlias.TABLE.value: table_centric_template,
+    OpensearchAlias.VARIABLE.value: variable_centric_template
+}
+
+"""
+Opensearch id columns
+"""
+os_id_columns: dict = {
+    OpensearchAlias.RESOURCE.value: "rs_id",
+    OpensearchAlias.TABLE.value: "tab_id",
+    OpensearchAlias.VARIABLE.value: "var_id"
 }
 
 """

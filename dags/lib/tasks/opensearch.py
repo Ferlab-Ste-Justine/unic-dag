@@ -57,7 +57,7 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
     from airflow.exceptions import AirflowFailException
 
-    from lib.opensearch import load_cert, get_opensearch_client, os_templates
+    from lib.opensearch import load_cert, get_opensearch_client, os_templates, os_id_columns
     from lib.config import yellow_minio_conn_id
 
 
@@ -99,28 +99,24 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
 
     try:
         # delete index if already exists
-        logging.info(f"Deleting index: {index_name}")
         os_client.indices.delete(index=index_name, ignore=404)
+        logging.info(f"Deleted index: {index_name}")
+
         # load template
-        logging.info(f"Creating Template: {template_name}")
         os_client.indices.put_index_template(name=template_name, body=os_templates.get(alias))
+        logging.info(f"Loaded template: {template_name}")
 
-        # create index
+        # load index data
         data = []
-        for i in json.loads(df.to_json(orient='records')):
-            data.append({"index": {"_index": index_name, "_id": i.get("rs_id")}}) #pass id
-            data.append(i)
+        for record in json.loads(df.to_json(orient='records')):
+            data.append({"index": {"_index": index_name, "_id": os_id_columns.get(alias)}})
+            data.append(record)
 
-        rc = os_client.bulk(data)  # pylint: disable=invalid-name
-        if rc["errors"]:
-            print("There were errors:")
-            for item in rc["items"]:
-                print(f"{item['index']['status']}: {item['index']['error']['type']}")
-        else:
-            print(f"Bulk-inserted {len(rc['items'])} items.")
+        bulk_response = os_client.bulk(data)
+        logging.info(f"Bulk-inserted {len(bulk_response['items'])} items.")
+
     except Exception as e:
         raise AirflowFailException(f"Failed to load index in Opensearch: {e}")
-
 
 @task.virtualenv(
     task_id="publish_index", requirements=["opensearch-py==2.8.0"]

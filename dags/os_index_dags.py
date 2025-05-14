@@ -13,7 +13,7 @@ from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
 from lib.config import spark_failure_msg, jar
-from lib.opensearch import OpensearchEnv, os_env_config
+from lib.opensearch import OpensearchEnv, OpensearchAlias, os_env_config
 from lib.postgres import PostgresEnv
 # from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -79,10 +79,8 @@ for os_env in OpensearchEnv:
         @task_group(group_id="load_indexes")
         def load_index_group(release_id: str):
             if os_env_name == OpensearchEnv.QA.value:
-                aliases = ["resource_centric", "table_centric", "variable_centric"]
-
-                for alias in aliases:
-                    load_index.override(task_id=f"load_index_{alias}")(os_env_name, release_id, alias)
+                for alias in OpensearchAlias:
+                    load_index.override(task_id=f"load_index_{alias.value}")(os_env_name, release_id, alias.value)
 
             elif os_env_name == OpensearchEnv.PROD.value:
                 os_config = os_env_config.get(os_env_name)
@@ -102,10 +100,8 @@ for os_env in OpensearchEnv:
 
         @task_group(group_id="publish_indexes")
         def publish_index_group(release_id: str):
-            aliases = ["resource_centric", "table_centric", "variable_centric"]
-
-            for alias in aliases:
-                publish_index.override(task_id=f"publish_index_{alias}")(os_env_name, release_id, alias)
+            for alias in OpensearchAlias:
+                publish_index.override(task_id=f"publish_index_{alias.value}")(os_env_name, release_id, alias.value)
 
         get_next_release_id_task = get_next_release_id(os_env_name, get_release_id())
 
