@@ -7,7 +7,7 @@ from datetime import timedelta, datetime
 from airflow import DAG
 from airflow.models import Param
 
-from lib.config import config_file, jar, spark_failure_msg, default_args
+from lib.config import CONFIG_FILE, JAR, SPARK_FAILURE_MSG, DEFAULT_ARGS
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -34,7 +34,7 @@ with DAG(
             "destination": Param("anonymized_unic_participant_index_", type="string"),
             "run_type": Param("default", enum=["default", "initial"]),
         },
-        default_args=default_args,
+        default_args=DEFAULT_ARGS,
         doc_md=DOC,
         start_date=datetime(2021, 1, 1),
         concurrency=2,
@@ -55,11 +55,11 @@ with DAG(
     anonymized_task = SparkOperator(
         task_id="anonymized_participant_index",
         name="anonymized-participant-index",
-        arguments=[config_file, run_type(), destination()],
+        arguments=[CONFIG_FILE, run_type(), destination()],
         zone="yellow",
         spark_class="bio.ferlab.ui.etl.yellow.anonymized.Main",
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="xsmall-etl",
     )
 

@@ -9,7 +9,7 @@ from datetime import datetime, timedelta
 import pendulum
 from airflow import DAG
 
-from lib.config import default_params, default_args, spark_failure_msg, jar
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -28,7 +28,7 @@ TAGS = ['curated', 'anonymized']
 CURATED_MAIN_CLASS = 'bio.ferlab.ui.etl.red.curated.philips.Main'
 ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.philips.Main"
 
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 LOCAL_TZ = pendulum.timezone("America/Montreal")
 
 args.update({
@@ -42,7 +42,7 @@ dag = DAG(
     start_date=datetime(2023, 8, 15, tzinfo=LOCAL_TZ),
     end_date=datetime(2025, 1, 3, tzinfo=LOCAL_TZ),
     schedule_interval="@daily",
-    params=default_params,
+    params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=8),
     default_args=args,
     is_paused_upon_creation=True,
@@ -80,8 +80,8 @@ def create_spark_task(destination: str, cluster_size: str, main_class: str, zone
         arguments=spark_args,
         zone=zone,
         spark_class=main_class,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config=cluster_size,
         dag=dag
     )

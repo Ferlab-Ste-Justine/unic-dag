@@ -10,7 +10,7 @@ from airflow import DAG
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg, version
+from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, VERSION
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
@@ -47,7 +47,7 @@ utilisée comme version de la release.
 """
 
 # Update default args
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 
 dag = DAG(
@@ -55,8 +55,8 @@ dag = DAG(
     doc_md=DOC,
     start_date=datetime(2023, 9, 29, 7, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=4),
-    params=default_params,
-    dagrun_timeout=timedelta(hours=default_timeout_hours),
+    params=DEFAULT_PARAMS,
+    dagrun_timeout=timedelta(hours=DEFAULT_TIMEOUT_HOURS),
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
@@ -99,7 +99,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -111,7 +111,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag,
         )
@@ -123,7 +123,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -135,7 +135,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -147,7 +147,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -159,7 +159,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -171,7 +171,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -183,7 +183,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -195,7 +195,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -207,7 +207,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -219,7 +219,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -231,7 +231,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -243,7 +243,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -255,7 +255,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -267,7 +267,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -279,7 +279,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -312,7 +312,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag,
         )
@@ -324,7 +324,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -336,7 +336,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -348,7 +348,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -360,7 +360,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -372,7 +372,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -384,7 +384,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -396,7 +396,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -408,7 +408,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -420,7 +420,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -432,7 +432,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -444,7 +444,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -456,7 +456,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -468,7 +468,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -480,7 +480,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -490,7 +490,7 @@ with dag:
         PUBLISHED_MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
 
         def published_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination, version]
+            return ["config/prod.conf", "default", destination, VERSION]
 
 
         published_appointment_information = SparkOperator(
@@ -500,7 +500,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag,
         )
@@ -512,7 +512,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -524,7 +524,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -536,7 +536,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -548,7 +548,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -560,7 +560,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -572,7 +572,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -584,7 +584,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -596,7 +596,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -608,7 +608,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -620,7 +620,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -632,7 +632,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -644,7 +644,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -656,7 +656,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -668,7 +668,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )

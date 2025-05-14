@@ -10,7 +10,7 @@ from airflow import DAG
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg
+from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
@@ -43,7 +43,7 @@ Le fichier Excel doit être généré manuellement via un notebook de la zone ro
 """
 
 # Update default args
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 
 dag = DAG(
@@ -51,8 +51,8 @@ dag = DAG(
     doc_md=DOC,
     start_date=datetime(2023, 10, 20, 7, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=4),
-    params=default_params,
-    dagrun_timeout=timedelta(hours=default_timeout_hours),
+    params=DEFAULT_PARAMS,
+    dagrun_timeout=timedelta(hours=DEFAULT_TIMEOUT_HOURS),
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
@@ -94,7 +94,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
             dag=dag
         )
@@ -106,7 +106,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
             dag=dag
         )
@@ -118,7 +118,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
             dag=dag,
         )
@@ -130,7 +130,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
             dag=dag
         )

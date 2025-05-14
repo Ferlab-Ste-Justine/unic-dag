@@ -1,6 +1,7 @@
 """
-Ingestion and anonymized dags
+Create DAGs from JSON configuration files.
 """
+import json
 import os
 import re
 from datetime import timedelta, datetime
@@ -8,46 +9,47 @@ from datetime import timedelta, datetime
 import pendulum
 from airflow import DAG
 
-from lib.config import dags_config_path, extract_resource, default_timeout_hours, default_args, config_file, \
-    spark_failure_msg, jar, version, default_params
+from lib.config import DAGS_CONFIG_PATH, EXTRACT_RESOURCE, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, CONFIG_FILE, \
+    SPARK_FAILURE_MSG, JAR, DEFAULT_PARAMS
 from lib.slack import Slack
-from spark_operators import read_json, setup_dag
+from tasks import create_tasks
 
-for (r, zones, _) in os.walk(dags_config_path):
-    if r == dags_config_path:
+for (r, zones, _) in os.walk(DAGS_CONFIG_PATH):
+    if r == DAGS_CONFIG_PATH:
         for zone in zones:
-            for (_, subzones, _) in os.walk(f'{dags_config_path}/{zone}'):
+            for (_, subzones, _) in os.walk(f'{DAGS_CONFIG_PATH}/{zone}'):
                 for subzone in subzones:
-                    for (_, _, files) in os.walk(f'{dags_config_path}/{zone}/{subzone}'):
+                    for (_, _, files) in os.walk(f'{DAGS_CONFIG_PATH}/{zone}/{subzone}'):
                         for f in files:
-                            resource = re.search(extract_resource, f).group(1)
+                            resource = re.search(EXTRACT_RESOURCE, f).group(1)
                             dagid = f"{subzone}_{resource}".lower()
-                            config = read_json(f"{dags_config_path}/{zone}/{subzone}/{resource}_config.json")
-                            k = 'timeout_hours'
-                            timeout_hours = config[k] if k in config else default_timeout_hours
-                            exec_timeout_hours = 3/4 * timeout_hours
-                            default_args["execution_timeout"] = timedelta(hours=exec_timeout_hours)
-                            dag = DAG(
-                                dag_id=dagid,
-                                schedule_interval=config['schedule'],
-                                params=default_params,
-                                default_args=default_args,
-                                start_date=datetime(2021, 1, 1, tzinfo=pendulum.timezone("America/Montreal")),
-                                concurrency=config['concurrency'],
-                                catchup=False,
-                                tags=[subzone],
-                                dagrun_timeout=timedelta(hours=timeout_hours),
-                                is_paused_upon_creation=True,
-                                on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
-                            )
-                            with dag:
-                                setup_dag(
-                                    dag=dag,
-                                    dag_config=config,
-                                    config_file=config_file,
-                                    jar=jar,
-                                    resource=resource,
-                                    version=version,
-                                    spark_failure_msg=spark_failure_msg
+                            with open(f"{DAGS_CONFIG_PATH}/{zone}/{subzone}/{f}", encoding='UTF8') as json_file:
+                                config = json.load(json_file)
+                                k = 'timeout_hours'
+                                timeout_hours = config[k] if k in config else DEFAULT_TIMEOUT_HOURS
+                                exec_timeout_hours = 3/4 * timeout_hours
+                                args = DEFAULT_ARGS.copy()
+                                args["execution_timeout"] = timedelta(hours=exec_timeout_hours)
+                                dag = DAG(
+                                    dag_id=dagid,
+                                    schedule_interval=config['schedule'],
+                                    params=DEFAULT_PARAMS,
+                                    default_args=args,
+                                    start_date=datetime(2021, 1, 1, tzinfo=pendulum.timezone("America/Montreal")),
+                                    concurrency=config['concurrency'],
+                                    catchup=False,
+                                    tags=[subzone],
+                                    dagrun_timeout=timedelta(hours=timeout_hours),
+                                    is_paused_upon_creation=True,
+                                    on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
                                 )
-                            globals()[dagid] = dag
+                                with dag:
+                                    create_tasks(
+                                        dag=dag,
+                                        dag_config=config,
+                                        config_file=CONFIG_FILE,
+                                        jar=JAR,
+                                        resource=resource,
+                                        spark_failure_msg=SPARK_FAILURE_MSG
+                                    )
+                                globals()[dagid] = dag

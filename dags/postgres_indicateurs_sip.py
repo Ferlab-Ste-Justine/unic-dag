@@ -9,7 +9,7 @@ from airflow import DAG
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import default_args
+from lib.config import DEFAULT_ARGS
 from lib.groups.postgres.create_tables import create_tables
 from lib.groups.postgres.drop_tables import drop_tables
 from lib.slack import Slack
@@ -39,7 +39,7 @@ sql_config = {
 table_name_list = [table['name'] for table in sql_config['tables']]
 
 # Update default args
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 args.update({
     'trigger_rule': TriggerRule.NONE_FAILED,
     'on_failure_callback': Slack.notify_task_failure})
