@@ -14,7 +14,7 @@ class OpensearchEnv(Enum):
     PROD = 'prod'
 
 class OpensearchAlias(Enum):
-    RESOURCE = 'resouce_centric'
+    RESOURCE = 'resource_centric'
     TABLE = 'table_centric'
     VARIABLE = 'variable_centric'
 
