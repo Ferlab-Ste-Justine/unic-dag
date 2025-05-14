@@ -1,0 +1,52 @@
+{
+  "concurrency": 3,
+  "schedule": "0 6 * * 2",
+  "timeout_hours": 4,
+  "steps": [
+    {
+      "destination_zone": "yellow",
+      "destination_subzone": "enriched",
+      "main_class": "bio.ferlab.ui.etl.yellow.enriched.sprintkid.Main",
+      "multiple_main_methods": true,
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id":"enriched_sprintkid_hospital_data"                   , "cluster_type": "medium", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": ["enriched_sprintkid_respiratory_pathogen_diagnostics"]},
+        {"dataset_id":"enriched_sprintkid_live_region_v20_import_template" , "cluster_type": "medium", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": ["enriched_sprintkid_participant_index", "enriched_sprintkid_stream_2_aefi_screening", "enriched_sprintkid_respiratory_pathogen_diagnostics", "enriched_sprintkid_patient_data", "enriched_sprintkid_hospital_data"]},
+        {"dataset_id":"enriched_sprintkid_participant_index"               , "cluster_type": "medium", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": ["enriched_sprintkid_stream_2_aefi_screening", "enriched_sprintkid_respiratory_pathogen_diagnostics"]},
+        {"dataset_id":"enriched_sprintkid_patient_data"                    , "cluster_type": "medium", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": ["enriched_sprintkid_respiratory_pathogen_diagnostics"]},
+        {"dataset_id":"enriched_sprintkid_respiratory_pathogen_diagnostics", "cluster_type": "medium", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_sprintkid_stream_2_aefi_screening"         , "cluster_type": "medium", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_surveillancegermes_patient"                , "cluster_type": "medium", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"enriched_surveillancegermes_weekly_summary"         , "cluster_type": "medium", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": ["enriched_surveillancegermes_patient"]}
+      ],
+      "optimize": [],
+      "post_tests": []
+    },
+    {
+      "destination_zone": "green",
+      "destination_subzone": "released",
+      "main_class": "bio.ferlab.ui.etl.green.released.Main",
+      "multiple_main_methods": false,
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id":"released_sprintkid_live_region_v20_import_template", "cluster_type": "medium", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"released_surveillancegermes_weekly_summary"        , "cluster_type": "medium", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": []}
+      ],
+      "optimize": [],
+      "post_tests": []
+    },
+    {
+      "destination_zone": "green",
+      "destination_subzone": "published",
+      "main_class": "",
+      "multiple_main_methods": false,
+      "pre_tests": [],
+      "datasets": [
+        {"dataset_id":"published_sprintkid_live_region_v20_import_template", "cluster_type": "", "run_type": "", "pass_date": true, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_surveillancegermes_weekly_summary"        , "cluster_type": "", "run_type": "", "pass_date": true, "cluster_specs": {}, "dependencies": []}
+      ],
+      "optimize": [],
+      "post_tests": []
+    }
+  ]
+}
