@@ -7,8 +7,6 @@
     "destination_subzone": "raw",
     "main_class": "bio.ferlab.ui.etl.red.raw.centro.Main",
     "multiple_main_methods": false,
-    "publish_class": "bio.ferlab.ui.etl.red.raw.UpdateLog",
-    "schemas": ["centro"],
     "pre_tests": [],
     "datasets": [
       {"dataset_id": "raw_centro_ado_*"     , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
@@ -88,8 +86,6 @@
       "destination_subzone": "curated",
       "main_class": "bio.ferlab.ui.etl.red.curated.centro.Main",
       "multiple_main_methods": false,
-      "publish_class": "",
-      "schemas": [],
       "pre_tests": [{"name": "greater_or_equal_partition_counts", "destinations": ["curated_centro_*"], "cluster_type" : "large"}],
       "datasets": [
         {"dataset_id":"curated_centro_atoe_*", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
@@ -105,8 +101,6 @@
     "destination_subzone": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
     "multiple_main_methods": false,
-    "publish_class": "",
-    "schemas": [],
     "pre_tests": [{"name": "greater_or_equal_partition_counts", "destinations": [
       "anonymized_centro_c*",
       "anonymized_centro_d*",

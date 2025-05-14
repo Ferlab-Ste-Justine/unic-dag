@@ -8,8 +8,6 @@
       "destination_subzone": "enriched",
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.trekids.Main",
       "multiple_main_methods": true,
-      "publish_class": "",
-      "schemas": [],
       "pre_tests": [],
       "datasets": [
         {"dataset_id":"enriched_trekids_participant_index"        , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []                                    },
@@ -29,8 +27,6 @@
       "destination_subzone": "released",
       "main_class": "bio.ferlab.ui.etl.green.released.Main",
       "multiple_main_methods": false,
-      "publish_class": "",
-      "schemas": [],
       "pre_tests": [],
       "datasets": [
         {"dataset_id":"released_trekids_hospitalisation"          , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
@@ -47,19 +43,17 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "main_class": "",
       "multiple_main_methods": false,
-      "publish_class": "",
-      "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"published_trekids_hospitalisation"          , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_trekids_diagnosis"                , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_trekids_laboratory"               , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_trekids_medication_visit"         , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_trekids_medication_administration", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_trekids_patient_info"             , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_trekids_patient_medical_history"  , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"published_trekids_hospitalisation"          , "cluster_type": "", "run_type": "", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_trekids_diagnosis"                , "cluster_type": "", "run_type": "", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_trekids_laboratory"               , "cluster_type": "", "run_type": "", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_trekids_medication_visit"         , "cluster_type": "", "run_type": "", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_trekids_medication_administration", "cluster_type": "", "run_type": "", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_trekids_patient_info"             , "cluster_type": "", "run_type": "", "pass_date": false, "cluster_specs": {}, "dependencies": []},
+        {"dataset_id":"published_trekids_patient_medical_history"  , "cluster_type": "", "run_type": "", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []

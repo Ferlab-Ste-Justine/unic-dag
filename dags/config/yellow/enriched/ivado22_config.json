@@ -8,8 +8,6 @@
       "destination_subzone": "enriched",
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.ivado22.Main",
       "multiple_main_methods": true,
-      "publish_class": "",
-      "schemas": [],
       "pre_tests": [],
       "datasets": [
         {"dataset_id": "enriched_ivado22_abdomen_ultrasound_reports", "cluster_type": "small", "run_type": "default", "pass_date": true, "cluster_specs": {}, "dependencies": ["enriched_ivado22_participant_index"]},

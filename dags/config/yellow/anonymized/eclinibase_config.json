@@ -7,8 +7,6 @@
     "destination_subzone": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
     "multiple_main_methods": false,
-    "publish_class": "",
-    "schemas": [],
     "pre_tests": [
       {"name": "greater_or_equal_partition_counts", "destinations": [
         "anonymized_eclinibase_v_activite",

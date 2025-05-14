@@ -7,8 +7,6 @@
     "destination_subzone": "raw",
     "main_class": "bio.ferlab.ui.etl.red.raw.icca.Main",
     "multiple_main_methods": false,
-    "publish_class": "",
-    "schemas": [],
     "pre_tests": [],
     "datasets": [
       {"dataset_id": "raw_icca_blood_gas"         , "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
@@ -34,8 +32,6 @@
     "destination_subzone": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
     "multiple_main_methods": false,
-    "publish_class": "",
-    "schemas": [],
     "pre_tests": [],
     "datasets": [
       {"dataset_id": "anonymized_icca_blood_gas"         , "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},

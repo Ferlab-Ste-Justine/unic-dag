@@ -8,8 +8,6 @@
       "destination_subzone": "curated",
       "main_class": "bio.ferlab.ui.etl.red.curated.sil.Main",
       "multiple_main_methods": false,
-      "publish_class": "",
-      "schemas": [],
       "pre_tests": [{"name": "greater_partition_counts", "destinations": ["curated_softpath_*"], "cluster_type" : "xsmall"}],
       "datasets": [
         {"dataset_id":"curated_softpath_v_p_pat_gyncase"           , "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
@@ -31,8 +29,6 @@
       "destination_subzone": "anonymized",
       "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
       "multiple_main_methods": false,
-      "publish_class": "",
-      "schemas": [],
       "pre_tests": [{"name": "greater_partition_counts", "destinations": [
         "anonymized_softpath_v_p_pat_auxilarydoctor",
         "anonymized_softpath_v_p_pat_d*",

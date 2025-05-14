@@ -7,8 +7,6 @@
     "destination_subzone": "curated",
     "main_class": "bio.ferlab.ui.etl.red.curated.Main",
     "multiple_main_methods": true,
-    "publish_class": "",
-    "schemas": [],
     "pre_tests": [],
     "datasets": [
       {"dataset_id": "curated_medecho_mep_vue_diagnostic", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
@@ -21,8 +19,6 @@
     "destination_subzone": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
     "multiple_main_methods": false,
-    "publish_class": "",
-    "schemas": [],
     "pre_tests": [
       {"name": "greater_partition_counts", "destinations": [
         "anonymized_medecho_mep_vue_accident", "anonymized_medecho_mep_vue_c*", "anonymized_medecho_mep_vue_destination",

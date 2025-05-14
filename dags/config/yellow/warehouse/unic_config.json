@@ -7,8 +7,6 @@
     "destination_subzone": "warehouse",
     "main_class": "bio.ferlab.ui.etl.yellow.warehouse.Main",
     "multiple_main_methods": false,
-    "publish_class": "",
-    "schemas": [],
     "pre_tests": [],
     "datasets": [
       {"dataset_id": "warehouse_diagnostic_reference"                     , "cluster_type": "small" , "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},

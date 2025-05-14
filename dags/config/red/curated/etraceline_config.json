@@ -7,8 +7,6 @@
     "destination_subzone": "curated",
     "main_class": "bio.ferlab.ui.etl.red.curated.Main",
     "multiple_main_methods": true,
-    "publish_class": "",
-    "schemas": [],
     "pre_tests": [
       {"name": "greater_partition_counts", "destinations": ["curated_etraceline_patient"], "cluster_type" : "xsmall"}
     ],
@@ -23,8 +21,6 @@
     "destination_subzone": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
     "multiple_main_methods": false,
-    "publish_class": "",
-    "schemas": [],
     "pre_tests": [
       {"name": "greater_or_equal_partition_counts", "destinations": [
         "anonymized_etraceline_etat_produit",

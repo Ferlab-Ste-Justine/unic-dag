@@ -8,8 +8,6 @@
       "destination_subzone": "enriched",
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.edinava.Main",
       "multiple_main_methods": false,
-      "publish_class": "",
-      "schemas": [],
       "pre_tests": [],
       "datasets": [
         {"dataset_id": "enriched_edinava_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
@@ -22,8 +20,6 @@
       "destination_subzone": "released",
       "main_class": "bio.ferlab.ui.etl.green.released.Main",
       "multiple_main_methods": false,
-      "publish_class": "",
-      "schemas": [],
       "pre_tests": [],
       "datasets": [
           {"dataset_id": "released_edinava_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
@@ -34,13 +30,11 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "main_class": "",
       "multiple_main_methods": false,
-      "publish_class": "",
-      "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "published_edinava_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "published_edinava_participant_index", "cluster_type": "", "run_type": "", "pass_date": false, "cluster_specs": {}, "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []

@@ -8,8 +8,6 @@
       "destination_subzone": "enriched",
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.mfm.Main",
       "multiple_main_methods": true,
-      "publish_class": "",
-      "schemas": [],
       "pre_tests": [],
       "datasets":
       [
@@ -55,8 +53,6 @@
       "destination_subzone": "released",
       "main_class": "bio.ferlab.ui.etl.green.released.mfm.Main",
       "multiple_main_methods": true,
-      "publish_class": "",
-      "schemas": [],
       "pre_tests": [],
       "datasets":
       [
@@ -95,8 +91,6 @@
       "destination_subzone": "published",
       "main_class": "bio.ferlab.ui.etl.green.published.Main",
       "multiple_main_methods": false,
-      "publish_class": "",
-      "schemas": [],
       "pre_tests": [],
       "datasets":
       [
