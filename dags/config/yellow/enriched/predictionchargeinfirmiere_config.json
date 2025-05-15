@@ -8,40 +8,29 @@
       "destination_subzone": "enriched",
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.predictionchargeinfirmiere.Main",
       "multiple_main_methods": true,
-      "pre_tests": [],
       "datasets": [
-        {"dataset_id":"enriched_predictionchargeinfirmiere_diagnostic"       , "cluster_type": "small", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_predictionchargeinfirmiere_episode_of_care"]},
-        {"dataset_id":"enriched_predictionchargeinfirmiere_episode_of_care"  , "cluster_type": "small", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": ["enriched_predictionchargeinfirmiere_participant_index"]},
-        {"dataset_id":"enriched_predictionchargeinfirmiere_participant_index", "cluster_type": "small", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []}
-      ],
-      "optimize": [],
-      "post_tests": []
+        {"dataset_id":"enriched_predictionchargeinfirmiere_diagnostic"       , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": ["enriched_predictionchargeinfirmiere_episode_of_care"]},
+        {"dataset_id":"enriched_predictionchargeinfirmiere_episode_of_care"  , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": ["enriched_predictionchargeinfirmiere_participant_index"]},
+        {"dataset_id":"enriched_predictionchargeinfirmiere_participant_index", "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": []}
+      ]
     },
     {
       "destination_zone": "green",
       "destination_subzone": "released",
       "main_class": "bio.ferlab.ui.etl.green.released.Main",
       "multiple_main_methods": false,
-      "pre_tests": [],
       "datasets": [
-        {"dataset_id":"released_predictionchargeinfirmiere_diagnostic"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_predictionchargeinfirmiere_episode_of_care", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
-      ],
-      "optimize": [],
-      "post_tests": []
+        {"dataset_id":"released_predictionchargeinfirmiere_diagnostic"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id":"released_predictionchargeinfirmiere_episode_of_care", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+      ]
     },
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "main_class": "",
-      "multiple_main_methods": false,
-      "pre_tests": [],
       "datasets": [
-        {"dataset_id":"published_predictionchargeinfirmiere_diagnostic"     , "cluster_type": "", "run_type": "", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_predictionchargeinfirmiere_episode_of_care", "cluster_type": "", "run_type": "", "pass_date": false, "cluster_specs": {}, "dependencies": []}
-      ],
-      "optimize": [],
-      "post_tests": []
+        {"dataset_id":"published_predictionchargeinfirmiere_diagnostic"     , "pass_date": false, "dependencies": []},
+        {"dataset_id":"published_predictionchargeinfirmiere_episode_of_care", "pass_date": false, "dependencies": []}
+      ]
     }
   ]
 }

@@ -8,12 +8,9 @@
       "destination_subzone": "enriched",
       "main_class": "bio.ferlab.ui.etl.red.enriched.validationindexpatient.PatientsDupliquesETL",
       "multiple_main_methods": false,
-      "pre_tests": [],
       "datasets": [
-        {"dataset_id":"enriched_validationindexpatient_patients_dupliques", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
-      ],
-      "optimize" : [],
-      "post_tests": []
+        {"dataset_id":"enriched_validationindexpatient_patients_dupliques", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+      ]
     }
   ]
 }

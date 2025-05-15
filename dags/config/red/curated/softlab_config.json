@@ -9,7 +9,7 @@
     "multiple_main_methods": false,
     "pre_tests": [{"name": "greater_partition_counts", "destinations": ["curated_softlab_v_p_lab_patient"], "cluster_type" : "xsmall"}],
     "datasets": [
-      {"dataset_id": "curated_softlab_v_p_lab_patient", "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "curated_softlab_v_p_lab_patient", "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []}
     ],
     "optimize" : [],
     "post_tests": []
@@ -27,13 +27,13 @@
       "anonymized_softlab_v_p_lab_s*"
     ], "cluster_type" : "xsmall"}],
     "datasets": [
-      {"dataset_id": "anonymized_softlab_v_p_genindex_hisaux" , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_softlab_v_p_lab_message"     , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_softlab_v_p_lab_order"       , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_softlab_v_p_lab_ordered_test", "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_softlab_v_p_lab_patient"     , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_softlab_v_p_lab_s*"          , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_softlab_v_p_lab_test_result" , "cluster_type": "medium", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "anonymized_softlab_v_p_genindex_hisaux" , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_softlab_v_p_lab_message"     , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_softlab_v_p_lab_order"       , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_softlab_v_p_lab_ordered_test", "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_softlab_v_p_lab_patient"     , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_softlab_v_p_lab_s*"          , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_softlab_v_p_lab_test_result" , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []}
     ],
     "optimize" : ["anonymized_softlab_v_p_lab_test_result"],
     "post_tests": [

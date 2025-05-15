@@ -9,10 +9,10 @@
     "multiple_main_methods": false,
     "pre_tests": [{"name": "greater_partition_counts", "destinations": ["anonymized_loinc_*"], "cluster_type" : "xsmall"}],
     "datasets": [
-      {"dataset_id":"anonymized_loinc_code_mapping"   , "cluster_type": "small" , "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_loinc_dsq_table_codes", "cluster_type": "small" , "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_loinc_organization"   , "cluster_type": "small" , "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-      {"dataset_id":"anonymized_loinc_terminology"    , "cluster_type": "small" , "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []}
+      {"dataset_id":"anonymized_loinc_code_mapping"   , "cluster_type": "small" , "run_type": "initial", "pass_date": false, "dependencies": []},
+      {"dataset_id":"anonymized_loinc_dsq_table_codes", "cluster_type": "small" , "run_type": "initial", "pass_date": false, "dependencies": []},
+      {"dataset_id":"anonymized_loinc_organization"   , "cluster_type": "small" , "run_type": "initial", "pass_date": false, "dependencies": []},
+      {"dataset_id":"anonymized_loinc_terminology"    , "cluster_type": "small" , "run_type": "initial", "pass_date": false, "dependencies": []}
     ],
     "optimize" : [],
     "post_tests": [

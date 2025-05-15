@@ -8,7 +8,7 @@ from airflow import DAG
 from airflow.utils.task_group import TaskGroup
 
 from lib.config import RELEASED_BUCKET, RELEASED_PREFIX, DATE, PUBLISHED_BUCKET, PUBLISHED_PREFIX, UNDERSCORE_DATE, \
-    GREEN_MINIO_CONN_ID, UNDERSCORE_VERSION, VERSION
+    GREEN_MINIO_CONN_ID, UNDERSCORE_VERSION, VERSION, DEFAULT_MULTIPLE_MAIN_METHODS
 from lib.groups.qa import tests as qa_group
 from lib.operators.spark import SparkOperator
 from lib.tasks import notify
@@ -36,7 +36,7 @@ def _get_version(pass_date: bool, underscore: bool = False):
            f"{{% else %}}{version}{{% endif %}}"
 
 
-def _get_main_class(subzone: str, main_class: str):
+def _get_main_class(subzone: str, main_class: Optional[str]):
     """
     Get the main class to use for the Spark task. If no main class is provided in the config file, we use the default.
 
@@ -51,7 +51,7 @@ def _get_main_class(subzone: str, main_class: str):
         "released": "bio.ferlab.ui.etl.green.released.Main",
         "published": "bio.ferlab.ui.etl.green.published.Main",
     }
-    if main_class != "":
+    if main_class:
         return main_class
 
     try:
@@ -70,7 +70,7 @@ def _create_spark_task(destination: str,
                        config_file: str,
                        jar: str,
                        dag: DAG,
-                       main_class: str,
+                       main_class: Optional[str],
                        multiple_main_methods: bool,
                        spark_failure_msg: str,
                        skip: Optional[str] = None):
@@ -182,17 +182,17 @@ def create_tasks(dag: DAG,
         with TaskGroup(group_id=step_config['destination_subzone']) as subzone_group:
             zone = step_config['destination_zone']
             subzone = step_config['destination_subzone']
-            main_class = step_config['main_class']
-            multiple_main_methods = step_config['multiple_main_methods']
+            main_class = step_config['main_class'] if 'main_class' in step_config else None
+            multiple_main_methods = step_config['multiple_main_methods'] if 'multiple_main_methods' in step_config else DEFAULT_MULTIPLE_MAIN_METHODS
 
             start = notify.start(task_id=f"start_{subzone}_{resource}")
             end = notify.end(f"end_{subzone}_{resource}")
 
             jobs = {}
             all_dependencies = []
-            optimize_tables = step_config['optimize']
-            pre_tests = step_config['pre_tests']
-            post_tests = step_config['post_tests']
+            optimize_tables = step_config['optimize'] if 'optimize' in step_config else []
+            pre_tests = step_config['pre_tests'] if 'pre_tests' in step_config else []
+            post_tests = step_config['post_tests'] if 'post_tests' in step_config else []
             pre_test_sub_group = None
             post_test_sub_group = None
 
@@ -209,8 +209,6 @@ def create_tasks(dag: DAG,
 
             for conf in step_config['datasets']:
                 dataset_id = conf['dataset_id']
-                config_type = conf['cluster_type']
-                run_type = conf['run_type']
                 pass_date = conf['pass_date']
 
                 # When no main class is defined for published tasks, we create a Python task to publish Excel files
@@ -219,7 +217,9 @@ def create_tasks(dag: DAG,
 
                 # For all other tasks, we create a SparkOperator task
                 else:
-                    job = _create_spark_task(dataset_id, zone, subzone, run_type, pass_date, config_type, config_file,
+                    run_type = conf['run_type']
+                    cluster_type = conf['cluster_type']
+                    job = _create_spark_task(dataset_id, zone, subzone, run_type, pass_date, cluster_type, config_file,
                                              jar, dag, main_class, multiple_main_methods, spark_failure_msg, skip_task)
 
                 all_dependencies.extend(conf['dependencies'])

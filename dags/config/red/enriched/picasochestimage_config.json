@@ -8,12 +8,9 @@
       "destination_subzone": "enriched",
       "main_class": "bio.ferlab.ui.etl.red.enriched.picaso.ChestImageETL",
       "multiple_main_methods": false,
-      "pre_tests": [],
       "datasets": [
-        {"dataset_id":"enriched_picaso_chest_image", "cluster_type": "medium" , "run_type": "default" , "pass_date": false, "cluster_specs": {} , "dependencies": []}
-      ],
-      "optimize" : [],
-      "post_tests": []
+        {"dataset_id":"enriched_picaso_chest_image", "cluster_type": "medium" , "run_type": "default" , "pass_date": false, "dependencies": []}
+      ]
     }
   ]
 }

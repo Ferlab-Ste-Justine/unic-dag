@@ -10,7 +10,7 @@ import pendulum
 from airflow import DAG
 
 from lib.config import DAGS_CONFIG_PATH, EXTRACT_RESOURCE, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, CONFIG_FILE, \
-    SPARK_FAILURE_MSG, JAR, DEFAULT_PARAMS, DEFAULT_START_DATE
+    SPARK_FAILURE_MSG, JAR, DEFAULT_PARAMS, DEFAULT_START_DATE, DEFAULT_CONCURRENCY
 from lib.slack import Slack
 from tasks import create_tasks
 
@@ -37,11 +37,11 @@ for (r, zones, _) in os.walk(DAGS_CONFIG_PATH):
 
                                 dag = DAG(
                                     dag_id=dagid,
-                                    schedule_interval=config['schedule'],
+                                    schedule_interval=config['schedule'] if 'schedule' in config else None,
                                     params=DEFAULT_PARAMS,
                                     default_args=args,
                                     start_date=start_date,
-                                    concurrency=config['concurrency'],
+                                    concurrency=config['concurrency'] if 'concurrency' in config else DEFAULT_CONCURRENCY,
                                     catchup=config['catchup'] if 'catchup' in config else False,
                                     tags=[subzone],
                                     dagrun_timeout=timedelta(hours=timeout_hours),

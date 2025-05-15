@@ -10,7 +10,7 @@
         "multiple_main_methods": false,
         "pre_tests": [],
         "datasets": [
-          {"dataset_id": "anonymized_unite_des_naissances_registre", "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "cluster_specs": {}, "dependencies": []}
+          {"dataset_id": "anonymized_unite_des_naissances_registre", "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "dependencies": []}
         ],
         "optimize" : [],
         "post_tests": [

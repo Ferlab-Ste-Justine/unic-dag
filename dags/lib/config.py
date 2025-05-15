@@ -12,6 +12,7 @@ DAGS_CONFIG_PATH = f"{ROOT}/config"
 EXTRACT_RESOURCE = '(.*)_config.json'
 DEFAULT_START_DATE = datetime(2021, 1, 1, tzinfo=pendulum.timezone("America/Montreal"))
 DEFAULT_TIMEOUT_HOURS = 4
+DEFAULT_CONCURRENCY = 1
 DEFAULT_ARGS = {
     "owner": "unic",
     "depends_on_past": False,
@@ -29,6 +30,7 @@ DEFAULT_PARAMS = {
 CONFIG_FILE = "config/prod.conf"
 SPARK_FAILURE_MSG = "Spark job failed"
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
+DEFAULT_MULTIPLE_MAIN_METHODS = False
 
 # Connection config
 MINIO_CONN_ID = "minio"
