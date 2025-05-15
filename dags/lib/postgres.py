@@ -2,6 +2,8 @@ from enum import Enum
 
 from airflow.models import Variable
 
+from dags.lib.hooks.postgresca import PostgresCaHook
+
 
 class PostgresEnv(Enum):
     DEV = 'dev'
@@ -34,3 +36,12 @@ def drop_table(schema_name: str, table_name: str) -> str:
     Generate drop table statement for the given table_name.
     """
     return f"DROP TABLE IF EXISTS {schema_name}.{table_name} CASCADE;"
+
+def get_pg_ca_hook(pg_conn_id: str, ca_path: str = postgres_vlan2_ca_path, ca_filename: str = postgres_ca_filename,
+                ca_cert: str = postgres_vlan2_ca_cert) -> PostgresCaHook:
+    """
+    Get the Postgres Hook for the given environment.
+    """
+    return PostgresCaHook(postgres_conn_id=pg_conn_id, ca_path=ca_path,
+                        ca_filename=ca_filename, ca_cert=ca_cert)
+
