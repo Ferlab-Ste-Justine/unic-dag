@@ -53,3 +53,5 @@ optimization_main_class = "bio.ferlab.ui.etl.optimization.DeltaTableOptimization
 optimization_cluster_type = "small"
 optimization_spark_failure_msg = "Spark optimization job failed"
 optimization_retries = 0
+
+GREEN_BUCKET = "green-prd"
