@@ -11,18 +11,27 @@
     "schemas": [],
     "pre_tests": [
       {"name": "greater_or_equal_partition_counts", "destinations": [
-        "anonymized_staturgence_recherche_activity", "anonymized_staturgence_recherche_d*", 
-        "anonymized_staturgence_recherche_episode_bcm", "anonymized_staturgence_recherche_episode_fadm",
-        "anonymized_staturgence_recherche_generic", "anonymized_staturgence_recherche_location*",
-        "anonymized_staturgence_recherche_pilotage", "anonymized_staturgence_recherche_quest_raison_visite",
+        "anonymized_staturgence_recherche_activity",
+        "anonymized_staturgence_recherche_d*",
+        "anonymized_staturgence_recherche_episode_bcm",
+        "anonymized_staturgence_recherche_episode_fadm",
+        "anonymized_staturgence_recherche_generic",
+        "anonymized_staturgence_recherche_location*",
+        "anonymized_staturgence_recherche_pilotage",
+        "anonymized_staturgence_recherche_quest_raison_visite",
         "anonymized_staturgence_recherche_test"
       ], "cluster_type" : "xsmall"},
       {"name": "greater_partition_counts", "destinations": [
-        "anonymized_staturgence_recherche_episode", "anonymized_staturgence_recherche_episode_activity", 
-        "anonymized_staturgence_recherche_episode_consultation", "anonymized_staturgence_recherche_episode_diagnostic",
-        "anonymized_staturgence_recherche_episode_location", "anonymized_staturgence_recherche_episode_pec",
-        "anonymized_staturgence_recherche_episode_s*", "anonymized_staturgence_recherche_episode_t*",
-        "anonymized_staturgence_recherche_logtransaction", "anonymized_staturgence_recherche_patientadt*"
+        "anonymized_staturgence_recherche_episode",
+        "anonymized_staturgence_recherche_episode_activity",
+        "anonymized_staturgence_recherche_episode_consultation",
+        "anonymized_staturgence_recherche_episode_diagnostic",
+        "anonymized_staturgence_recherche_episode_location",
+        "anonymized_staturgence_recherche_episode_pec",
+        "anonymized_staturgence_recherche_episode_s*",
+        "anonymized_staturgence_recherche_episode_t*",
+        "anonymized_staturgence_recherche_logtransaction",
+        "anonymized_staturgence_recherche_patientadt"
       ], "cluster_type" : "xsmall"}
     ],
     "datasets": [
