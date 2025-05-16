@@ -57,8 +57,8 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
     from airflow.exceptions import AirflowFailException
 
-    from lib.opensearch import load_cert, get_opensearch_client, os_templates, os_id_columns
-    from lib.config import yellow_minio_conn_id
+    from lib.opensearch import load_cert, get_opensearch_client, OS_TEMPLATES, OS_ID_COLUMNS
+    from lib.config import YELLOW_MINIO_CONN_ID
 
 
     # Load the os ca-certificate into task
@@ -68,7 +68,7 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
     os_client = get_opensearch_client(env_name)
 
     # Get s3 client
-    s3 = S3Hook(aws_conn_id=yellow_minio_conn_id)
+    s3 = S3Hook(aws_conn_id=YELLOW_MINIO_CONN_ID)
 
     index_name = f"{alias}_{release_id}"
     template_name = f"{alias}_template"
@@ -103,13 +103,13 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
         logging.info(f"Deleted index: {index_name}")
 
         # load template
-        os_client.indices.put_index_template(name=template_name, body=os_templates.get(alias))
+        os_client.indices.put_index_template(name=template_name, body=OS_TEMPLATES.get(alias))
         logging.info(f"Loaded template: {template_name}")
 
         # load index data
         data = []
         for record in json.loads(df.to_json(orient='records')):
-            data.append({"index": {"_index": index_name, "_id": record.get(os_id_columns.get(alias))}})
+            data.append({"index": {"_index": index_name, "_id": record.get(OS_ID_COLUMNS.get(alias))}})
             data.append(record)
 
         bulk_response = os_client.bulk(data)
@@ -173,7 +173,7 @@ def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_c
     :return: The next release_id
     """
     import logging
-    from lib.opensearch import os_env_config, load_cert, get_opensearch_client
+    from lib.opensearch import OS_ENV_CONFIG, load_cert, get_opensearch_client
     from airflow.exceptions import AirflowFailException
 
     # Load the os ca-certificate into task

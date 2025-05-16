@@ -2,13 +2,13 @@ from typing import List
 
 from airflow import DAG
 
-from lib.config import qa_test_main_class, qa_test_cluster_type, qa_test_spark_failure_msg, \
-    qa_test_retries
+from lib.config import QA_TEST_MAIN_CLASS, QA_TEST_CLUSTER_TYPE, QA_TEST_SPARK_FAILURE_MSG, \
+    QA_TEST_RETRIES
 from lib.operators.spark import SparkOperator
 
 
 def test(test_name: str, destinations: List[str], resource: str, zone: str, subzone: str,
-         config_file: str, jar: str, dag: DAG, cluster_type : str = qa_test_cluster_type) -> SparkOperator:
+         config_file: str, jar: str, dag: DAG, cluster_type : str = QA_TEST_CLUSTER_TYPE) -> SparkOperator:
     """
     Create QA test task.
 
@@ -37,10 +37,10 @@ def test(test_name: str, destinations: List[str], resource: str, zone: str, subz
         name=task_id.replace("_", "-")[:40],
         zone=zone,
         arguments=args,
-        spark_class=qa_test_main_class,
+        spark_class=QA_TEST_MAIN_CLASS,
         spark_jar=jar,
-        spark_failure_msg=qa_test_spark_failure_msg,
+        spark_failure_msg=QA_TEST_SPARK_FAILURE_MSG,
         spark_config=f"{cluster_type}-etl",
-        retries=qa_test_retries,
+        retries=QA_TEST_RETRIES,
         dag=dag
     )

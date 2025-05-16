@@ -12,13 +12,13 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "enriched_monchemin_admission_hospital"  , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_monchemin_surgery"]},
-        {"dataset_id": "enriched_monchemin_cancellation"        , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_monchemin_surgery"]},
-        {"dataset_id": "enriched_monchemin_diagnostic"          , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_monchemin_admission_hospital"]},
-        {"dataset_id": "enriched_monchemin_intervention"        , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_monchemin_admission_hospital"]},
-        {"dataset_id": "enriched_monchemin_programation_history", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_monchemin_surgery"]},
-        {"dataset_id": "enriched_monchemin_surgery"             , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "enriched_monchemin_visit_clinic"        , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_monchemin_surgery"]}
+        {"dataset_id": "enriched_monchemin_admission_hospital"  , "cluster_type": "medium", "run_type": "initial", "dependencies": ["enriched_monchemin_surgery"]},
+        {"dataset_id": "enriched_monchemin_cancellation"        , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_monchemin_surgery"]},
+        {"dataset_id": "enriched_monchemin_diagnostic"          , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_monchemin_admission_hospital"]},
+        {"dataset_id": "enriched_monchemin_intervention"        , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_monchemin_admission_hospital"]},
+        {"dataset_id": "enriched_monchemin_programation_history", "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_monchemin_surgery"]},
+        {"dataset_id": "enriched_monchemin_surgery"             , "cluster_type": "medium", "run_type": "initial", "dependencies": []},
+        {"dataset_id": "enriched_monchemin_visit_clinic"        , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_monchemin_surgery"]}
       ],
       "optimize": [],
       "post_tests": []
@@ -32,13 +32,13 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "released_monchemin_admission_hospital"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_monchemin_cancellation"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_monchemin_diagnostic"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_monchemin_intervention"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_monchemin_programation_history", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_monchemin_surgery"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_monchemin_visit_clinic"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "released_monchemin_admission_hospital"  , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "released_monchemin_cancellation"        , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "released_monchemin_diagnostic"          , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "released_monchemin_intervention"        , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "released_monchemin_programation_history", "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "released_monchemin_surgery"             , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "released_monchemin_visit_clinic"        , "cluster_type": "small", "run_type": "default", "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
@@ -52,13 +52,13 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "published_monchemin_admission_hospital"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_monchemin_cancellation"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_monchemin_diagnostic"          , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_monchemin_intervention"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_monchemin_programation_history", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_monchemin_surgery"             , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_monchemin_visit_clinic"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "published_monchemin_admission_hospital"  , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "published_monchemin_cancellation"        , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "published_monchemin_diagnostic"          , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "published_monchemin_intervention"        , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "published_monchemin_programation_history", "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "published_monchemin_surgery"             , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "published_monchemin_visit_clinic"        , "cluster_type": "small", "run_type": "default", "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []

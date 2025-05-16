@@ -12,8 +12,8 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"enriched_predisepsis_culture"          , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_predisepsis_participant_index"]},
-        {"dataset_id":"enriched_predisepsis_participant_index", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"enriched_predisepsis_culture"          , "cluster_type": "small", "run_type": "initial", "dependencies": ["enriched_predisepsis_participant_index"]},
+        {"dataset_id":"enriched_predisepsis_participant_index", "cluster_type": "small", "run_type": "initial", "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
@@ -27,7 +27,7 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"released_predisepsis_culture", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"released_predisepsis_culture", "cluster_type": "small", "run_type": "default", "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
@@ -41,7 +41,7 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"published_predisepsis_culture", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"published_predisepsis_culture", "cluster_type": "small", "run_type": "default", "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []

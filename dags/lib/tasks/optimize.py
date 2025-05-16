@@ -2,8 +2,8 @@ from typing import List
 
 from airflow import DAG
 
-from lib.config import optimization_main_class, optimization_cluster_type, optimization_spark_failure_msg, \
-    optimization_retries
+from lib.config import OPTIMIZATION_MAIN_CLASS, OPTIMIZATION_CLUSTER_TYPE, OPTIMIZATION_SPARK_FAILURE_MSG, \
+    OPTIMIZATION_RETRIES
 from lib.operators.spark import SparkOperator
 
 def optimize(destinations: List[str], resource: str, zone: str, subzone: str,
@@ -34,10 +34,10 @@ def optimize(destinations: List[str], resource: str, zone: str, subzone: str,
         name=task_id.replace("_", "-")[:40],
         zone=zone,
         arguments=args,
-        spark_class=optimization_main_class,
+        spark_class=OPTIMIZATION_MAIN_CLASS,
         spark_jar=jar,
-        spark_failure_msg=optimization_spark_failure_msg,
-        spark_config=f"{optimization_cluster_type}-etl",
-        retries=optimization_retries,
+        spark_failure_msg=OPTIMIZATION_SPARK_FAILURE_MSG,
+        spark_config=f"{OPTIMIZATION_CLUSTER_TYPE}-etl",
+        retries=OPTIMIZATION_RETRIES,
         dag=dag
     )

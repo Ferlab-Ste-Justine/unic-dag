@@ -11,7 +11,7 @@ from airflow.decorators import task
 from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import jar, spark_failure_msg, default_args
+from lib.config import JAR, SPARK_FAILURE_MSG, DEFAULT_ARGS
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -35,7 +35,7 @@ Ce DAG prends une liste de dataset ids et compacte et vacuum l'entièreté des d
 MAIN_CLASS = "bio.ferlab.datalake.spark3.utils.OptimizeDeltaTables"
 
 # Update default args
-dag_args = default_args.copy()
+dag_args = DEFAULT_ARGS.copy()
 dag_args.update({
     'trigger_rule': TriggerRule.NONE_FAILED,
     'on_failure_callback': Slack.notify_task_failure})
@@ -112,8 +112,8 @@ with DAG(
             number_of_versions=get_number_of_versions(),
             zone=get_zone(),
             spark_class=MAIN_CLASS,
-            spark_jar=jar,
-            spark_failure_msg=spark_failure_msg,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )

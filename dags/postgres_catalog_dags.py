@@ -10,9 +10,9 @@ from airflow import DAG
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import default_args
+from lib.config import DEFAULT_ARGS
 from lib.groups.postgres.create_tables import create_tables
-from lib.postgres import postgres_vlan2_ca_path, postgres_vlan2_ca_cert, \
+from lib.postgres import POSTGRES_VLAN2_CA_PATH, POSTGRES_VLAN2_CA_CERT, \
     PostgresEnv, unic_postgres_vlan2_conn_id
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -38,7 +38,7 @@ sql_config = {
 table_name_list = [table['name'] for table in sql_config['tables']]
 
 # Update default args
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 args.update({
     'trigger_rule': TriggerRule.NONE_FAILED,
     'on_failure_callback': Slack.notify_task_failure})
@@ -76,11 +76,11 @@ for env in PostgresEnv:
             on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
         start("start_postgres_catalog") \
-        >> create_resource(PostgresResource.SCHEMA, sql_config, conn_id=conn_id, ca_path=postgres_vlan2_ca_path,
-                           ca_cert=postgres_vlan2_ca_cert) \
-        >> create_resource(PostgresResource.TYPES, sql_config, conn_id=conn_id, ca_path=postgres_vlan2_ca_path,
-                           ca_cert=postgres_vlan2_ca_cert) \
-        >> create_tables(sql_config, conn_id=conn_id, ca_path=postgres_vlan2_ca_path, ca_cert=postgres_vlan2_ca_cert) \
-        >> create_resource(PostgresResource.INDEXES, sql_config, conn_id=conn_id, ca_path=postgres_vlan2_ca_path,
-                           ca_cert=postgres_vlan2_ca_cert) \
+        >> create_resource(PostgresResource.SCHEMA, sql_config, conn_id=conn_id, ca_path=POSTGRES_VLAN2_CA_PATH,
+                           ca_cert=POSTGRES_VLAN2_CA_CERT) \
+        >> create_resource(PostgresResource.TYPES, sql_config, conn_id=conn_id, ca_path=POSTGRES_VLAN2_CA_PATH,
+                           ca_cert=POSTGRES_VLAN2_CA_CERT) \
+        >> create_tables(sql_config, conn_id=conn_id, ca_path=POSTGRES_VLAN2_CA_PATH, ca_cert=POSTGRES_VLAN2_CA_CERT) \
+        >> create_resource(PostgresResource.INDEXES, sql_config, conn_id=conn_id, ca_path=POSTGRES_VLAN2_CA_PATH,
+                           ca_cert=POSTGRES_VLAN2_CA_CERT) \
         >> end("end_postgres_catalog")

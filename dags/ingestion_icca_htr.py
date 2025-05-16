@@ -8,7 +8,7 @@ from typing import List
 import pendulum
 from airflow import DAG
 
-from lib.config import default_params, default_args, spark_failure_msg, jar, config_file
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -30,7 +30,7 @@ RAW_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.icca.iccaHtr.Main"
 ANONYMIZED_ZONE = "yellow"
 ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.highresolution.Main"
 
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 args.update({
     'start_date': datetime(2015, 5, 21, tzinfo=pendulum.timezone("America/Montreal")),
     'provide_context': True,
@@ -42,7 +42,7 @@ dag = DAG(
     doc_md=DOC,
     start_date=datetime(2015, 5, 21, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval="@daily",
-    params=default_params,
+    params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=2),
     default_args=args,
     is_paused_upon_creation=True,
@@ -58,7 +58,7 @@ def arguments(destination: str, steps: str = "default") -> List[str]:
     Generate Spark task arguments for the ETL process
     """
     return [
-        "--config", config_file,
+        "--config", CONFIG_FILE,
         "--steps", steps,
         "--app-name", destination,
         "--destination", destination,
@@ -73,8 +73,8 @@ with dag:
         arguments=arguments("raw_icca_icca_htr"),
         zone=RAW_ZONE,
         spark_class=RAW_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="medium-etl",
         dag=dag
     )
@@ -85,8 +85,8 @@ with dag:
         arguments=arguments("anonymized_icca_icca_htr"),
         zone=ANONYMIZED_ZONE,
         spark_class=ANONYMIZED_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="medium-etl",
         dag=dag
     )

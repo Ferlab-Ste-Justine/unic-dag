@@ -13,11 +13,11 @@ from airflow.exceptions import AirflowFailException
 from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import jar, spark_failure_msg, yellow_minio_conn_id, default_args
+from lib.config import JAR, SPARK_FAILURE_MSG, YELLOW_MINIO_CONN_ID, DEFAULT_ARGS
 from lib.operators.spark import SparkOperator
 from lib.operators.upsert_csv_to_postgres import UpsertCsvToPostgres
-from lib.postgres import skip_task, postgres_vlan2_ca_path, postgres_ca_filename, \
-    postgres_vlan2_ca_cert, PostgresEnv, unic_postgres_vlan2_conn_id
+from lib.postgres import skip_task, POSTGRES_VLAN2_CA_PATH, POSTGRES_CA_FILENAME, \
+    POSTGRES_VLAN2_CA_CERT, PostgresEnv, unic_postgres_vlan2_conn_id
 from lib.slack import Slack
 from lib.tasks.excel import excel_to_csv
 from lib.tasks.notify import start, end
@@ -51,7 +51,7 @@ def arguments(table_name: str, app_name: str, project_name: Optional[str] = None
 
 
 # Update default args
-dag_args = default_args.copy()
+dag_args = DEFAULT_ARGS.copy()
 dag_args.update({
     'trigger_rule': TriggerRule.NONE_FAILED,
     'on_failure_callback': Slack.notify_task_failure})
@@ -124,7 +124,7 @@ for env in PostgresEnv:
                     s3_source_key=s3_source_key,
                     s3_destination_bucket=YELLOW_BUCKET,
                     s3_destination_key=s3_destination_key,
-                    s3_conn_id=yellow_minio_conn_id,
+                    s3_conn_id=YELLOW_MINIO_CONN_ID,
                     sheet_name=sheet_name,
                     skip=skip_task(table_name)
                 )
@@ -173,8 +173,8 @@ for env in PostgresEnv:
                     arguments=args,
                     zone=ZONE,
                     spark_class=MAIN_CLASS,
-                    spark_jar=jar,
-                    spark_failure_msg=spark_failure_msg,
+                    spark_jar=JAR,
+                    spark_failure_msg=SPARK_FAILURE_MSG,
                     spark_config=cluster_size,
                     skip=skip_task(table_name),
                 )
@@ -184,11 +184,11 @@ for env in PostgresEnv:
                     task_id=f"load_{table_name}_table",
                     s3_bucket="yellow-prd",
                     s3_key=s3_key,
-                    s3_conn_id=yellow_minio_conn_id,
+                    s3_conn_id=YELLOW_MINIO_CONN_ID,
                     postgres_conn_id=conn_id,
-                    postgres_ca_path=postgres_vlan2_ca_path,
-                    postgres_ca_filename=postgres_ca_filename,
-                    postgres_ca_cert=postgres_vlan2_ca_cert,
+                    postgres_ca_path=POSTGRES_VLAN2_CA_PATH,
+                    postgres_ca_filename=POSTGRES_CA_FILENAME,
+                    postgres_ca_cert=POSTGRES_VLAN2_CA_CERT,
                     schema_name="catalog",
                     table_name=table_name,
                     table_schema_path=f"sql/catalog/tables/{table_name}.sql",

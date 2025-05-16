@@ -9,7 +9,7 @@ from airflow import DAG
 from airflow.utils.trigger_rule import TriggerRule
 from airflow.models import Param
 
-from lib.config import default_args, spark_failure_msg, config_file
+from lib.config import DEFAULT_ARGS, SPARK_FAILURE_MSG, CONFIG_FILE
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import end, start
 
@@ -23,7 +23,7 @@ Dag pour debugger le patient index. Ecrit dans s3a://red-test/curated/unic/patie
 """
 
 # Update default args
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 
 params = {
@@ -50,7 +50,7 @@ with dag:
 
     args = [
         "curated_unic_patient_index",
-        "--config", config_file,
+        "--config", CONFIG_FILE,
         "--steps", "initial",
         "--app-name", "curated_unic_patient_index"
     ]
@@ -62,7 +62,7 @@ with dag:
         zone=CURATED_ZONE,
         spark_class=CURATED_MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="large-etl",
         dag=dag
     )

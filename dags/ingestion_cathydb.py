@@ -7,7 +7,7 @@ from typing import List
 
 from airflow import DAG
 
-from lib.config import default_params, default_args, spark_failure_msg, jar
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -29,7 +29,7 @@ la run du 1 janvier 2020 ingère les données du 1 janvier 2020 dans le lac.
 INGESTION_ZONE = "red"
 INGESTION_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.cathydb.Main"
 
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 args.update({
     'start_date': datetime(2016, 12, 2),
     'provide_context': True})  # to use date of ingested data as input in main
@@ -40,7 +40,7 @@ dag = DAG(
     start_date=datetime(2016, 12, 2),
     end_date=datetime(2023, 8, 14),
     schedule_interval="@daily",
-    params=default_params,
+    params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=2),
     default_args=args,
     is_paused_upon_creation=True,
@@ -80,8 +80,8 @@ with dag:
         arguments=arguments(task_name),
         zone=INGESTION_ZONE,
         spark_class=INGESTION_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config=cluster_size,
         dag=dag
     ) for task_name, cluster_size in cathydb_raw_tasks]

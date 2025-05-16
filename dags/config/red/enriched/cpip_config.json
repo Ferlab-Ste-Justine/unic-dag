@@ -1,0 +1,18 @@
+{
+  "concurrency": 1,
+  "start_date": "2024-07-20",
+  "schedule": null,
+  "catchup": true,
+  "timeout_hours": 2,
+  "steps": [
+    {
+      "destination_zone": "red",
+      "destination_subzone": "enriched",
+      "main_class": "bio.ferlab.ui.etl.red.enriched.cpip.ParticipantIndexETL",
+      "multiple_main_methods": false,
+      "datasets": [
+        {"dataset_id":"enriched_cpip_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []}
+      ]
+    }
+  ]
+}

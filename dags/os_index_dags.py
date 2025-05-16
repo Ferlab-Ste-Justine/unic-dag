@@ -12,8 +12,8 @@ from airflow.decorators import task_group
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import spark_failure_msg, jar
-from lib.opensearch import OpensearchEnv, OpensearchAlias, os_env_config
+from lib.config import SPARK_FAILURE_MSG, JAR
+from lib.opensearch import OpensearchEnv, OpensearchAlias, OS_ENV_CONFIG
 from lib.postgres import PostgresEnv
 # from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -83,7 +83,7 @@ for os_env in OpensearchEnv:
                     load_index.override(task_id=f"load_index_{alias.value}")(os_env_name, release_id, alias.value)
 
             elif os_env_name == OpensearchEnv.PROD.value:
-                os_config = os_env_config.get(os_env_name)
+                os_config = OS_ENV_CONFIG.get(os_env_name)
 
                 os_url = f"https://{os_config.get('host')}"
                 os_port = os_config.get('port')
@@ -95,7 +95,7 @@ for os_env in OpensearchEnv:
                 ]
 
                 [load_index_spark(task_id, load_index_arguments(release_id, os_url, os_port, template_filename, os_env_name, pg_env_name, alias),
-                            jar, spark_failure_msg, cluster_size, dag) for
+                                  JAR, SPARK_FAILURE_MSG, cluster_size, dag) for
                  task_id, alias, cluster_size, template_filename in es_load_index_conf]
 
         @task_group(group_id="publish_indexes")

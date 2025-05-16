@@ -12,12 +12,12 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "enriched_atoepilot_admission_hospital", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_atoepilot_surgery"]},
-        {"dataset_id": "enriched_atoepilot_laboratory_results", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_atoepilot_surgery"]},
-        {"dataset_id": "enriched_atoepilot_participant_index" , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "enriched_atoepilot_patient_biopsy"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_atoepilot_participant_index", "enriched_atoepilot_surgery"]},
-        {"dataset_id": "enriched_atoepilot_patient_weight"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_atoepilot_participant_index", "enriched_atoepilot_surgery"]},
-        {"dataset_id": "enriched_atoepilot_surgery"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_atoepilot_participant_index"]}
+        {"dataset_id": "enriched_atoepilot_admission_hospital", "cluster_type": "small", "run_type": "default", "dependencies": ["enriched_atoepilot_surgery"]},
+        {"dataset_id": "enriched_atoepilot_laboratory_results", "cluster_type": "small", "run_type": "default", "dependencies": ["enriched_atoepilot_surgery"]},
+        {"dataset_id": "enriched_atoepilot_participant_index" , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "enriched_atoepilot_patient_biopsy"    , "cluster_type": "small", "run_type": "default", "dependencies": ["enriched_atoepilot_participant_index", "enriched_atoepilot_surgery"]},
+        {"dataset_id": "enriched_atoepilot_patient_weight"    , "cluster_type": "small", "run_type": "default", "dependencies": ["enriched_atoepilot_participant_index", "enriched_atoepilot_surgery"]},
+        {"dataset_id": "enriched_atoepilot_surgery"           , "cluster_type": "small", "run_type": "default", "dependencies": ["enriched_atoepilot_participant_index"]}
       ],
       "optimize" : [],
       "post_tests": []
@@ -31,11 +31,11 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "released_atoepilot_admission_hospital", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_atoepilot_laboratory_results", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_atoepilot_patient_biopsy"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_atoepilot_patient_weight"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_atoepilot_surgery"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "released_atoepilot_admission_hospital", "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "released_atoepilot_laboratory_results", "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "released_atoepilot_patient_biopsy"    , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "released_atoepilot_patient_weight"    , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "released_atoepilot_surgery"           , "cluster_type": "small", "run_type": "default", "dependencies": []}
       ],
       "optimize" : [],
       "post_tests": []
@@ -49,11 +49,11 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id": "published_atoepilot_admission_hospital", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_atoepilot_laboratory_results", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_atoepilot_patient_biopsy"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_atoepilot_patient_weight"    , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_atoepilot_surgery"           , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "published_atoepilot_admission_hospital", "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "published_atoepilot_laboratory_results", "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "published_atoepilot_patient_biopsy"    , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "published_atoepilot_patient_weight"    , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id": "published_atoepilot_surgery"           , "cluster_type": "small", "run_type": "default", "dependencies": []}
       ],
       "optimize" : [],
       "post_tests": []

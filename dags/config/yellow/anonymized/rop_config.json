@@ -7,12 +7,10 @@
     "destination_subzone": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
     "multiple_main_methods": false,
-    "publish_class": "",
-    "schemas": [],
     "pre_tests": [],
     "datasets": [
-      {"dataset_id": "anonymized_rop_table_patient", "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []},
-      {"dataset_id": "anonymized_rop_table_examen" , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
+      {"dataset_id": "anonymized_rop_table_patient", "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_rop_table_examen" , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []}
     ],
     "optimize" : [],
     "post_tests": [

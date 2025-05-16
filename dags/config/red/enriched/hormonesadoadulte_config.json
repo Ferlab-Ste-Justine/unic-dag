@@ -1,0 +1,21 @@
+{
+  "concurrency": 2,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [
+    {
+      "destination_zone": "red",
+      "destination_subzone": "enriched",
+      "main_class": "bio.ferlab.ui.etl.red.enriched.hormonesadoadulte.Main",
+      "multiple_main_methods": true,
+      "datasets": [
+        {"dataset_id":"enriched_hormonesadoadulte_clinic_appointment", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_hormonesadoadulte_participant_index"]},
+        {"dataset_id":"enriched_hormonesadoadulte_gestational_age"   , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_hormonesadoadulte_participant_index", "enriched_hormonesadoadulte_selected_patients"]},
+        {"dataset_id":"enriched_hormonesadoadulte_medication"        , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_hormonesadoadulte_participant_index", "enriched_hormonesadoadulte_selected_patients"]},
+        {"dataset_id":"enriched_hormonesadoadulte_participant_index" , "cluster_type": "small", "run_type": "default", "pass_date": true , "dependencies": []},
+        {"dataset_id":"enriched_hormonesadoadulte_selected_patients" , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_hormonesadoadulte_participant_index", "enriched_hormonesadoadulte_visited_clinic", "enriched_hormonesadoadulte_clinic_appointment"]},
+        {"dataset_id":"enriched_hormonesadoadulte_visited_clinic"    , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_hormonesadoadulte_clinic_appointment"]}
+      ]
+    }
+  ]
+}

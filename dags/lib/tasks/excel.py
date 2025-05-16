@@ -8,7 +8,7 @@ from airflow.exceptions import AirflowFailException
 from airflow.exceptions import AirflowSkipException
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
-from lib.config import minio_conn_id
+from lib.config import MINIO_CONN_ID
 
 
 @task(task_id="parquet_to_excel")
@@ -19,7 +19,9 @@ def parquet_to_excel(
         excel_output_key: str,
         header: list = None,
         sheet_name: str = "sheet1",
-        minio_conn_id: str = 'minio_conn_id') -> None:
+        minio_conn_id: str = MINIO_CONN_ID,
+        skip: bool = False,
+) -> None:
     """
     Create an Airflow task to convert multiple or single parquet from a specified directory from Minio into a single excel file.
     Output stored in another specified directory.
@@ -32,10 +34,13 @@ def parquet_to_excel(
     - header:               list of column names to use as header in the Excel file.
     - sheet_name:           name of the sheet in the Excel file, default -> 'Sheet1'.
     - minio_conn_id:        connection id service, default -> 'minio_conn_id'.
+    - skip:                 True to skip the task, defaults to False (task is not skipped).
 
     Returns:
     - function: An Airflow task to be used in DAGs for converting parquet to excel.
     """
+    if skip:
+        raise AirflowSkipException()
 
     s3 = S3Hook(aws_conn_id=minio_conn_id)
     s3_client = s3.get_conn()
@@ -102,7 +107,7 @@ def csv_to_excel(
         excel_output_key: str,
         header: list = None,
         sheet_name: str = "sheet1",
-        minio_conn_id: str = 'minio_conn_id') -> None:
+        minio_conn_id: str = MINIO_CONN_ID) -> None:
     """
     Create an Airflow task to convert multiple or single csv from a specified directory from Minio.
     Each output file is stored in another specified directory.
@@ -177,7 +182,7 @@ def csv_to_excel(
 @task(task_id="excel_to_csv")
 def excel_to_csv(s3_source_bucket: str, s3_source_key: str,
                  s3_destination_bucket: str, s3_destination_key: str,
-                 s3_conn_id: str = minio_conn_id,
+                 s3_conn_id: str = MINIO_CONN_ID,
                  sheet_name: Union[str, int, None] = 0,
                  header: Union[int, List[int], None] = 0,
                  skip: bool = False):

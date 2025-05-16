@@ -7,15 +7,9 @@
       "destination_zone": "red",
       "destination_subzone": "enriched",
       "main_class": "bio.ferlab.ui.etl.red.enriched.spitzai.ParticipantIndexETL",
-      "multiple_main_methods": false,
-      "publish_class": "",
-      "schemas": [],
-      "pre_tests": [],
       "datasets": [
-        {"dataset_id":"enriched_spitzai_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": false, "cluster_specs": {}, "dependencies": []}
-      ],
-      "optimize": [],
-      "post_tests": []
+        {"dataset_id":"enriched_spitzai_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+      ]
     }
   ]
 }

@@ -7,7 +7,7 @@ from typing import List
 
 from airflow import DAG
 
-from lib.config import default_args, default_timeout_hours, spark_failure_msg
+from lib.config import DEFAULT_ARGS, DEFAULT_TIMEOUT_HOURS, SPARK_FAILURE_MSG
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
@@ -30,8 +30,8 @@ dag = DAG(
     doc_md=DOC,
     start_date=datetime(2023, 8, 24),
     schedule_interval=None,
-    dagrun_timeout=timedelta(hours=default_timeout_hours),
-    default_args=default_args,
+    dagrun_timeout=timedelta(hours=DEFAULT_TIMEOUT_HOURS),
+    default_args=DEFAULT_ARGS,
     is_paused_upon_creation=True,
     max_active_tasks=3,
     tags=["schema"],
@@ -49,7 +49,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -61,7 +61,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -73,7 +73,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -85,7 +85,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -97,7 +97,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -109,7 +109,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -121,7 +121,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -133,7 +133,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -145,7 +145,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -157,7 +157,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -169,7 +169,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -181,7 +181,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -193,7 +193,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -205,7 +205,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -217,7 +217,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
@@ -229,7 +229,7 @@ with dag:
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
-        spark_failure_msg=spark_failure_msg,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )

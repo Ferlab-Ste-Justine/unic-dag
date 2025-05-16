@@ -7,11 +7,11 @@ from typing import List
 
 import pendulum
 from airflow import DAG
-from airflow.models import Param, Variable
+from airflow.models import Param
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import default_params, default_timeout_hours, default_args, spark_failure_msg, version
+from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, VERSION
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
@@ -49,9 +49,9 @@ utilisée comme version de la release.
 """
 
 # Update default params
-params = default_params.copy()
+params = DEFAULT_PARAMS.copy()
 params.update({"skip_last_visit_survey": Param(True, type="boolean")})
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 
 dag = DAG(
@@ -60,7 +60,7 @@ dag = DAG(
     start_date=datetime(2023, 6, 9, 6, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=4),
     params=params,
-    dagrun_timeout=timedelta(hours=default_timeout_hours),
+    dagrun_timeout=timedelta(hours=DEFAULT_TIMEOUT_HOURS),
     default_args=args,
     is_paused_upon_creation=True,
     catchup=True,
@@ -104,7 +104,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
             dag=dag
         )
@@ -116,7 +116,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag,
             skip=skip_last_visit_survey()
@@ -129,7 +129,7 @@ with dag:
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
         )
@@ -153,7 +153,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
             dag=dag,
             skip=skip_last_visit_survey()
@@ -172,7 +172,7 @@ with dag:
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
             dag=dag
         )
@@ -180,11 +180,10 @@ with dag:
     with TaskGroup(group_id="published") as published:
         PUBLISHED_ZONE = "green"
         PUBLISHED_MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
-        mail_to = Variable.get("EMAIL_ENRICHED_SIGNATURE_MAIL_TO")
 
 
         def published_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination, version]
+            return ["config/prod.conf", "default", destination, VERSION]
 
 
         published_last_visit_survey = SparkOperator(
@@ -194,7 +193,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="xsmall-etl",
             dag=dag,
             skip=skip_last_visit_survey()
@@ -207,7 +206,7 @@ with dag:
             zone=PUBLISHED_ZONE,
             spark_class=PUBLISHED_MAIN_CLASS,
             spark_jar=JAR,
-            spark_failure_msg=spark_failure_msg,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="xsmall-etl",
             dag=dag
         )

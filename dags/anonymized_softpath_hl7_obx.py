@@ -8,7 +8,7 @@ from typing import List
 import pendulum
 from airflow import DAG
 
-from lib.config import default_params, default_args, spark_failure_msg, jar
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import start, end
 
@@ -19,7 +19,7 @@ Temp DAG to anonymize the OBX segment of Softpath HL7 messages
 
 ANONYMIZED_ZONE = "yellow"
 ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.hl7.Main"
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 args.update({
     'provide_context': True,
     'depends_on_past': False,
@@ -31,7 +31,7 @@ dag = DAG(
     start_date=datetime(2021, 1, 1, 0, tzinfo=pendulum.timezone("America/Montreal")),
     end_date=datetime(2026, 5, 20, 0, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),
-    params=default_params,
+    params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=2),
     default_args=args,
     is_paused_upon_creation=True,
@@ -69,8 +69,8 @@ with dag:
         arguments=get_arguments(task_name),
         zone=ANONYMIZED_ZONE,
         spark_class=ANONYMIZED_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config=cluster_size,
         dag=dag
     ) for task_name, cluster_size in softpath_hl7_anonymized_tasks]

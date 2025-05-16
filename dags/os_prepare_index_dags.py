@@ -9,7 +9,7 @@ from airflow import DAG
 from airflow.decorators import task_group
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import default_params, jar, spark_failure_msg, default_args
+from lib.config import DEFAULT_PARAMS, JAR, SPARK_FAILURE_MSG, DEFAULT_ARGS
 from lib.postgres import PostgresEnv
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -18,7 +18,7 @@ from lib.tasks.opensearch import prepare_index
 # pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, cell-var-from-loop, duplicate-code, redefined-outer-name
 
 # Update default args
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 args.update({
     'trigger_rule': TriggerRule.NONE_FAILED,
     'on_failure_callback': Slack.notify_task_failure})
@@ -53,7 +53,7 @@ for pg_env in PostgresEnv:
 
     with DAG(
             dag_id=f"os_{pg_env_name}_prepare_index",
-            params=default_params,
+            params=DEFAULT_PARAMS,
             default_args=args,
             doc_md=doc,
             start_date=datetime(2024, 11, 18),
@@ -70,7 +70,7 @@ for pg_env in PostgresEnv:
                 ("os_index_variable_centric", "large-etl")
             ]
 
-            [prepare_index(task_id, arguments(task_id, pg_env_name), jar, spark_failure_msg,
+            [prepare_index(task_id, arguments(task_id, pg_env_name), JAR, SPARK_FAILURE_MSG,
                            cluster_size, dag) for task_id, cluster_size in os_prepare_index_conf]
 
 

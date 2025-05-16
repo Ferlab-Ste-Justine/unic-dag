@@ -13,13 +13,13 @@
       "pre_tests": [],
       "datasets":
       [
-        {"dataset_id": "enriched_modelisationsglt2_participant_index"        , "cluster_type": "medium", "run_type": "initial", "cluster_specs": {}, "dependencies": []                                                                                       },
-        {"dataset_id": "enriched_modelisationsglt2_patient"                  , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_modelisationsglt2_participant_index", "enriched_modelisationsglt2_laboratory"]},
-        {"dataset_id": "enriched_modelisationsglt2_consultation"             , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_modelisationsglt2_participant_index"]                                         },
-        {"dataset_id": "enriched_modelisationsglt2_medication_visit"         , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_modelisationsglt2_participant_index"]                                         },
-        {"dataset_id": "enriched_modelisationsglt2_medication_administration", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_modelisationsglt2_participant_index"]                                         },
-        {"dataset_id": "enriched_modelisationsglt2_laboratory"               , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_modelisationsglt2_participant_index"]                                         },
-        {"dataset_id": "enriched_modelisationsglt2_diagnosis"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_modelisationsglt2_participant_index"]                                         }
+        {"dataset_id": "enriched_modelisationsglt2_participant_index"        , "cluster_type": "medium", "run_type": "initial", "dependencies": []                                                                                       },
+        {"dataset_id": "enriched_modelisationsglt2_patient"                  , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_modelisationsglt2_participant_index", "enriched_modelisationsglt2_laboratory"]},
+        {"dataset_id": "enriched_modelisationsglt2_consultation"             , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_modelisationsglt2_participant_index"]                                         },
+        {"dataset_id": "enriched_modelisationsglt2_medication_visit"         , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_modelisationsglt2_participant_index"]                                         },
+        {"dataset_id": "enriched_modelisationsglt2_medication_administration", "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_modelisationsglt2_participant_index"]                                         },
+        {"dataset_id": "enriched_modelisationsglt2_laboratory"               , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_modelisationsglt2_participant_index"]                                         },
+        {"dataset_id": "enriched_modelisationsglt2_diagnosis"                , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_modelisationsglt2_participant_index"]                                         }
       ],
       "optimize": [],
       "post_tests": []
@@ -34,12 +34,12 @@
       "pre_tests": [],
       "datasets":
       [
-        {"dataset_id": "released_modelisationsglt2_patient"                  , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_modelisationsglt2_consultation"             , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_modelisationsglt2_medication_visit"         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_modelisationsglt2_medication_administration", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_modelisationsglt2_laboratory"               , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "released_modelisationsglt2_diagnosis"                , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "released_modelisationsglt2_patient"                  , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+        {"dataset_id": "released_modelisationsglt2_consultation"             , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+        {"dataset_id": "released_modelisationsglt2_medication_visit"         , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+        {"dataset_id": "released_modelisationsglt2_medication_administration", "cluster_type": "small", "run_type": "initial", "dependencies": []},
+        {"dataset_id": "released_modelisationsglt2_laboratory"               , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+        {"dataset_id": "released_modelisationsglt2_diagnosis"                , "cluster_type": "small", "run_type": "initial", "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
@@ -54,12 +54,12 @@
       "pre_tests": [],
       "datasets":
       [
-        {"dataset_id": "published_modelisationsglt2_patient"                  , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_modelisationsglt2_consultation"             , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_modelisationsglt2_medication_visit"         , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_modelisationsglt2_medication_administration", "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_modelisationsglt2_laboratory"               , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id": "published_modelisationsglt2_diagnosis"                , "cluster_type": "small", "run_type": "initial", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id": "published_modelisationsglt2_patient"                  , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+        {"dataset_id": "published_modelisationsglt2_consultation"             , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+        {"dataset_id": "published_modelisationsglt2_medication_visit"         , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+        {"dataset_id": "published_modelisationsglt2_medication_administration", "cluster_type": "small", "run_type": "initial", "dependencies": []},
+        {"dataset_id": "published_modelisationsglt2_laboratory"               , "cluster_type": "small", "run_type": "initial", "dependencies": []},
+        {"dataset_id": "published_modelisationsglt2_diagnosis"                , "cluster_type": "small", "run_type": "initial", "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []

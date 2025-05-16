@@ -9,7 +9,7 @@ from typing import List
 import pendulum
 from airflow import DAG
 
-from lib.config import jar, spark_failure_msg, default_params, default_args
+from lib.config import JAR, SPARK_FAILURE_MSG, DEFAULT_PARAMS, DEFAULT_ARGS
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -58,8 +58,8 @@ def create_spark_task(destination: str, cluster_size: str, main_class: str, zone
         arguments=spark_args,
         zone=zone,
         spark_class=main_class,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config=cluster_size,
         dag=dag
     )
@@ -72,7 +72,7 @@ INGESTION_MAIN_CLASS = "bio.ferlab.ui.etl.red.raw.philips.Main"
 CURATED_MAIN_CLASS = 'bio.ferlab.ui.etl.red.curated.philips.Main'
 ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.philips.Main"
 
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 args.update({
     'start_date': datetime(2023, 8, 15, 2, tzinfo=pendulum.timezone("America/Montreal")),
     'provide_context': True,  # to use date of ingested data as input in main
@@ -84,7 +84,7 @@ dag = DAG(
     doc_md=DOC,
     start_date=datetime(2023, 8, 15, 2, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),  # every day at 2am timezone montreal
-    params=default_params,
+    params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=12),
     default_args=args,
     is_paused_upon_creation=True,
@@ -133,8 +133,8 @@ with dag:
         arguments=arguments("raw_philips_external_numeric"),
         zone=RAW_ZONE,
         spark_class=INGESTION_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="medium-etl",
         dag=dag
     )
@@ -145,8 +145,8 @@ with dag:
         arguments=arguments("raw_philips_external_patient"),
         zone=RAW_ZONE,
         spark_class=INGESTION_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="medium-etl",
         dag=dag
     )
@@ -157,8 +157,8 @@ with dag:
         arguments=arguments("raw_philips_external_patientdateattribute"),
         zone=RAW_ZONE,
         spark_class=INGESTION_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="xsmall-etl",
         dag=dag
     )
@@ -169,8 +169,8 @@ with dag:
         arguments=arguments("raw_philips_external_patientstringattribute"),
         zone=RAW_ZONE,
         spark_class=INGESTION_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="xsmall-etl",
         dag=dag
     )
@@ -181,8 +181,8 @@ with dag:
         arguments=arguments("raw_philips_external_wave"),
         zone=RAW_ZONE,
         spark_class=INGESTION_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="medium-etl",
         dag=dag
     )
@@ -193,8 +193,8 @@ with dag:
         arguments=arguments("raw_philips_external_numericvalue"),
         zone=RAW_ZONE,
         spark_class=INGESTION_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="medium-etl",
         dag=dag
     )
@@ -205,8 +205,8 @@ with dag:
         arguments=arguments("raw_philips_external_wavesample"),
         zone=RAW_ZONE,
         spark_class=INGESTION_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="medium-etl",
         dag=dag
     )
@@ -217,8 +217,8 @@ with dag:
         arguments=arguments("raw_philips_external_alert"),
         zone=RAW_ZONE,
         spark_class=INGESTION_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="medium-etl",
         dag=dag
     )

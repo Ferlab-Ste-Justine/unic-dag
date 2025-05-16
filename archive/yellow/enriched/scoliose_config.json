@@ -12,8 +12,8 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"enriched_scoliose_participant_index", "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": []},
-        {"dataset_id":"enriched_scoliose_patient"          , "cluster_type": "small" , "run_type": "initial" , "cluster_specs": {} , "dependencies": ["enriched_scoliose_participant_index"]}
+        {"dataset_id":"enriched_scoliose_participant_index", "cluster_type": "small" , "run_type": "initial" , "dependencies": []},
+        {"dataset_id":"enriched_scoliose_patient"          , "cluster_type": "small" , "run_type": "initial" , "dependencies": ["enriched_scoliose_participant_index"]}
       ],
       "optimize": [],
       "post_tests": []
@@ -27,7 +27,7 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"released_scoliose_patient", "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+        {"dataset_id":"released_scoliose_patient", "cluster_type": "small" , "run_type": "default" , "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
@@ -41,7 +41,7 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"published_scoliose_patient", "cluster_type": "small" , "run_type": "default" , "cluster_specs": {} , "dependencies": []}
+        {"dataset_id":"published_scoliose_patient", "cluster_type": "small" , "run_type": "default" , "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []

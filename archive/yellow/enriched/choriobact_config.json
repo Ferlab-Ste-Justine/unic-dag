@@ -12,14 +12,14 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"enriched_choriobact_participant_index"   , "cluster_type": "medium", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"enriched_choriobact_mother_blood_culture", "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_choriobact_participant_index"]},
-        {"dataset_id":"enriched_choriobact_baby_blood_culture"  , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_choriobact_participant_index"]},
-        {"dataset_id":"enriched_choriobact_mother_culture"      , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_choriobact_participant_index"]},
-        {"dataset_id":"enriched_choriobact_mother_culture_all"  , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_choriobact_participant_index"]},
-        {"dataset_id":"enriched_choriobact_baby_culture"        , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_choriobact_participant_index"]},
-        {"dataset_id":"enriched_choriobact_mother"              , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_choriobact_mother_blood_culture", "enriched_choriobact_mother_culture"]},
-        {"dataset_id":"enriched_choriobact_baby"                , "cluster_type": "small" , "run_type": "initial", "cluster_specs": {}, "dependencies": ["enriched_choriobact_baby_blood_culture", "enriched_choriobact_baby_culture"]}
+        {"dataset_id":"enriched_choriobact_participant_index"   , "cluster_type": "medium", "run_type": "default", "dependencies": []},
+        {"dataset_id":"enriched_choriobact_mother_blood_culture", "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_choriobact_participant_index"]},
+        {"dataset_id":"enriched_choriobact_baby_blood_culture"  , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_choriobact_participant_index"]},
+        {"dataset_id":"enriched_choriobact_mother_culture"      , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_choriobact_participant_index"]},
+        {"dataset_id":"enriched_choriobact_mother_culture_all"  , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_choriobact_participant_index"]},
+        {"dataset_id":"enriched_choriobact_baby_culture"        , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_choriobact_participant_index"]},
+        {"dataset_id":"enriched_choriobact_mother"              , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_choriobact_mother_blood_culture", "enriched_choriobact_mother_culture"]},
+        {"dataset_id":"enriched_choriobact_baby"                , "cluster_type": "small" , "run_type": "initial", "dependencies": ["enriched_choriobact_baby_blood_culture", "enriched_choriobact_baby_culture"]}
       ],
       "optimize": [],
       "post_tests": []
@@ -33,13 +33,13 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"released_choriobact_mother_blood_culture", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_choriobact_baby_blood_culture"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_choriobact_mother_culture"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_choriobact_mother_culture_all"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_choriobact_baby_culture"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_choriobact_mother"              , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_choriobact_baby"                , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"released_choriobact_mother_blood_culture", "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"released_choriobact_baby_blood_culture"  , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"released_choriobact_mother_culture"      , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"released_choriobact_mother_culture_all"  , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"released_choriobact_baby_culture"        , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"released_choriobact_mother"              , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"released_choriobact_baby"                , "cluster_type": "small", "run_type": "default", "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
@@ -53,13 +53,13 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"published_choriobact_mother_blood_culture", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_choriobact_baby_blood_culture"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_choriobact_mother_culture"      , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_choriobact_mother_culture_all"  , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_choriobact_baby_culture"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_choriobact_mother"              , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_choriobact_baby"                , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"published_choriobact_mother_blood_culture", "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"published_choriobact_baby_blood_culture"  , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"published_choriobact_mother_culture"      , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"published_choriobact_mother_culture_all"  , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"published_choriobact_baby_culture"        , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"published_choriobact_mother"              , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"published_choriobact_baby"                , "cluster_type": "small", "run_type": "default", "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []

@@ -12,8 +12,8 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"enriched_pragmatiq_participant_index"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"enriched_pragmatiq_hospitalization_follow_up", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": ["enriched_pragmatiq_participant_index"]}
+        {"dataset_id":"enriched_pragmatiq_participant_index"        , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"enriched_pragmatiq_hospitalization_follow_up", "cluster_type": "small", "run_type": "default", "dependencies": ["enriched_pragmatiq_participant_index"]}
       ],
       "optimize": [],
       "post_tests": []
@@ -27,8 +27,8 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"released_pragmatiq_participant_index"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"released_pragmatiq_hospitalization_follow_up", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"released_pragmatiq_participant_index"        , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"released_pragmatiq_hospitalization_follow_up", "cluster_type": "small", "run_type": "default", "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []
@@ -42,8 +42,8 @@
       "schemas": [],
       "pre_tests": [],
       "datasets": [
-        {"dataset_id":"published_pragmatiq_participant_index"        , "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []},
-        {"dataset_id":"published_pragmatiq_hospitalization_follow_up", "cluster_type": "small", "run_type": "default", "cluster_specs": {}, "dependencies": []}
+        {"dataset_id":"published_pragmatiq_participant_index"        , "cluster_type": "small", "run_type": "default", "dependencies": []},
+        {"dataset_id":"published_pragmatiq_hospitalization_follow_up", "cluster_type": "small", "run_type": "default", "dependencies": []}
       ],
       "optimize": [],
       "post_tests": []

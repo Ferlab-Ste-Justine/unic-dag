@@ -7,7 +7,7 @@ from datetime import datetime, timedelta
 import pendulum
 from airflow import DAG
 
-from lib.config import default_params, default_args, spark_failure_msg, jar
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
 # from core.slack import Slack
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import start, end
@@ -27,7 +27,7 @@ La run du 2 janvier 2020 parse les données du 1 janvier dans le lac.
 
 CURATED_ZONE = "red"
 CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 args.update({
     'provide_context': True})
 
@@ -36,7 +36,7 @@ dag = DAG(
     doc_md=DOC,
     start_date=datetime(1999, 12, 3, 1, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),
-    params=default_params,
+    params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=2),
     default_args=args,
     is_paused_upon_creation=True,
@@ -62,8 +62,8 @@ with dag:
         arguments=arguments,
         zone=CURATED_ZONE,
         spark_class=CURATED_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
     )
