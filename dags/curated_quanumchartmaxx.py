@@ -14,11 +14,11 @@ from airflow.models import Param
 from airflow.operators.empty import EmptyOperator
 
 from lib.tasks.optimize import optimize
-from lib.config import default_params, default_args, spark_failure_msg, jar, config_file
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
-from spark_operators import sanitize_string
+from lib.utils import sanitize_string
 
 DOC = """
 # Curated QuanumChartmaxx DAG
@@ -51,13 +51,13 @@ QUANUM_CURATED_NEW_FORM_CHECKER_CLASS = "bio.ferlab.ui.etl.script.QuanumNewFormC
 
 LOCAL_TZ = pendulum.timezone("America/Montreal")
 
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 args.update({
     'start_date': datetime(2023, 11, 2, tzinfo=LOCAL_TZ),
     'provide_context': True}
 )
 
-params = default_params.copy()
+params = DEFAULT_PARAMS.copy()
 params.update({'run_type': Param('default', enum=['default', 'initial'])})
 
 dag = DAG(
@@ -82,7 +82,7 @@ def generate_spark_arguments(destination: str, pass_date: bool, steps: str = "de
     Generate Spark task arguments for the ETL process.
     """
     arguments = [
-        "--config", config_file,
+        "--config", CONFIG_FILE,
         "--steps", steps,
         "--app-name", destination,
         "--destination", destination,
@@ -108,8 +108,8 @@ with dag:
             arguments=generate_spark_arguments("curated_quanum_form_data_vw", pass_date=True, steps=run_type()),
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_MAIN_CLASS,
-            spark_jar=jar,
-            spark_failure_msg=spark_failure_msg,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
             dag=dag
         )
@@ -120,8 +120,8 @@ with dag:
             arguments=generate_spark_arguments("curated_quanum_form_metadata_vw", pass_date=True, steps=run_type()),
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_MAIN_CLASS,
-            spark_jar=jar,
-            spark_failure_msg=spark_failure_msg,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
             dag=dag
         )
@@ -132,8 +132,8 @@ with dag:
             arguments=generate_spark_arguments("curated_quanum_form_name_vw", pass_date=True, steps=run_type()),
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_MAIN_CLASS,
-            spark_jar=jar,
-            spark_failure_msg=spark_failure_msg,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
             dag=dag
         )
@@ -145,8 +145,8 @@ with dag:
             arguments=["config/prod.conf", "default"],
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_NEW_FORM_CHECKER_CLASS,
-            spark_jar=jar,
-            spark_failure_msg=spark_failure_msg,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="xsmall-etl",
             dag=dag
         )
@@ -181,14 +181,14 @@ with dag:
             arguments=generate_spark_arguments(task_name, pass_date=True, steps=run_type()),
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_MAIN_CLASS,
-            spark_jar=jar,
-            spark_failure_msg=spark_failure_msg,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config=cluster_size,
             dag=dag
         ) for task_name, cluster_size in curated_quanum_config]
 
         curated_quanum_optimization_task = optimize(['curated_quanum_form_metadata_vw', 'curated_quanum_form_name_vw']
-                                                    , "quanum", QUANUM_CURATED_ZONE, "curated", config_file, jar, dag)
+                                                    , "quanum", QUANUM_CURATED_ZONE, "curated", CONFIG_FILE, JAR, dag)
 
         [curated_quanum_form_data_vw_task, curated_quanum_form_metadata_vw_task,
          curated_quanum_form_name_vw_task] >> curated_quanum_new_form_checker_task >> start_quanum_forms_task
@@ -225,8 +225,8 @@ with dag:
             arguments=generate_spark_arguments(task_name, pass_date=False, steps=run_type()),
             zone=QUANUMCHARTMAXX_CURATED_ZONE,
             spark_class=QUANUMCHARTMAXX_CURATED_MAIN_CLASS,
-            spark_jar=jar,
-            spark_failure_msg=spark_failure_msg,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config=cluster_size,
             dag=dag
         ) for task_name, cluster_size in curated_quanumchartmaxx_config]
@@ -241,7 +241,7 @@ with dag:
              "curated_quanum_chartmaxx_o*", "curated_quanum_chartmaxx_p*", "curated_quanum_chartmaxx_q*",
              "curated_quanum_chartmaxx_r*", "curated_quanum_chartmaxx_s*",
              "curated_quanum_chartmaxx_t*", "curated_quanum_chartmaxx_urogynecologie*", "curated_quanum_chartmaxx_v*"],
-            "quanum_chartmaxx", QUANUMCHARTMAXX_CURATED_ZONE, "curated", config_file, jar, dag)
+            "quanum_chartmaxx", QUANUMCHARTMAXX_CURATED_ZONE, "curated", CONFIG_FILE, JAR, dag)
 
         curated_quanum_chartmaxx_tasks >> curated_quanum_chartmaxx_optimization_task
 
@@ -260,14 +260,14 @@ with dag:
             arguments=["config/prod.conf", run_type(), task_name],
             zone=QUANUMCHARTMAXX_ANONYMIZED_ZONE,
             spark_class=QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS,
-            spark_jar=jar,
-            spark_failure_msg=spark_failure_msg,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config=cluster_size,
             dag=dag
         ) for task_name, cluster_size in anonymized_quanum_config]
 
         anonymized_quanum_optimization_tasks = optimize(['anonymized_quanum_*'], "quanum",
-                                                        QUANUMCHARTMAXX_ANONYMIZED_ZONE, "anonymized", config_file, jar, dag)
+                                                        QUANUMCHARTMAXX_ANONYMIZED_ZONE, "anonymized", CONFIG_FILE, JAR, dag)
 
         anonymized_quanum_tasks >> anonymized_quanum_optimization_tasks
 
@@ -288,15 +288,15 @@ with dag:
             arguments=["config/prod.conf", run_type(), task_name],
             zone=QUANUMCHARTMAXX_ANONYMIZED_ZONE,
             spark_class=QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS,
-            spark_jar=jar,
-            spark_failure_msg=spark_failure_msg,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config=cluster_size,
             dag=dag
         ) for task_name, cluster_size in anonymized_quanumchartmaxx_config]
 
         anonymized_quanum_chartmaxx_optimization_tasks = optimize(
             ['anonymized_quanum_chartmaxx*'], "quanum_chartmaxx", QUANUMCHARTMAXX_ANONYMIZED_ZONE, "anonymized",
-            config_file, jar, dag)
+            CONFIG_FILE, JAR, dag)
 
         anonymized_quanum_chartmaxx_tasks >> anonymized_quanum_chartmaxx_optimization_tasks
 

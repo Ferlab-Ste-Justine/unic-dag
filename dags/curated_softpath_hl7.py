@@ -8,7 +8,7 @@ from typing import List
 import pendulum
 from airflow import DAG
 
-from lib.config import default_params, default_args, spark_failure_msg, jar
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
 # from core.slack import Slack
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
@@ -31,7 +31,7 @@ ANONYMIZED_ZONE = "yellow"
 CURATED_ZONE = "red"
 ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.hl7.Main"
 CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
-args = default_args.copy()
+args = DEFAULT_ARGS.copy()
 args.update({
     'provide_context': True,
     'depends_on_past': False,
@@ -42,7 +42,7 @@ dag = DAG(
     doc_md=DOC,
     start_date=datetime(1999, 12, 3, 1, tzinfo=pendulum.timezone("America/Montreal")),
     schedule="0 1 * * *",
-    params=default_params,
+    params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=2),
     default_args=args,
     is_paused_upon_creation=True,
@@ -81,8 +81,8 @@ with dag:
         arguments=get_arguments(task_name),
         zone=CURATED_ZONE,
         spark_class=CURATED_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config=cluster_size,
         dag=dag
     ) for task_name, cluster_size in softpath_hl7_curated_tasks]
@@ -101,8 +101,8 @@ with dag:
         arguments=get_arguments(task_name),
         zone=ANONYMIZED_ZONE,
         spark_class=ANONYMIZED_MAIN_CLASS,
-        spark_jar=jar,
-        spark_failure_msg=spark_failure_msg,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config=cluster_size,
         dag=dag
     ) for task_name, cluster_size in softpath_hl7_anonymized_tasks]

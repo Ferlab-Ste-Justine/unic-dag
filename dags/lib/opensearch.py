@@ -22,7 +22,7 @@ class OpensearchAlias(Enum):
 """
 Opensearch environment to Postgres environment mapping
 """
-os_env_pg_env_mapping: dict = {
+OS_ENV_PG_ENV_MAPPING: dict = {
     OpensearchEnv.PROD: PostgresEnv.PROD,
     OpensearchEnv.QA: PostgresEnv.DEV
 }
@@ -30,7 +30,7 @@ os_env_pg_env_mapping: dict = {
 """
 Opensearch index templates
 """
-os_templates: dict = {
+OS_TEMPLATES: dict = {
     OpensearchAlias.RESOURCE.value: resource_centric_template,
     OpensearchAlias.TABLE.value: table_centric_template,
     OpensearchAlias.VARIABLE.value: variable_centric_template
@@ -39,7 +39,7 @@ os_templates: dict = {
 """
 Opensearch id columns
 """
-os_id_columns: dict = {
+OS_ID_COLUMNS: dict = {
     OpensearchAlias.RESOURCE.value: "rs_id",
     OpensearchAlias.TABLE.value: "tab_id",
     OpensearchAlias.VARIABLE.value: "var_id"
@@ -48,7 +48,7 @@ os_id_columns: dict = {
 """
 OpenSearch environment configuration map
 """
-os_env_config = {
+OS_ENV_CONFIG = {
     OpensearchEnv.PROD.value : {
         'host': 'workers.opensearch.unic.sainte-justine.intranet',
         'port': '9200',
@@ -73,7 +73,7 @@ def load_cert(env_name: str) -> None:
     """
     Load the os ca-certificate into task for the specified environment.
     """
-    os_config = os_env_config.get(env_name)
+    os_config = OS_ENV_CONFIG.get(env_name)
 
     subprocess.run(["mkdir", "-p", os_config.get('ca_path')])
 
@@ -86,7 +86,7 @@ def get_opensearch_client(env_name: str):
     """
     from opensearchpy import OpenSearch
 
-    os_config = os_env_config.get(env_name)
+    os_config = OS_ENV_CONFIG.get(env_name)
 
     host = os_config.get('host')
     port = os_config.get('port')
