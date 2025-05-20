@@ -8,7 +8,7 @@ from airflow import DAG
 from airflow.utils.task_group import TaskGroup
 
 from lib.config import RELEASED_BUCKET, RELEASED_PREFIX, DATE, PUBLISHED_BUCKET, PUBLISHED_PREFIX, UNDERSCORE_DATE, \
-    GREEN_MINIO_CONN_ID, UNDERSCORE_VERSION, VERSION, DEFAULT_MULTIPLE_MAIN_METHODS
+    GREEN_MINIO_CONN_ID, UNDERSCORE_VERSION, VERSION, DEFAULT_MULTIPLE_MAIN_METHODS, V4_SUBZONES
 from lib.groups.qa import tests as qa_group
 from lib.operators.spark import SparkOperator
 from lib.tasks import notify
@@ -89,14 +89,14 @@ def _create_spark_task(destination: str,
     :param main_class: Main class to use for the Spark task
     :param multiple_main_methods: True if the main class contains multiple methods instead of a single run() method
     :param spark_failure_msg: Message to display in case of Spark job failure
-    :param skip: A function to evaluate whether a task should be skipped or not, defaults to None
+    :param skip: A Jinja template to evaluate whether a task should be skipped or not, defaults to None
     :return: SparkOperator task
     """
     main_class = _get_main_class(subzone, main_class)
     version = _get_version(pass_date)
     args = [config_file, run_type, destination]
 
-    if subzone in ["raw", "curated", "released", "enriched"]:
+    if subzone in V4_SUBZONES:
         args = [
             "--config", config_file,
             "--steps", run_type,
@@ -114,10 +114,10 @@ def _create_spark_task(destination: str,
         elif subzone != "enriched" and not multiple_main_methods:
             args = args + ["--destination", destination]
 
-    if subzone in ["released"]:
+    if subzone == "released":
         args = args + ["--version", version]
 
-    elif subzone in ["published"]:
+    elif subzone == "published":
         args = args + [version]
 
     return SparkOperator(
@@ -144,7 +144,7 @@ def _create_publish_excel_task(destination: str,
     :param destination: Dataset ID of the destination to publish
     :param resource: Resource name
     :param pass_date: True if the date should be passed as version. If False, the version provided to the DAG is passed.
-    :param skip: A function to evaluate whether a task should be skipped or not, defaults to None
+    :param skip: A Jinja template to evaluate whether a task should be skipped or not, defaults to None
     :return: ParquetToExcel Python task
     """
     table_name = extract_table_name(destination, resource)
