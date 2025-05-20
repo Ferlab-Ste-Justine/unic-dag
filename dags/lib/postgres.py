@@ -2,8 +2,7 @@ from enum import Enum
 
 from airflow.models import Variable
 
-from dags.lib.hooks.postgresca import PostgresCaHook
-
+from lib.hooks.postgresca import PostgresCaHook
 
 class PostgresEnv(Enum):
     DEV = 'dev'

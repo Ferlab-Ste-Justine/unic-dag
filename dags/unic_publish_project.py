@@ -1,5 +1,5 @@
 """
-Génération des DAGs pour le publication du dictionnaire d'un projet dans le Portail de l'UNIC.
+Génération des DAGs pour le publication du d'un projet de recherche dans le Portail de l'UNIC.
 Un DAG par environnement postgres est généré.
 """
 
@@ -15,10 +15,11 @@ from airflow.exceptions import AirflowFailException
 from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.tasks.publish import publish_dictionary, update_dict_current_version, released_to_published
+from lib.tasks.publish import publish_dictionary, update_dict_current_version
 from lib.tasks.notify import start, end
-from lib.config import default_args
+from lib.config import default_args, green_minio_conn_id
 from lib.postgres import PostgresEnv, unic_postgres_vlan2_conn_id
+from lib.tasks.excel import parquet_to_excel
 from lib.slack import Slack
 
 ZONE = "green"
@@ -53,21 +54,21 @@ for env in PostgresEnv:
     DAG pour la publication d'un projet de recherche dans le portail de l'UNIC dans l'environnement **{env_name}**.
     
     ### Description
-    Ce DAG publie le dictionaire d'un projet dans la zone published de minio et inclue le projet dans les indexs 
+    Ce DAG publie le dictionaire et les données d'un projet dans la zone published de minio et inclue le projet dans les indexs
     opensearch du portail UNIC. Il a un dag par environnment postgres.
     
     ### Configuration
     * Paramètre `resource_code` : Code de la ressource à charger.
     * Paramètre `version_to_publish` : date version dans released à publier dans published.
-    * Paramètre `release_id` (optional) : release id of opensearch index
+    * Paramètre `release_id` (optional) : release id of opensearch index.
 
     """
 
     with DAG(
-            dag_id=f"os_publish_{env_name}_dictionary",
+            dag_id=f"unic_publish_project_{env_name}",
             params={
                 "resource_code": Param("", type="string", description="Resource to publish. Ex: cpip"),
-                "version_to_publish": Param("", type="string", description="Date to publish. If not specified, will take most recent release. Ex: 2001-01-01"),
+                "version_to_publish": Param("", type="string", description="Date to publish. Ex: 2001-01-01"),
                 "release_id": Param("", type=["null", "string"], description="(Optional) Release id of OpenSearch index. If not specified, will increment. Ex: re_0000")
             },
             default_args=dag_args,
@@ -94,10 +95,10 @@ for env in PostgresEnv:
             dag_run: DagRun = ti.dag_run
             version_to_publish = dag_run.conf['version_to_publish']
             date_format = "%Y-%m-%d"
-            if bool(datetime.strptime(version_to_publish, date_format)):
+            if not version_to_publish:
+               raise AirflowFailException(f"DAG param 'version_to_publish' is required. Expected format: YYYY-MM-DD")
+            elif bool(datetime.strptime(version_to_publish, date_format)):
                 return dag_run.conf['version_to_publish']
-            elif not version_to_publish:
-                raise AirflowFailException(f"DAG param 'version_to_publish' is required. Expected format: YYYY-MM-DD")
             else:
                 raise AirflowFailException(f"DAG param 'version_to_publish' is not in the correct format. Expected format: YYYY-MM-DD")
 
@@ -117,10 +118,16 @@ for env in PostgresEnv:
         get_version_to_publish_task = get_version_to_publish()
         get_release_id_task = get_release_id()
 
-        start("start_os_publish_dictionary") >> [get_resource_code_task, get_version_to_publish_task, get_release_id_task] \
-        >> update_dict_current_version(cur_dict_version=get_version_to_publish_task, resource_code=get_resource_code_task, pg_conn_id=pg_conn_id) \
-        >> publish_dictionary(resource_code=get_resource_code(), pg_conn_id=pg_conn_id)
-        >> released_to_published(resource_code=get_resource_code()) \
-        >> end("end_os_publish_dictionary")
+        start("start_unic_publish_project") >> [get_resource_code_task, get_version_to_publish_task, get_release_id_task] \
+        >> update_dict_current_version(dict_version=get_version_to_publish_task, resource_code=get_resource_code_task, pg_conn_id=pg_conn_id) \
+        >> publish_dictionary(resource_code=get_resource_code_task, pg_conn_id=pg_conn_id) \
+        >> parquet_to_excel.override(task_id=f"publish_data")(
+            parquet_bucket_name='green-prd',
+            parquet_dir_key=f'released/{get_resource_code_task}/{get_version_to_publish_task}/live_region_v20_import_template',
+            excel_bucket_name='green-prd',
+            excel_output_key=f'published/sprintkid/{get_version_to_publish_task}/live_region_v20_import_template/live_region_v20_import_template_{get_version_to_publish_task}.xlsx', # TODO: Convert to underscores
+            minio_conn_id=green_minio_conn_id
+        ) \
+        >> end("end_unic_publish_project")
 
         # TODO: put all of the load index tasks in a task group to reuse in this dag and others
