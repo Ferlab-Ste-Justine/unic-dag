@@ -2,22 +2,18 @@
 Génération des DAGs pour le publication du d'un projet de recherche dans le Portail de l'UNIC.
 Un DAG par environnement postgres est généré.
 """
-import logging
 # pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, raise-missing-from, cell-var-from-loop
-import re
-
 from datetime import datetime
 from typing import List
 
 from airflow import DAG
-from airflow.decorators import task
-from airflow.exceptions import AirflowFailException
-from airflow.models import Param, DagRun
+from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.tasks.excel import released_to_published
-from lib.tasks.publish import publish_dictionary, update_dict_current_version
+from lib.groups.publish.index import index_opensearch
+from lib.groups.publish.publish import publish_research_project
 from lib.tasks.notify import start, end
+from lib.opensearch import pg_env_os_env_mapping
 from lib.config import default_args
 from lib.postgres import PostgresEnv, unic_postgres_vlan2_conn_id
 from lib.slack import Slack
@@ -78,54 +74,10 @@ for env in PostgresEnv:
             render_template_as_native_obj=True,
             schedule_interval=None,
             tags=["postgresql", "published", "opensearch"],
-            on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
+            on_failure_callback=Slack.notify_dag_failure
     ) as dag:
-        @task
-        def get_resource_code(ti=None) -> str:
-            dag_run: DagRun = ti.dag_run
-            resource_code = dag_run.conf['resource_code']
 
-            if not resource_code:
-                raise AirflowFailException("DAG param 'resource_code' is required.")
-            else:
-                return resource_code
-
-        @task
-        def get_version_to_publish(ti=None) -> str:
-            dag_run: DagRun = ti.dag_run
-            version_to_publish = dag_run.conf['version_to_publish']
-            date_format = "%Y-%m-%d"
-            if not version_to_publish:
-               raise AirflowFailException(f"DAG param 'version_to_publish' is required. Expected format: YYYY-MM-DD")
-            elif bool(datetime.strptime(version_to_publish, date_format)):
-                return dag_run.conf['version_to_publish']
-            else:
-                raise AirflowFailException(f"DAG param 'version_to_publish' is not in the correct format. Expected format: YYYY-MM-DD")
-
-        @task
-        def get_release_id(ti=None) -> str:
-            dag_run: DagRun = ti.dag_run
-            release_id = dag_run.conf['release_id']
-            regex = "^re_\d{4}$"
-            if not release_id:
-                return release_id
-            elif re.fullmatch(regex, release_id):
-                return dag_run.conf['release_id']
-            else:
-                raise AirflowFailException(f"Param version_to_publish is not in the correct format. Expected format: YYYY-MM-DD")
-
-        get_resource_code_task = get_resource_code()
-        get_version_to_publish_task = get_version_to_publish()
-        get_release_id_task = get_release_id()
-
-        start("start_unic_publish_project") >> [get_resource_code_task, get_version_to_publish_task, get_release_id_task] \
-        >> update_dict_current_version(dict_version=get_version_to_publish_task, resource_code=get_resource_code_task, pg_conn_id=pg_conn_id) \
-        >> publish_dictionary(resource_code=get_resource_code_task, pg_conn_id=pg_conn_id) \
-        >> released_to_published(
-            resource_code=get_resource_code_task,
-            version_to_publish=get_version_to_publish_task,
-            minio_conn_id='minio'
-        ) \
+        start("start_unic_publish_project") \
+        >> publish_research_project(pg_conn_id) \
+        >> index_opensearch(env_name, pg_env_os_env_mapping.get(env).value, dag) \
         >> end("end_unic_publish_project")
-
-        # TODO: put all of the load index tasks in a task group to reuse in this dag and others

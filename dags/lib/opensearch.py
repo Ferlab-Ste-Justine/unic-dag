@@ -28,6 +28,14 @@ OS_ENV_PG_ENV_MAPPING: dict = {
 }
 
 """
+Postgres environment to Opensearch environment mapping
+"""
+pg_env_os_env_mapping: dict = {
+    PostgresEnv.PROD: OpensearchEnv.PROD,
+    PostgresEnv.DEV: OpensearchEnv.QA
+}
+
+"""
 Opensearch index templates
 """
 OS_TEMPLATES: dict = {
