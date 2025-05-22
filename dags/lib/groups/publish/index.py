@@ -5,7 +5,7 @@ from airflow.decorators import task_group
 
 from lib.opensearch import OpensearchAlias, OpensearchEnv
 from lib.tasks.opensearch import prepare_index, load_index, publish_index, get_next_release_id
-from lib.config import spark_failure_msg, jar
+from lib.config import SPARK_FAILURE_MSG, JAR
 
 @task_group(group_id="index_opensearch")
 def index_opensearch(pg_env_name: str, os_env_name: str, dag: DAG):
@@ -29,8 +29,8 @@ def index_opensearch(pg_env_name: str, os_env_name: str, dag: DAG):
             prepare_index(
                 task_id,
                 prepare_index_arguments(task_id),
-                jar,
-                spark_failure_msg,
+                JAR,
+                SPARK_FAILURE_MSG,
                 "small_etl",
                 dag
             )

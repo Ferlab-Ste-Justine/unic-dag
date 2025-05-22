@@ -36,8 +36,8 @@ def drop_table(schema_name: str, table_name: str) -> str:
     """
     return f"DROP TABLE IF EXISTS {schema_name}.{table_name} CASCADE;"
 
-def get_pg_ca_hook(pg_conn_id: str, ca_path: str = postgres_vlan2_ca_path, ca_filename: str = postgres_ca_filename,
-                ca_cert: str = postgres_vlan2_ca_cert) -> PostgresCaHook:
+def get_pg_ca_hook(pg_conn_id: str, ca_path: str = POSTGRES_VLAN2_CA_PATH, ca_filename: str = POSTGRES_CA_FILENAME,
+                ca_cert: str = POSTGRES_VLAN2_CA_CERT) -> PostgresCaHook:
     """
     Get the Postgres Hook for the given environment.
     """

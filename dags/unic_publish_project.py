@@ -14,7 +14,7 @@ from lib.groups.publish.index import index_opensearch
 from lib.groups.publish.publish import publish_research_project
 from lib.tasks.notify import start, end
 from lib.opensearch import pg_env_os_env_mapping
-from lib.config import default_args
+from lib.config import DEFAULT_ARGS
 from lib.postgres import PostgresEnv, unic_postgres_vlan2_conn_id
 from lib.slack import Slack
 
@@ -26,7 +26,7 @@ env_name = None
 conn_id = None
 
 # Update default args
-dag_args = default_args.copy()
+dag_args = DEFAULT_ARGS.copy()
 dag_args.update({
     'trigger_rule': TriggerRule.NONE_FAILED,
     'on_failure_callback': Slack.notify_task_failure})

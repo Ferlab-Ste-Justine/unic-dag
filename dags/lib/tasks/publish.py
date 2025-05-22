@@ -11,7 +11,7 @@ from lib.hooks.postgresca import PostgresCaHook
 
 from lib.postgres import get_pg_ca_hook
 from lib.publish import resource_query, dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query
-from lib.config import GREEN_BUCKET, green_minio_conn_id
+from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID
 
 from lib.tasks.excel import parquet_to_excel
 
@@ -55,8 +55,8 @@ def publish_dictionary(
         resource_code: str,
         version_to_publish: str,
         pg_conn_id: str,
-        s3_destination_bucket: str = GREEN_BUCKET,
-        minio_conn_id: str = green_minio_conn_id) -> None:
+        s3_destination_bucket: str = PUBLISHED_BUCKET,
+        minio_conn_id: str = GREEN_MINIO_CONN_ID) -> None:
     """
     Publish research project dictionary.
 
@@ -123,7 +123,7 @@ def update_dict_current_version(dict_version: str, resource_code: str, pg_conn_i
     pg_hook.run(query)
 
 @task
-def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_id: str = 'minio', bucket: str = GREEN_BUCKET):
+def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_id: str = 'minio', bucket: str = PUBLISHED_BUCKET):
     s3 = S3Hook(aws_conn_id=minio_conn_id)
 
     released_path = f"released/{resource_code}/{version_to_publish}/"
