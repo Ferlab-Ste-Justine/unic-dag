@@ -2,7 +2,7 @@
 Génération des DAGs pour le publication du d'un projet de recherche dans le Portail de l'UNIC.
 Un DAG par environnement postgres est généré.
 """
-
+import logging
 # pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, raise-missing-from, cell-var-from-loop
 import re
 
@@ -15,11 +15,11 @@ from airflow.exceptions import AirflowFailException
 from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
 
+from lib.tasks.excel import released_to_published
 from lib.tasks.publish import publish_dictionary, update_dict_current_version
 from lib.tasks.notify import start, end
-from lib.config import default_args, green_minio_conn_id
+from lib.config import default_args
 from lib.postgres import PostgresEnv, unic_postgres_vlan2_conn_id
-from lib.tasks.excel import parquet_to_excel
 from lib.slack import Slack
 
 ZONE = "green"
@@ -121,12 +121,10 @@ for env in PostgresEnv:
         start("start_unic_publish_project") >> [get_resource_code_task, get_version_to_publish_task, get_release_id_task] \
         >> update_dict_current_version(dict_version=get_version_to_publish_task, resource_code=get_resource_code_task, pg_conn_id=pg_conn_id) \
         >> publish_dictionary(resource_code=get_resource_code_task, pg_conn_id=pg_conn_id) \
-        >> parquet_to_excel.override(task_id=f"publish_data")(
-            parquet_bucket_name='green-prd',
-            parquet_dir_key=f'released/{get_resource_code_task}/{get_version_to_publish_task}/live_region_v20_import_template',
-            excel_bucket_name='green-prd',
-            excel_output_key=f'published/sprintkid/{get_version_to_publish_task}/live_region_v20_import_template/live_region_v20_import_template_{get_version_to_publish_task}.xlsx', # TODO: Convert to underscores
-            minio_conn_id=green_minio_conn_id
+        >> released_to_published(
+            resource_code=get_resource_code_task,
+            version_to_publish=get_version_to_publish_task,
+            minio_conn_id='minio'
         ) \
         >> end("end_unic_publish_project")
 
