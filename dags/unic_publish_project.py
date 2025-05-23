@@ -49,6 +49,7 @@ for env in PostgresEnv:
             params={
                 "resource_code": Param("", type="string", description="Resource to publish. Ex: cpip"),
                 "version_to_publish": Param("", type="string", description="Date to publish. Ex: 2001-01-01"),
+                "include_dictionary": Param(True, type="boolean", description="Include dictionary in publication of project"),
                 "release_id": Param("", type=["null", "string"], description="(Optional) Release id of OpenSearch index. If not specified, will increment. Ex: re_0000")
             },
             default_args=dag_args,

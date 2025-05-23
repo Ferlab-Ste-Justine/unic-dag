@@ -1,4 +1,3 @@
-import logging
 from datetime import datetime
 import os
 import re
@@ -6,7 +5,7 @@ import re
 import pandas as pd
 import psycopg2
 from airflow.decorators import task
-from airflow.exceptions import AirflowFailException
+from airflow.exceptions import AirflowFailException, AirflowSkipException
 from airflow.models import DagRun
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
@@ -40,6 +39,11 @@ def get_version_to_publish(ti=None) -> str:
         raise AirflowFailException(f"DAG param 'version_to_publish' is not in the correct format. Expected format: YYYY-MM-DD")
 
 @task
+def get_include_dictionary(ti=None) -> bool:
+    dag_run: DagRun = ti.dag_run
+    return dag_run.conf['include_dictionary']
+
+@task
 def get_release_id(ti=None) -> str:
     dag_run: DagRun = ti.dag_run
     release_id = dag_run.conf['release_id']
@@ -56,6 +60,7 @@ def get_release_id(ti=None) -> str:
 def publish_dictionary(
         resource_code: str,
         version_to_publish: str,
+        include_dictionary: bool,
         pg_conn_id: str,
         s3_destination_bucket: str = PUBLISHED_BUCKET,
         minio_conn_id: str = GREEN_MINIO_CONN_ID) -> None:
@@ -64,11 +69,14 @@ def publish_dictionary(
 
     :param resource_code: resource code of project to publish.
     :param version_to_publish: version of project to publish.
+    :param include_dictionary: Specify if the dictionary should be included.
     :param pg_conn_id: Postgres connection id.
     :param s3_destination_bucket: published bucket name.
     :param minio_conn_id: Minio connection id.
     :return: None
     """
+    if not include_dictionary:
+        raise AirflowSkipException()
 
     # define excel vars
     local_excel_directory = '/tmp/excel/'
@@ -105,15 +113,19 @@ def publish_dictionary(
 
 
 @task(task_id='update_dict_current_version')
-def update_dict_current_version(dict_version: str, resource_code: str, pg_conn_id: str) -> None:
+def update_dict_current_version(dict_version: str, resource_code: str, include_dictionary: bool, pg_conn_id: str) -> None:
     """
     Update dict version for a given resource.
 
     :param dict_version: New dict version to set.
     :param resource_code: Resource code associated to the dict.
+    :param include_dictionary: Specify if the dictionary should be included.
     :param pg_conn_id: Postgres connection id.
     :return: None
     """
+    if not include_dictionary:
+        raise AirflowSkipException()
+
     pg_conn = get_pg_ca_hook(pg_conn_id).get_conn()
 
     with pg_conn.cursor() as cur:
