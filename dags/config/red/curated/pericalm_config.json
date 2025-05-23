@@ -23,8 +23,10 @@
       "multiple_main_methods": false,
       "pre_tests": [
         {"name": "greater_or_equal_partition_counts", "destinations": [
-          "anonymized_pericalm_a*", "anonymized_pericalm_c*", "anonymized_pericalm_extractversion",
-          "anonymized_pericalm_i*", "anonymized_pericalm_s*"
+          "anonymized_pericalm_c*",
+          "anonymized_pericalm_extractversion",
+          "anonymized_pericalm_i*",
+          "anonymized_pericalm_s*"
         ], "cluster_type" : "xsmall"},
         {"name": "greater_partition_counts", "destinations": [
           "anonymized_pericalm_en_custombirthlog", "anonymized_pericalm_extraction*", "anonymized_pericalm_f*",
@@ -52,8 +54,37 @@
       ],
       "optimize" : [],
       "post_tests": [
-        {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_pericalm_*"], "cluster_type" : "xsmall"},
-        {"name": "equal_counts", "destinations": ["anonymized_pericalm_*"], "cluster_type" : "xsmall"}
+        {"name": "lower_or_equal_null_counts", "destinations": [
+          "anonymized_pericalm_c*",
+          "anonymized_pericalm_e*",
+          "anonymized_pericalm_f*",
+          "anonymized_pericalm_helper_*",
+          "anonymized_pericalm_i*",
+          "anonymized_pericalm_l*",
+          "anonymized_pericalm_m*",
+          "anonymized_pericalm_n*",
+          "anonymized_pericalm_o*",
+          "anonymized_pericalm_p*",
+          "anonymized_pericalm_r*",
+          "anonymized_pericalm_s*",
+          "anonymized_pericalm_v*"
+        ], "cluster_type" : "xsmall"},
+        {"name": "equal_counts", "destinations": [
+          "anonymized_pericalm_c*",
+          "anonymized_pericalm_e*",
+          "anonymized_pericalm_f*",
+          "anonymized_pericalm_helper_*",
+          "anonymized_pericalm_i*",
+          "anonymized_pericalm_l*",
+          "anonymized_pericalm_m*",
+          "anonymized_pericalm_n*",
+          "anonymized_pericalm_o*",
+          "anonymized_pericalm_p*",
+          "anonymized_pericalm_r*",
+          "anonymized_pericalm_s*",
+          "anonymized_pericalm_v*"
+        ], 
+        "cluster_type" : "xsmall"}
       ]
     }
   ]
