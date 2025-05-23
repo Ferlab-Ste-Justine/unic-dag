@@ -2,9 +2,8 @@
 Génération des DAGs pour le publication du d'un projet de recherche dans le Portail de l'UNIC.
 Un DAG par environnement postgres est généré.
 """
-# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, raise-missing-from, cell-var-from-loop
+# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, raise-missing-from, cell-var-from-loop, duplicate-code
 from datetime import datetime
-from typing import List
 
 from airflow import DAG
 from airflow.models import Param
