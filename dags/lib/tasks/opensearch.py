@@ -4,6 +4,9 @@ from typing import List
 from airflow.decorators import task
 from lib.operators.spark import SparkOperator
 
+from dags.lib.opensearch import MAX_RELEASE_ID, NUM_VERSIONS_TO_KEEP
+
+
 def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,
                   dag: DAG, zone: str = "yellow",
                   spark_class: str = 'bio.ferlab.ui.etl.catalog.os.prepare.Main') -> SparkOperator:
@@ -62,9 +65,11 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
         # get index key from minio
         keys = s3.list_keys(bucket_name=src_bucket, prefix=f"{src_path}{alias}/")
         if not keys:
-            raise AirflowFailException(f"No files found in: {src_bucket}/{src_path}")
+            logging.error(f"No files found in: {src_bucket}/{src_path}")
+            raise AirflowFailException()
     except Exception as e:
-        raise AirflowFailException(f"Failed to list the files from: {src_bucket}/{src_path}: {e}")
+        logging.error(f"Failed to list the files from: {src_bucket}/{src_path}: {e}")
+        raise AirflowFailException()
 
     # get index data from minio
     parquet_files = []
@@ -74,12 +79,14 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
                 s3_response = s3.get_key(key=key, bucket_name=src_bucket)
                 parquet_files.append(s3_response.get()['Body'].read())
             except Exception as e:
-                raise AirflowFailException(f"Failed to download the file: {src_bucket}/{key}: {e}")
+                logging.error(f"Failed to download the file: {src_bucket}/{key}: {e}")
+                raise AirflowFailException()
 
     try:
         df = pd.concat([pd.read_parquet(BytesIO(file)) for file in parquet_files], ignore_index=True)
     except Exception as e:
-        raise AirflowFailException(f"Failed to combine parquet files into single df: {e}")
+        logging.error(f"Failed to combine parquet files into single df: {e}")
+        raise AirflowFailException()
 
     try:
         # delete index if already exists
@@ -100,7 +107,8 @@ def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "ye
         logging.info(f"Bulk-inserted {len(bulk_response['items'])} items.")
 
     except Exception as e:
-        raise AirflowFailException(f"Failed to load index in Opensearch: {e}")
+        logging.error(f"Failed to load index in Opensearch: {e}")
+        raise AirflowFailException()
 
 @task.virtualenv(
     task_id="publish_index", requirements=["opensearch-py==2.8.0"]
@@ -141,7 +149,27 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
         response = os_client.indices.update_aliases(body={"actions": actions})
         logging.info(f"Alias updated: {response}")
     except Exception as e:
-        raise AirflowFailException(f"Failed to update Alias in Opensearch: {e}")
+        logging.error(f"Failed to update Alias in Opensearch: {e}")
+        raise AirflowFailException()
+
+    # Delete old index, keep 5 most recent
+    current_release_id_num = int(release_id.split('_')[-1])
+    if current_release_id_num < NUM_VERSIONS_TO_KEEP:
+        release_id_num_to_delete = (MAX_RELEASE_ID + 1) - (NUM_VERSIONS_TO_KEEP - current_release_id_num)
+    else:
+        release_id_num_to_delete = current_release_id_num - NUM_VERSIONS_TO_KEEP
+
+    release_id_to_delete = f're_{str(release_id_num_to_delete).zfill(4)}'
+    index_to_delete = f"{alias}_{release_id_to_delete}"
+    try:
+        if os_client.indices.exists(index=index_to_delete):
+            response = os_client.indices.delete(index=index_to_delete)
+            logging.info(f"Deleted index {index_to_delete}: {response}")
+        else:
+            logging.info(f"Index {index_to_delete} does not exist, skipping deletion.")
+    except Exception as e:
+        logging.error(f"Failed to delete index {index_to_delete} from Opensearch: {e}")
+        raise AirflowFailException()
 
 @task.virtualenv(
     task_id="get_next_release_id", requirements=["opensearch-py==2.8.0"]
@@ -157,7 +185,7 @@ def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_c
     :return: The next release_id
     """
     import logging
-    from lib.opensearch import OS_ENV_CONFIG, load_cert, get_opensearch_client
+    from lib.opensearch import OS_ENV_CONFIG, MAX_RELEASE_ID_NUM, MIN_RELEASE_ID_NUM, load_cert, get_opensearch_client
     from airflow.exceptions import AirflowFailException
 
     # Load the os ca-certificate into task
@@ -177,16 +205,20 @@ def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_c
         # Fetch current id from OS
         alias_info = os_client.indices.get_alias(name=alias)
         current_index = list(alias_info.keys())[0]
-        current_release_id = current_index.split('_')[-1]
+        current_release_id_num = current_index.split('_')[-1]
     except Exception as e:
-        raise AirflowFailException(f"Failed to retrieve current release id from Opensearch: {e}")
+        logging.error(f"Failed to retrieve current release id from Opensearch: {e}")
+        raise AirflowFailException()
 
     if increment:
         # Increment current id by 1
-        new_release_id = f're_{str(int(current_release_id) + 1).zfill(4)}'
+        if current_release_id_num == MAX_RELEASE_ID:
+            return f're_{str(MIN_RELEASE_ID_NUM).zfill(4)}'
+
+        new_release_id = f're_{str(int(current_release_id_num) + 1).zfill(4)}'
         logging.info(f'New release id: {new_release_id}')
         return new_release_id
     else:
-        return f're_{current_release_id}'
+        return f're_{current_release_id_num}'
 
 
