@@ -37,7 +37,7 @@
         ], "cluster_type" : "xsmall"}
       ],
       "datasets": [
-        {"dataset_id": "anonymized_pericalm_a*"      , "cluster_type": "medium","run_type": "initial", "pass_date": false, "dependencies": []},
+        {"dataset_id": "anonymized_pericalm_a*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "anonymized_pericalm_c*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "anonymized_pericalm_e*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "anonymized_pericalm_f*"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
