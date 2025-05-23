@@ -18,27 +18,11 @@ from lib.config import DEFAULT_ARGS
 from lib.postgres import PostgresEnv, unic_postgres_vlan2_conn_id
 from lib.slack import Slack
 
-ZONE = "green"
-SUBZONE = "published"
-MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
-GREEN_BUCKET = "green-prd"
-env_name = None
-conn_id = None
-
 # Update default args
 dag_args = DEFAULT_ARGS.copy()
 dag_args.update({
     'trigger_rule': TriggerRule.NONE_FAILED,
     'on_failure_callback': Slack.notify_task_failure})
-
-def prepare_index_arguments(task_id: str) -> List[str]:
-    return [
-        task_id,
-        "--config", "config/prod.conf",
-        "--steps", "default",
-        "--app-name", f"prepare_{task_id}",
-        "--env", env_name
-    ]
 
 for env in PostgresEnv:
     env_name = env.value

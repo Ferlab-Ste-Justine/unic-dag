@@ -1,19 +1,21 @@
+import logging
 from datetime import datetime
 import os
 import re
 
 import pandas as pd
+import psycopg2
 from airflow.decorators import task
 from airflow.exceptions import AirflowFailException
 from airflow.models import DagRun
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+
 from lib.hooks.postgresca import PostgresCaHook
-
 from lib.postgres import get_pg_ca_hook
-from lib.publish import resource_query, dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query
 from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID
-
 from lib.tasks.excel import parquet_to_excel
+
+from sql.publish import update_dict_current_version_query, resource_query, dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query
 
 @task
 def get_resource_code(ti=None) -> str:
@@ -47,7 +49,7 @@ def get_release_id(ti=None) -> str:
     elif re.fullmatch(regex, release_id):
         return dag_run.conf['release_id']
     else:
-        raise AirflowFailException(f"Param version_to_publish is not in the correct format. Expected format: YYYY-MM-DD")
+        raise AirflowFailException(f"DAG param 'release_id' is not in the correct format. Expected format: re_xxxx where x is a digit.")
 
 
 @task(task_id="publish_dictionary",)
@@ -112,18 +114,19 @@ def update_dict_current_version(dict_version: str, resource_code: str, pg_conn_i
     :param pg_conn_id: Postgres connection id.
     :return: None
     """
-    pg_hook = get_pg_ca_hook(pg_conn_id)
+    pg_conn = get_pg_ca_hook(pg_conn_id).get_conn()
 
-    query = f"""
-                UPDATE catalog.resource
-                SET dict_current_version = '{dict_version}'
-                WHERE recourse_id = '{resource_code}';
-            """
+    with pg_conn.cursor() as cur:
+        try:
+            cur.execute(update_dict_current_version_query(resource_code, dict_version))
+            pg_conn.commit()
+        except psycopg2.DatabaseError as e:
+            pg_conn.rollback()
+            raise AirflowFailException(f"Failed to update dict version for {resource_code}: {e}")
 
-    pg_hook.run(query)
 
 @task
-def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_id: str = 'minio', bucket: str = PUBLISHED_BUCKET):
+def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_id: str = GREEN_MINIO_CONN_ID, bucket: str = PUBLISHED_BUCKET):
     s3 = S3Hook(aws_conn_id=minio_conn_id)
 
     released_path = f"released/{resource_code}/{version_to_publish}/"

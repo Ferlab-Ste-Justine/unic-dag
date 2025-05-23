@@ -121,3 +121,13 @@ def mapping_query(resource_code: str) -> str:
         INNER JOIN filt_value_set_code fvsc
         ON fvsc.filt_value_set_code_id = m.value_set_code_id
     """
+
+def update_dict_current_version_query(resource_code: str, dict_version: str) -> None:
+    """
+    Query to update 'dict_current_version' for a given resource code.
+    """
+    return f"""
+        UPDATE catalog.resource
+        SET dict_current_version = '{dict_version}'
+        WHERE recourse_id = '{resource_code}';
+    """
