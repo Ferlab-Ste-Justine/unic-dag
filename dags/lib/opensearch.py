@@ -8,6 +8,10 @@ from lib.templates.resource_centric import resource_centric_template
 from lib.templates.table_centric import table_centric_template
 from lib.templates.variable_centric import variable_centric_template
 
+# Opensearch constants
+MAX_RELEASE_ID_NUM = 9999
+MIN_RELEASE_ID_NUM = 1
+NUM_VERSIONS_TO_KEEP = 5
 
 class OpensearchEnv(Enum):
     QA = 'qa'
@@ -18,13 +22,20 @@ class OpensearchAlias(Enum):
     TABLE = 'table_centric'
     VARIABLE = 'variable_centric'
 
-
 """
 Opensearch environment to Postgres environment mapping
 """
 OS_ENV_PG_ENV_MAPPING: dict = {
     OpensearchEnv.PROD: PostgresEnv.PROD,
     OpensearchEnv.QA: PostgresEnv.DEV
+}
+
+"""
+Postgres environment to Opensearch environment mapping
+"""
+pg_env_os_env_mapping: dict = {
+    PostgresEnv.PROD: OpensearchEnv.PROD,
+    PostgresEnv.DEV: OpensearchEnv.QA
 }
 
 """

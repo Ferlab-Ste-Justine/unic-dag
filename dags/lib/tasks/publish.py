@@ -1,245 +1,160 @@
+from datetime import datetime
 import os
-from typing import re
+import re
 
 import pandas as pd
+import psycopg2
 from airflow.decorators import task
-from airflow.exceptions import AirflowFailException
+from airflow.exceptions import AirflowFailException, AirflowSkipException
+from airflow.models import DagRun
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-from lib.hooks.postgresca import PostgresCaHook
 
+from lib.hooks.postgresca import PostgresCaHook
+from lib.postgres import get_pg_ca_hook
+from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID
+from lib.tasks.excel import parquet_to_excel
+
+from sql.publish import update_dict_current_version_query, resource_query, dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query
+
+@task
+def get_resource_code(ti=None) -> str:
+    dag_run: DagRun = ti.dag_run
+    resource_code = dag_run.conf['resource_code']
+
+    if not resource_code:
+        raise AirflowFailException("DAG param 'resource_code' is required.")
+    else:
+        return resource_code
+
+@task
+def get_version_to_publish(ti=None) -> str:
+    dag_run: DagRun = ti.dag_run
+    version_to_publish = dag_run.conf['version_to_publish']
+    date_format = "%Y-%m-%d"
+    if not version_to_publish:
+        raise AirflowFailException(f"DAG param 'version_to_publish' is required. Expected format: YYYY-MM-DD")
+    elif bool(datetime.strptime(version_to_publish, date_format)):
+        return dag_run.conf['version_to_publish']
+    else:
+        raise AirflowFailException(f"DAG param 'version_to_publish' is not in the correct format. Expected format: YYYY-MM-DD")
+
+@task
+def get_include_dictionary(ti=None) -> bool:
+    dag_run: DagRun = ti.dag_run
+    return dag_run.conf['include_dictionary']
+
+@task
+def get_release_id(ti=None) -> str:
+    dag_run: DagRun = ti.dag_run
+    release_id = dag_run.conf['release_id']
+    regex = "^re_\d{4}$"
+    if not release_id:
+        return release_id
+    elif re.fullmatch(regex, release_id):
+        return dag_run.conf['release_id']
+    else:
+        raise AirflowFailException(f"DAG param 'release_id' is not in the correct format. Expected format: re_xxxx where x is a digit.")
+
+
+@task(task_id="publish_dictionary",)
 def publish_dictionary(
-        pg_hook: PostgresCaHook,
-        resource_code : str,
-        s3_destination_key : str,
-        s3_destination_bucket : str,
-        minio_conn_id: str = 'minio_conn_id') -> None:
+        resource_code: str,
+        version_to_publish: str,
+        include_dictionary: bool,
+        pg_conn_id: str,
+        s3_destination_bucket: str = PUBLISHED_BUCKET,
+        minio_conn_id: str = GREEN_MINIO_CONN_ID) -> None:
+    """
+    Publish research project dictionary.
+
+    :param resource_code: resource code of project to publish.
+    :param version_to_publish: version of project to publish.
+    :param include_dictionary: Specify if the dictionary should be included.
+    :param pg_conn_id: Postgres connection id.
+    :param s3_destination_bucket: published bucket name.
+    :param minio_conn_id: Minio connection id.
+    :return: None
+    """
+    if not include_dictionary:
+        raise AirflowSkipException()
 
     # define excel vars
     local_excel_directory = '/tmp/excel/'
 
-    # define minio vars
+    # define connection vars
     s3 = S3Hook(aws_conn_id=minio_conn_id)
-
-    # define sql queries
-    resourse_query = f"""
-        SELECT * FROM catalog.resource 
-        WHERE code='{resource_code}'
-        AND r.to_be_published = true
-    """
-
-    dict_table_query = f"""
-        SELECT t.*
-        FROM catalog.dict_table t
-        INNER JOIN catalog.resource r
-        ON t.resource_id = r.id
-        WHERE r.code='{resource_code}'
-        AND r.to_be_published = true
-        AND t.to_be_published = true
-    """
-
-    variable_query = f"""
-        WITH filt_dict_table AS (
-            SELECT t.id AS filt_table_id 
-            FROM catalog.dict_table t
-            INNER JOIN catalog.resource r
-            ON t.resource_id = r.id
-            WHERE r.code='{resource_code}'
-            AND r.to_be_published = true
-            AND t.to_be_published = true
-        )
-        SELECT v.* 
-        FROM catalog.variable v
-        INNER JOIN filt_dict_table fdt
-        ON fdt.filt_table_id = v.table_id
-        WHERE v.to_be_published = true
-    """
-
-    value_set_query = f"""
-        WITH filt_dict_table AS (
-            SELECT t.id AS filt_table_id 
-            FROM catalog.dict_table t
-            INNER JOIN catalog.resource r
-            ON t.resource_id = r.id
-            where r.code='{resource_code}'
-            AND r.to_be_published = true
-            AND t.to_be_published = true
-        ),
-        filt_variable AS (
-            SELECT v.value_set_id AS filt_value_set_id
-            FROM catalog.variable v
-            INNER JOIN filt_dict_table fdt
-            ON fdt.filt_table_id = v.table_id
-            WHERE v.to_be_published = true
-        )
-        SELECT vs.* 
-        FROM catalog.value_set vs
-        INNER JOINfilt_variable fv
-        ON fv.filt_value_set_id = vs.id
-    """
-
-    value_set_code_query = f"""
-        WITH filt_dict_table AS (
-            SELECT t.id AS filt_table_id 
-            FROM catalog.dict_table t
-            INNER JOIN catalog.resource r
-            ON t.resource_id = r.id
-            WHERE r.code='{resource_code}'
-            AND r.to_be_published = true
-            AND t.to_be_published = true
-        ),
-        filt_variable as (
-            SELECT v.value_set_id AS filt_value_set_id
-            FROM catalog.variable v
-            INNER JOIN filt_dict_table fdt
-            ON fdt.filt_table_id = v.table_id
-            WHERE v.to_be_published = true
-        )
-        SELECT vsc.* 
-        FROM catalog.value_set_code vsc
-        INNER JOIN filt_variable fv
-        ON fv.filt_value_set_id = vsc.value_set_id
-    """
-
-    mapping_query = f"""
-        WITH filt_dict_table AS (
-            SELECT t.id AS filt_table_id 
-            FROM catalog.dict_table t
-            INNER JOIN catalog.resource r
-            ON t.resource_id = r.id
-            WHERE r.code='{resource_code}'
-            AND r.to_be_published = true
-            AND t.to_be_published = true
-        ),
-        filt_variable AS (
-            SELECT v.value_set_id AS filt_value_set_id
-            FROM catalog.variable v
-            INNER JOIN filt_dict_table fdt
-            ON fdt.filt_table_id = v.table_id
-            WHERE v.to_be_published = true
-        ),
-        filt_value_set_code AS (
-            SELECT vsc.id AS filt_value_set_code_id
-            FROM catalog.value_set_code vsc
-            INNER JOIN filt_variable fv
-            ON fv.filt_value_set_id = vsc.value_set_id
-        )
-        SELECT m.* 
-        FROM catalog.mapping m
-        INNER JOIN filt_value_set_code fvsc
-        ON fvsc.filt_value_set_code_id = m.value_set_code_id
-    """
+    pg = get_pg_ca_hook(pg_conn_id=pg_conn_id)
 
     result_map = {
-        "Resource" : pg_hook.get_pandas_df(resourse_query),
-        "Dict Tables" : pg_hook.get_pandas_df(dict_table_query),
-        "Variable" : pg_hook.get_pandas_df(variable_query),
-        "Value Sets" : pg_hook.get_pandas_df(value_set_query),
-        "Value Set Codes" : pg_hook.get_pandas_df(value_set_code_query),
-        "Mappings" : pg_hook.get_pandas_df(mapping_query)
+        "Resource" : pg.get_pandas_df(resource_query(resource_code)),
+        "Dict Tables" : pg.get_pandas_df(dict_table_query(resource_code)),
+        "Variable" : pg.get_pandas_df(variable_query(resource_code)),
+        "Value Sets" : pg.get_pandas_df(value_set_query(resource_code)),
+        "Value Set Codes" : pg.get_pandas_df(value_set_code_query(resource_code)),
+        "Mappings" : pg.get_pandas_df(mapping_query(resource_code))
     }
 
-
-    local_excel_file = os.path.join(local_excel_directory, os.path.basename(s3_destination_key))
+    local_excel_file = os.path.join(local_excel_directory, os.path.basename(resource_code))
 
     # convert to excel
     try:
-        excel_writer = pd.ExcelWriter(local_excel_file)
-        for sheet, data in result_map.items():
-            data.to_excel(excel_writer, sheet_name=sheet, index=False)
-        excel_writer.close()
+         with pd.ExcelWriter(local_excel_file) as excel_writer:
+            for sheet, data in result_map.items():
+                data.to_excel(excel_writer, sheet_name=sheet, index=False)
     except Exception as e:
         raise AirflowFailException(f"Failed to convert {local_excel_file} to excel: {e}")
 
     # Upload to minio
     try:
-        s3.load_file(local_excel_file, key=s3_destination_key, bucket_name=s3_destination_bucket, replace=True)
+        key = f"{resource_code}/{version_to_publish}/{resource_code}_dictionary_{version_to_publish.replace('-', '_')}.xlsx"
+        s3.load_file(local_excel_file, key=key, bucket_name=s3_destination_bucket, replace=True)
     except Exception as e:
         raise AirflowFailException(f"Failed to upload Excel file {local_excel_file} to minio: {e}")
 
-@task(task_id="released_to_published")
-def released_to_published(
-        resource_code : str,
-        version_to_publish: str,
-        dict_version : str,
-        bucket : str = 'green-prd',
-        header : str = None,
-        sheet_name: str = "sheet1",
-        minio_conn_id: str = 'minio_conn_id') -> None:
-    """
-    Create an Airflow task to take all tables of specified resource and version in released (parquet) and publish them (xlsx).
 
-    Params:
-    - resource_code: name of resource to publish.
-    - version_to_publish:  version in released to publish (ex: 2020-01-01).
-    - bucket:   realed to publish bucket.
-    - header:               list of column names to use as header in the Excel file, default -> None.
-    - sheet_name:           name of the sheet in the Excel file, default -> 'Sheet1'.
-    - minio_conn_id:        connection id service, default -> 'minio_conn_id'.
-
-    Returns:
-    - function: An Airflow task to be used in DAGs for publishing a version of a resource.
+@task(task_id='update_dict_current_version')
+def update_dict_current_version(dict_version: str, resource_code: str, include_dictionary: bool, pg_conn_id: str) -> None:
     """
-    
+    Update dict version for a given resource.
+
+    :param dict_version: New dict version to set.
+    :param resource_code: Resource code associated to the dict.
+    :param include_dictionary: Specify if the dictionary should be included.
+    :param pg_conn_id: Postgres connection id.
+    :return: None
+    """
+    if not include_dictionary:
+        raise AirflowSkipException()
+
+    pg_conn = get_pg_ca_hook(pg_conn_id).get_conn()
+
+    with pg_conn.cursor() as cur:
+        try:
+            cur.execute(update_dict_current_version_query(resource_code, dict_version))
+            pg_conn.commit()
+        except psycopg2.DatabaseError as e:
+            pg_conn.rollback()
+            raise AirflowFailException(f"Failed to update dict version for {resource_code}: {e}")
+
+
+@task
+def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_id: str = GREEN_MINIO_CONN_ID, bucket: str = PUBLISHED_BUCKET):
     s3 = S3Hook(aws_conn_id=minio_conn_id)
-    s3_client = s3.get_conn()
 
-    # Define local dirs
-    local_parquet_directory = '/tmp/parquet/'
-    local_excel_directory = '/tmp/excel'
+    released_path = f"released/{resource_code}/{version_to_publish}/"
 
-    # Create dirs if they do not exist
-    os.makedirs(local_parquet_directory, exist_ok=True)
-    os.makedirs(local_excel_directory, exist_ok=True)
+    table_paths = s3.list_prefixes(bucket, released_path, "/")
+    list_of_kwargs = []
+    for table_path in table_paths:
+        table = table_path.split("/")[-2] # Extract table name from the path, assumes the path structure is consistent
+        string_version = version_to_publish.replace("-", "_")
 
-    # Get all tables to publish
-    keys = s3.list_keys(bucket_name=bucket, prefix=f"released/{resource_code}/{version_to_publish}/")
-    tables = [re.search(f'{version_to_publish}/(.+?)/', key).group(1) for key in keys]
+        list_of_kwargs.append({
+            "parquet_bucket_name": bucket,
+            "parquet_dir_key": f'released/{resource_code}/{version_to_publish}/{table}',
+            "excel_bucket_name": bucket,
+            "excel_output_key": f'published/{resource_code}/{version_to_publish}/{table}/{table}_{string_version}.xlsx',
+            "minio_conn_id": minio_conn_id
+        })
 
-    # Publish each table
-    for table in tables:
-        source = f"released/{resource_code}/{version_to_publish}/{table}",
-        dest = f"published/{resource_code}/{version_to_publish}/{table}.xlsx"
-
-        try:
-            keys = s3.list_keys(bucket_name=bucket, prefix=source)
-            if not keys:
-                raise AirflowFailException(f"No files found in: {bucket}/{source}")
-        except Exception as e:
-            raise AirflowFailException(f"Failed to list the files from: {bucket}/{source}: {e}")
-
-        # Download parquet files
-        parquet_files = []
-        for key in keys:
-            if key.endswith('.parquet'):
-                local_file_path = os.path.join(local_parquet_directory, os.path.basename(key))
-                try:
-                    s3_client.download_file(bucket, key, local_file_path)
-                    parquet_files.append(local_file_path)
-                except Exception as e:
-                    raise AirflowFailException(f"Failed to download the file: {bucket}/{key}: {e}")
-
-        if not parquet_files:
-            raise AirflowFailException(f'No parquet files found in: {bucket}/{source}')
-
-        # Combine Parquet files into a single dataframe
-        try:
-            df = pd.concat([pd.read_parquet(file) for file in parquet_files], ignore_index=True)
-        except Exception as e:
-            raise AirflowFailException(f"Failed to combine parquet files into single df: {e}")
-
-        # Set the header if not provided
-        if header is None:
-            header = df.columns
-
-        # Save the output to xlsx format
-        local_excel_file = os.path.join(local_excel_directory, os.path.basename(dest))
-        try:
-            df.to_excel(local_excel_file, index=False, header=header, sheet_name=sheet_name)
-        except Exception as e:
-            raise AirflowFailException(f"Failed to convert {local_excel_file} to excel: {e}")
-
-        # Upload to minio
-        try:
-            s3.load_file(local_excel_file, key=dest, bucket_name=bucket, replace=True)
-        except Exception as e:
-            raise AirflowFailException(f"Failed to upload Excel file {local_excel_file} to bucket {bucket}: {e}")
+    return list_of_kwargs
