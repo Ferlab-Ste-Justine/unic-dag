@@ -79,9 +79,6 @@ def publish_dictionary(
     if not include_dictionary:
         raise AirflowSkipException()
 
-    # define excel vars
-    local_excel_directory = '/tmp/excel/'
-
     # define connection vars
     s3 = S3Hook(aws_conn_id=minio_conn_id)
     pg = get_pg_ca_hook(pg_conn_id=pg_conn_id)
@@ -95,6 +92,9 @@ def publish_dictionary(
         "Mappings" : pg.get_pandas_df(mapping_query(resource_code))
     }
 
+    # set up local Excel file
+    local_excel_directory = '/tmp/excel/'
+    os.makedirs(local_excel_directory, exist_ok=True)
     local_excel_file = f"{os.path.join(local_excel_directory, os.path.basename(resource_code))}.xlsx"
 
     # convert to excel
