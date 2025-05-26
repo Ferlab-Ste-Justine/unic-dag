@@ -4,7 +4,7 @@ def resource_query(resource_code: str) -> str:
     Query to get resource information for a given resource code.
     """
     return f"""
-        SELECT * FROM catalog.resource 
+        SELECT * FROM catalog.resource r
         WHERE code='{resource_code}'
         AND r.to_be_published = true
     """
