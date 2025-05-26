@@ -1,3 +1,4 @@
+import logging
 from datetime import datetime
 import os
 import re
@@ -94,22 +95,24 @@ def publish_dictionary(
         "Mappings" : pg.get_pandas_df(mapping_query(resource_code))
     }
 
-    local_excel_file = os.path.join(local_excel_directory, os.path.basename(resource_code))
+    local_excel_file = f"{os.path.join(local_excel_directory, os.path.basename(resource_code))}.xlsx"
 
     # convert to excel
     try:
-         with pd.ExcelWriter(local_excel_file) as excel_writer:
+        with pd.ExcelWriter(local_excel_file) as excel_writer:
             for sheet, data in result_map.items():
                 data.to_excel(excel_writer, sheet_name=sheet, index=False)
     except Exception as e:
-        raise AirflowFailException(f"Failed to convert {local_excel_file} to excel: {e}")
+        logging.error(f"Failed to convert {local_excel_file} to excel: {e}")
+        raise AirflowFailException()
 
     # Upload to minio
     try:
-        key = f"{resource_code}/{version_to_publish}/{resource_code}_dictionary_{version_to_publish.replace('-', '_')}.xlsx"
+        key = f"published/{resource_code}/{version_to_publish}/{resource_code}_dictionary_{version_to_publish.replace('-', '_')}.xlsx"
         s3.load_file(local_excel_file, key=key, bucket_name=s3_destination_bucket, replace=True)
     except Exception as e:
-        raise AirflowFailException(f"Failed to upload Excel file {local_excel_file} to minio: {e}")
+        logging.error(f"Failed to upload Excel file {local_excel_file} to minio: {e}")
+        raise AirflowFailException()
 
 
 @task(task_id='update_dict_current_version')
