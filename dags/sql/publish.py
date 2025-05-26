@@ -5,7 +5,7 @@ def resource_query(resource_code: str) -> str:
     """
     return f"""
         SELECT * FROM catalog.resource r
-        WHERE code='{resource_code}'
+        WHERE r.code='{resource_code}'
         AND r.to_be_published = true
     """
 
