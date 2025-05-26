@@ -1,0 +1,50 @@
+{
+  "concurrency": 4,
+  "schedule": null,
+  "timeout_hours": 8,
+  "steps": [
+    {
+      "destination_zone": "yellow",
+      "destination_subzone": "enriched",
+      "main_class": "bio.ferlab.ui.etl.yellow.enriched.syphilis.Main",
+      "multiple_main_methods": true,
+      "datasets":
+      [
+        {"dataset_id": "enriched_syphilis_identification"                            , "cluster_type": "medium", "run_type": "default", "pass_date": true, "dependencies": ["enriched_syphilis_participant_index"], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "enriched_syphilis_participant_index"                         , "cluster_type": "medium", "run_type": "default", "pass_date": true, "dependencies": []                                     , "pre_tests": [], "post_tests": []},
+        {"dataset_id": "enriched_syphilis_syphilis_laboratory_results"               , "cluster_type": "medium", "run_type": "default", "pass_date": true, "dependencies": ["enriched_syphilis_participant_index"], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "enriched_syphilis_toutes_donnes_cliniques_intrapartum_2"     , "cluster_type": "medium", "run_type": "default", "pass_date": true, "dependencies": ["enriched_syphilis_participant_index"], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "enriched_syphilis_toutes_histoire_de_la_grossesse_actuelle_2", "cluster_type": "medium", "run_type": "default", "pass_date": true, "dependencies": ["enriched_syphilis_participant_index"], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "enriched_syphilis_toutes_tests_syphilitiques_maternelles_2"  , "cluster_type": "medium", "run_type": "default", "pass_date": true, "dependencies": ["enriched_syphilis_participant_index"], "pre_tests": [], "post_tests": []}
+      ]
+    },
+    {
+      "destination_zone": "green",
+      "destination_subzone": "released",
+      "main_class": "bio.ferlab.ui.etl.green.released.syphilis.Main",
+      "multiple_main_methods": false,
+      "datasets":
+      [
+        {"dataset_id": "released_syphilis_identification"                            , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "released_syphilis_syphilis_laboratory_results"               , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "released_syphilis_toutes_donnes_cliniques_intrapartum_2"     , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "released_syphilis_toutes_histoire_de_la_grossesse_actuelle_2", "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "released_syphilis_toutes_tests_syphilitiques_maternelles_2"  , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": [], "pre_tests": [], "post_tests": []}
+      ]
+    },
+    {
+      "destination_zone": "green",
+      "destination_subzone": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "multiple_main_methods": false,
+      "datasets":
+      [
+        {"dataset_id": "published_syphilis_identification"                            , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "published_syphilis_syphilis_laboratory_results"               , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "published_syphilis_toutes_donnes_cliniques_intrapartum_2"     , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "published_syphilis_toutes_histoire_de_la_grossesse_actuelle_2", "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "published_syphilis_toutes_tests_syphilitiques_maternelles_2"  , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": [], "pre_tests": [], "post_tests": []}
+      ]
+    }
+  ]
+}
