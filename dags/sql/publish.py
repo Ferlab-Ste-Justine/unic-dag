@@ -129,5 +129,5 @@ def update_dict_current_version_query(resource_code: str, dict_version: str) -> 
     return f"""
         UPDATE catalog.resource
         SET dict_current_version = '{dict_version}'
-        WHERE recourse_id = '{resource_code}';
+        WHERE code = '{resource_code}';
     """
