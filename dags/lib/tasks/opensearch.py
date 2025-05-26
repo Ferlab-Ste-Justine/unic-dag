@@ -4,9 +4,6 @@ from typing import List
 from airflow.decorators import task
 from lib.operators.spark import SparkOperator
 
-from dags.lib.opensearch import MAX_RELEASE_ID, NUM_VERSIONS_TO_KEEP
-
-
 def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,
                   dag: DAG, zone: str = "yellow",
                   spark_class: str = 'bio.ferlab.ui.etl.catalog.os.prepare.Main') -> SparkOperator:
@@ -123,7 +120,7 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
     :return: None
     """
     import logging
-    from lib.opensearch import load_cert, get_opensearch_client
+    from lib.opensearch import MAX_RELEASE_ID_NUM, NUM_VERSIONS_TO_KEEP, load_cert, get_opensearch_client
     from airflow.exceptions import AirflowFailException
 
     # Load the os ca-certificate into task
@@ -155,7 +152,7 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
     # Delete old index, keep 5 most recent
     current_release_id_num = int(release_id.split('_')[-1])
     if current_release_id_num < NUM_VERSIONS_TO_KEEP:
-        release_id_num_to_delete = (MAX_RELEASE_ID + 1) - (NUM_VERSIONS_TO_KEEP - current_release_id_num)
+        release_id_num_to_delete = (MAX_RELEASE_ID_NUM + 1) - (NUM_VERSIONS_TO_KEEP - current_release_id_num)
     else:
         release_id_num_to_delete = current_release_id_num - NUM_VERSIONS_TO_KEEP
 
