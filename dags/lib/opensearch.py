@@ -10,7 +10,7 @@ from lib.templates.variable_centric import variable_centric_template
 
 # Opensearch constants
 MAX_RELEASE_ID_NUM = 9999
-MIN_RELEASE_ID_NUM = 1
+MIN_RELEASE_ID_NUM = 0
 NUM_VERSIONS_TO_KEEP = 5
 
 class OpensearchEnv(Enum):
