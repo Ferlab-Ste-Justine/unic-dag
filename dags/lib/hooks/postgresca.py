@@ -29,7 +29,7 @@ class PostgresCaHook(PostgresHook):
     def get_conn(self):
         self.load_cert()
 
-        super().get_conn()
+        return super().get_conn()
 
     def load_cert(self):
         subprocess.run(["mkdir", "-p", self.ca_path])
