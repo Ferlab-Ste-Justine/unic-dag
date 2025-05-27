@@ -25,13 +25,13 @@ def index_opensearch(pg_env_name: str, os_env_name: str, dag: DAG):
     @task_group(group_id="prepare_indexes")
     def prepare_index_group():
         for alias in OpensearchAlias:
-            task_id = f"prepare_index_{alias.value}"
+            task_id = f"os_index_{alias.value}"
             prepare_index(
                 task_id,
                 prepare_index_arguments(task_id),
                 MASTER_JAR,
                 SPARK_FAILURE_MSG,
-                "small_etl",
+                "small-etl",
                 dag
             )
 
