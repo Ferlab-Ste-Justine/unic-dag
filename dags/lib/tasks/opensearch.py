@@ -4,8 +4,13 @@ from typing import List
 from airflow.decorators import task
 from lib.operators.spark import SparkOperator
 
-def prepare_index(task_id: str, args: List[str], jar: str, spark_failure_msg: str, cluster_size: str,
-                  dag: DAG, zone: str = "yellow",
+def prepare_index(task_id: str,
+                  args: List[str],
+                  jar: str,
+                  spark_failure_msg: str,
+                  cluster_size: str,
+                  dag: DAG,
+                  zone: str = "yellow",
                   spark_class: str = 'bio.ferlab.ui.etl.catalog.os.prepare.Main') -> SparkOperator:
 
     return SparkOperator(
