@@ -214,7 +214,7 @@ def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_c
 
     if increment:
         # Increment current id by 1
-        if current_release_id_num == MAX_RELEASE_ID:
+        if current_release_id_num == MAX_RELEASE_ID_NUM:
             return f're_{str(MIN_RELEASE_ID_NUM).zfill(4)}'
 
         new_release_id = f're_{str(int(current_release_id_num) + 1).zfill(4)}'
