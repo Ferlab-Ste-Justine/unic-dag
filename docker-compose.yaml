@@ -173,7 +173,7 @@ services:
     volumes:
       - minio-data-volume:/data
 
-  postgres-catalog:
+  postgres-unic:
     image: postgres
     hostname: localhost
     ports:
@@ -181,23 +181,23 @@ services:
     environment:
       POSTGRES_USER: pgadmin
       POSTGRES_PASSWORD: pgadmin
-      POSTGRES_DB: catalog
+      POSTGRES_DB: unic
     volumes:
-      - postgres-catalog-volume:/postgresql/data
+      - postgres-unic-volume:/postgresql/data
     restart: unless-stopped
 
   pgadmin:
     image: dpage/pgadmin4
     depends_on:
-      - postgres-catalog
+      - postgres-unic
     ports:
       - "5050:80"
     environment:
-      PGADMIN_DEFAULT_EMAIL: admin@admin.com
-      PGADMIN_DEFAULT_PASSWORD: root
+      PGADMIN_DEFAULT_EMAIL: pgadmin@pgadmin.com
+      PGADMIN_DEFAULT_PASSWORD: pgadmin
     restart: unless-stopped
 
 volumes:
   postgres-db-volume:
   minio-data-volume:
-  postgres-catalog-volume:
+  postgres-unic-volume:
