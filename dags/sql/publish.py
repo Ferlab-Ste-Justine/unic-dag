@@ -122,12 +122,22 @@ def mapping_query(resource_code: str) -> str:
         ON fvsc.filt_value_set_code_id = m.value_set_code_id
     """
 
-def update_dict_current_version_query(resource_code: str, dict_version: str) -> None:
+def update_dict_current_version_query(resource_code: str, dict_version: str) -> str:
     """
     Query to update 'dict_current_version' for a given resource code.
     """
     return f"""
         UPDATE catalog.resource
         SET dict_current_version = '{dict_version}'
+        WHERE code = '{resource_code}';
+    """
+
+def get_to_be_published_query(resource_code: str) -> str:
+    """
+    Query that gets the value of 'to_be_published' for a given resource code.
+    """
+    return  f"""
+        SELECT to_be_published
+        FROM catalog.resource
         WHERE code = '{resource_code}';
     """
