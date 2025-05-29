@@ -181,7 +181,7 @@ Navigate to **Admin → Connections** and add:
 - Host: `postgres-unic`
 - Schema: `unic`
 - Password: `pgadmin`
-- Port: `pgadmin`
+- Port: `5432`
 
 ---
 ### 🔔 Slack Setup _(Optional)_
