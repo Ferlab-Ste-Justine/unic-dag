@@ -4,13 +4,16 @@ from typing import List
 from airflow.decorators import task
 from lib.operators.spark import SparkOperator
 
+from lib.config import CATALOG_ZONE, CATALOG_BUCKET
+
+
 def prepare_index(task_id: str,
                   args: List[str],
                   jar: str,
                   spark_failure_msg: str,
                   cluster_size: str,
                   dag: DAG,
-                  zone: str = "yellow",
+                  zone: str = CATALOG_ZONE,
                   spark_class: str = 'bio.ferlab.ui.etl.catalog.os.prepare.Main') -> SparkOperator:
 
     return SparkOperator(
@@ -28,7 +31,7 @@ def prepare_index(task_id: str,
 @task.virtualenv(
     task_id="load_index", requirements=["opensearch-py==2.8.0"]
 )
-def load_index(env_name: str, release_id: str, alias: str, src_path: str, src_bucket: str = "yellow-prd") -> None:
+def load_index(env_name: str, release_id: str, alias: str, src_path: str, src_bucket: str = CATALOG_BUCKET) -> None:
 
     """
     Load index in Opensearch.

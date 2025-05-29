@@ -27,25 +27,34 @@ def index_opensearch(pg_env_name: str, os_env_name: str, dag: DAG):
         for alias in OpensearchAlias:
             task_id = f"os_index_{alias.value}"
             prepare_index(
-                task_id,
-                prepare_index_arguments(task_id),
-                MASTER_JAR,
-                SPARK_FAILURE_MSG,
-                "small-etl",
-                dag
+                task_id=task_id,
+                args=prepare_index_arguments(task_id),
+                jar=MASTER_JAR,
+                spark_failure_msg=SPARK_FAILURE_MSG,
+                cluster_size="small-etl",
+                dag=dag
             )
 
     @task_group(group_id="load_indexes")
     def load_index_group(release_id: str):
         for alias in OpensearchAlias:
-            load_index.override(task_id=f"load_index_{alias.value}")(os_env_name, release_id, alias.value, f"catalog/{pg_env_name}/os_index/")
+            load_index.override(task_id=f"load_index_{alias.value}")(
+                env_name=os_env_name,
+                release_id=release_id,
+                alias=alias.value,
+                src_path=f"catalog/{pg_env_name}/os_index/"
+            )
 
     @task_group(group_id="publish_indexes")
     def publish_index_group(release_id: str):
         for alias in OpensearchAlias:
-            publish_index.override(task_id=f"publish_index_{alias.value}")(os_env_name, release_id, alias.value)
+            publish_index.override(task_id=f"publish_index_{alias.value}")(
+                env_name=os_env_name,
+                release_id=release_id,
+                alias=alias.value
+            )
 
-    get_next_release_id_task = get_next_release_id(os_env_name, get_release_id())
+    get_next_release_id_task = get_next_release_id(env_name=os_env_name, release_id=get_release_id())
 
     prepare_index_group() >> get_next_release_id_task >> load_index_group(release_id=get_next_release_id_task) \
     >> publish_index_group(release_id=get_next_release_id_task)

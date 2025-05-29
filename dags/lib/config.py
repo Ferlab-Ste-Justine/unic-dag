@@ -47,6 +47,12 @@ UNDERSCORE_DATE = '{{ data_interval_end | ds | replace("-", "_") }}'
 VERSION = '{{ params.version }}'
 UNDERSCORE_VERSION = '{{ params.version | replace("-", "_") }}'
 
+# Zones
+CATALOG_ZONE = "yellow"
+
+# Catalog config
+CATALOG_BUCKET = "yellow-prd"
+
 # Released config
 RELEASED_BUCKET = "green-prd"
 RELEASED_PREFIX = "released"
