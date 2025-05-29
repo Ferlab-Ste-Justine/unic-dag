@@ -31,7 +31,7 @@ def prepare_index(task_id: str,
 @task.virtualenv(
     task_id="load_index", requirements=["opensearch-py==2.8.0"]
 )
-def load_index(env_name: str, release_id: str, alias: str, src_path: str, src_bucket: str = CATALOG_BUCKET) -> None:
+def load_index(env_name: str, release_id: str, alias: str, src_path: str) -> None:
 
     """
     Load index in Opensearch.
@@ -68,12 +68,12 @@ def load_index(env_name: str, release_id: str, alias: str, src_path: str, src_bu
     # List all the files for a given dir in Minio
     try:
         # get index key from minio
-        keys = s3.list_keys(bucket_name=src_bucket, prefix=f"{src_path}{alias}/")
+        keys = s3.list_keys(bucket_name=CATALOG_BUCKET, prefix=f"{src_path}{alias}/")
         if not keys:
-            logging.error(f"No files found in: {src_bucket}/{src_path}")
+            logging.error(f"No files found in: {CATALOG_BUCKET}/{src_path}")
             raise AirflowFailException()
     except Exception as e:
-        logging.error(f"Failed to list the files from: {src_bucket}/{src_path}: {e}")
+        logging.error(f"Failed to list the files from: {CATALOG_BUCKET}/{src_path}: {e}")
         raise AirflowFailException()
 
     # get index data from minio
@@ -81,10 +81,10 @@ def load_index(env_name: str, release_id: str, alias: str, src_path: str, src_bu
     for key in keys:
         if key.endswith('.parquet'):
             try:
-                s3_response = s3.get_key(key=key, bucket_name=src_bucket)
+                s3_response = s3.get_key(key=key, bucket_name=CATALOG_BUCKET)
                 parquet_files.append(s3_response.get()['Body'].read())
             except Exception as e:
-                logging.error(f"Failed to download the file: {src_bucket}/{key}: {e}")
+                logging.error(f"Failed to download the file: {CATALOG_BUCKET}/{key}: {e}")
                 raise AirflowFailException()
 
     try:
