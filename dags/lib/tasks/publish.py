@@ -194,5 +194,5 @@ def validate_to_be_published(resource_code: str, pg_conn_id) -> ShortCircuitOper
     return ShortCircuitOperator(
         task_id="validate_to_be_published",
         python_callable=get_to_be_published,
-        op_args=[resource_code, pg_conn_id], # Ensure to set the DAG context if used in a DAG
+        op_args=[resource_code, pg_conn_id],
     )
