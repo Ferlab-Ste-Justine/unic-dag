@@ -50,7 +50,7 @@ def load_index(env_name: str, release_id: str, alias: str, src_path: str, src_bu
     from airflow.exceptions import AirflowFailException
 
     from lib.opensearch import load_cert, get_opensearch_client, OS_TEMPLATES, OS_ID_COLUMNS
-    from lib.config import YELLOW_MINIO_CONN_ID
+    from lib.config import YELLOW_MINIO_CONN_ID, CATALOG_BUCKET
 
 
     # Load the os ca-certificate into task
