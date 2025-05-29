@@ -68,7 +68,19 @@ for env in PostgresEnv:
 
         start("start_unic_publish_project") \
         >> [get_resource_code_task, get_version_to_publish_task, get_include_dictionary_task] \
-        >> publish_research_project(pg_conn_id, get_resource_code_task, get_version_to_publish_task, get_include_dictionary_task) \
-        >> validate_to_be_published(get_resource_code_task, pg_conn_id) \
-        >> index_opensearch(env_name, pg_env_os_env_mapping.get(env).value, dag) \
+        >> publish_research_project(
+            pg_conn_id=pg_conn_id,
+            resource_code=get_resource_code_task,
+            version_to_publish=get_version_to_publish_task,
+            include_dictionary=get_include_dictionary_task
+        ) \
+        >> validate_to_be_published(
+            resource_code=get_resource_code_task,
+            pg_conn_id=pg_conn_id
+        ) \
+        >> index_opensearch(
+            pg_env_name=env_name,
+            os_env_name=pg_env_os_env_mapping.get(env).value,
+            dag=dag
+        ) \
         >> end("end_unic_publish_project")

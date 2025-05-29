@@ -57,4 +57,4 @@ for os_env in OpensearchEnv:
             on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
     ) as dag:
 
-        start("start_os_index") >> index_opensearch(pg_env_name, os_env_name, dag) >> end("end_os_index")
+        start("start_os_index") >> index_opensearch(pg_env_name=pg_env_name, os_env_name=os_env_name, dag=dag) >> end("end_os_index")
