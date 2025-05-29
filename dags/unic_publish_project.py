@@ -59,7 +59,8 @@ for env in PostgresEnv:
             render_template_as_native_obj=True,
             schedule_interval=None,
             tags=["postgresql", "published", "opensearch"],
-            on_failure_callback=Slack.notify_dag_failure
+            on_failure_callback=Slack.notify_dag_failure,
+            # on_skipped_callback=Slack.notify_task_skip # Available airflow 2.9
     ) as dag:
         get_resource_code_task = get_resource_code()
         get_version_to_publish_task = get_version_to_publish()

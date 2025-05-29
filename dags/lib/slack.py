@@ -50,12 +50,23 @@ class Slack:
         Slack.notify(f'Task {dag_link} failed. {slack_msg}', type=Slack.ERROR)
 
     @staticmethod
-    def notify_dag_failure(context):
+    def notify_task_skip(context):
         dag_id = context['dag'].dag_id
-        slack_msg = """*Execution Time*: {exec_date}""".format(exec_date=context['execution_date'])
-        dag_link = Slack._dag_link(dag_id, dag_id, context['run_id'])
+        task_id = context['task'].task_id
 
-        Slack.notify(f'Dag {dag_link} failed. {slack_msg}', type=Slack.ERROR)
+        slack_msg = """
+            *Execution Time*: {exec_date},  
+            *Log Url*: {log_url}
+            """.format(
+            exec_date=context['execution_date'],
+            log_url=context['task_instance'].log_url,
+        )
+
+        dag_link = Slack._dag_link(
+            f'{dag_id}.{task_id}', dag_id, context['run_id'], task_id,
+        )
+
+        Slack.notify(f'Task {dag_link} was skipped. {slack_msg}', type=Slack.WARNING)
 
     @staticmethod
     def notify_task_retry(context):
@@ -78,6 +89,14 @@ class Slack:
         )
 
         Slack.notify(f'Task {dag_link} up for retry. {slack_msg}', type=Slack.WARNING)
+
+    @staticmethod
+    def notify_dag_failure(context):
+        dag_id = context['dag'].dag_id
+        slack_msg = """*Execution Time*: {exec_date}""".format(exec_date=context['execution_date'])
+        dag_link = Slack._dag_link(dag_id, dag_id, context['run_id'])
+
+        Slack.notify(f'Dag {dag_link} failed. {slack_msg}', type=Slack.ERROR)
 
     @staticmethod
     def notify_dag_start(context):

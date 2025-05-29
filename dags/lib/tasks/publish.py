@@ -138,7 +138,8 @@ def update_dict_current_version(dict_version: str, resource_code: str, include_d
             pg_conn.commit()
         except psycopg2.DatabaseError as e:
             pg_conn.rollback()
-            raise AirflowFailException(f"Failed to update dict version for {resource_code}: {e}")
+            logging.error(f"Failed to update dict version for {resource_code}: {e}")
+            raise AirflowFailException()
 
 
 @task
