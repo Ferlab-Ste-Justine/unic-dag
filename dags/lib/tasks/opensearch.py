@@ -210,7 +210,7 @@ def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_c
         # Fetch current id from OS
         alias_info = os_client.indices.get_alias(name=alias)
         current_index = list(alias_info.keys())[0]
-        current_release_id_num = current_index.split('_')[-1]
+        current_release_id_num = int(current_index.split('_')[-1])
     except Exception as e:
         logging.error(f"Failed to retrieve current release id from Opensearch: {e}")
         raise AirflowFailException()
@@ -220,10 +220,10 @@ def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_c
         if current_release_id_num == MAX_RELEASE_ID_NUM:
             return f're_{str(MIN_RELEASE_ID_NUM).zfill(4)}'
 
-        new_release_id = f're_{str(int(current_release_id_num) + 1).zfill(4)}'
+        new_release_id = f're_{str(current_release_id_num + 1).zfill(4)}'
         logging.info(f'New release id: {new_release_id}')
         return new_release_id
     else:
-        return f're_{current_release_id_num}'
+        return f're_{str(current_release_id_num)}'
 
 
