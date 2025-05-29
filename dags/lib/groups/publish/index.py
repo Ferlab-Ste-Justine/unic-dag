@@ -38,7 +38,7 @@ def index_opensearch(pg_env_name: str, os_env_name: str, dag: DAG):
     @task_group(group_id="load_indexes")
     def load_index_group(release_id: str):
         for alias in OpensearchAlias:
-            load_index.override(task_id=f"load_index_{alias.value}")(os_env_name, release_id, alias.value)
+            load_index.override(task_id=f"load_index_{alias.value}")(os_env_name, release_id, alias.value, f"catalog/{pg_env_name}/os_index/")
 
     @task_group(group_id="publish_indexes")
     def publish_index_group(release_id: str):

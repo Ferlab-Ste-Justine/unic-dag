@@ -28,7 +28,7 @@ def prepare_index(task_id: str,
 @task.virtualenv(
     task_id="load_index", requirements=["opensearch-py==2.8.0"]
 )
-def load_index(env_name: str, release_id: str, alias: str, src_bucket: str = "yellow-prd", src_path: str = "catalog/prod/os_index/") -> None:
+def load_index(env_name: str, release_id: str, alias: str, src_path: str, src_bucket: str = "yellow-prd") -> None:
 
     """
     Load index in Opensearch.
