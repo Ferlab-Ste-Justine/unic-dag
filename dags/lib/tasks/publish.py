@@ -8,6 +8,7 @@ import psycopg2
 from airflow.decorators import task
 from airflow.exceptions import AirflowFailException, AirflowSkipException
 from airflow.models import DagRun
+from airflow.operators.python import ShortCircuitOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 from lib.hooks.postgresca import PostgresCaHook
@@ -15,7 +16,7 @@ from lib.postgres import get_pg_ca_hook
 from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID
 from lib.tasks.excel import parquet_to_excel
 
-from sql.publish import update_dict_current_version_query, resource_query, dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query
+from sql.publish import update_dict_current_version_query, get_to_be_published_query, resource_query, dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query
 
 @task
 def get_resource_code(ti=None) -> str:
@@ -137,7 +138,8 @@ def update_dict_current_version(dict_version: str, resource_code: str, include_d
             pg_conn.commit()
         except psycopg2.DatabaseError as e:
             pg_conn.rollback()
-            raise AirflowFailException(f"Failed to update dict version for {resource_code}: {e}")
+            logging.error(f"Failed to update dict version for {resource_code}: {e}")
+            raise AirflowFailException()
 
 
 @task
@@ -161,3 +163,37 @@ def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_i
         })
 
     return list_of_kwargs
+
+def get_to_be_published(resource_code: str, pg_conn_id: str) -> bool:
+    """
+    Get value of to_be_published for given resource code.
+
+    :param resource_code: Resource code associated to the dict.
+    :param pg_conn_id: Postgres connection id.
+    :return: Boolean indicating if the resource is to be published.
+    """
+
+    pg_conn = get_pg_ca_hook(pg_conn_id).get_conn()
+
+    with pg_conn.cursor() as cur:
+        try:
+            cur.execute(get_to_be_published_query(resource_code))
+            return cur.fetchone()[0]
+        except Exception as e:
+            logging.error(f"Failed to retrive to_be_published for {resource_code}: {e}")
+            raise AirflowFailException()
+
+def validate_to_be_published(resource_code: str, pg_conn_id) -> ShortCircuitOperator:
+    """
+    Validate if the resource is to be published.
+
+    :param resource_code: Resource code associated to the dict.
+    :param pg_conn_id: Postgres connection id.
+    :return: ShortCircuitOperator.
+    """
+
+    return ShortCircuitOperator(
+        task_id="validate_to_be_published",
+        python_callable=get_to_be_published,
+        op_args=[resource_code, pg_conn_id],
+    )

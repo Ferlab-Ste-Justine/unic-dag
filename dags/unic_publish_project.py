@@ -11,6 +11,7 @@ from airflow.utils.trigger_rule import TriggerRule
 
 from lib.groups.publish.index import index_opensearch
 from lib.groups.publish.publish import publish_research_project
+from lib.tasks.publish import validate_to_be_published, get_resource_code, get_version_to_publish, get_include_dictionary
 from lib.tasks.notify import start, end
 from lib.opensearch import pg_env_os_env_mapping
 from lib.config import DEFAULT_ARGS
@@ -58,10 +59,16 @@ for env in PostgresEnv:
             render_template_as_native_obj=True,
             schedule_interval=None,
             tags=["postgresql", "published", "opensearch"],
-            on_failure_callback=Slack.notify_dag_failure
+            on_failure_callback=Slack.notify_dag_failure,
+            # on_skipped_callback=Slack.notify_task_skip # Available airflow 2.9
     ) as dag:
+        get_resource_code_task = get_resource_code()
+        get_version_to_publish_task = get_version_to_publish()
+        get_include_dictionary_task = get_include_dictionary()
 
         start("start_unic_publish_project") \
-        >> publish_research_project(pg_conn_id) \
+        >> [get_resource_code_task, get_version_to_publish_task, get_include_dictionary_task] \
+        >> publish_research_project(pg_conn_id, get_resource_code_task, get_version_to_publish_task, get_include_dictionary_task) \
+        >> validate_to_be_published(get_resource_code_task, pg_conn_id) \
         >> index_opensearch(env_name, pg_env_os_env_mapping.get(env).value, dag) \
         >> end("end_unic_publish_project")
