@@ -99,30 +99,6 @@ with dag:
             dag=dag
         )
 
-        enriched_moka_participant_index_external_clinic = SparkOperator(
-            task_id="enriched_moka_participant_index_external_clinic",
-            name="enriched-moka-participant-index-external-clinic",
-            arguments=enriched_arguments("enriched_moka_participant_index_external_clinic", start_date=True, end_date=True),
-            zone=ENRICHED_ZONE,
-            spark_class=ENRICHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag
-        )
-
-        enriched_moka_screening_external_clinic = SparkOperator(
-            task_id="enriched_moka_screening_external_clinic",
-            name="enriched-moka-screening-external-clinic",
-            arguments=enriched_arguments("enriched_moka_screening_external_clinic", start_date=False, end_date=True),
-            zone=ENRICHED_ZONE,
-            spark_class=ENRICHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
         enriched_moka_screening_emergency_department = SparkOperator(
             task_id="enriched_moka_screening_emergency_department",
             name="enriched-moka-screening-emergency-department",
@@ -135,7 +111,6 @@ with dag:
             dag=dag
         )
 
-        enriched_moka_participant_index_external_clinic >> enriched_moka_screening_external_clinic
         enriched_moka_participant_index_emergency_department >> enriched_moka_screening_emergency_department
 
     start() >> enriched >> end()
