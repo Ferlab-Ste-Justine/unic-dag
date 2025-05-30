@@ -6,12 +6,12 @@ This repository contains the DAG definitions for the **UnIC** datalake project (
 
 ## ⚙️ Requirements
 
-- 🐍 Python 3.8+
+- 🐍 Python 3.9
 
 ### Setup with a virtual environment
 ```bash
-python -m venv venv
-source venv/bin/activate
+python -m venv .venv
+source .venv/bin/activate
 pip install -r requirements.txt
 ```
 ---
