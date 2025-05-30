@@ -55,7 +55,6 @@
           {"dataset_id": "anonymized_cscmed_orl*"      , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_ort*"      , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_pal*"      , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
-          {"dataset_id": "anonymized_cscmed_pal*"      , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_ped"       , "cluster_type": "large" , "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_phy*"      , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_pla*"      , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
