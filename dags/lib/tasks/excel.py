@@ -53,13 +53,16 @@ def parquet_to_excel(
     os.makedirs(local_parquet_directory, exist_ok=True)
     os.makedirs(local_excel_directory, exist_ok=True)
 
+    # Pad parquet_dir_key with a trailing slash if it does not end with one
+    padded_parquet_dir_key = parquet_dir_key if parquet_dir_key.endswith('/') else parquet_dir_key + '/'
+
     # List all the files for a given dir in Minio
     try:
-        keys = s3.list_keys(bucket_name=parquet_bucket_name, prefix=parquet_dir_key)
+        keys = s3.list_keys(bucket_name=parquet_bucket_name, prefix=padded_parquet_dir_key)
         if not keys:
-            raise AirflowFailException(f"No files found in: {parquet_bucket_name}/{parquet_dir_key}")
+            raise AirflowFailException(f"No files found in: {parquet_bucket_name}/{padded_parquet_dir_key}")
     except Exception as e:
-        raise AirflowFailException(f"Failed to list the files from: {parquet_bucket_name}/{parquet_dir_key}: {e}")
+        raise AirflowFailException(f"Failed to list the files from: {parquet_bucket_name}/{padded_parquet_dir_key}: {e}")
 
     # Download parquet files
     parquet_files = []
@@ -73,7 +76,7 @@ def parquet_to_excel(
                 raise AirflowFailException(f"Failed to download the file: {parquet_bucket_name}/{key}: {e}")
 
     if not parquet_files:
-        raise AirflowFailException(f'No parquet files found in: {parquet_bucket_name}/{parquet_dir_key}')
+        raise AirflowFailException(f'No parquet files found in: {parquet_bucket_name}/{padded_parquet_dir_key}')
 
     # Combine Parquet files into a single dataframe
     try:
