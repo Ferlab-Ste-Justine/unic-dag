@@ -33,7 +33,15 @@ paramètre au DAG seront dropées et recréées selon les schémas définis dans
 sql_config = {
     "schema": {"name" : "indicateurs_sip", "postgres_schema_creation_sql_path" : "sql/indicateurs_sip/schema.sql"},
     "tables": [
-        {"name": "infections"  , "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/infections_schema.sql"  , "dependencies": []},
+        {"name": "sejour"     , "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/sejour_schema.sql"     , "dependencies": []},
+        {"name": "catheter"   , "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/catheter_schema.sql"   , "dependencies": []},
+        {"name": "ventilation", "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/ventilation_schema.sql", "dependencies": []},
+        {"name": "extubation" , "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/extubation_schema.sql" , "dependencies": []},
+        {"name": "lits"       , "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/lits_schema.sql"       , "dependencies": []},
+        {"name": "infirmieres", "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/infirmieres_schema.sql", "dependencies": []},
+        {"name": "ecmo"       , "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/ecmo_schema.sql"       , "dependencies": []},
+        {"name": "scores"     , "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/scores_schema.sql"     , "dependencies": []},
+        {"name": "infections" , "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/infections_schema.sql" , "dependencies": []},
     ]
 }
 table_name_list = [table['name'] for table in sql_config['tables']]
