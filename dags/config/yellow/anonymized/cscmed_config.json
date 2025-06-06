@@ -38,7 +38,7 @@
           {"dataset_id": "anonymized_cscmed_esej*"      , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_fkp*"       , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_gas*"       , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
-          {"dataset_id": "anonymized_cscmed_gen*"       , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+          {"dataset_id": "anonymized_cscmed_ge*"        , "cluster_type": "large" , "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_hem"        , "cluster_type": "large" , "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_imm*"       , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_inh*"       , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
