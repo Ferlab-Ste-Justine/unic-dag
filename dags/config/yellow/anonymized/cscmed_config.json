@@ -74,7 +74,7 @@
           {"dataset_id": "anonymized_cscmed_soc*"       , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_sto*"       , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_tel*"       , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
-          {"dataset_id": "anonymized_cscmed_uro*"       , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
+          {"dataset_id": "anonymized_cscmed_uro*"       , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []}
     ],
     "optimize" : [],
     "post_tests": [
