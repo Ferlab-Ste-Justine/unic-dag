@@ -6,8 +6,8 @@
     {
       "destination_zone": "red",
       "destination_subzone": "curated",
-      "main_class": "bio.ferlab.ui.etl.red.curated.cscmed.JobsSectionsETL",
-      "multiple_main_methods": false,
+      "main_class": "bio.ferlab.ui.etl.red.curated.Main",
+      "multiple_main_methods": true,
       "pre_tests": [{"name": "greater_or_equal_partition_counts", "destinations": ["curated_cscmed_jobs_sections"], "cluster_type" : "large"}],
       "datasets": [
         {"dataset_id":"curated_cscmed_jobs_sections", "cluster_type": "large", "run_type": "default", "pass_date": false, "dependencies": []}
