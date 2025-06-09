@@ -2,7 +2,20 @@
   "concurrency": 3,
   "schedule": null, 
   "timeout_hours": 12,
-  "steps": [{
+  "steps": [
+    {
+      "destination_zone": "red",
+      "destination_subzone": "curated",
+      "main_class": "bio.ferlab.ui.etl.red.curated.cscmed.JobsSectionsETL",
+      "multiple_main_methods": false,
+      "pre_tests": [{"name": "greater_or_equal_partition_counts", "destinations": ["curated_cscmed_jobs_sections"], "cluster_type" : "large"}],
+      "datasets": [
+        {"dataset_id":"curated_cscmed_jobs_sections", "cluster_type": "large", "run_type": "default", "pass_date": false, "dependencies": []}
+      ],
+      "optimize" : [],
+      "post_tests": []
+    }, 
+    {
     "destination_zone": "yellow",
     "destination_subzone": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
