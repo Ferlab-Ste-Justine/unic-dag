@@ -103,13 +103,19 @@ def load_index(env_name: str, release_id: str, alias: str, src_path: str) -> Non
         logging.info(f"Loaded template: {template_name}")
 
         # load index data
-        data = []
-        for record in json.loads(df.to_json(orient='records')):
-            data.append({"index": {"_index": index_name, "_id": record.get(OS_ID_COLUMNS.get(alias))}})
-            data.append(record)
+        json_data = json.loads(df.to_json(orient='records'))
 
-        bulk_response = os_client.bulk(data)
-        logging.info(f"Bulk-inserted {len(bulk_response['items'])} items.")
+        chunk_size = 50000
+        split_json_data = [json_data[i:i+chunk_size] for i in range(0,len(json_data),chunk_size)]
+
+        for chunk in split_json_data:
+            data = []
+            for record in chunk:
+                data.append({"index": {"_index": index_name, "_id": record.get(OS_ID_COLUMNS.get(alias))}})
+                data.append(record)
+
+            bulk_response = os_client.bulk(data)
+            logging.info(f"Bulk-inserted {len(bulk_response['items'])} items.")
 
     except Exception as e:
         logging.error(f"Failed to load index in Opensearch: {e}")
