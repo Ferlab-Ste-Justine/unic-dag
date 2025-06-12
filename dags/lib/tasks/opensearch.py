@@ -152,7 +152,7 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
     logging.info(f"New Index: {new_index}")
 
     actions = [
-        {"remove": {"index": current_index, "alias": alias}},
+        {"remove": {"index": current_index, "alias": alias, "must_exist": False}},
         {"add": {"index": new_index, "alias": alias}}
     ]
 
