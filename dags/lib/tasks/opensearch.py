@@ -145,8 +145,8 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
 
     new_index = f"{alias}_{release_id}"
 
-    alias_info = os_client.indices.get_alias(name=alias)
-    current_index = list(alias_info.keys())[0]
+    alias_info = os_client.indices.get_alias(name=alias, ignore_unavailable=True)
+    current_index = "" if not list(alias_info.keys()) else list(alias_info.keys())[0]
 
     logging.info(f"Current Index: {current_index}")
     logging.info(f"New Index: {new_index}")
