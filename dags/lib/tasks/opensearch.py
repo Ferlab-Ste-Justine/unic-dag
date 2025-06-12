@@ -145,17 +145,21 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
 
     new_index = f"{alias}_{release_id}"
 
-    alias_info = os_client.indices.get_alias(name=alias, ignore_unavailable=True)
-    logging.info(f"Alias info: {alias_info}")
-    current_index = next(iter(alias_info), "")
+    alias_exists = os_client.indices.exists_alias(name=alias)
+    logging.info(f"Alias '{alias}' exists: {alias_exists}")
+
+    actions = []
+    if alias_exists:
+        alias_info = os_client.indices.get_alias(name=alias)
+        current_index = next(iter(alias_info), "")
+        actions.append({"remove": {"index": current_index, "alias": alias}})
+    else:
+        current_index = "No alias"
+
+    actions.append({"add": {"index": new_index, "alias": alias}})
 
     logging.info(f"Current Index: {current_index}")
     logging.info(f"New Index: {new_index}")
-
-    actions = [
-        {"remove": {"index": current_index, "alias": alias, "must_exist": False}},
-        {"add": {"index": new_index, "alias": alias}}
-    ]
 
     try:
         response = os_client.indices.update_aliases(body={"actions": actions})
