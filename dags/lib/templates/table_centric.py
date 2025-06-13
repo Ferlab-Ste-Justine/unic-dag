@@ -8,7 +8,7 @@ table_centric_template = {
         "number_of_shards": "3",
         "mapping": {
           "nested_objects": {
-            "limit": "45000"
+            "limit": "50000"
           }
         },
         "analysis": {
