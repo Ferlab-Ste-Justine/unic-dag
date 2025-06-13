@@ -115,7 +115,11 @@ def load_index(env_name: str, release_id: str, alias: str, src_path: str) -> Non
                 data.append(record)
 
             bulk_response = os_client.bulk(data)
-            logging.info(f"BULK RESPONSE: {bulk_response}")
+
+            if bulk_response['errors']:
+                logging.error(f"Errors occurred during bulk insert: {bulk_response}")
+                raise AirflowFailException()
+
             logging.info(f"Bulk-inserted {len(bulk_response['items'])} items.")
 
     except Exception as e:
