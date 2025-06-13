@@ -8,7 +8,7 @@ resource_centric_template = {
         "number_of_shards": "3",
         "mapping": {
           "nested_objects": {
-            "limit": "30000"
+            "limit": "45000"
           }
         },
         "analysis": {
