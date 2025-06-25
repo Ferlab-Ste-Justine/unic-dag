@@ -17,7 +17,15 @@
         "anonymized_staturgence_recherche_location*",
         "anonymized_staturgence_recherche_pilotage",
         "anonymized_staturgence_recherche_quest_raison_visite",
-        "anonymized_staturgence_recherche_test"
+        "anonymized_staturgence_recherche_test",
+        "anonymized_staturgence_recherche_axes_cdj",
+        "anonymized_staturgence_recherche_episode_cdj",
+        "anonymized_staturgence_recherche_locationsector_cdj",
+        "anonymized_staturgence_recherche_location_cdj",
+        "anonymized_staturgence_recherche_medecin",
+        "anonymized_staturgence_recherche_patient_cdj",
+        "anonymized_staturgence_recherche_pilotage_cdj",
+        "anonymized_staturgence_recherche_rdv_cdj"
       ], "cluster_type" : "xsmall"},
       {"name": "greater_partition_counts", "destinations": [
         "anonymized_staturgence_recherche_episode",
@@ -33,17 +41,16 @@
       ], "cluster_type" : "xsmall"}
     ],
     "datasets": [
-      {"dataset_id":"anonymized_staturgence_recherche_activity"            , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_d*"                  , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_episode*"            , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_generic"             , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_location*"           , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_logtransaction"      , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_patientadt*"         , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_patientallergy"      , "cluster_type": "large" , "run_type": "initial", "pass_date": false, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_pilotage"            , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_quest_raison_visite" , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
-      {"dataset_id":"anonymized_staturgence_recherche_test"                , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []}
+      {"dataset_id":"anonymized_staturgence_recherche_a*"                 , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_d*"                 , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_episode*"           , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_generic"            , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_l*"                 , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_medecin"            , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_p*"                 , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_quest_raison_visite", "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_rdv_cdj"            , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id":"anonymized_staturgence_recherche_test"               , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []}
     ],
     "optimize" : [],
     "post_tests": [
@@ -57,7 +64,17 @@
         "anonymized_staturgence_recherche_patientadt*",
         "anonymized_staturgence_recherche_pilotage",
         "anonymized_staturgence_recherche_quest_raison_visite",
-        "anonymized_staturgence_recherche_test"
+        "anonymized_staturgence_recherche_test",
+        "anonymized_staturgence_recherche_test",
+        "anonymized_staturgence_recherche_axes_cdj",
+        "anonymized_staturgence_recherche_episode_cdj",
+        "anonymized_staturgence_recherche_locationsector_cdj",
+        "anonymized_staturgence_recherche_location_cdj",
+        "anonymized_staturgence_recherche_medecin",
+        "anonymized_staturgence_recherche_patient_cdj",
+        "anonymized_staturgence_recherche_pilotage_cdj",
+        "anonymized_staturgence_recherche_rdv_cdj"
+
       ], "cluster_type" : "xsmall"},
       {"name": "equal_counts", "destinations": [
         "anonymized_staturgence_recherche_activity",
@@ -69,7 +86,16 @@
         "anonymized_staturgence_recherche_patientadt*",
         "anonymized_staturgence_recherche_pilotage",
         "anonymized_staturgence_recherche_quest_raison_visite",
-        "anonymized_staturgence_recherche_test"
+        "anonymized_staturgence_recherche_test",
+        "anonymized_staturgence_recherche_test",
+        "anonymized_staturgence_recherche_axes_cdj",
+        "anonymized_staturgence_recherche_episode_cdj",
+        "anonymized_staturgence_recherche_locationsector_cdj",
+        "anonymized_staturgence_recherche_location_cdj",
+        "anonymized_staturgence_recherche_medecin",
+        "anonymized_staturgence_recherche_patient_cdj",
+        "anonymized_staturgence_recherche_pilotage_cdj",
+        "anonymized_staturgence_recherche_rdv_cdj"
       ], "cluster_type" : "xsmall"}
     ]
   }]
