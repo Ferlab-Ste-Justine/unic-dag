@@ -43,6 +43,7 @@ for (r, zones, _) in os.walk(DAGS_CONFIG_PATH):
                                     start_date=start_date,
                                     concurrency=config['concurrency'] if 'concurrency' in config else DEFAULT_CONCURRENCY,
                                     catchup=config['catchup'] if 'catchup' in config else False,
+                                    max_active_runs=1,
                                     tags=[subzone],
                                     dagrun_timeout=timedelta(hours=timeout_hours),
                                     is_paused_upon_creation=True,
