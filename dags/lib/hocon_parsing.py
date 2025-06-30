@@ -19,7 +19,7 @@ def greenzone_hocon_parsing(
     from airflow.exceptions import AirflowFailException, AirflowSkipException
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
-    from lib.config import MINIO_CONN_ID, SPARK_BUCKET, CONFIG_FILE
+    from lib.config import YELLOW_MINIO_CONN_ID , SPARK_BUCKET, CONFIG_FILE
     from lib.exceptions import AirflowInputParsingException, MinioFileNotFoundException
 
     if skip:
@@ -32,7 +32,7 @@ def greenzone_hocon_parsing(
 
 
     #Get S3 client
-    s3 = S3Hook(aws_conn_id=MINIO_CONN_ID)
+    s3 = S3Hook(aws_conn_id=YELLOW_MINIO_CONN_ID )
     s3_client = s3.get_conn()
 
     #Checking if the conf file exists
