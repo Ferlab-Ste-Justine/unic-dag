@@ -26,6 +26,9 @@ DEFAULT_PARAMS = {
     "version": Param("latest", type="string")
 }
 
+#Spark config
+SPARK_BUCKET = "spark-prd"
+
 # Spark jobs config
 CONFIG_FILE = "config/prod.conf"
 SPARK_FAILURE_MSG = "Spark job failed"
