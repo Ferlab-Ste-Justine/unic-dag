@@ -13,7 +13,7 @@ from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 from lib.hooks.postgresca import PostgresCaHook
 from lib.postgres import get_pg_ca_hook
-from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID, MINIO_CONN_ID
+from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID
 from lib.tasks.excel import parquet_to_excel
 
 from sql.publish import update_dict_current_version_query, get_to_be_published_query, resource_query, dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query
