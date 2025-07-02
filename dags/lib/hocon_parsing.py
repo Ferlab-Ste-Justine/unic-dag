@@ -81,13 +81,3 @@ def get_bucket_id(source_id: str, config: dict) -> str:
             return storage["path"].split("/")[2] # Extract bucket name from s3 path
 
     raise AirflowFailException(f"Storage ID {storageid} not found in configuration.")
-
-
-def get_published_sources_bucket_map(config: dict) -> dict:
-    sources = config.get("datalake.sources")
-    bucket_map = {}
-    for source in sources:
-        if source["id"].startswith("published_"):
-            bucket_map[source["id"]] = source["storageid"]
-
-    return bucket_map
