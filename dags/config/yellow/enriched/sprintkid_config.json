@@ -1,6 +1,6 @@
 {
   "concurrency": 3,
-  "start_date": "2024-03-05",
+  "start_date": "2024-02-27",
   "schedule": "0 6 * * 2",
   "catchup": true,
   "timeout_hours": 4,
