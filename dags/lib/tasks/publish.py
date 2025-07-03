@@ -13,7 +13,7 @@ from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 from lib.hooks.postgresca import PostgresCaHook
 from lib.postgres import get_pg_ca_hook
-from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID
+from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_ID
 from lib.tasks.excel import parquet_to_excel
 
 from sql.publish import update_dict_current_version_query, get_to_be_published_query, resource_query, dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query
@@ -143,7 +143,7 @@ def update_dict_current_version(dict_version: str, resource_code: str, include_d
 
 
 @task.virtualenv(requirements=["pyhocon==0.3.61"], system_site_packages=True)
-def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_id: str = "minio", bucket: str = GREEN_MINIO_CONN_ID):
+def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_id: str = YELLOW_MINIO_CONN_ID, bucket: str = PUBLISHED_BUCKET):
     from lib.hocon_parsing import parse_hocon_conf, get_bucket_id
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
