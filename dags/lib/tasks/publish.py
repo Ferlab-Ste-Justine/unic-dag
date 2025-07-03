@@ -143,9 +143,16 @@ def update_dict_current_version(dict_version: str, resource_code: str, include_d
 
 
 @task.virtualenv(requirements=["pyhocon==0.3.61"], system_site_packages=True)
-def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_id: str = YELLOW_MINIO_CONN_ID, bucket: str = PUBLISHED_BUCKET):
+def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_id: str = None, bucket: str = None):
     from lib.hocon_parsing import parse_hocon_conf, get_bucket_id
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+    from lib.config import YELLOW_MINIO_CONN_ID, PUBLISHED_BUCKET
+
+    # Set default constants if not provided
+    if minio_conn_id is None:
+        minio_conn_id = YELLOW_MINIO_CONN_ID
+    if bucket is None:
+        bucket = PUBLISHED_BUCKET
 
     s3 = S3Hook(aws_conn_id=minio_conn_id)
 
