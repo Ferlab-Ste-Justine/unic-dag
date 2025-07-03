@@ -26,11 +26,14 @@ DEFAULT_PARAMS = {
     "version": Param("latest", type="string")
 }
 
+#Spark config
+SPARK_BUCKET = "spark-prd"
+
 # Spark jobs config
 CONFIG_FILE = "config/prod.conf"
 SPARK_FAILURE_MSG = "Spark job failed"
-JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
-MASTER_JAR = 's3a://spark-prd/jars/unic-etl-master.jar'
+JAR = f's3a://{SPARK_BUCKET}/jars/unic-etl-{{ params.branch }}.jar'
+MASTER_JAR = f's3a://{SPARK_BUCKET}/jars/unic-etl-master.jar'
 DEFAULT_MULTIPLE_MAIN_METHODS = False
 V4_SUBZONES = ["raw", "curated", "released", "enriched"]  # Subzones using ETL v4
 

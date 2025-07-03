@@ -142,11 +142,16 @@ def update_dict_current_version(dict_version: str, resource_code: str, include_d
             raise AirflowFailException()
 
 
-@task
-def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_id: str = GREEN_MINIO_CONN_ID, bucket: str = PUBLISHED_BUCKET):
+@task.virtualenv(requirements=["pyhocon==0.3.61"], system_site_packages=True)
+def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_id: str = "minio", bucket: str = GREEN_MINIO_CONN_ID):
+    from lib.hocon_parsing import parse_hocon_conf, get_bucket_id
+    from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+
     s3 = S3Hook(aws_conn_id=minio_conn_id)
 
     released_path = f"released/{resource_code}/{version_to_publish}/"
+
+    config = parse_hocon_conf()
 
     table_paths = s3.list_prefixes(bucket, released_path, "/")
     list_of_kwargs = []
@@ -154,11 +159,16 @@ def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_i
         table = table_path.split("/")[-2] # Extract table name from the path, assumes the path structure is consistent
         string_version = version_to_publish.replace("-", "_")
 
+        output_bucket = get_bucket_id(
+            source_id=f"published_{resource_code}_{table}",
+            config=config
+        )
+
         list_of_kwargs.append({
             "parquet_bucket_name": bucket,
             "parquet_dir_key": f'released/{resource_code}/{version_to_publish}/{table}',
-            "excel_bucket_name": bucket,
-            "excel_output_key": f'published/{resource_code}/{version_to_publish}/{table}/{table}_{string_version}.xlsx',
+            "excel_bucket_name": output_bucket,
+            "excel_output_key": f'{version_to_publish}/{table}/{table}_{string_version}.xlsx',
             "minio_conn_id": minio_conn_id
         })
 
