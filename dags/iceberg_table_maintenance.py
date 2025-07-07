@@ -20,7 +20,8 @@ DOC = """
 ETL pour la maintenance des tables Iceberg.
 
 ### Description
-Ce DAG est utilisé pour effectuer la maintenance des tables Iceberg, notamment la supression des tables orphelines dans le catalog iceberg spécifié. 
+Ce DAG est utilisé pour effectuer la maintenance des tables Iceberg, notamment l'expiration des snapshots plus vieux que 1 jour 
+et la supression des tables orphelines dans le catalog Iceberg spécifié. 
 Il roule chaque jour a 23h00.
 
 """
@@ -58,9 +59,9 @@ with dag:
             "--catalog", catalog,
         ]
 
-    iceberg_table_maintenance = SparkOperator(
-        task_id="iceberg_table_maintenance",
-        name="iceberg-table-maintenance",
+    expire_snapshots = SparkOperator(
+        task_id="expire_snapshots",
+        name="expire-snapshots",
         arguments=arguments(get_catalog()),
         zone=ZONE,
         spark_class=MAIN_CLASS,
@@ -70,4 +71,16 @@ with dag:
         dag=dag
     )
 
-    start() >> iceberg_table_maintenance >> end()
+    delete_orphan_files = SparkOperator(
+        task_id="delete_orphan_files",
+        name="delete-orphan-files",
+        arguments=arguments(get_catalog()),
+        zone=ZONE,
+        spark_class=MAIN_CLASS,
+        spark_jar=JAR,
+        spark_failure_msg=SPARK_FAILURE_MSG,
+        spark_config="small-etl",
+        dag=dag
+    )
+
+    start() >> expire_snapshots >> delete_orphan_files >> end()
