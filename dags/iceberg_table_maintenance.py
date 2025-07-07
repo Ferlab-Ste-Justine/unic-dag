@@ -26,7 +26,9 @@ Il roule chaque jour a 23h00.
 
 """
 ZONE = "red"
-MAIN_CLASS = "bio.ferlab.ui.etl.optimization.IcebergTableMaintenance.Main"
+MAIN_CLASS = "bio.ferlab.ui.etl.optimization.iceberg.IcebergTableMaintenance.Main"
+EXPIRE_SNAPSHOTS_MAIN = "expireSnapshotsInCatalog"
+DELETE_ORPHAN_FILES_MAIN = "deleteOrphanFilesInCatalog"
 
 dag = DAG(
     dag_id="iceberg_table_maintenance",
@@ -51,8 +53,9 @@ with dag:
     def get_catalog() -> str:
         return '{{ params.catalog or "" }}'
 
-    def arguments(catalog: str) -> List[str]:
+    def arguments(main: str, catalog: str) -> List[str]:
         return [
+            main,
             "--config", "config/iceberg.conf",
             "--steps", "initial",
             "--app-name", f"iceberg_table_maintenance_{catalog}",
@@ -62,7 +65,7 @@ with dag:
     expire_snapshots = SparkOperator(
         task_id="expire_snapshots",
         name="expire-snapshots",
-        arguments=arguments(get_catalog()),
+        arguments=arguments(EXPIRE_SNAPSHOTS_MAIN, get_catalog()),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
@@ -74,7 +77,7 @@ with dag:
     delete_orphan_files = SparkOperator(
         task_id="delete_orphan_files",
         name="delete-orphan-files",
-        arguments=arguments(get_catalog()),
+        arguments=arguments(DELETE_ORPHAN_FILES_MAIN, get_catalog()),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
