@@ -219,7 +219,7 @@ def publish_dictionary(
 
     # Upload to minio
     try:
-        key = f"/{version_to_publish}/{resource_code}_dictionary_{version_to_publish.replace('-', '_')}.xlsx"
+        key = f"{version_to_publish}/{resource_code}_dictionary_{version_to_publish.replace('-', '_')}.xlsx"
         s3.load_file(local_excel_file, key=key, bucket_name=s3_destination_bucket, replace=True)
     except Exception as e:
         logging.error(f"Failed to upload Excel file {local_excel_file} to minio: {e}")
@@ -260,7 +260,6 @@ def set_publish_kwargs(resource_code: str, version_to_publish: str, config: dict
     :param resource_code: Resource code of the project to publish.
     :param version_to_publish: Version of the project to publish.
     :param config: Parsed HOCON configuration.
-    :param bucket: S3 bucket from which the data will be published, defaults to PUBLISHED_BUCKET.
     :return: List of kwargs for publishing data.
     """
 
