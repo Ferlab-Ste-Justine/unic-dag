@@ -22,13 +22,11 @@ def add_extension_to_path(path: str, output_type: FileType) -> str:
     return f"{path}{output_type.value}"
 
 def print_extracted_config(resource_code: str, version_to_publish: str, mini_config: dict) -> None:
-    # Print a nice summary of the configuration
     logging.info(f"Configuration for {resource_code} (version {version_to_publish}):")
     logging.info(f"Input bucket: {mini_config['input_bucket']}")
     logging.info(f"Has clinical data: {mini_config['has_clinical']}")
     logging.info(f"Has nominative data: {mini_config['has_nominative']}")
 
-    # Print details about each table
     logging.info("Tables to be published:")
     for source_id, source_info in mini_config['sources'].items():
         logging.info(f"  - {source_info['table']}:")
