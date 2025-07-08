@@ -15,8 +15,10 @@ from lib.hooks.postgresca import PostgresCaHook
 from lib.postgres import get_pg_ca_hook
 from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_ID
 from lib.tasks.excel import parquet_to_excel
+from lib.publish_utils import FileType, add_extension_to_path
 
 from sql.publish import update_dict_current_version_query, get_to_be_published_query, resource_query, dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query
+
 
 @task
 def get_resource_code(ti=None) -> str:
@@ -58,14 +60,105 @@ def get_release_id(ti=None) -> str:
         raise AirflowFailException(f"DAG param 'release_id' is not in the correct format. Expected format: re_xxxx where x is a digit.")
 
 
+@task.virtualenv(requirements=["pyhocon==0.3.61"], system_site_packages=True)
+def extract_config_info(
+        resource_code: str,
+        version_to_publish: str,
+        minio_conn_id: str = None,
+        bucket: str = None,
+
+) -> dict:
+    """
+    This function retrieves the necessary table names, S3 paths WITHOUT their extension,
+    and bucket IDs for publishing data. The structure of the return dictionary is as follows:
+    {
+        "sources": {
+            "source_id1": {
+                "output_bucket": <bucket_name>,
+                "output_path": <s3_path>,
+                "table": <table_name>
+            },
+            "source_id2": {
+                ...,
+            }
+        }
+        ...,
+        "has_clinical": bool - Indicates if the project has some table published in the clinical bucket. In that
+        case, the dictionary will go in the clinical bucket. Otherwise, it will go in the nominative one.
+        "has_nominative": bool - Indicates if the project has some table published in the nominative bucket.
+        "input_bucket": <bucket_name> - The bucket from which the data will be published.
+
+    }
+
+    :param resource_code: Resource code of the project to publish.
+    :param version_to_publish: Version of the project to publish.
+    :param minio_conn_id: Minio connection id, defaults to YELLOW_MINIO_CONN_ID.
+    :param bucket: S3 bucket from which the data will be published, defaults to PUBLISHED_BUCKET.
+    :returns : Dictionary containing the source IDs, input & output buckets, output paths, and table names.
+
+    """
+
+    from lib.hocon_parsing import parse_hocon_conf, get_bucket_id, get_dataset_published_path
+    from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+    from lib.config import YELLOW_MINIO_CONN_ID, PUBLISHED_BUCKET
+    from lib.publish_utils import print_extracted_config
+
+    # Set default constants if not provided
+    if minio_conn_id is None:
+        minio_conn_id = YELLOW_MINIO_CONN_ID
+    if bucket is None:
+        bucket = PUBLISHED_BUCKET
+
+
+    # Initialize the mini_config
+    mini_config = {}
+    mini_config["has_clinical"] = False
+    mini_config["has_nominative"] = False
+    mini_config["sources"] = {}
+    #Set the input bucket
+    mini_config["input_bucket"] = bucket
+
+    s3 = S3Hook(aws_conn_id=minio_conn_id)
+
+    released_path = f"released/{resource_code}/{version_to_publish}/"
+
+    config = parse_hocon_conf()
+
+    table_paths = s3.list_prefixes(bucket, released_path, "/")
+    for table_path in table_paths:
+        table = table_path.split("/")[-2]  # Extract table name from the path, assumes the path structure is consistent
+
+        #Reconstructing the source id of the table
+        source_id = f"published_{resource_code}_{table}"
+
+        output_bucket = get_bucket_id(source_id=source_id, config=config)
+
+        if "clinical" in output_bucket:
+            mini_config["has_clinical"] = True
+
+        if "nominative" in output_bucket:
+            mini_config["has_nominative"] = True
+
+        output_path = get_dataset_published_path(source_id = source_id, config=config).replace("{{version}}", version_to_publish)
+
+        mini_config["sources"][source_id] = {
+            "output_bucket": output_bucket,
+            "output_path": output_path,
+            "table": table,
+            "minio_conn_id": minio_conn_id
+        }
+    print_extracted_config(resource_code, version_to_publish, mini_config)
+    return mini_config
+
+
 @task(task_id="publish_dictionary",)
 def publish_dictionary(
         resource_code: str,
         version_to_publish: str,
         include_dictionary: bool,
         pg_conn_id: str,
-        s3_destination_bucket: str = PUBLISHED_BUCKET,
-        minio_conn_id: str = GREEN_MINIO_CONN_ID) -> None:
+        config: dict,
+        minio_conn_id: str = YELLOW_MINIO_CONN_ID) -> None:
     """
     Publish research project dictionary.
 
@@ -73,12 +166,28 @@ def publish_dictionary(
     :param version_to_publish: version of project to publish.
     :param include_dictionary: Specify if the dictionary should be included.
     :param pg_conn_id: Postgres connection id.
-    :param s3_destination_bucket: published bucket name.
+    :param config: Relevant info of this resource_code extracted from the hocon config and input minio path.
     :param minio_conn_id: Minio connection id.
     :return: None
     """
+
     if not include_dictionary:
         raise AirflowSkipException()
+
+    ## Retrieve the bucket list from the config
+    clinical_bucket_name = f"published-clinical-{resource_code}"
+    nominative_bucket_name = f"published-nominative-{resource_code}"
+
+    s3_destination_bucket = None
+
+    if config["has_clinical"]:
+        s3_destination_bucket = clinical_bucket_name
+    if (not config["has_clinical"]) and config["has_nominative"] :
+        s3_destination_bucket = nominative_bucket_name
+
+    # At least one bucket must be present always
+    if not s3_destination_bucket:
+        raise AirflowFailException(f"The project {resource_code} does not have any table published in clinical or nominative buckets. Please check the config file.")
 
     # define connection vars
     s3 = S3Hook(aws_conn_id=minio_conn_id)
@@ -109,7 +218,7 @@ def publish_dictionary(
 
     # Upload to minio
     try:
-        key = f"published/{resource_code}/{version_to_publish}/{resource_code}_dictionary_{version_to_publish.replace('-', '_')}.xlsx"
+        key = f"/{version_to_publish}/{resource_code}_dictionary_{version_to_publish.replace('-', '_')}.xlsx"
         s3.load_file(local_excel_file, key=key, bucket_name=s3_destination_bucket, replace=True)
     except Exception as e:
         logging.error(f"Failed to upload Excel file {local_excel_file} to minio: {e}")
@@ -142,41 +251,28 @@ def update_dict_current_version(dict_version: str, resource_code: str, include_d
             raise AirflowFailException()
 
 
-@task.virtualenv(requirements=["pyhocon==0.3.61"], system_site_packages=True)
-def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_id: str = None, bucket: str = None):
-    from lib.hocon_parsing import parse_hocon_conf, get_bucket_id
-    from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-    from lib.config import YELLOW_MINIO_CONN_ID, PUBLISHED_BUCKET
+@task
+def set_publish_kwargs(resource_code: str, version_to_publish: str, config: dict) -> list:
+    """
+    Get kwargs for publishing data to Excel.
 
-    # Set default constants if not provided
-    if minio_conn_id is None:
-        minio_conn_id = YELLOW_MINIO_CONN_ID
-    if bucket is None:
-        bucket = PUBLISHED_BUCKET
+    :param resource_code: Resource code of the project to publish.
+    :param version_to_publish: Version of the project to publish.
+    :param config: Parsed HOCON configuration.
+    :param bucket: S3 bucket from which the data will be published, defaults to PUBLISHED_BUCKET.
+    :return: List of kwargs for publishing data.
+    """
 
-    s3 = S3Hook(aws_conn_id=minio_conn_id)
-
-    released_path = f"released/{resource_code}/{version_to_publish}/"
-
-    config = parse_hocon_conf()
-
-    table_paths = s3.list_prefixes(bucket, released_path, "/")
     list_of_kwargs = []
-    for table_path in table_paths:
-        table = table_path.split("/")[-2] # Extract table name from the path, assumes the path structure is consistent
-        string_version = version_to_publish.replace("-", "_")
-
-        output_bucket = get_bucket_id(
-            source_id=f"published_{resource_code}_{table}",
-            config=config
-        )
+    for (source_id, source_info) in config["sources"].items():
+        table = source_info["table"]
 
         list_of_kwargs.append({
-            "parquet_bucket_name": bucket,
+            "parquet_bucket_name": config["input_bucket"],
             "parquet_dir_key": f'released/{resource_code}/{version_to_publish}/{table}',
-            "excel_bucket_name": output_bucket,
-            "excel_output_key": f'{version_to_publish}/{table}/{table}_{string_version}.xlsx',
-            "minio_conn_id": minio_conn_id
+            "excel_bucket_name": source_info["output_bucket"],
+            "excel_output_key": add_extension_to_path(source_info["output_path"], FileType.EXCEL),
+            "minio_conn_id": source_info["minio_conn_id"],
         })
 
     return list_of_kwargs
