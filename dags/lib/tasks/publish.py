@@ -147,7 +147,8 @@ def extract_config_info(
             "table": table,
             "minio_conn_id": minio_conn_id
         }
-    print_extracted_config(resource_code, version_to_publish, mini_config)
+    # Uncomment to print the extracted configuration
+    #print_extracted_config(resource_code, version_to_publish, mini_config)
     return mini_config
 
 
