@@ -52,7 +52,7 @@ def parse_hocon_conf(
     return config
 
 
-def get_bucket_id(source_id: str, config: dict) -> str:
+def get_bucket_name(source_id: str, config: dict) -> str:
     """
     Get the bucket id for a given source id from the Spark HOCON configuration.
 
@@ -81,3 +81,26 @@ def get_bucket_id(source_id: str, config: dict) -> str:
             return storage["path"].split("/")[2] # Extract bucket name from s3 path
 
     raise AirflowFailException(f"Storage ID {storageid} not found in configuration.")
+
+def get_dataset_published_path(
+        source_id: str,
+        config: dict
+) -> str:
+    """
+    Get the published path for a dataset from the Spark HOCON configuration.
+    The path comes without the extension for the output file.
+
+    :param source_id: The dataset ID to look up.
+    :param config: The parsed HOCON configuration.
+    :return: The published path associated with the dataset ID.
+    """
+    # Imports made inside function due to using PythonVirtualenvOperator
+    from airflow.exceptions import AirflowFailException
+
+    sources = config.get("datalake.sources")
+
+    for source in sources:
+        if source["id"] == source_id:
+            return source["path"]
+
+    raise AirflowFailException(f"Dataset ID {source_id} not found in configuration.")
