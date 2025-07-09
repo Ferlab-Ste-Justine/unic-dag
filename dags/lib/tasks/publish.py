@@ -98,7 +98,7 @@ def extract_config_info(
 
     """
 
-    from lib.hocon_parsing import parse_hocon_conf, get_bucket_id, get_dataset_published_path
+    from lib.hocon_parsing import parse_hocon_conf, get_bucket_name, get_dataset_published_path
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
     from lib.config import YELLOW_MINIO_CONN_ID, PUBLISHED_BUCKET
     from lib.publish_utils import print_extracted_config
@@ -131,7 +131,7 @@ def extract_config_info(
         #Reconstructing the source id of the table
         source_id = f"published_{resource_code}_{table}"
 
-        output_bucket = get_bucket_id(source_id=source_id, config=config)
+        output_bucket = get_bucket_name(source_id=source_id, config=config)
 
         if "clinical" in output_bucket:
             mini_config["has_clinical"] = True
@@ -145,7 +145,6 @@ def extract_config_info(
             "output_bucket": output_bucket,
             "output_path": output_path,
             "table": table,
-            "minio_conn_id": minio_conn_id
         }
     # Uncomment to print the extracted configuration
     #print_extracted_config(resource_code, version_to_publish, mini_config)
@@ -253,15 +252,20 @@ def update_dict_current_version(dict_version: str, resource_code: str, include_d
 
 
 @task
-def set_publish_kwargs(resource_code: str, version_to_publish: str, config: dict) -> list:
+def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_id: str, config: dict) -> list:
     """
     Get kwargs for publishing data to Excel.
 
     :param resource_code: Resource code of the project to publish.
     :param version_to_publish: Version of the project to publish.
+    :param minio_conn_id: Minio connection id, defaults to YELLOW_MINIO_CONN_ID.
     :param config: Parsed HOCON configuration.
     :return: List of kwargs for publishing data.
     """
+
+    # Set default constants if not provided
+    if minio_conn_id is None:
+        minio_conn_id = YELLOW_MINIO_CONN_ID
 
     list_of_kwargs = []
     for (source_id, source_info) in config["sources"].items():
@@ -272,7 +276,7 @@ def set_publish_kwargs(resource_code: str, version_to_publish: str, config: dict
             "parquet_dir_key": f'released/{resource_code}/{version_to_publish}/{table}',
             "excel_bucket_name": source_info["output_bucket"],
             "excel_output_key": add_extension_to_path(source_info["output_path"], FileType.EXCEL),
-            "minio_conn_id": source_info["minio_conn_id"],
+            "minio_conn_id": minio_conn_id,
         })
 
     return list_of_kwargs

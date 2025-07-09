@@ -1,7 +1,5 @@
-from enum import Enum
 import logging
-
-from airflow.exceptions import AirflowFailException
+from enum import Enum
 
 
 class FileType(Enum):
@@ -10,6 +8,7 @@ class FileType(Enum):
     """
     EXCEL = ".xlsx"
     PARQUET = ".parquet"
+
 
 def add_extension_to_path(path: str, output_type: FileType) -> str:
     """
@@ -20,6 +19,7 @@ def add_extension_to_path(path: str, output_type: FileType) -> str:
     :param output_type: The type of output, which determines the extension to append.
     """
     return f"{path}{output_type.value}"
+
 
 def print_extracted_config(resource_code: str, version_to_publish: str, mini_config: dict) -> None:
     logging.info(f"Configuration for {resource_code} (version {version_to_publish}):")

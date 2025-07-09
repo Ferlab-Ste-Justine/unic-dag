@@ -52,7 +52,7 @@ def parse_hocon_conf(
     return config
 
 
-def get_bucket_id(source_id: str, config: dict) -> str:
+def get_bucket_name(source_id: str, config: dict) -> str:
     """
     Get the bucket id for a given source id from the Spark HOCON configuration.
 
