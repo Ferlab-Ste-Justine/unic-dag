@@ -26,14 +26,14 @@ Il roule chaque jour a 23h00.
 
 """
 ZONE = "red"
-MAIN_CLASS = "bio.ferlab.ui.etl.optimization.iceberg.IcebergTableMaintenance.Main"
+MAIN_CLASS = "bio.ferlab.ui.etl.optimization.iceberg.IcebergTableMaintenance"
 EXPIRE_SNAPSHOTS_MAIN = "expireSnapshotsInCatalog"
 DELETE_ORPHAN_FILES_MAIN = "deleteOrphanFilesInCatalog"
 
 dag = DAG(
     dag_id="iceberg_table_maintenance",
     doc_md=DOC,
-    start_date=datetime(2025, 6, 10, 23, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2025, 7 , 9, 23, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),
     params={
         "branch": Param("master", type="string"),
