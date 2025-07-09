@@ -33,7 +33,7 @@ DELETE_ORPHAN_FILES_MAIN = "deleteOrphanFilesInCatalog"
 dag = DAG(
     dag_id="iceberg_table_maintenance",
     doc_md=DOC,
-    start_date=datetime(2025, 7 , 9, 23, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2025, 7 , 8, 23, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),
     params={
         "branch": Param("master", type="string"),
