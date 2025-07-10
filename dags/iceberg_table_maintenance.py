@@ -59,7 +59,7 @@ with dag:
             "--config", "config/iceberg.conf",
             "--steps", "initial",
             "--app-name", f"iceberg_table_maintenance_{catalog}",
-            "--catalog", catalog,
+            "--iceberg-catalog", catalog,
         ]
 
     expire_snapshots = SparkOperator(
