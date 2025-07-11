@@ -2,7 +2,7 @@
 Iceberg Table Maintenance DAG
 """
 # pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
-from datetime import datetime, timedelta
+# onfrom datetime import datetime, timedelta
 from typing import List
 
 import pendulum
@@ -11,7 +11,7 @@ from airflow.models import Param
 
 from lib.config import DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
 from lib.operators.spark import SparkOperator
-from lib.slack import Slack
+# from lib.slack import Slack
 from lib.tasks.notify import end, start
 
 DOC = """
