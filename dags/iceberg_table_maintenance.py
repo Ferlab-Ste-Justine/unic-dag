@@ -2,7 +2,7 @@
 Iceberg Table Maintenance DAG
 """
 # pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
-# onfrom datetime import datetime, timedelta
+from datetime import datetime, timedelta
 from typing import List
 
 import pendulum
