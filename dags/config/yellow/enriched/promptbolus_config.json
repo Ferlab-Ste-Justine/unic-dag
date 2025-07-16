@@ -31,11 +31,8 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "datasets": [
-        {"dataset_id":"published_promptbolus_antibiotics_received", "pass_date": true, "dependencies": []},
-        {"dataset_id":"published_promptbolus_bolus_received"      , "pass_date": true, "dependencies": []},
-        {"dataset_id":"published_promptbolus_patients"            , "pass_date": true, "dependencies": []}
-      ]
+      "pass_date": true,
+      "include_dictionary": true
     }
   ]
 }
