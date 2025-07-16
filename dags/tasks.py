@@ -223,16 +223,11 @@ def create_tasks(dag: DAG,
                     dataset_id = conf['dataset_id']
                     pass_date = conf['pass_date']
 
-                    # When no main class is defined for published tasks, we create a Python task to publish Excel files
-                    if subzone == "published" and not main_class:
-                        job = _create_publish_excel_task(dataset_id, resource, pass_date, skip_task)
-
                     # For all other tasks, we create a SparkOperator task
-                    else:
-                        run_type = conf['run_type']
-                        cluster_type = conf['cluster_type']
-                        job = _create_spark_task(dataset_id, zone, subzone, run_type, pass_date, cluster_type, config_file,
-                                                 jar, dag, main_class, multiple_main_methods, spark_failure_msg, skip_task)
+                    run_type = conf['run_type']
+                    cluster_type = conf['cluster_type']
+                    job = _create_spark_task(dataset_id, zone, subzone, run_type, pass_date, cluster_type, config_file,
+                                             jar, dag, main_class, multiple_main_methods, spark_failure_msg, skip_task)
 
                     all_dependencies.extend(conf['dependencies'])
                     jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
