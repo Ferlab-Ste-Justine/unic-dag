@@ -5,6 +5,7 @@ Create tasks for a DAG from a JSON configuration file.
 from typing import Optional
 
 from airflow import DAG
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.utils.task_group import TaskGroup
 
 from lib.config import RELEASED_BUCKET, RELEASED_PREFIX, DATE, PUBLISHED_BUCKET, PUBLISHED_PREFIX, UNDERSCORE_DATE, \
@@ -207,41 +208,58 @@ def create_tasks(dag: DAG,
             if optimize_tables:
                 optimize_task = optimize(optimize_tables, resource, zone, subzone, config_file, jar, dag)
 
-            for conf in step_config['datasets']:
-                dataset_id = conf['dataset_id']
-                pass_date = conf['pass_date']
+            if subzone == "published":
+                publish_dag = TriggerDagRunOperator(
+                    task_id=f"trigger_publish_{resource}",
+                    trigger_dag_id = "unic_publish_project_prod",
+                    conf = {
+                        'resource_code': resource,
+                        'version_to_publish': _get_version(pass_date=step_config.get('pass_date', False), underscore=False),
+                        'include_dictionary': step_config.get('include_dictionary', True),
+                        'release_id': "",
+                        'run_index': False
+                    },
+                    wait_for_completion=True, #Wait for the triggered DAG to complete before continuing
+                    poke_interval=15 #Check the status of the triggered DAG every 15 seconds
+                )
 
-                # When no main class is defined for published tasks, we create a Python task to publish Excel files
-                if subzone == "published" and not main_class:
-                    job = _create_publish_excel_task(dataset_id, resource, pass_date, skip_task)
+                start >> publish_dag >> end
+            else:
+                for conf in step_config['datasets']:
+                    dataset_id = conf['dataset_id']
+                    pass_date = conf['pass_date']
 
-                # For all other tasks, we create a SparkOperator task
-                else:
-                    run_type = conf['run_type']
-                    cluster_type = conf['cluster_type']
-                    job = _create_spark_task(dataset_id, zone, subzone, run_type, pass_date, cluster_type, config_file,
-                                             jar, dag, main_class, multiple_main_methods, spark_failure_msg, skip_task)
+                    # When no main class is defined for published tasks, we create a Python task to publish Excel files
+                    if subzone == "published" and not main_class:
+                        job = _create_publish_excel_task(dataset_id, resource, pass_date, skip_task)
 
-                all_dependencies.extend(conf['dependencies'])
-                jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
-
-            for dataset_id, job in jobs.items():
-                for dependency in job['dependencies']:
-                    jobs[dependency]['job'] >> job['job']
-                if len(job['dependencies']) == 0:
-                    if pre_tests:
-                        pre_test_sub_group >> start >> job['job']
+                    # For all other tasks, we create a SparkOperator task
                     else:
-                        start >> job['job']
-                if dataset_id not in all_dependencies:
-                    if post_tests and optimize_tables:
-                        job['job'] >> optimize_task >> end >> post_test_sub_group
-                    elif not post_tests and optimize_tables:
-                        job['job'] >> optimize_task >> end
-                    elif post_tests and not optimize_tables:
-                        job['job'] >> end >> post_test_sub_group
-                    else:
-                        job['job'] >> end
+                        run_type = conf['run_type']
+                        cluster_type = conf['cluster_type']
+                        job = _create_spark_task(dataset_id, zone, subzone, run_type, pass_date, cluster_type, config_file,
+                                                 jar, dag, main_class, multiple_main_methods, spark_failure_msg, skip_task)
+
+                    all_dependencies.extend(conf['dependencies'])
+                    jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
+
+                for dataset_id, job in jobs.items():
+                    for dependency in job['dependencies']:
+                        jobs[dependency]['job'] >> job['job']
+                    if len(job['dependencies']) == 0:
+                        if pre_tests:
+                            pre_test_sub_group >> start >> job['job']
+                        else:
+                            start >> job['job']
+                    if dataset_id not in all_dependencies:
+                        if post_tests and optimize_tables:
+                            job['job'] >> optimize_task >> end >> post_test_sub_group
+                        elif not post_tests and optimize_tables:
+                            job['job'] >> optimize_task >> end
+                        elif post_tests and not optimize_tables:
+                            job['job'] >> end >> post_test_sub_group
+                        else:
+                            job['job'] >> end
 
             groups.append(subzone_group)
 

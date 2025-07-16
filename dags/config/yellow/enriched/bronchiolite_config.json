@@ -61,26 +61,8 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "datasets": [
-        {"dataset_id":"published_bronchiolite_consultation_complication"   , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_consultation_other"          , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_culture_results"             , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_episode_of_care_emergency"   , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_episode_of_care_wards"       , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_follow_up_diagnosis"         , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_follow_up"                   , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_imaging"                     , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_laboratory_results"          , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_medication_emergency"        , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_medication_wards"            , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_patient"                     , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_patient_diagnosis"           , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_respiratory_care"            , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_wards_episode_physician"     , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_wards_consultation_physician", "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_wards_intervention_physician", "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_bronchiolite_wards_service_physician"     , "pass_date": false, "dependencies": []}
-      ]
+      "pass_date": true,
+      "include_dictionary": true
     }
   ]
 }

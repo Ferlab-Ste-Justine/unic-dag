@@ -30,6 +30,7 @@ def get_resource_code(ti=None) -> str:
     else:
         return resource_code
 
+
 @task
 def get_version_to_publish(ti=None) -> str:
     dag_run: DagRun = ti.dag_run
@@ -46,6 +47,22 @@ def get_version_to_publish(ti=None) -> str:
 def get_include_dictionary(ti=None) -> bool:
     dag_run: DagRun = ti.dag_run
     return dag_run.conf['include_dictionary']
+
+
+@task
+def get_run_index(ti=None) -> bool:
+    dag_run: DagRun = ti.dag_run
+    return dag_run.conf['run_index']
+
+
+@task.short_circuit
+def check_run_index(run_index: bool) -> bool:
+    """
+    ShortCircuitOperator task that skips all tasks downstream if run_index is False.
+    :param run_index: DAG param 'run_index' to determine if the OpenSearch indexing should run.
+    """
+    return run_index
+
 
 @task
 def get_release_id(ti=None) -> str:
@@ -109,13 +126,12 @@ def extract_config_info(
     if bucket is None:
         bucket = PUBLISHED_BUCKET
 
-
     # Initialize the mini_config
     mini_config = {}
     mini_config["has_clinical"] = False
     mini_config["has_nominative"] = False
     mini_config["sources"] = {}
-    #Set the input bucket
+    # Set the input bucket
     mini_config["input_bucket"] = bucket
 
     s3 = S3Hook(aws_conn_id=minio_conn_id)
@@ -128,7 +144,7 @@ def extract_config_info(
     for table_path in table_paths:
         table = table_path.split("/")[-2]  # Extract table name from the path, assumes the path structure is consistent
 
-        #Reconstructing the source id of the table
+        # Reconstructing the source id of the table
         source_id = f"published_{resource_code}_{table}"
 
         output_bucket = get_bucket_name(source_id=source_id, config=config)
@@ -151,7 +167,7 @@ def extract_config_info(
     return mini_config
 
 
-@task(task_id="publish_dictionary",)
+@task(task_id="publish_dictionary")
 def publish_dictionary(
         resource_code: str,
         version_to_publish: str,
@@ -182,7 +198,7 @@ def publish_dictionary(
 
     if config["has_clinical"]:
         s3_destination_bucket = clinical_bucket_name
-    if (not config["has_clinical"]) and config["has_nominative"] :
+    if (not config["has_clinical"]) and config["has_nominative"]:
         s3_destination_bucket = nominative_bucket_name
 
     # At least one bucket must be present always
@@ -281,6 +297,7 @@ def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_i
 
     return list_of_kwargs
 
+
 def get_to_be_published(resource_code: str, pg_conn_id: str) -> bool:
     """
     Get value of to_be_published for given resource code.
@@ -299,6 +316,7 @@ def get_to_be_published(resource_code: str, pg_conn_id: str) -> bool:
         except Exception as e:
             logging.error(f"Failed to retrive to_be_published for {resource_code}: {e}")
             raise AirflowFailException()
+
 
 def validate_to_be_published(resource_code: str, pg_conn_id) -> ShortCircuitOperator:
     """
