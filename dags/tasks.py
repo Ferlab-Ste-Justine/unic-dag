@@ -5,7 +5,6 @@ Create tasks for a DAG from a JSON configuration file.
 from typing import Optional
 
 from airflow import DAG
-from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.utils.task_group import TaskGroup
 
 from lib.config import RELEASED_BUCKET, RELEASED_PREFIX, DATE, PUBLISHED_BUCKET, PUBLISHED_PREFIX, UNDERSCORE_DATE, \
