@@ -9,10 +9,11 @@ from airflow.decorators import task
 from airflow.exceptions import AirflowFailException, AirflowSkipException
 from airflow.models import DagRun
 from airflow.operators.python import ShortCircuitOperator
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 from lib.hooks.postgresca import PostgresCaHook
-from lib.postgres import get_pg_ca_hook
+from lib.postgres import get_pg_ca_hook, PostgresEnv
 from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_ID
 from lib.tasks.excel import parquet_to_excel
 from lib.publish_utils import FileType, add_extension_to_path
@@ -296,6 +297,40 @@ def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_i
         })
 
     return list_of_kwargs
+
+def trigger_publish_dag(
+        resource_code: str,
+        version_to_publish: str,
+        include_dictionary: bool = True,
+        run_index: bool = False,
+        release_id: str = "",
+        env : PostgresEnv = PostgresEnv.PROD) -> TriggerDagRunOperator:
+    """
+    Trigger the publish DAG with the given parameters.
+
+    :param resource_code: Resource code of the project to publish.
+    :param version_to_publish: Version of the project to publish.
+    :param include_dictionary: Specify if the dictionary should be included, True by default.
+    :param run_index: Boolean that sets whether the OpenSearch indexing runs or not, False by default.
+    :param release_id: Release id of OpenSearch index.
+    :param env: Postgres environment to use for the DAG, default of "prod"
+    :return: TriggerDagRunOperator
+    """
+    return TriggerDagRunOperator(
+        task_id = f"trigger_publish_{resource_code}",
+        trigger_dag_id = f"unic_publish_project_{env.value}",
+        conf={
+            "resource_code": resource_code,
+            "version_to_publish": version_to_publish,
+            "include_dictionary": include_dictionary,
+            "run_index": run_index,
+            "release_id": release_id
+        },
+        wait_for_completion=True, # Wait for the triggered DAG to complete before continuing
+        poke_interval=60, # Check the status of the triggered DAG every 60 seconds.
+        failed_states= ["failed"], # The default failed_states is None, thus provide "failed" as a failed state to check against.
+        retries= 3,  # Number of retries if the trigger fails
+)
 
 
 def get_to_be_published(resource_code: str, pg_conn_id: str) -> bool:

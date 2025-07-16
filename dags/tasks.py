@@ -15,6 +15,7 @@ from lib.operators.spark import SparkOperator
 from lib.tasks import notify
 from lib.tasks.excel import parquet_to_excel
 from lib.tasks.optimize import optimize
+from lib.tasks.publish import trigger_publish_dag
 from lib.utils import sanitize_string, extract_table_name
 
 
@@ -208,19 +209,12 @@ def create_tasks(dag: DAG,
             if optimize_tables:
                 optimize_task = optimize(optimize_tables, resource, zone, subzone, config_file, jar, dag)
 
-            if subzone == "published":
-                publish_dag = TriggerDagRunOperator(
-                    task_id=f"trigger_publish_{resource}",
-                    trigger_dag_id = "unic_publish_project_prod",
-                    conf = {
-                        'resource_code': resource,
-                        'version_to_publish': _get_version(pass_date=step_config.get('pass_date', False), underscore=False),
-                        'include_dictionary': step_config.get('include_dictionary', True),
-                        'release_id': "",
-                        'run_index': False
-                    },
-                    wait_for_completion=True, #Wait for the triggered DAG to complete before continuing
-                    poke_interval=15 #Check the status of the triggered DAG every 15 seconds
+            if subzone == "published" and not main_class:
+                # By default, if pass_date is not specified, we assume it is False, as most projects do have it as False
+                publish_dag = trigger_publish_dag(
+                    resource_code= resource,
+                    version_to_publish= _get_version(pass_date=step_config.get('pass_date', False), underscore=False),
+                    include_dictionary= step_config.get('include_dictionary', True),
                 )
 
                 start >> publish_dag >> end
