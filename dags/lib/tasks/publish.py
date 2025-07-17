@@ -319,15 +319,15 @@ def trigger_publish_dag(
     return TriggerDagRunOperator(
         task_id = f"trigger_publish_{resource_code}",
         trigger_dag_id = f"unic_publish_project_{env.value}",
-        conf={
+        conf= {
             "resource_code": resource_code,
             "version_to_publish": version_to_publish,
             "include_dictionary": include_dictionary,
             "run_index": run_index,
             "release_id": release_id
         },
-        wait_for_completion=True, # Wait for the triggered DAG to complete before continuing
-        poke_interval=60, # Check the status of the triggered DAG every 60 seconds.
+        wait_for_completion= True, # Wait for the triggered DAG to complete before continuing
+        poke_interval= 60, # Check the status of the triggered DAG every 60 seconds.
         failed_states= ["failed"], # The default failed_states is None, thus provide "failed" as a failed state to check against.
         retries= 3,  # Number of retries if the trigger fails
 )

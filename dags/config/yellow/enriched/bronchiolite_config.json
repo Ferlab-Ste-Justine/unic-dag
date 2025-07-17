@@ -61,7 +61,7 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "pass_date": true,
+      "pass_date": false,
       "include_dictionary": true
     }
   ]
