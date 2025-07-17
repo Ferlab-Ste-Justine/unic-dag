@@ -69,8 +69,6 @@ for env in PostgresEnv:
         get_include_dictionary_task = get_include_dictionary()
         get_run_index_task = get_run_index()
 
-        end_task = end(task_id= "end_unic_publish_project")
-
         # ShortCircuitOperator that skips the indexing task if run_index is False
         check_run_index_task = check_run_index(get_run_index_task)
 
@@ -91,4 +89,4 @@ for env in PostgresEnv:
             os_env_name=pg_env_os_env_mapping.get(env).value,
             dag=dag
         ) \
-        >> end_task
+        >> end(task_id= "end_unic_publish_project")
