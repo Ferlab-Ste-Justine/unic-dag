@@ -14,6 +14,7 @@ from lib.operators.spark import SparkOperator
 from lib.tasks import notify
 from lib.tasks.excel import parquet_to_excel
 from lib.tasks.optimize import optimize
+from lib.tasks.publish import trigger_publish_dag
 from lib.utils import sanitize_string, extract_table_name
 
 
@@ -207,41 +208,46 @@ def create_tasks(dag: DAG,
             if optimize_tables:
                 optimize_task = optimize(optimize_tables, resource, zone, subzone, config_file, jar, dag)
 
-            for conf in step_config['datasets']:
-                dataset_id = conf['dataset_id']
-                pass_date = conf['pass_date']
+            if subzone == "published" and not main_class:
+                # By default, if pass_date is not specified, we assume it is False, as most projects do have it as False
+                publish_dag = trigger_publish_dag(
+                    resource_code= resource,
+                    version_to_publish= _get_version(pass_date=step_config.get('pass_date', False), underscore=False),
+                    include_dictionary= step_config.get('include_dictionary', True),
+                )
 
-                # When no main class is defined for published tasks, we create a Python task to publish Excel files
-                if subzone == "published" and not main_class:
-                    job = _create_publish_excel_task(dataset_id, resource, pass_date, skip_task)
+                start >> publish_dag >> end
+            else:
+                for conf in step_config['datasets']:
+                    dataset_id = conf['dataset_id']
+                    pass_date = conf['pass_date']
 
-                # For all other tasks, we create a SparkOperator task
-                else:
+                    # For all other tasks, we create a SparkOperator task
                     run_type = conf['run_type']
                     cluster_type = conf['cluster_type']
                     job = _create_spark_task(dataset_id, zone, subzone, run_type, pass_date, cluster_type, config_file,
                                              jar, dag, main_class, multiple_main_methods, spark_failure_msg, skip_task)
 
-                all_dependencies.extend(conf['dependencies'])
-                jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
+                    all_dependencies.extend(conf['dependencies'])
+                    jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
 
-            for dataset_id, job in jobs.items():
-                for dependency in job['dependencies']:
-                    jobs[dependency]['job'] >> job['job']
-                if len(job['dependencies']) == 0:
-                    if pre_tests:
-                        pre_test_sub_group >> start >> job['job']
-                    else:
-                        start >> job['job']
-                if dataset_id not in all_dependencies:
-                    if post_tests and optimize_tables:
-                        job['job'] >> optimize_task >> end >> post_test_sub_group
-                    elif not post_tests and optimize_tables:
-                        job['job'] >> optimize_task >> end
-                    elif post_tests and not optimize_tables:
-                        job['job'] >> end >> post_test_sub_group
-                    else:
-                        job['job'] >> end
+                for dataset_id, job in jobs.items():
+                    for dependency in job['dependencies']:
+                        jobs[dependency]['job'] >> job['job']
+                    if len(job['dependencies']) == 0:
+                        if pre_tests:
+                            pre_test_sub_group >> start >> job['job']
+                        else:
+                            start >> job['job']
+                    if dataset_id not in all_dependencies:
+                        if post_tests and optimize_tables:
+                            job['job'] >> optimize_task >> end >> post_test_sub_group
+                        elif not post_tests and optimize_tables:
+                            job['job'] >> optimize_task >> end
+                        elif post_tests and not optimize_tables:
+                            job['job'] >> end >> post_test_sub_group
+                        else:
+                            job['job'] >> end
 
             groups.append(subzone_group)
 

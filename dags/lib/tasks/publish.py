@@ -9,10 +9,11 @@ from airflow.decorators import task
 from airflow.exceptions import AirflowFailException, AirflowSkipException
 from airflow.models import DagRun
 from airflow.operators.python import ShortCircuitOperator
+from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 from lib.hooks.postgresca import PostgresCaHook
-from lib.postgres import get_pg_ca_hook
+from lib.postgres import get_pg_ca_hook, PostgresEnv
 from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_ID
 from lib.tasks.excel import parquet_to_excel
 from lib.publish_utils import FileType, add_extension_to_path
@@ -30,6 +31,7 @@ def get_resource_code(ti=None) -> str:
     else:
         return resource_code
 
+
 @task
 def get_version_to_publish(ti=None) -> str:
     dag_run: DagRun = ti.dag_run
@@ -46,6 +48,22 @@ def get_version_to_publish(ti=None) -> str:
 def get_include_dictionary(ti=None) -> bool:
     dag_run: DagRun = ti.dag_run
     return dag_run.conf['include_dictionary']
+
+
+@task
+def get_run_index(ti=None) -> bool:
+    dag_run: DagRun = ti.dag_run
+    return dag_run.conf['run_index']
+
+
+@task.short_circuit
+def check_run_index(run_index: bool) -> bool:
+    """
+    ShortCircuitOperator task that skips all tasks downstream if run_index is False.
+    :param run_index: DAG param 'run_index' to determine if the OpenSearch indexing should run.
+    """
+    return run_index
+
 
 @task
 def get_release_id(ti=None) -> str:
@@ -109,13 +127,12 @@ def extract_config_info(
     if bucket is None:
         bucket = PUBLISHED_BUCKET
 
-
     # Initialize the mini_config
     mini_config = {}
     mini_config["has_clinical"] = False
     mini_config["has_nominative"] = False
     mini_config["sources"] = {}
-    #Set the input bucket
+    # Set the input bucket
     mini_config["input_bucket"] = bucket
 
     s3 = S3Hook(aws_conn_id=minio_conn_id)
@@ -128,7 +145,7 @@ def extract_config_info(
     for table_path in table_paths:
         table = table_path.split("/")[-2]  # Extract table name from the path, assumes the path structure is consistent
 
-        #Reconstructing the source id of the table
+        # Reconstructing the source id of the table
         source_id = f"published_{resource_code}_{table}"
 
         output_bucket = get_bucket_name(source_id=source_id, config=config)
@@ -151,7 +168,7 @@ def extract_config_info(
     return mini_config
 
 
-@task(task_id="publish_dictionary",)
+@task(task_id="publish_dictionary")
 def publish_dictionary(
         resource_code: str,
         version_to_publish: str,
@@ -182,7 +199,7 @@ def publish_dictionary(
 
     if config["has_clinical"]:
         s3_destination_bucket = clinical_bucket_name
-    if (not config["has_clinical"]) and config["has_nominative"] :
+    if (not config["has_clinical"]) and config["has_nominative"]:
         s3_destination_bucket = nominative_bucket_name
 
     # At least one bucket must be present always
@@ -281,6 +298,41 @@ def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_i
 
     return list_of_kwargs
 
+def trigger_publish_dag(
+        resource_code: str,
+        version_to_publish: str,
+        include_dictionary: bool = True,
+        run_index: bool = False,
+        release_id: str = "",
+        env : PostgresEnv = PostgresEnv.PROD) -> TriggerDagRunOperator:
+    """
+    Trigger the publish DAG with the given parameters.
+
+    :param resource_code: Resource code of the project to publish.
+    :param version_to_publish: Version of the project to publish.
+    :param include_dictionary: Specify if the dictionary should be included, True by default.
+    :param run_index: Boolean that sets whether the OpenSearch indexing runs or not, False by default.
+    :param release_id: Release id of OpenSearch index.
+    :param env: Postgres environment to use for the DAG, default of "prod"
+    :return: TriggerDagRunOperator
+    """
+    return TriggerDagRunOperator(
+        task_id = f"trigger_publish_{resource_code}",
+        trigger_dag_id = f"unic_publish_project_{env.value}",
+        conf = {
+            "resource_code": resource_code,
+            "version_to_publish": version_to_publish,
+            "include_dictionary": include_dictionary,
+            "run_index": run_index,
+            "release_id": release_id
+        },
+        wait_for_completion = True, # Wait for the triggered DAG to complete before continuing
+        poke_interval = 60, # Check the status of the triggered DAG every 60 seconds.
+        failed_states = ["failed"], # The default failed_states is None, thus provide "failed" as a failed state to check against.
+        retries = 3,  # Number of retries if the trigger fails
+)
+
+
 def get_to_be_published(resource_code: str, pg_conn_id: str) -> bool:
     """
     Get value of to_be_published for given resource code.
@@ -299,6 +351,7 @@ def get_to_be_published(resource_code: str, pg_conn_id: str) -> bool:
         except Exception as e:
             logging.error(f"Failed to retrive to_be_published for {resource_code}: {e}")
             raise AirflowFailException()
+
 
 def validate_to_be_published(resource_code: str, pg_conn_id) -> ShortCircuitOperator:
     """
