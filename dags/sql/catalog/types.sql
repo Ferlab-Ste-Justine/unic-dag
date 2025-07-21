@@ -18,7 +18,7 @@ $$
         'Psychology', 'Rehabilitation', 'Rheumatology', 'Sleep', 'Sociodemographics', 'Social Services', 'Speech Therapy',
         'Surgery', 'Telemedicine', 'Transfusion', 'Traumatology', 'Urology', 'Vital Signs');
         CREATE TYPE catalog.status_enum AS ENUM ('to_do','on_hold','in_progress','completed','delivered','removed');
-        CREATE TYPE catalog.project_status_enum AS ENUM ('on_hold', 'in_review', 'in_progress', 'delivered', 'completed');
+        CREATE TYPE catalog.project_status_enum AS ENUM ('on_hold', 'in_review', 'in_progress', 'delivered', 'completed', 'reopened');
         CREATE TYPE catalog.rolling_version_enum AS ENUM ('obsolete', 'current', 'future');
     EXCEPTION
         WHEN duplicate_object THEN null;
