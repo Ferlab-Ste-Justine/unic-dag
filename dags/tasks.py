@@ -211,9 +211,9 @@ def create_tasks(dag: DAG,
             if subzone == "published" and not main_class:
                 # By default, if pass_date is not specified, we assume it is False, as most projects do have it as False
                 publish_dag = trigger_publish_dag(
-                    resource_code= resource,
-                    version_to_publish= _get_version(pass_date=step_config.get('pass_date', False), underscore=False),
-                    include_dictionary= step_config.get('include_dictionary', True),
+                    resource_code=resource,
+                    version_to_publish=_get_version(pass_date=step_config.get('pass_date', False), underscore=False),
+                    include_dictionary=step_config.get('include_dictionary', True),
                 )
 
                 start >> publish_dag >> end

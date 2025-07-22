@@ -14,7 +14,7 @@ from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 from lib.hooks.postgresca import PostgresCaHook
 from lib.postgres import get_pg_ca_hook, PostgresEnv
-from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_ID
+from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_ID, DEFAULT_VERSION
 from lib.tasks.excel import parquet_to_excel
 from lib.publish_utils import FileType, add_extension_to_path
 
@@ -39,7 +39,7 @@ def get_version_to_publish(ti=None) -> str:
     date_format = "%Y-%m-%d"
     if not version_to_publish:
         raise AirflowFailException(f"DAG param 'version_to_publish' is required. Expected format: YYYY-MM-DD")
-    elif bool(datetime.strptime(version_to_publish, date_format)):
+    elif version_to_publish == DEFAULT_VERSION or bool(datetime.strptime(version_to_publish, date_format)):
         return dag_run.conf['version_to_publish']
     else:
         raise AirflowFailException(f"DAG param 'version_to_publish' is not in the correct format. Expected format: YYYY-MM-DD")
@@ -156,7 +156,7 @@ def extract_config_info(
         if "nominative" in output_bucket:
             mini_config["has_nominative"] = True
 
-        output_path = get_dataset_published_path(source_id = source_id, config=config).replace("{{version}}", version_to_publish)
+        output_path = get_dataset_published_path(source_id=source_id, config=config).replace("{{version}}", version_to_publish)
 
         mini_config["sources"][source_id] = {
             "output_bucket": output_bucket,
@@ -164,7 +164,7 @@ def extract_config_info(
             "table": table,
         }
     # Uncomment to print the extracted configuration
-    #print_extracted_config(resource_code, version_to_publish, mini_config)
+    # print_extracted_config(resource_code, version_to_publish, mini_config)
     return mini_config
 
 
