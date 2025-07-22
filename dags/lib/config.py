@@ -13,6 +13,7 @@ EXTRACT_RESOURCE = '(.*)_config.json'
 DEFAULT_START_DATE = datetime(2021, 1, 1, tzinfo=pendulum.timezone("America/Montreal"))
 DEFAULT_TIMEOUT_HOURS = 4
 DEFAULT_CONCURRENCY = 1
+DEFAULT_VERSION = "latest"
 DEFAULT_ARGS = {
     "owner": "unic",
     "depends_on_past": False,
@@ -23,7 +24,7 @@ DEFAULT_ARGS = {
 }
 DEFAULT_PARAMS = {
     "branch": Param("master", type="string"),
-    "version": Param("latest", type="string")
+    "version": Param(DEFAULT_VERSION, type="string")
 }
 
 #Spark config
