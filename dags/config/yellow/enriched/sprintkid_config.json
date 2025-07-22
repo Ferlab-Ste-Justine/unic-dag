@@ -37,11 +37,8 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "datasets": [
-        {"dataset_id":"published_sprintkid_live_region_v20_import_template"         , "pass_date": true, "dependencies": []},
-        {"dataset_id":"published_sprintkid_live_region_v20_import_template_balanced", "pass_date": true, "dependencies": []},
-        {"dataset_id":"published_surveillancegermes_weekly_summary"                 , "pass_date": true, "dependencies": []}
-      ]
+      "pass_date": true,
+      "include_dictionary": false
     }
   ]
 }
