@@ -42,7 +42,7 @@ def get_resource_type() -> str:
     return "{{ params.resource_type }}"
 
 
-def arguments(table_name: str, resource_code: str, resource_type: str, to_be_published: bool = True) -> \
+def arguments(table_name: str, resource_code: str, resource_type: str) -> \
         List[str]:
     return [
         table_name,
@@ -51,8 +51,7 @@ def arguments(table_name: str, resource_code: str, resource_type: str, to_be_pub
         "--app-name", f"scan_{table_name}_table_for_{resource_code}",
         "--env", env_name,
         "--resource-code", resource_code,
-        "--resource-type", resource_type,
-        "--to-be-published", str(to_be_published)
+        "--resource-type", resource_type
     ]
 
 
@@ -80,7 +79,6 @@ for env in PostgresEnv:
     #### Données chargées
     Les colonnes suivantes sont chargées dans le catalogue pour la table `dict_table` :
     - name
-    - to_be_published
     - resource_id
     
     Les colonnes suivantes sont chargées dans le catalogue pour la table `variable` :
@@ -88,14 +86,12 @@ for env in PostgresEnv:
     - path
     - value_type
     - table_id
-    - to_be_published
     - rolling_version
     
     ### Configuration
     * Paramètre `branch` : Branche du jar à utiliser.
     * Paramètre `resource_code` : Code de la ressource à charger.
     * Paramètre `resource_type` : Type de la ressource à charger parmi `source_system`, `research_project` ou `eqp`.
-    * Paramètre `to_be_published` : Si les métadonnées de la ressource doivent être publiées dans le portail.
     * Paramètre `tables` : Liste des tables postgres dans lesquelles charger les métadonnées parmi `dict_table` et `variable`. Par défaut, les deux tables sont chargées.
     """
 
@@ -107,7 +103,6 @@ for env in PostgresEnv:
                 "resource_type": Param("source_system", type="string",
                                        enum=["source_system", "research_project", "eqp"],
                                        description="Type of the resource."),
-                "to_be_published": Param(True, type="boolean", description="Whether the resource should be published."),
                 "tables": Param(default=table_name_list, type=["array"], examples=table_name_list,
                                 description="Tables to load."),
             },
@@ -121,11 +116,11 @@ for env in PostgresEnv:
     ) as dag:
         @task_group(group_id="load_tables")
         def load_tables_group():
-            def scan_table_task(table_name: str, cluster_size: str, to_be_published: bool = True) -> SparkOperator:
+            def scan_table_task(table_name: str, cluster_size: str) -> SparkOperator:
                 return SparkOperator(
                     task_id=f"scan_{table_name}_table",
                     name=f"scan-{table_name}-table",
-                    arguments=arguments(table_name, get_resource_code(), get_resource_type(), to_be_published),
+                    arguments=arguments(table_name, get_resource_code(), get_resource_type()),
                     zone=ZONE,
                     spark_class=MAIN_CLASS,
                     spark_jar=JAR,
