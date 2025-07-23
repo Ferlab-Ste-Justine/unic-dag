@@ -18,6 +18,5 @@ CREATE TABLE IF NOT EXISTS catalog.variable
     derivation_algorithm  TEXT,
     notes                 VARCHAR(255),
     variable_status       catalog.status_enum,
-    rolling_version       catalog.rolling_version_enum                                 NOT NULL,
-    to_be_published       BOOLEAN                                                      NOT NULL
+    rolling_version       catalog.rolling_version_enum                                 NOT NULL
 );

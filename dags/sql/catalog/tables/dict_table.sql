@@ -13,6 +13,5 @@ CREATE TABLE IF NOT EXISTS catalog.dict_table
     label_en        VARCHAR(500),
     label_fr        VARCHAR(500),
     row_filter      VARCHAR(500),
-    to_be_published BOOLEAN                                                    NOT NULL,
     UNIQUE (resource_id, name)
 );
