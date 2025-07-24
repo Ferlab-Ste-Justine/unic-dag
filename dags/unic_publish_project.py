@@ -11,7 +11,7 @@ from airflow.utils.trigger_rule import TriggerRule
 
 from lib.groups.publish.index import index_opensearch
 from lib.groups.publish.publish import publish_research_project
-from lib.tasks.publish import validate_to_be_published, get_resource_code, get_version_to_publish, get_include_dictionary, get_run_index, check_run_index
+from lib.tasks.publish import validate_to_be_published, get_resource_code, get_version_to_publish, get_include_dictionary, get_skip_index
 from lib.tasks.notify import start, end
 from lib.opensearch import pg_env_os_env_mapping
 from lib.config import DEFAULT_ARGS
@@ -41,7 +41,7 @@ for env in PostgresEnv:
     * Paramètre `resource_code` : Code de la ressource à charger.
     * Paramètre `version_to_publish` : date version dans released à publier dans published.
     * Paramètre `release_id` (optional) : release id of opensearch index.
-    * Paramètre `run_index` (optional) : Boolean that sets whether the OpenSearch indexing runs or not.
+    * Paramètre `skip_index` (optional) : Boolean that sets whether the OpenSearch indexing is skipped.
 
     """
 
@@ -52,7 +52,7 @@ for env in PostgresEnv:
                 "version_to_publish": Param("", type="string", description="Date to publish. Ex: 2001-01-01"),
                 "include_dictionary": Param(True, type="boolean", description="Include dictionary in publication of project"),
                 "release_id": Param("", type=["null", "string"], description="(Optional) Release id of OpenSearch index. If not specified, will increment. Ex: re_0000"),
-                "run_index": Param(True, type="boolean", description="Run OpenSearch indexing after publication. Default: True"),
+                "skip_index": Param(False, type="boolean", description="Skip OpenSearch indexing after publication. Default: False"),
             },
             default_args=dag_args,
             doc_md=doc,
@@ -67,13 +67,10 @@ for env in PostgresEnv:
         get_resource_code_task = get_resource_code()
         get_version_to_publish_task = get_version_to_publish()
         get_include_dictionary_task = get_include_dictionary()
-        get_run_index_task = get_run_index()
-
-        # ShortCircuitOperator that skips the indexing task if run_index is False
-        check_run_index_task = check_run_index(get_run_index_task)
+        get_skip_index_task = get_skip_index()
 
         start("start_unic_publish_project") \
-        >> [get_resource_code_task, get_version_to_publish_task, get_include_dictionary_task, get_run_index_task] \
+        >> [get_resource_code_task, get_version_to_publish_task, get_include_dictionary_task, get_skip_index_task] \
         >> publish_research_project(
             pg_conn_id=pg_conn_id,
             resource_code=get_resource_code_task,
@@ -82,11 +79,13 @@ for env in PostgresEnv:
         ) \
         >> validate_to_be_published(
             resource_code=get_resource_code_task,
-            pg_conn_id=pg_conn_id
+            pg_conn_id=pg_conn_id,
+            skip=get_skip_index_task
         ) \
-        >> check_run_index_task >>  index_opensearch(
+        >>  index_opensearch(
             pg_env_name=env_name,
             os_env_name=pg_env_os_env_mapping.get(env).value,
-            dag=dag
+            dag=dag,
+            skip=get_skip_index_task
         ) \
         >> end(task_id= "end_unic_publish_project")
