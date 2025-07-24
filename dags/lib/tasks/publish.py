@@ -8,7 +8,6 @@ import psycopg2
 from airflow.decorators import task
 from airflow.exceptions import AirflowFailException, AirflowSkipException
 from airflow.models import DagRun
-from airflow.operators.python import ShortCircuitOperator
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
@@ -51,18 +50,9 @@ def get_include_dictionary(ti=None) -> bool:
 
 
 @task
-def get_run_index(ti=None) -> bool:
+def get_skip_index(ti=None) -> bool:
     dag_run: DagRun = ti.dag_run
-    return dag_run.conf['run_index']
-
-
-@task.short_circuit
-def check_run_index(run_index: bool) -> bool:
-    """
-    ShortCircuitOperator task that skips all tasks downstream if run_index is False.
-    :param run_index: DAG param 'run_index' to determine if the OpenSearch indexing should run.
-    """
-    return run_index
+    return dag_run.conf['skip_index']
 
 
 @task
@@ -84,7 +74,6 @@ def extract_config_info(
         version_to_publish: str,
         minio_conn_id: str = None,
         bucket: str = None,
-
 ) -> dict:
     """
     This function retrieves the necessary table names, S3 paths WITHOUT their extension,
@@ -156,7 +145,11 @@ def extract_config_info(
         if "nominative" in output_bucket:
             mini_config["has_nominative"] = True
 
-        output_path = get_dataset_published_path(source_id=source_id, config=config).replace("{{version}}", version_to_publish)
+        output_path = get_dataset_published_path(source_id=source_id, config=config)
+        # Replacing the version in the filename with the underscore version to publish
+        output_path = output_path.replace("_{{version}}", f"_{version_to_publish.replace('-','_')}")
+        # Replacing the version template for the folder with the dashed version to publish
+        output_path = output_path.replace("{{version}}", version_to_publish)
 
         mini_config["sources"][source_id] = {
             "output_bucket": output_bucket,
@@ -164,7 +157,7 @@ def extract_config_info(
             "table": table,
         }
     # Uncomment to print the extracted configuration
-    # print_extracted_config(resource_code, version_to_publish, mini_config)
+    print_extracted_config(resource_code, version_to_publish, mini_config)
     return mini_config
 
 
@@ -302,7 +295,7 @@ def trigger_publish_dag(
         resource_code: str,
         version_to_publish: str,
         include_dictionary: bool = True,
-        run_index: bool = False,
+        skip_index: bool = True,
         release_id: str = "",
         env : PostgresEnv = PostgresEnv.PROD) -> TriggerDagRunOperator:
     """
@@ -311,7 +304,7 @@ def trigger_publish_dag(
     :param resource_code: Resource code of the project to publish.
     :param version_to_publish: Version of the project to publish.
     :param include_dictionary: Specify if the dictionary should be included, True by default.
-    :param run_index: Boolean that sets whether the OpenSearch indexing runs or not, False by default.
+    :param skip_index: Boolean that sets whether the OpenSearch indexing is skipped, True by default.
     :param release_id: Release id of OpenSearch index.
     :param env: Postgres environment to use for the DAG, default of "prod"
     :return: TriggerDagRunOperator
@@ -323,7 +316,7 @@ def trigger_publish_dag(
             "resource_code": resource_code,
             "version_to_publish": version_to_publish,
             "include_dictionary": include_dictionary,
-            "run_index": run_index,
+            "skip_index": skip_index,
             "release_id": release_id
         },
         wait_for_completion = True, # Wait for the triggered DAG to complete before continuing
@@ -353,17 +346,18 @@ def get_to_be_published(resource_code: str, pg_conn_id: str) -> bool:
             raise AirflowFailException()
 
 
-def validate_to_be_published(resource_code: str, pg_conn_id) -> ShortCircuitOperator:
+@task.short_circuit
+def validate_to_be_published(resource_code: str, pg_conn_id, skip: bool = False) -> bool:
     """
     Validate if the resource is to be published.
 
     :param resource_code: Resource code associated to the dict.
     :param pg_conn_id: Postgres connection id.
+    :param skip: If True, skips the task. False by default.
     :return: ShortCircuitOperator.
     """
 
-    return ShortCircuitOperator(
-        task_id="validate_to_be_published",
-        python_callable=get_to_be_published,
-        op_args=[resource_code, pg_conn_id],
-    )
+    if skip:
+        raise AirflowSkipException()
+
+    return get_to_be_published(resource_code=resource_code, pg_conn_id=pg_conn_id)

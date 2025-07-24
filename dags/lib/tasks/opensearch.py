@@ -1,8 +1,8 @@
 from airflow import DAG
 from typing import List
 
-from airflow.decorators import task
 from lib.operators.spark import SparkOperator
+from lib.operators.python_operators import SkippablePythonVirtualenvOperator
 
 from lib.config import CATALOG_ZONE, CATALOG_BUCKET
 
@@ -14,7 +14,8 @@ def prepare_index(task_id: str,
                   cluster_size: str,
                   dag: DAG,
                   zone: str = CATALOG_ZONE,
-                  spark_class: str = 'bio.ferlab.ui.etl.catalog.os.prepare.Main') -> SparkOperator:
+                  spark_class: str = 'bio.ferlab.ui.etl.catalog.os.prepare.Main',
+                  skip: bool = False) -> SparkOperator:
 
     return SparkOperator(
         task_id=task_id,
@@ -25,12 +26,10 @@ def prepare_index(task_id: str,
         spark_jar=jar,
         spark_failure_msg=spark_failure_msg,
         spark_config=cluster_size,
-        dag=dag
+        dag=dag,
+        skip=skip
     )
 
-@task.virtualenv(
-    task_id="load_index", requirements=["opensearch-py==2.8.0"]
-)
 def load_index(env_name: str, release_id: str, alias: str, src_path: str) -> None:
 
     """
@@ -126,9 +125,31 @@ def load_index(env_name: str, release_id: str, alias: str, src_path: str) -> Non
         logging.error(f"Failed to load index in Opensearch: {e}")
         raise AirflowFailException()
 
-@task.virtualenv(
-    task_id="publish_index", requirements=["opensearch-py==2.8.0"]
-)
+def launch_load_index(env_name: str,
+                      release_id: str,
+                      alias: str,
+                      src_path: str,
+                      skip: bool = False,
+                      task_id: str = "load_index"):
+    """
+       Wrapper function for lauching the load_index task
+    :param task_id: Task ID
+    :param env_name: OpenSearch environment name (e.g. 'prod', 'qa')
+    :param release_id: Release ID to use.
+    :param alias: Specify alias of OpenSearch index to publish.
+    :param src_path:
+    :param skip: Whether to skip the task or not.
+    :return:
+    """
+    return SkippablePythonVirtualenvOperator(
+        task_id = task_id,
+        python_callable = load_index,
+        requirements= ["opensearch-py==2.8.0"],
+        op_kwargs = {"env_name": env_name, "release_id": release_id, "alias": alias, "src_path": src_path},
+        skip = skip
+    )
+
+
 def publish_index(env_name: str, release_id: str, alias: str) -> None:
     """
     Publish index by updating alias.
@@ -192,10 +213,33 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
         logging.error(f"Failed to delete index {index_to_delete} from Opensearch: {e}")
         raise AirflowFailException()
 
-@task.virtualenv(
-    task_id="get_next_release_id", requirements=["opensearch-py==2.8.0"]
-)
-def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_centric', increment: bool = True) -> str:
+
+def launch_publish_index(env_name: str,
+                         release_id: str,
+                         alias: str,
+                         task_id: str = "publish_index",
+                         skip: bool = False):
+    """
+    Wrapper function for launching the publish_index task
+    :param env_name: OpenSearch environment name (e.g. 'prod', 'qa')
+    :param release_id: Release ID to use.
+    :param alias: Specify alias of OpenSearch index to publish.
+    :param task_id: Task ID
+    :param skip: Whether to skip the task or not.
+    :return:
+    """
+    return SkippablePythonVirtualenvOperator(
+        task_id=task_id,
+        python_callable=publish_index,
+        requirements=["opensearch-py==2.8.0"],
+        op_kwargs={"env_name": env_name, "release_id": release_id, "alias": alias},
+        skip=skip
+    )
+
+def get_next_release_id(env_name: str,
+                        release_id: str,
+                        alias: str = 'resource_centric',
+                        increment: bool = True) -> str:
     """
     Get release id for openseach index.
 
@@ -243,3 +287,21 @@ def get_next_release_id(env_name: str, release_id: str, alias: str = 'resource_c
         return f're_{str(current_release_id_num)}'
 
 
+def launch_get_next_release_id(env_name: str,
+                               release_id: str,
+                               alias: str = 'resource_centric',
+                               increment: bool = True,
+                               task_id: str = "get_next_release_id",
+                               skip: bool = False) -> str:
+    return SkippablePythonVirtualenvOperator(
+        task_id = task_id,
+        python_callable = get_next_release_id,
+        requirements = ["opensearch-py==2.8.0"],
+        op_kwargs = {
+            "env_name": env_name,
+            "release_id": release_id,
+            "alias": alias,
+            "increment": increment
+        },
+        skip=skip
+    )
