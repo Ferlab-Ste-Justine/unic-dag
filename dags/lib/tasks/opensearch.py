@@ -132,7 +132,7 @@ def launch_load_index(env_name: str,
                       skip: bool = False,
                       task_id: str = "load_index"):
     """
-       Wrapper function for lauching the load_index task
+       Wrapper function for launching the load_index task
     :param task_id: Task ID
     :param env_name: OpenSearch environment name (e.g. 'prod', 'qa')
     :param release_id: Release ID to use.

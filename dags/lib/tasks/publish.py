@@ -157,7 +157,7 @@ def extract_config_info(
             "table": table,
         }
     # Uncomment to print the extracted configuration
-    print_extracted_config(resource_code, version_to_publish, mini_config)
+    # print_extracted_config(resource_code, version_to_publish, mini_config)
     return mini_config
 
 
