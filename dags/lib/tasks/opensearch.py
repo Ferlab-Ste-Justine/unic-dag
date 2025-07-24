@@ -30,7 +30,7 @@ def prepare_index(task_id: str,
         skip=skip
     )
 
-def load_index(env_name: str, release_id: str, alias: str, src_path: str) -> None:
+def _load_index(env_name: str, release_id: str, alias: str, src_path: str) -> None:
 
     """
     Load index in Opensearch.
@@ -125,7 +125,7 @@ def load_index(env_name: str, release_id: str, alias: str, src_path: str) -> Non
         logging.error(f"Failed to load index in Opensearch: {e}")
         raise AirflowFailException()
 
-def launch_load_index(env_name: str,
+def load_index(env_name: str,
                       release_id: str,
                       alias: str,
                       src_path: str,
@@ -143,14 +143,14 @@ def launch_load_index(env_name: str,
     """
     return SkippablePythonVirtualenvOperator(
         task_id = task_id,
-        python_callable = load_index,
+        python_callable = _load_index,
         requirements= ["opensearch-py==2.8.0"],
         op_kwargs = {"env_name": env_name, "release_id": release_id, "alias": alias, "src_path": src_path},
         skip = skip
     )
 
 
-def publish_index(env_name: str, release_id: str, alias: str) -> None:
+def _publish_index(env_name: str, release_id: str, alias: str) -> None:
     """
     Publish index by updating alias.
 
@@ -214,7 +214,7 @@ def publish_index(env_name: str, release_id: str, alias: str) -> None:
         raise AirflowFailException()
 
 
-def launch_publish_index(env_name: str,
+def publish_index(env_name: str,
                          release_id: str,
                          alias: str,
                          task_id: str = "publish_index",
@@ -230,13 +230,13 @@ def launch_publish_index(env_name: str,
     """
     return SkippablePythonVirtualenvOperator(
         task_id=task_id,
-        python_callable=publish_index,
+        python_callable=_publish_index,
         requirements=["opensearch-py==2.8.0"],
         op_kwargs={"env_name": env_name, "release_id": release_id, "alias": alias},
         skip=skip
     )
 
-def get_next_release_id(env_name: str,
+def _get_next_release_id(env_name: str,
                         release_id: str,
                         alias: str = 'resource_centric',
                         increment: bool = True) -> str:
@@ -287,7 +287,7 @@ def get_next_release_id(env_name: str,
         return f're_{str(current_release_id_num)}'
 
 
-def launch_get_next_release_id(env_name: str,
+def get_next_release_id(env_name: str,
                                release_id: str,
                                alias: str = 'resource_centric',
                                increment: bool = True,
@@ -295,7 +295,7 @@ def launch_get_next_release_id(env_name: str,
                                skip: bool = False) -> str:
     return SkippablePythonVirtualenvOperator(
         task_id = task_id,
-        python_callable = get_next_release_id,
+        python_callable = _get_next_release_id,
         requirements = ["opensearch-py==2.8.0"],
         op_kwargs = {
             "env_name": env_name,

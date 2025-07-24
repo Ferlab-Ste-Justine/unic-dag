@@ -4,7 +4,7 @@ from airflow import DAG
 from airflow.decorators import task_group
 
 from lib.opensearch import OpensearchAlias, OpensearchEnv
-from lib.tasks.opensearch import prepare_index, launch_load_index, launch_publish_index, launch_get_next_release_id
+from lib.tasks.opensearch import prepare_index, load_index, publish_index, get_next_release_id
 from lib.config import SPARK_FAILURE_MSG, MASTER_JAR
 
 @task_group(group_id="index_opensearch")
@@ -39,7 +39,7 @@ def index_opensearch(pg_env_name: str, os_env_name: str, dag: DAG, skip: bool = 
     @task_group(group_id="load_indexes")
     def load_index_group(release_id: str):
         for alias in OpensearchAlias:
-            launch_load_index(
+            load_index(
                 env_name=os_env_name,
                 release_id=release_id,
                 alias=alias.value,
@@ -51,7 +51,7 @@ def index_opensearch(pg_env_name: str, os_env_name: str, dag: DAG, skip: bool = 
     @task_group(group_id="publish_indexes")
     def publish_index_group(release_id: str):
         for alias in OpensearchAlias:
-            launch_publish_index(
+            publish_index(
                 env_name=os_env_name,
                 release_id=release_id,
                 alias=alias.value,
@@ -59,7 +59,7 @@ def index_opensearch(pg_env_name: str, os_env_name: str, dag: DAG, skip: bool = 
                 skip=skip
             )
 
-    get_next_release_id_task = launch_get_next_release_id(env_name=os_env_name, release_id=get_release_id(), skip=skip)
+    get_next_release_id_task = get_next_release_id(env_name=os_env_name, release_id=get_release_id(), skip=skip)
 
     prepare_index_group() >> get_next_release_id_task >> load_index_group(release_id=get_next_release_id_task) \
     >> publish_index_group(release_id=get_next_release_id_task)
