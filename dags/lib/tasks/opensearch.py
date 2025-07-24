@@ -2,7 +2,7 @@ from airflow import DAG
 from typing import List
 
 from lib.operators.spark import SparkOperator
-from lib.operators.python_operators import SkippablePythonVirtualenvOperator
+from lib.operators.skippable_virtualenv_operator import SkippablePythonVirtualenvOperator
 
 from lib.config import CATALOG_ZONE, CATALOG_BUCKET
 
