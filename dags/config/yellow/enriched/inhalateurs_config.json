@@ -31,12 +31,8 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "datasets": [
-        {"dataset_id": "published_inhalateurs_emergency_patients"       , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_inhalateurs_external_clinics_patients", "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_inhalateurs_hospitalised_patients"    , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_inhalateurs_plan_action_asthme"       , "pass_date": false, "dependencies": []}
-      ]
+      "pass_date": false,
+      "include_dictionary": true
     }
   ]
 }

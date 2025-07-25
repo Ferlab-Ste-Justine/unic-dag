@@ -29,11 +29,8 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "datasets": [
-        {"dataset_id": "published_picnicsag_hospitalization_diagnosis"          , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_picnicsag_positive_sterile_culture_strepto"   , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_picnicsag_positive_nonsterile_culture_strepto", "pass_date": false, "dependencies": []}
-      ]
+      "pass_date": false,
+      "include_dictionary": true
     }
   ]
 }

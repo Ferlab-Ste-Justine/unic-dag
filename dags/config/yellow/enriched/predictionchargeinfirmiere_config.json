@@ -27,10 +27,8 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "datasets": [
-        {"dataset_id":"published_predictionchargeinfirmiere_diagnostic"     , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_predictionchargeinfirmiere_episode_of_care", "pass_date": false, "dependencies": []}
-      ]
+      "pass_date": false,
+      "include_dictionary": true
     }
   ]
 }
