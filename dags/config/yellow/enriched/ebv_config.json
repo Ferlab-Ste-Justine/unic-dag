@@ -40,16 +40,8 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "datasets": [
-        {"dataset_id": "published_ebv_bcell_therapies"             , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_ebv_cmv_infection"               , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_ebv_ebv_infection"               , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_ebv_ebv_replication_episodes"    , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_ebv_patient_profile"             , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_ebv_rejection_episodes"          , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_ebv_treatment"                   , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_ebv_external_clinics_medications", "pass_date": false, "dependencies": []}
-      ]
+      "pass_date": false,
+      "include_dictionary": true
     }
   ]
 }

@@ -30,12 +30,8 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "datasets": [
-        {"dataset_id":"published_pragmatiq2_participant_index"             , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_pragmatiq2_hospitalization_follow_up"     , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_pragmatiq2_emergency_department_follow_up", "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_pragmatiq2_external_clinic_follow_up"     , "pass_date": false, "dependencies": []}
-      ]
+      "pass_date": false,
+      "include_dictionary": true
     }
   ]
 }

@@ -15,6 +15,8 @@ from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPAR
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
+from lib.tasks.publish import trigger_publish_dag
+from tasks import _get_version
 
 JAR = 's3a://spark-prd/jars/unic-etl-master.jar'
 
@@ -178,50 +180,14 @@ with dag:
         )
 
     with TaskGroup(group_id="published") as published:
-        PUBLISHED_ZONE = "green"
-        PUBLISHED_MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
-
-
-        def published_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination, VERSION]
-
-
-        published_last_visit_survey = SparkOperator(
-            task_id="published_signature_last_visit_survey",
-            name="published-signature-last-visit-survey",
-            arguments=published_arguments("published_signature_last_visit_survey"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="xsmall-etl",
-            dag=dag,
-            skip=skip_last_visit_survey()
-        )
-
-        published_monthly_visit = SparkOperator(
-            task_id="published_signature_monthly_visit",
-            name="published-signature-monthly-visit",
-            arguments=published_arguments("published_signature_monthly_visit"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="xsmall-etl",
-            dag=dag
-        )
-
-        # with open(f"{root}/email/enriched_signature.html", "r", encoding="utf-8") as f:
-        #     html_content = f.read()
-        #
-        # notify = EmailOperator(
-        #     task_id="notify",
-        #     to=mail_to,
-        #     bcc=mail_from,
-        #     subject="Nouveau rapport disponible dans l'UnIC",
-        #     html_content=html_content
-        # )
 
         # [published_last_visit_survey, published_monthly_visit] >> notify
+        trigger_publish_dag_task = trigger_publish_dag(
+            resource_code = "signature",
+            # Setting pass_date to False since the original SparkOperator took the version from the params of the DAG
+            version_to_publish = _get_version(pass_date= True, underscore= False),
+            include_dictionary = True,
+            skip_index = True
+        )
 
     start() >> enriched >> released >> published >> end()

@@ -24,9 +24,8 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "datasets": [
-        {"dataset_id": "published_edinava_participant_index", "pass_date": false, "dependencies": []}
-      ]
+      "pass_date": false,
+      "include_dictionary": true
     }
   ]
 }
