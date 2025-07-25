@@ -11,7 +11,7 @@ from airflow.models import Param
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, VERSION
+from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
@@ -183,11 +183,11 @@ with dag:
 
         # [published_last_visit_survey, published_monthly_visit] >> notify
         trigger_publish_dag_task = trigger_publish_dag(
-            resource_code = "signature",
+            resource_code="signature",
             # Setting pass_date to False since the original SparkOperator took the version from the params of the DAG
-            version_to_publish = _get_version(pass_date= True, underscore= False),
-            include_dictionary = True,
-            skip_index = True
+            version_to_publish=_get_version(pass_date=True, underscore=False),
+            include_dictionary=True,
+            skip_index=True
         )
 
     start() >> enriched >> released >> published >> end()

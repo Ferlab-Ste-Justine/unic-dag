@@ -11,7 +11,7 @@ from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, VERSION
+from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
@@ -490,10 +490,10 @@ with dag:
 
     with TaskGroup(group_id="published") as published:
         trigger_publish_dag_task = trigger_publish_dag(
-            resource_code = "triceps",
-            version_to_publish = _get_version(pass_date= True, underscore= False),
-            include_dictionary = True,
-            skip_index = True
+            resource_code="triceps",
+            version_to_publish=_get_version(pass_date=True, underscore=False),
+            include_dictionary=True,
+            skip_index=True
         )
 
     start() >> enriched >> released >> published >> end()
