@@ -9,13 +9,16 @@
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.ebv.Main",
       "multiple_main_methods": true,
       "datasets": [
-        {"dataset_id": "enriched_ebv_participant_index"       , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id": "enriched_ebv_bcell_therapies"         , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index", "enriched_ebv_ebv_infection"]},
-        {"dataset_id": "enriched_ebv_cmv_infection"           , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index", "enriched_ebv_ebv_infection"]},
-        {"dataset_id": "enriched_ebv_ebv_infection"           , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]},
-        {"dataset_id": "enriched_ebv_ebv_replication_episodes", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]},
-        {"dataset_id": "enriched_ebv_patient_profile"         , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]},
-        {"dataset_id": "enriched_ebv_rejection_episodes"      , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]}
+        {"dataset_id": "enriched_ebv_participant_index"           , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "enriched_ebv_bcell_therapies"             , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index", "enriched_ebv_ebv_infection"]},
+        {"dataset_id": "enriched_ebv_cmv_infection"               , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index", "enriched_ebv_ebv_infection"]},
+        {"dataset_id": "enriched_ebv_ebv_infection"               , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]},
+        {"dataset_id": "enriched_ebv_ebv_replication_episodes"    , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]},
+        {"dataset_id": "enriched_ebv_patient_profile"             , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]},
+        {"dataset_id": "enriched_ebv_rejection_episodes"          , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]},
+        {"dataset_id": "enriched_ebv_treatment"                   , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]},
+        {"dataset_id": "enriched_ebv_external_clinics_medications", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]}
+
       ]
     },
     {
@@ -24,24 +27,28 @@
       "main_class": "bio.ferlab.ui.etl.green.released.Main",
       "multiple_main_methods": false,
       "datasets": [
-        {"dataset_id": "released_ebv_bcell_therapies"         , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id": "released_ebv_cmv_infection"           , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id": "released_ebv_ebv_infection"           , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id": "released_ebv_ebv_replication_episodes", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id": "released_ebv_patient_profile"         , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id": "released_ebv_rejection_episodes"      , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": []}
+        {"dataset_id": "released_ebv_bcell_therapies"             , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "released_ebv_cmv_infection"               , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "released_ebv_ebv_infection"               , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "released_ebv_ebv_replication_episodes"    , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "released_ebv_patient_profile"             , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "released_ebv_rejection_episodes"          , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "released_ebv_treatment"                   , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "released_ebv_external_clinics_medications", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
       ]
     },
     {
       "destination_zone": "green",
       "destination_subzone": "published",
       "datasets": [
-        {"dataset_id": "published_ebv_bcell_therapies"         , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_ebv_cmv_infection"           , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_ebv_ebv_infection"           , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_ebv_ebv_replication_episodes", "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_ebv_patient_profile"         , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_ebv_rejection_episodes"      , "pass_date": false, "dependencies": []}
+        {"dataset_id": "published_ebv_bcell_therapies"             , "pass_date": false, "dependencies": []},
+        {"dataset_id": "published_ebv_cmv_infection"               , "pass_date": false, "dependencies": []},
+        {"dataset_id": "published_ebv_ebv_infection"               , "pass_date": false, "dependencies": []},
+        {"dataset_id": "published_ebv_ebv_replication_episodes"    , "pass_date": false, "dependencies": []},
+        {"dataset_id": "published_ebv_patient_profile"             , "pass_date": false, "dependencies": []},
+        {"dataset_id": "published_ebv_rejection_episodes"          , "pass_date": false, "dependencies": []},
+        {"dataset_id": "published_ebv_treatment"                   , "pass_date": false, "dependencies": []},
+        {"dataset_id": "published_ebv_external_clinics_medications", "pass_date": false, "dependencies": []}
       ]
     }
   ]
