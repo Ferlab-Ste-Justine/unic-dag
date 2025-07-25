@@ -184,7 +184,6 @@ with dag:
         # [published_last_visit_survey, published_monthly_visit] >> notify
         trigger_publish_dag_task = trigger_publish_dag(
             resource_code="signature",
-            # Setting pass_date to False since the original SparkOperator took the version from the params of the DAG
             version_to_publish=_get_version(pass_date=True, underscore=False),
             include_dictionary=True,
             skip_index=True
