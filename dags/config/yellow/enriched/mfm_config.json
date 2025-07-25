@@ -83,9 +83,37 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
       "multiple_main_methods": false,
-      "pass_date": false,
-      "include_dictionary": true
+      "datasets":
+      [
+        {"dataset_id":"published_mfm_baby_information"                                  , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_basic_pregnancy_information"                       , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_birth"                                             , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_family_medical_history"                            , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_first_trimester_prenatal_ultrasound"               , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_labour_and_delivery"                               , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_laboratory_tests_file_baby"                        , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_laboratory_tests_file_mother"                      , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_laboratory_tests_file_upload_baby"                 , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_laboratory_tests_file_upload_mother"               , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_maternal_and_pregnancy_complications"              , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_maternal_blood_products_administration"            , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_maternal_health_during_pregnancy"                  , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_maternal_medical_and_obstetric_history"            , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_maternal_outcomes"                                 , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_medication_file_baby"                              , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_medication_file_mother"                            , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_medication_file_upload_baby"                       , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_medication_file_upload_mother"                     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_neonatal_y1_health_questionnaire"                  , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_neonatal_y1_surgery_questionnaire"                 , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_neonatal_y1_therapies_and_intervention_questionnai", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_prenatal_diagnosis_and_fetal_therapy"              , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_prenatal_laboratory_tests"                         , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_second_and_third_trimester_prenatal_ultrasound"    , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id":"published_mfm_sociodemographic_information"                      , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []}
+      ]
     }
   ]
 }

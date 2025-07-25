@@ -36,9 +36,15 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
       "multiple_main_methods": false,
-      "pass_date": false,
-      "include_dictionary": true
+      "datasets":
+      [
+        {"dataset_id": "published_syphilis_cas_de_syphilis_tests_syphiliques_maternels", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "published_syphilis_toutes_donnees_cliniques_intrapartum"       , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "published_syphilis_toutes_histoire_de_la_grossesse_actuelle"   , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []},
+        {"dataset_id": "published_syphilis_toutes_tests_syphilitiques_maternelles"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": [], "pre_tests": [], "post_tests": []}
+      ]
     }
   ]
 }
