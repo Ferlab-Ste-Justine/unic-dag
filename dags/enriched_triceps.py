@@ -62,8 +62,8 @@ dag = DAG(
     dagrun_timeout=timedelta(hours=DEFAULT_TIMEOUT_HOURS),
     default_args=args,
     is_paused_upon_creation=True,
-    catchup=False,
-    max_active_runs=4,
+    catchup=True,
+    max_active_runs=1,
     max_active_tasks=2,
     tags=["enriched"],
     on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
