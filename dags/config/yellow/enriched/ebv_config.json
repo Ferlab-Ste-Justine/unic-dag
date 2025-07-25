@@ -16,8 +16,8 @@
         {"dataset_id": "enriched_ebv_ebv_replication_episodes"    , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]},
         {"dataset_id": "enriched_ebv_patient_profile"             , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]},
         {"dataset_id": "enriched_ebv_rejection_episodes"          , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]},
-        {"dataset_id": "enriched_ebv_treatment"                   , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]},
-        {"dataset_id": "enriched_ebv_external_clinics_medications", "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]}
+        {"dataset_id": "enriched_ebv_treatment"                   , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]},
+        {"dataset_id": "enriched_ebv_external_clinics_medications", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]}
 
       ]
     },
@@ -33,8 +33,8 @@
         {"dataset_id": "released_ebv_ebv_replication_episodes"    , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "released_ebv_patient_profile"             , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "released_ebv_rejection_episodes"          , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id": "released_ebv_treatment"                   , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": []},
-        {"dataset_id": "released_ebv_external_clinics_medications", "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": []}
+        {"dataset_id": "released_ebv_treatment"                   , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "released_ebv_external_clinics_medications", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
       ]
     },
     {
