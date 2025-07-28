@@ -24,9 +24,8 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "datasets": [
-      {"dataset_id":"published_empyeme_admission_per_unit", "pass_date": false, "dependencies": []}
-      ]
+      "pass_date": false,
+      "include_dictionary": true
     }
   ]
 }

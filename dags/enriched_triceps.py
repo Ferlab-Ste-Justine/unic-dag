@@ -10,10 +10,13 @@ from airflow import DAG
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, VERSION
+
+from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
+from lib.tasks.publish import trigger_publish_dag
+from tasks import _get_version
 
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 DOC = """
@@ -486,191 +489,11 @@ with dag:
         )
 
     with TaskGroup(group_id="published") as published:
-        PUBLISHED_ZONE = "green"
-        PUBLISHED_MAIN_CLASS = "bio.ferlab.ui.etl.green.published.Main"
-
-        def published_arguments(destination: str) -> List[str]:
-            return ["config/prod.conf", "default", destination, VERSION]
-
-
-        published_appointment_information = SparkOperator(
-            task_id="published_triceps_appointment_information",
-            name="published-triceps-appointment-information",
-            arguments=published_arguments("published_triceps_appointment_information"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag,
-        )
-
-        published_consultation = SparkOperator(
-            task_id="published_triceps_consultation",
-            name="published-triceps-consultation",
-            arguments=published_arguments("published_triceps_consultation"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag
-        )
-
-        published_laboratory_results = SparkOperator(
-            task_id="published_triceps_laboratory_results",
-            name="published-triceps-laboratory-results",
-            arguments=published_arguments("published_triceps_laboratory_results"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag
-        )
-
-        published_pathology_results = SparkOperator(
-            task_id="published_triceps_pathology_results",
-            name="published-triceps-pathology-results",
-            arguments=published_arguments("published_triceps_pathology_results"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag
-        )
-
-        published_general_information_consultation = SparkOperator(
-            task_id="published_triceps_general_information_consultation",
-            name="published-triceps-general-information-consultation",
-            arguments=published_arguments("published_triceps_general_information_consultation"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag
-        )
-
-        published_family_history = SparkOperator(
-            task_id="published_triceps_family_history",
-            name="published-triceps-family-history",
-            arguments=published_arguments("published_triceps_family_history"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag
-        )
-
-        published_family_history_consultation = SparkOperator(
-            task_id="published_triceps_family_history_consultation",
-            name="published-triceps-family-history-consultation",
-            arguments=published_arguments("published_triceps_family_history_consultation"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag
-        )
-
-        published_medical_history_consultation = SparkOperator(
-            task_id="published_triceps_medical_history_consultation",
-            name="published-triceps-medical-history-consultation",
-            arguments=published_arguments("published_triceps_medical_history_consultation"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag
-        )
-
-        published_personal_history_consultation = SparkOperator(
-            task_id="published_triceps_personal_history_consultation",
-            name="published-triceps-personal-history-consultation",
-            arguments=published_arguments("published_triceps_personal_history_consultation"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag
-        )
-
-        published_discussion_and_plan_consultation = SparkOperator(
-            task_id="published_triceps_discussion_and_plan_consultation",
-            name="published-triceps-discussion-and-plan-consultation",
-            arguments=published_arguments("published_triceps_discussion_and_plan_consultation"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag
-        )
-
-        published_personal_history_consultation_table = SparkOperator(
-            task_id="published_triceps_personal_history_consultation_table",
-            name="published-triceps-personal-history-consultation-table",
-            arguments=published_arguments("published_triceps_personal_history_consultation_table"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag
-        )
-
-        published_genetic_counseling_note = SparkOperator(
-            task_id="published_triceps_genetic_counseling_note",
-            name="published-triceps-genetic-counseling-note",
-            arguments=published_arguments("published_triceps_genetic_counseling_note"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag
-        )
-
-        published_genetic_counseling_note_discussion_and_plan = SparkOperator(
-            task_id="published_triceps_genetic_counseling_note_discussion_and_plan",
-            name="published-triceps-genetic-counseling-note-discussion-and-plan",
-            arguments=published_arguments("published_triceps_genetic_counseling_note_discussion_and_plan"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag
-        )
-
-        published_genetic_counseling_follow_up_note = SparkOperator(
-            task_id="published_triceps_genetic_counseling_follow_up_note",
-            name="published-triceps-genetic-counseling-follow-up-note",
-            arguments=published_arguments("published_triceps_genetic_counseling_follow_up_note"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag
-        )
-
-        published_presence = SparkOperator(
-            task_id="published_triceps_presence",
-            name="published-triceps-presence",
-            arguments=published_arguments("published_triceps_presence"),
-            zone=PUBLISHED_ZONE,
-            spark_class=PUBLISHED_MAIN_CLASS,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="medium-etl",
-            dag=dag
+        trigger_publish_dag_task = trigger_publish_dag(
+            resource_code="triceps",
+            version_to_publish=_get_version(pass_date=True, underscore=False),
+            include_dictionary=False,
+            skip_index=True
         )
 
     start() >> enriched >> released >> published >> end()

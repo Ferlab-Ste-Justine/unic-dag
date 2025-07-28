@@ -33,12 +33,8 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "datasets": [
-        {"dataset_id":"published_indicateurs_baby"         , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_indicateurs_complications", "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_indicateurs_delivery"     , "pass_date": false, "dependencies": []},
-        {"dataset_id":"published_indicateurs_pregnancy"    , "pass_date": false, "dependencies": []}
-      ]
+      "pass_date": false,
+      "include_dictionary": true
     }
   ]
 }

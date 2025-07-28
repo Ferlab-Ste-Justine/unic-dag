@@ -39,16 +39,8 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "datasets": [
-        {"dataset_id": "published_pedicss_patient"                         , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_pedicss_hospitalisation"                 , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_pedicss_hospitalisation_diagnostics"     , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_pedicss_hospitalisation_services"        , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_pedicss_intensive_care"                  , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_pedicss_emergency_department"            , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_pedicss_emergency_department_diagnostics", "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_pedicss_external_clinics"                , "pass_date": false, "dependencies": []}
-      ]
+      "pass_date": false,
+      "include_dictionary": true
     }
   ]
 }

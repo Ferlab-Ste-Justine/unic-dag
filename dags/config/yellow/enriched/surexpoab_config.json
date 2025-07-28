@@ -33,14 +33,8 @@
     {
       "destination_zone": "green",
       "destination_subzone": "published",
-      "datasets": [
-        {"dataset_id": "published_surexpoab_positive_culture"                , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_surexpoab_antibiotics_received"            , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_surexpoab_antibiotics_cycles"              , "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_surexpoab_antibiotics_served_by_department", "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_surexpoab_antibiotics_served_summary"      , "pass_date": false, "dependencies": []}
-
-      ]
+      "pass_date": false,
+      "include_dictionary": true
     }
   ]
 }
