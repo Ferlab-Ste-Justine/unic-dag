@@ -492,7 +492,7 @@ with dag:
         trigger_publish_dag_task = trigger_publish_dag(
             resource_code="triceps",
             version_to_publish=_get_version(pass_date=True, underscore=False),
-            include_dictionary=True,
+            include_dictionary=False,
             skip_index=True
         )
 

@@ -180,12 +180,10 @@ with dag:
         )
 
     with TaskGroup(group_id="published") as published:
-
-        # [published_last_visit_survey, published_monthly_visit] >> notify
         trigger_publish_dag_task = trigger_publish_dag(
             resource_code="signature",
             version_to_publish=_get_version(pass_date=True, underscore=False),
-            include_dictionary=True,
+            include_dictionary=False,
             skip_index=True
         )
 
