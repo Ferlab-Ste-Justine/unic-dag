@@ -9,7 +9,7 @@
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.ebv.Main",
       "multiple_main_methods": true,
       "datasets": [
-        {"dataset_id": "enriched_ebv_participant_index"           , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "enriched_ebv_participant_index"           , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": []},
         {"dataset_id": "enriched_ebv_bcell_therapies"             , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index", "enriched_ebv_ebv_infection"]},
         {"dataset_id": "enriched_ebv_cmv_infection"               , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index", "enriched_ebv_ebv_infection"]},
         {"dataset_id": "enriched_ebv_ebv_infection"               , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_ebv_participant_index"]},
