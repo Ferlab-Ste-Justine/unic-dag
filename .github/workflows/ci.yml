@@ -16,7 +16,7 @@ jobs:
           python-version: '3.8'
           architecture: 'x64'
       - run: |
-         pip install --upgrade pip
+         pip install re2
          pip install -r requirements.txt
          pylint --load-plugins=pylint_airflow --fail-under=10.0 */**.py
 
