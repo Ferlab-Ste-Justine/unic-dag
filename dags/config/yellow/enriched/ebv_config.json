@@ -36,12 +36,6 @@
         {"dataset_id": "released_ebv_treatment"                   , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "released_ebv_external_clinics_medications", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
       ]
-    },
-    {
-      "destination_zone": "green",
-      "destination_subzone": "published",
-      "pass_date": false,
-      "include_dictionary": true
     }
   ]
 }

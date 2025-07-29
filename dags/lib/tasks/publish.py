@@ -168,6 +168,7 @@ def publish_dictionary(
         include_dictionary: bool,
         pg_conn_id: str,
         config: dict,
+        s3_destination_bucket: str = PUBLISHED_BUCKET,
         minio_conn_id: str = YELLOW_MINIO_CONN_ID) -> None:
     """
     Publish research project dictionary.
@@ -177,6 +178,7 @@ def publish_dictionary(
     :param include_dictionary: Specify if the dictionary should be included.
     :param pg_conn_id: Postgres connection id.
     :param config: Relevant info of this resource_code extracted from the hocon config and input minio path.
+    :param s3_destination_bucket: S3 bucket where the dictionary will be published.
     :param minio_conn_id: Minio connection id.
     :return: None
     """
@@ -188,16 +190,15 @@ def publish_dictionary(
     clinical_bucket_name = f"published-clinical-{resource_code}"
     nominative_bucket_name = f"published-nominative-{resource_code}"
 
-    s3_destination_bucket = None
-
     if config["has_clinical"]:
         s3_destination_bucket = clinical_bucket_name
     if (not config["has_clinical"]) and config["has_nominative"]:
         s3_destination_bucket = nominative_bucket_name
 
     # At least one bucket must be present always
-    if not s3_destination_bucket:
-        raise AirflowFailException(f"The project {resource_code} does not have any table published in clinical or nominative buckets. Please check the config file.")
+    if s3_destination_bucket == PUBLISHED_BUCKET:
+        logging.info(f"The project {resource_code} does not have any table published in clinical or nominative buckets.")
+        logging.info(f"The dictionary will be published in the default bucket: {PUBLISHED_BUCKET}")
 
     # define connection vars
     s3 = S3Hook(aws_conn_id=minio_conn_id)
