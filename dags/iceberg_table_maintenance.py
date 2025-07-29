@@ -9,9 +9,9 @@ import pendulum
 from airflow import DAG
 from airflow.models import Param
 
+from lib.operators.spark_iceberg import SparkIcebergOperator
 from lib.config import DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
-from lib.operators.spark import SparkOperator
-# from lib.slack import Slack
+from lib.slack import Slack
 from lib.tasks.notify import end, start
 
 DOC = """
@@ -46,7 +46,7 @@ dag = DAG(
     max_active_runs=1,
     max_active_tasks=2,
     tags=["raw"],
-    # on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
+    on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
 )
 
 with dag:
@@ -62,7 +62,7 @@ with dag:
             "--iceberg-catalog", catalog,
         ]
 
-    expire_snapshots = SparkOperator(
+    expire_snapshots = SparkIcebergOperator(
         task_id="expire_snapshots",
         name="expire-snapshots",
         arguments=arguments(EXPIRE_SNAPSHOTS_MAIN, get_catalog()),
@@ -74,7 +74,7 @@ with dag:
         dag=dag
     )
 
-    delete_orphan_files = SparkOperator(
+    delete_orphan_files = SparkIcebergOperator(
         task_id="delete_orphan_files",
         name="delete-orphan-files",
         arguments=arguments(DELETE_ORPHAN_FILES_MAIN, get_catalog()),
