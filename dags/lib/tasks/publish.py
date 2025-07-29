@@ -152,7 +152,7 @@ def extract_config_info(
         output_path = output_path.replace("{{version}}", version_to_publish)
 
         if output_bucket == PUBLISHED_BUCKET:
-            output_path = f"published/{output_path}"
+            output_path = f"published{output_path}"
 
         mini_config["sources"][source_id] = {
             "output_bucket": output_bucket,
