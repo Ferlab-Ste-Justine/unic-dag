@@ -213,7 +213,7 @@ def create_tasks(dag: DAG,
                 publish_dag = trigger_publish_dag(
                     resource_code=resource,
                     version_to_publish=_get_version(pass_date=step_config.get('pass_date', False), underscore=False),
-                    include_dictionary=step_config.get('include_dictionary', True),
+                    include_dictionary=step_config.get('include_dictionary', False),
                 )
 
                 start >> publish_dag >> end
