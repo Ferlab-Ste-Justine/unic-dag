@@ -1,10 +1,10 @@
-from airflow import DAG
 from typing import List
 
-from lib.operators.spark import SparkOperator
-from lib.operators.skippable_virtualenv_operator import SkippablePythonVirtualenvOperator
+from airflow import DAG
+from airflow.decorators import task
 
-from lib.config import CATALOG_ZONE, CATALOG_BUCKET
+from lib.config import CATALOG_ZONE, SKIP_EXIT_CODE
+from lib.operators.spark import SparkOperator
 
 
 def prepare_index(task_id: str,
@@ -16,7 +16,6 @@ def prepare_index(task_id: str,
                   zone: str = CATALOG_ZONE,
                   spark_class: str = 'bio.ferlab.ui.etl.catalog.os.prepare.Main',
                   skip: bool = False) -> SparkOperator:
-
     return SparkOperator(
         task_id=task_id,
         name=task_id.replace("_", "-"),
@@ -30,14 +29,19 @@ def prepare_index(task_id: str,
         skip=skip
     )
 
-def _load_index(env_name: str, release_id: str, alias: str, src_path: str) -> None:
 
+@task.virtualenv(
+    task_id="load_index", requirements=["opensearch-py==2.8.0"], skip_on_exit_code=SKIP_EXIT_CODE
+)
+def load_index(env_name: str, release_id: str, alias: str, src_path: str, skip: bool = False) -> None:
     """
     Load index in Opensearch.
 
     :param env_name: OpenSearch environment name (e.g. 'prod', 'qa')
     :param release_id: Release ID to use.
     :param alias: Specify alias of OpenSearch index to publish.
+    :param src_path: Source path in Minio where the index data is stored.
+    :param skip: Whether to skip the task or not.
     :return: None
     """
     import logging
@@ -48,9 +52,11 @@ def _load_index(env_name: str, release_id: str, alias: str, src_path: str) -> No
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
     from airflow.exceptions import AirflowFailException
 
+    from lib.config import YELLOW_MINIO_CONN_ID, CATALOG_BUCKET, SKIP_EXIT_CODE
     from lib.opensearch import load_cert, get_opensearch_client, OS_TEMPLATES, OS_ID_COLUMNS
-    from lib.config import YELLOW_MINIO_CONN_ID, CATALOG_BUCKET
 
+    if skip:
+        exit(SKIP_EXIT_CODE)  # Will mark task as skipped
 
     # Load the os ca-certificate into task
     load_cert(env_name)
@@ -105,7 +111,7 @@ def _load_index(env_name: str, release_id: str, alias: str, src_path: str) -> No
         json_data = json.loads(df.to_json(orient='records'))
 
         chunk_size = 50000
-        split_json_data = [json_data[i:i+chunk_size] for i in range(0,len(json_data),chunk_size)]
+        split_json_data = [json_data[i:i + chunk_size] for i in range(0, len(json_data), chunk_size)]
 
         for chunk in split_json_data:
             data = []
@@ -125,43 +131,28 @@ def _load_index(env_name: str, release_id: str, alias: str, src_path: str) -> No
         logging.error(f"Failed to load index in Opensearch: {e}")
         raise AirflowFailException()
 
-def load_index(env_name: str,
-                      release_id: str,
-                      alias: str,
-                      src_path: str,
-                      skip: bool = False,
-                      task_id: str = "load_index"):
-    """
-       Wrapper function for launching the load_index task
-    :param task_id: Task ID
-    :param env_name: OpenSearch environment name (e.g. 'prod', 'qa')
-    :param release_id: Release ID to use.
-    :param alias: Specify alias of OpenSearch index to publish.
-    :param src_path:
-    :param skip: Whether to skip the task or not.
-    :return:
-    """
-    return SkippablePythonVirtualenvOperator(
-        task_id = task_id,
-        python_callable = _load_index,
-        requirements= ["opensearch-py==2.8.0"],
-        op_kwargs = {"env_name": env_name, "release_id": release_id, "alias": alias, "src_path": src_path},
-        skip = skip
-    )
 
-
-def _publish_index(env_name: str, release_id: str, alias: str) -> None:
+@task.virtualenv(
+    task_id="publish_index", requirements=["opensearch-py==2.8.0"], skip_on_exit_code=SKIP_EXIT_CODE
+)
+def publish_index(env_name: str, release_id: str, alias: str, skip: bool = False) -> None:
     """
     Publish index by updating alias.
 
     :param env_name: OpenSearch environment name (e.g. 'prod', 'qa')
     :param release_id: Release ID to use.
     :param alias: Specify alias of OpenSearch index to publish.
+    :param skip: Whether to skip the task or not.
     :return: None
     """
     import logging
+
+    from lib.config import SKIP_EXIT_CODE
     from lib.opensearch import MAX_RELEASE_ID_NUM, NUM_VERSIONS_TO_KEEP, load_cert, get_opensearch_client
     from airflow.exceptions import AirflowFailException
+
+    if skip:
+        exit(SKIP_EXIT_CODE)  # Will mark task as skipped
 
     # Load the os ca-certificate into task
     load_cert(env_name)
@@ -214,32 +205,14 @@ def _publish_index(env_name: str, release_id: str, alias: str) -> None:
         raise AirflowFailException()
 
 
-def publish_index(env_name: str,
-                         release_id: str,
-                         alias: str,
-                         task_id: str = "publish_index",
-                         skip: bool = False):
-    """
-    Wrapper function for launching the publish_index task
-    :param env_name: OpenSearch environment name (e.g. 'prod', 'qa')
-    :param release_id: Release ID to use.
-    :param alias: Specify alias of OpenSearch index to publish.
-    :param task_id: Task ID
-    :param skip: Whether to skip the task or not.
-    :return:
-    """
-    return SkippablePythonVirtualenvOperator(
-        task_id=task_id,
-        python_callable=_publish_index,
-        requirements=["opensearch-py==2.8.0"],
-        op_kwargs={"env_name": env_name, "release_id": release_id, "alias": alias},
-        skip=skip
-    )
-
-def _get_next_release_id(env_name: str,
+@task.virtualenv(
+    task_id="get_next_release_id", requirements=["opensearch-py==2.8.0"], skip_on_exit_code=SKIP_EXIT_CODE
+)
+def get_next_release_id(env_name: str,
                         release_id: str,
                         alias: str = 'resource_centric',
-                        increment: bool = True) -> str:
+                        increment: bool = True,
+                        skip: bool = False) -> str:
     """
     Get release id for openseach index.
 
@@ -247,11 +220,17 @@ def _get_next_release_id(env_name: str,
     :param release_id: Release ID to use. If not provided, the current release ID will be fetched from OpenSearch and incremented by 1.
     :param alias: Specify alias of OpenSearch index to get release_id from. Default is 'resource_centric'.
     :param increment: Specify whether to increment release_id. Default is True.
+    :param skip: Whether to skip the task or not.
     :return: The next release_id
     """
     import logging
-    from lib.opensearch import OS_ENV_CONFIG, MAX_RELEASE_ID_NUM, MIN_RELEASE_ID_NUM, load_cert, get_opensearch_client
+
+    from lib.config import SKIP_EXIT_CODE
+    from lib.opensearch import MAX_RELEASE_ID_NUM, MIN_RELEASE_ID_NUM, load_cert, get_opensearch_client
     from airflow.exceptions import AirflowFailException
+
+    if skip:
+        exit(SKIP_EXIT_CODE)  # Will mark task as skipped
 
     # Load the os ca-certificate into task
     load_cert(env_name)
@@ -285,23 +264,3 @@ def _get_next_release_id(env_name: str,
         return new_release_id
     else:
         return f're_{str(current_release_id_num)}'
-
-
-def get_next_release_id(env_name: str,
-                               release_id: str,
-                               alias: str = 'resource_centric',
-                               increment: bool = True,
-                               task_id: str = "get_next_release_id",
-                               skip: bool = False) -> str:
-    return SkippablePythonVirtualenvOperator(
-        task_id = task_id,
-        python_callable = _get_next_release_id,
-        requirements = ["opensearch-py==2.8.0"],
-        op_kwargs = {
-            "env_name": env_name,
-            "release_id": release_id,
-            "alias": alias,
-            "increment": increment
-        },
-        skip=skip
-    )
