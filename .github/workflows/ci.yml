@@ -16,6 +16,7 @@ jobs:
           python-version: '3.8'
           architecture: 'x64'
       - run: |
+         pip install "apache-airflow==2.7.1" --constraint https://raw.githubusercontent.com/apache/airflow/constraints-2.7.1/constraints-3.8.txt
          pip install -r requirements.txt
          pylint --load-plugins=pylint_airflow --fail-under=10.0 */**.py
 
