@@ -26,8 +26,9 @@ DEFAULT_PARAMS = {
     "branch": Param("master", type="string"),
     "version": Param(DEFAULT_VERSION, type="string")
 }
+SKIP_EXIT_CODE = 99
 
-#Spark config
+# Spark config
 SPARK_BUCKET = "spark-prd"
 
 # Spark jobs config
