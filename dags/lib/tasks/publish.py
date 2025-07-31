@@ -98,6 +98,7 @@ def extract_config_info(
     :param resource_code: Resource code of the project to publish.
     :param version_to_publish: Version of the project to publish.
     :param minio_conn_id: Minio connection id, defaults to YELLOW_MINIO_CONN_ID.
+    :param bucket: S3 bucket from which the data will be published, defaults to PUBLISHED_BUCKET.
     :returns : Dictionary containing the source IDs, input & output buckets, output paths, and table names.
 
     """
@@ -118,7 +119,6 @@ def extract_config_info(
     mini_config["clinical_bucket"] = None
     mini_config["nominative_bucket"] = None
     mini_config["sources"] = {}
-
     # Set the input bucket
     input_bucket = get_released_bucket_name(resource_code=resource_code, config=config)
     mini_config["input_bucket"] = input_bucket
@@ -159,7 +159,7 @@ def extract_config_info(
             "table": table,
         }
     # Uncomment to print the extracted configuration
-    print_extracted_config(resource_code, version_to_publish, mini_config)
+    # print_extracted_config(resource_code, version_to_publish, mini_config)
     return mini_config
 
 
