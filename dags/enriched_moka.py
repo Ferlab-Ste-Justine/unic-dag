@@ -14,6 +14,8 @@ from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPAR
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
+from lib.tasks.publish import trigger_publish_dag
+from tasks import _get_version
 
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
@@ -113,4 +115,61 @@ with dag:
 
         enriched_moka_participant_index_emergency_department >> enriched_moka_screening_emergency_department
 
-    start() >> enriched >> end()
+    with TaskGroup(group_id="released") as released:
+        RELEASED_ZONE = "red"
+        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.Main"
+
+        def released_arguments(destination: str, start_date: bool, end_date: bool) -> List[str]:
+            arguments = [
+                "--config", "config/prod.conf",
+                "--steps", "default",
+                "--app-name", destination,
+                "--destination", destination,
+                "--version", "{{ data_interval_end | ds }}"
+            ]
+
+            if start_date:
+                arguments += ["--start-date", "{{ data_interval_start }}"]
+
+            if end_date:
+                arguments += ["--end-date", "{{ data_interval_end }}"]
+
+            return arguments
+
+        released_moka_participant_index_emergency_department = SparkOperator(
+            task_id="released_moka_participant_index_emergency_department",
+            name="released-moka-participant-index-emergency-department",
+            arguments=released_arguments("released_moka_participant_index_emergency_department",
+                                         start_date=True,
+                                         end_date=True),
+            zone=RELEASED_ZONE,
+            spark_class=RELEASED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
+            spark_config="small-etl",
+            dag=dag,
+        )
+
+        released_moka_screening_emergency_department = SparkOperator(
+            task_id="released_moka_screening_emergency_department",
+            name="released-moka-screening-emergency-department",
+            arguments=released_arguments("released_moka_screening_emergency_department",
+                                         start_date=False,
+                                         end_date=True),
+            zone=RELEASED_ZONE,
+            spark_class=RELEASED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
+            spark_config="small-etl",
+            dag=dag
+        )
+
+    with TaskGroup(group_id="published") as published:
+        trigger_publish_dag_task = trigger_publish_dag(
+            resource_code = "moka",
+            version_to_publish = _get_version(pass_date= True, underscore= False),
+            include_dictionary = True,
+            skip_index = False
+        )
+
+    start() >> enriched >> released >> published >> end()

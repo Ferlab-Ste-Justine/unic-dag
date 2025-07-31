@@ -104,3 +104,26 @@ def get_dataset_published_path(
             return source["path"]
 
     raise AirflowFailException(f"Dataset ID {source_id} not found in configuration.")
+
+def get_released_bucket_name(resource_code: str, config: dict) -> str:
+    """
+    Get the bucket name for a released resource code from the Spark HOCON configuration.
+
+    :param resource_code: The resource code to look up.
+    :param config: The parsed HOCON configuration.
+    :return: The bucket name associated with the resource code.
+    """
+    from airflow.exceptions import AirflowFailException
+
+    sources = config.get("datalake.sources")
+    storages = config.get("datalake.storages")
+
+    for source in sources:
+        if f"released_{resource_code}" in source["id"]:
+            storage_id = source["storageid"]
+
+            for storage in storages:
+                if storage["id"] == storage_id:
+                    return storage["path"].split("/")[2]
+
+    raise AirflowFailException(f"Resource code {resource_code} does not have any released configurations.")

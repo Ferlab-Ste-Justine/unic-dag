@@ -72,8 +72,7 @@ def get_release_id(ti=None) -> str:
 def extract_config_info(
         resource_code: str,
         version_to_publish: str,
-        minio_conn_id: str = None,
-        bucket: str = None,
+        minio_conn_id: str = None
 ) -> dict:
     """
     This function retrieves the necessary table names, S3 paths WITHOUT their extension,
@@ -90,9 +89,8 @@ def extract_config_info(
             }
         }
         ...,
-        "has_clinical": bool - Indicates if the project has some table published in the clinical bucket. In that
-        case, the dictionary will go in the clinical bucket. Otherwise, it will go in the nominative one.
-        "has_nominative": bool - Indicates if the project has some table published in the nominative bucket.
+        "clinical_bucket": str - Name of the clinical bucket, if it exists, otherwise None.
+        "nominative_bucket": str - Name of the nominative bucket, if it exists, otherwise None.
         "input_bucket": <bucket_name> - The bucket from which the data will be published.
 
     }
@@ -100,37 +98,37 @@ def extract_config_info(
     :param resource_code: Resource code of the project to publish.
     :param version_to_publish: Version of the project to publish.
     :param minio_conn_id: Minio connection id, defaults to YELLOW_MINIO_CONN_ID.
-    :param bucket: S3 bucket from which the data will be published, defaults to PUBLISHED_BUCKET.
     :returns : Dictionary containing the source IDs, input & output buckets, output paths, and table names.
 
     """
 
-    from lib.hocon_parsing import parse_hocon_conf, get_bucket_name, get_dataset_published_path
+    from lib.hocon_parsing import parse_hocon_conf, get_bucket_name, get_dataset_published_path, get_released_bucket_name
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
     from lib.config import YELLOW_MINIO_CONN_ID, PUBLISHED_BUCKET
     from lib.publish_utils import print_extracted_config
 
+    config = parse_hocon_conf()
+
     # Set default constants if not provided
     if minio_conn_id is None:
         minio_conn_id = YELLOW_MINIO_CONN_ID
-    if bucket is None:
-        bucket = PUBLISHED_BUCKET
 
     # Initialize the mini_config
     mini_config = {}
-    mini_config["has_clinical"] = False
-    mini_config["has_nominative"] = False
+    mini_config["clinical_bucket"] = None
+    mini_config["nominative_bucket"] = None
     mini_config["sources"] = {}
+
     # Set the input bucket
-    mini_config["input_bucket"] = bucket
+    input_bucket = get_released_bucket_name(resource_code=resource_code, config=config)
+    mini_config["input_bucket"] = input_bucket
 
     s3 = S3Hook(aws_conn_id=minio_conn_id)
 
     released_path = f"released/{resource_code}/{version_to_publish}/"
 
-    config = parse_hocon_conf()
 
-    table_paths = s3.list_prefixes(bucket, released_path, "/")
+    table_paths = s3.list_prefixes(input_bucket, released_path, "/")
     for table_path in table_paths:
         table = table_path.split("/")[-2]  # Extract table name from the path, assumes the path structure is consistent
 
@@ -140,10 +138,10 @@ def extract_config_info(
         output_bucket = get_bucket_name(source_id=source_id, config=config)
 
         if "clinical" in output_bucket:
-            mini_config["has_clinical"] = True
+            mini_config["clinical_bucket"] = output_bucket
 
         if "nominative" in output_bucket:
-            mini_config["has_nominative"] = True
+            mini_config["nominative_bucket"] = output_bucket
 
         output_path = get_dataset_published_path(source_id=source_id, config=config)
         # Replacing the version in the filename with the underscore version to publish
@@ -151,6 +149,7 @@ def extract_config_info(
         # Replacing the version template for the folder with the dashed version to publish
         output_path = output_path.replace("{{version}}", version_to_publish)
 
+        # If the output bucket is the default green bucket, we must place the output path in the published folder
         if output_bucket == PUBLISHED_BUCKET:
             output_path = f"published{output_path}"
 
@@ -160,8 +159,25 @@ def extract_config_info(
             "table": table,
         }
     # Uncomment to print the extracted configuration
-    # print_extracted_config(resource_code, version_to_publish, mini_config)
+    print_extracted_config(resource_code, version_to_publish, mini_config)
     return mini_config
+
+
+def get_dictionary_output_bucket_name(clinical_bucket: str,
+                                      nominative_bucket: str) -> str:
+    """
+    Get the output bucket name for the dictionary based on the outputs of the mini-config.
+
+    :param clinical_bucket: The clinical bucket name, if it exists.
+    :param nominative_bucket: The nominative bucket name, if it exists.
+    :return: The output bucket name for the dictionary.
+    """
+    if clinical_bucket is not None:
+        return clinical_bucket
+    elif nominative_bucket is not None:
+        return nominative_bucket
+    else:
+        return PUBLISHED_BUCKET
 
 
 @task(task_id="publish_dictionary")
@@ -171,7 +187,6 @@ def publish_dictionary(
         include_dictionary: bool,
         pg_conn_id: str,
         config: dict,
-        s3_destination_bucket: str = PUBLISHED_BUCKET,
         minio_conn_id: str = YELLOW_MINIO_CONN_ID) -> None:
     """
     Publish research project dictionary.
@@ -189,19 +204,10 @@ def publish_dictionary(
     if not include_dictionary:
         raise AirflowSkipException()
 
-    ## Retrieve the bucket list from the config
-    clinical_bucket_name = f"published-clinical-{resource_code}"
-    nominative_bucket_name = f"published-nominative-{resource_code}"
-
-    if config["has_clinical"]:
-        s3_destination_bucket = clinical_bucket_name
-    if (not config["has_clinical"]) and config["has_nominative"]:
-        s3_destination_bucket = nominative_bucket_name
-
-    # At least one bucket must be present always
-    if s3_destination_bucket == PUBLISHED_BUCKET:
-        logging.info(f"The project {resource_code} does not have any table published in clinical or nominative buckets.")
-        logging.info(f"The dictionary will be published in the default bucket: {PUBLISHED_BUCKET}")
+    s3_destination_bucket = get_dictionary_output_bucket_name(
+        clinical_bucket=config["clinical_bucket"],
+        nominative_bucket=config["nominative_bucket"]
+    )
 
     # define connection vars
     s3 = S3Hook(aws_conn_id=minio_conn_id)
