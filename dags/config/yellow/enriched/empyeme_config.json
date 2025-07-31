@@ -20,12 +20,6 @@
       "datasets": [
       {"dataset_id":"released_empyeme_admission_per_unit", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
       ]
-    },
-    {
-      "destination_zone": "green",
-      "destination_subzone": "published",
-      "pass_date": false,
-      "include_dictionary": true
     }
   ]
 }

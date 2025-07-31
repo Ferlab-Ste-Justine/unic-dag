@@ -23,12 +23,6 @@
         {"dataset_id":"released_predictionchargeinfirmiere_diagnostic"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id":"released_predictionchargeinfirmiere_episode_of_care", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
       ]
-    },
-    {
-      "destination_zone": "green",
-      "destination_subzone": "published",
-      "pass_date": false,
-      "include_dictionary": true
     }
   ]
 }
