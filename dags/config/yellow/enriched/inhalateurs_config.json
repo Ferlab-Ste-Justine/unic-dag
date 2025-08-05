@@ -19,7 +19,7 @@
     {
       "destination_zone": "green",
       "destination_subzone": "released",
-      "main_class": "bio.ferlab.ui.etl.green.released.inhalateurs.Main",
+      "main_class": "bio.ferlab.ui.etl.released.inhalateurs.Main",
       "multiple_main_methods": true,
       "datasets": [
         {"dataset_id": "released_inhalateurs_emergency_patients"       , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},

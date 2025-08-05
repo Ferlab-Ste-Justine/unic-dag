@@ -29,7 +29,7 @@ def print_extracted_config(resource_code: str, version_to_publish: str, mini_con
     logging.info(f"+ Clinical bucket  : {mini_config['clinical_bucket']}")
     logging.info(f"+ Nominative bucket: {mini_config['nominative_bucket']}")
 
-    #Extracted tables
+    # Extracted tables
     logging.info("Extracted Tables".center(50, "-"))
     for source_id, source_info in mini_config['sources'].items():
         logging.info(f"  - {source_info['table']}:")

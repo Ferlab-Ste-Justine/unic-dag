@@ -78,9 +78,10 @@ def get_bucket_name(source_id: str, config: dict) -> str:
 
     for storage in storages:
         if storage["id"] == storageid:
-            return storage["path"].split("/")[2] # Extract bucket name from s3 path
+            return storage["path"].split("/")[2]  # Extract bucket name from s3 path
 
     raise AirflowFailException(f"Storage ID {storageid} not found in configuration.")
+
 
 def get_dataset_published_path(
         source_id: str,
@@ -104,6 +105,7 @@ def get_dataset_published_path(
             return source["path"]
 
     raise AirflowFailException(f"Dataset ID {source_id} not found in configuration.")
+
 
 def get_released_bucket_name(resource_code: str, config: dict) -> str:
     """

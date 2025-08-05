@@ -204,7 +204,7 @@ with dag:
     @task_group()
     def released():
         released_zone = "green"
-        released_main_class = "bio.ferlab.ui.etl.green.released.Main"
+        released_main_class = "bio.ferlab.ui.etl.released.Main"
 
         def released_arguments(destination: str, steps: str = "default") -> List[str]:
             """

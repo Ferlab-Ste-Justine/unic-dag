@@ -17,7 +17,7 @@
     {
       "destination_zone": "green",
       "destination_subzone": "released",
-      "main_class": "bio.ferlab.ui.etl.green.released.Main",
+      "main_class": "bio.ferlab.ui.etl.released.Main",
       "multiple_main_methods": false,
       "datasets": [
         {"dataset_id":"released_predictionchargeinfirmiere_diagnostic"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},

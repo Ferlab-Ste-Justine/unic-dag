@@ -140,7 +140,7 @@ with dag:
 
     with TaskGroup(group_id="released") as released:
         RELEASED_ZONE = "green"
-        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.green.released.Main"
+        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.released.Main"
 
         released_last_visit_survey = SparkOperator(
             task_id="released_signature_last_visit_survey",
