@@ -125,7 +125,7 @@ with dag:
         RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.released.Main"
 
 
-        def released_arguments(destination: str, start_date: bool, end_date: bool) -> List[str]:
+        def released_arguments(destination: str) -> List[str]:
             arguments = [
                 "--config", "config/prod.conf",
                 "--steps", "default",
@@ -140,9 +140,7 @@ with dag:
         released_moka_screening_emergency_department = SparkOperator(
             task_id="released_moka_screening_emergency_department",
             name="released-moka-screening-emergency-department",
-            arguments=released_arguments("released_moka_screening_emergency_department",
-                                         start_date=False,
-                                         end_date=True),
+            arguments=released_arguments("released_moka_screening_emergency_department"),
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
             spark_jar=JAR,
