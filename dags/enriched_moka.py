@@ -155,8 +155,8 @@ with dag:
         trigger_publish_dag_task = trigger_publish_dag(
             resource_code="moka",
             version_to_publish=_get_version(pass_date=True, underscore=False),
-            include_dictionary=True,
-            skip_index=False
+            include_dictionary=False,
+            skip_index=True
         )
 
     start() >> enriched >> released >> published >> end()
