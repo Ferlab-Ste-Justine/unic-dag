@@ -10,10 +10,12 @@ from airflow import DAG
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG
+from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, DATE
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
+from lib.tasks.publish import trigger_publish_dag
+from tasks import _get_version
 
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
@@ -70,6 +72,7 @@ with dag:
         ENRICHED_ZONE = "red"
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.red.enriched.moka.Main"
 
+
         def enriched_arguments(destination: str, start_date: bool, end_date: bool) -> List[str]:
             arguments = [
                 destination,
@@ -90,7 +93,9 @@ with dag:
         enriched_moka_participant_index_emergency_department = SparkOperator(
             task_id="enriched_moka_participant_index_emergency_department",
             name="enriched-moka-participant-index-emergency-department",
-            arguments=enriched_arguments("enriched_moka_participant_index_emergency_department", start_date=True, end_date=True),
+            arguments=enriched_arguments("enriched_moka_participant_index_emergency_department",
+                                         start_date=True,
+                                         end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -102,7 +107,9 @@ with dag:
         enriched_moka_screening_emergency_department = SparkOperator(
             task_id="enriched_moka_screening_emergency_department",
             name="enriched-moka-screening-emergency-department",
-            arguments=enriched_arguments("enriched_moka_screening_emergency_department", start_date=False, end_date=True),
+            arguments=enriched_arguments("enriched_moka_screening_emergency_department",
+                                         start_date=False,
+                                         end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=JAR,
@@ -113,4 +120,41 @@ with dag:
 
         enriched_moka_participant_index_emergency_department >> enriched_moka_screening_emergency_department
 
-    start() >> enriched >> end()
+    with TaskGroup(group_id="released") as released:
+        RELEASED_ZONE = "red"
+        RELEASED_MAIN_CLASS = "bio.ferlab.ui.etl.released.Main"
+
+
+        def released_arguments(destination: str) -> List[str]:
+            arguments = [
+                "--config", "config/prod.conf",
+                "--steps", "default",
+                "--app-name", destination,
+                "--destination", destination,
+                "--version", DATE
+            ]
+
+            return arguments
+
+
+        released_moka_screening_emergency_department = SparkOperator(
+            task_id="released_moka_screening_emergency_department",
+            name="released-moka-screening-emergency-department",
+            arguments=released_arguments("released_moka_screening_emergency_department"),
+            zone=RELEASED_ZONE,
+            spark_class=RELEASED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
+            spark_config="small-etl",
+            dag=dag
+        )
+
+    with TaskGroup(group_id="published") as published:
+        trigger_publish_dag_task = trigger_publish_dag(
+            resource_code="moka",
+            version_to_publish=_get_version(pass_date=True, underscore=False),
+            include_dictionary=False,
+            skip_index=True
+        )
+
+    start() >> enriched >> released >> published >> end()

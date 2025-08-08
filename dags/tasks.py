@@ -49,7 +49,7 @@ def _get_main_class(subzone: str, main_class: Optional[str]):
         "raw": "bio.ferlab.ui.etl.red.raw.Main",
         "curated": "bio.ferlab.ui.etl.red.curated.Main",
         "anonymized": "bio.ferlab.ui.etl.yellow.anonymized.Main",
-        "released": "bio.ferlab.ui.etl.green.released.Main",
+        "released": "bio.ferlab.ui.etl.released.Main",
         "published": "bio.ferlab.ui.etl.green.published.Main",
     }
     if main_class:
@@ -225,8 +225,9 @@ def create_tasks(dag: DAG,
                     # For all other tasks, we create a SparkOperator task
                     run_type = conf['run_type']
                     cluster_type = conf['cluster_type']
+
                     job = _create_spark_task(dataset_id, zone, subzone, run_type, pass_date, cluster_type, config_file,
-                                             jar, dag, main_class, multiple_main_methods, spark_failure_msg, skip_task)
+                                         jar, dag, main_class, multiple_main_methods, spark_failure_msg, skip_task)
 
                     all_dependencies.extend(conf['dependencies'])
                     jobs[dataset_id] = {"job": job, "dependencies": conf['dependencies']}
