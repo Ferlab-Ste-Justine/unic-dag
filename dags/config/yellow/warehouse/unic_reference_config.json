@@ -1,0 +1,19 @@
+{
+  "concurrency": 3,
+  "schedule": "0 6 1-7 * 4",
+  "timeout_hours": 1,
+  "steps": [{
+    "destination_zone": "yellow",
+    "destination_subzone": "warehouse",
+    "main_class": "bio.ferlab.ui.etl.yellow.warehouse.Main",
+    "multiple_main_methods": false,
+    "pre_tests": [],
+    "datasets": [
+      {"dataset_id": "warehouse_reference_laboratory_information_system"                 , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "warehouse_reference_laboratory_information_system_aggregations"    , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "warehouse_reference_laboratory_information_system_associated_tests", "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []}
+    ],
+      "optimize": [],
+      "post_tests": []
+  }]
+}
