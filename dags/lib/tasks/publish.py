@@ -105,7 +105,7 @@ def extract_config_info(
     from lib.hocon_parsing import parse_hocon_conf, get_bucket_name, get_dataset_published_path, get_released_bucket_name
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
     from lib.config import YELLOW_MINIO_CONN_ID, PUBLISHED_BUCKET
-    from lib.publish_utils import print_extracted_config
+    from lib.publish_utils import print_extracted_config, choose_minio_conn_id
 
     config = parse_hocon_conf()
 
@@ -122,7 +122,8 @@ def extract_config_info(
     input_bucket = get_released_bucket_name(resource_code=resource_code, config=config)
     mini_config["input_bucket"] = input_bucket
 
-    s3 = S3Hook(aws_conn_id=minio_conn_id)
+    chosen_conn_id = choose_minio_conn_id(config=config, minio_conn_id=minio_conn_id)
+    s3 = S3Hook(aws_conn_id=chosen_conn_id)
 
     released_path = f"released/{resource_code}/{version_to_publish}/"
 
