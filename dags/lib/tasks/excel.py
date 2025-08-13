@@ -7,8 +7,8 @@ from airflow.decorators import task
 from airflow.exceptions import AirflowFailException
 from airflow.exceptions import AirflowSkipException
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-
 from lib.config import MINIO_CONN_ID
+from lib.publish_utils import choose_minio_conn_id
 
 
 @task(task_id="parquet_to_excel")
@@ -21,6 +21,7 @@ def parquet_to_excel(
         sheet_name: str = "sheet1",
         minio_conn_id: str = MINIO_CONN_ID,
         skip: bool = False,
+        config: dict = None
 ) -> None:
     """
     Create an Airflow task to convert multiple or single parquet from a specified directory from Minio into a single excel file.
@@ -42,7 +43,10 @@ def parquet_to_excel(
     if skip:
         raise AirflowSkipException()
 
-    s3 = S3Hook(aws_conn_id=minio_conn_id)
+    chosen_minio_id = choose_minio_conn_id(config=config, minio_conn_id=minio_conn_id)
+
+    s3 = S3Hook(aws_conn_id=chosen_minio_id)
+
     s3_client = s3.get_conn()
 
     # Define local dirs

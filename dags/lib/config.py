@@ -41,6 +41,7 @@ V4_SUBZONES = ["raw", "curated", "released", "enriched"]  # Subzones using ETL v
 
 # Connection config
 MINIO_CONN_ID = "minio"
+RED_MINIO_CONN_ID = "red_minio"
 YELLOW_MINIO_CONN_ID = "yellow_minio"
 GREEN_MINIO_CONN_ID = "green_minio"
 
@@ -54,6 +55,9 @@ UNDERSCORE_VERSION = '{{ params.version | replace("-", "_") }}'
 
 # Zones
 CATALOG_ZONE = "yellow"
+
+# Nominative bucket
+NOMINATIVE_BUCKET = "red-prd"
 
 # Catalog config
 CATALOG_BUCKET = "yellow-prd"

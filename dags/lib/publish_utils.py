@@ -1,5 +1,6 @@
 import logging
 from enum import Enum
+from typing import Optional, Dict
 
 
 class FileType(Enum):
@@ -39,3 +40,30 @@ def print_extracted_config(resource_code: str, version_to_publish: str, mini_con
     logging.info("-" * 50)
 
     logging.info("=" * 50)
+
+
+def choose_minio_conn_id(config: Optional[Dict], minio_conn_id: str) -> str:
+    """
+    Choose the Minio connection ID based on the provided input bucket from the
+    mini-config or use the provided ID.
+
+    :param config: The configuration dictionary containing the input bucket from "extract_config_info".
+    :param minio_conn_id: The default Minio connection ID to use if no input bucket is specified.
+    """
+    from lib.config import GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_ID, RED_MINIO_CONN_ID, RELEASED_BUCKET, \
+        CATALOG_BUCKET, NOMINATIVE_BUCKET
+
+    if config is None:
+        return minio_conn_id
+    else:
+        input_bucket = config["input_bucket"]
+
+        if input_bucket == RELEASED_BUCKET:
+            return GREEN_MINIO_CONN_ID
+        elif input_bucket == CATALOG_BUCKET:
+            return YELLOW_MINIO_CONN_ID
+        elif input_bucket == NOMINATIVE_BUCKET:
+            return RED_MINIO_CONN_ID
+        else:
+            # If the input bucket does not match any known "released" buckets, return the provided Minio connection ID.
+            return minio_conn_id
