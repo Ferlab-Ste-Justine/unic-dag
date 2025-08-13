@@ -122,11 +122,10 @@ def extract_config_info(
     input_bucket = get_released_bucket_name(resource_code=resource_code, config=config)
     mini_config["input_bucket"] = input_bucket
 
-    chosen_conn_id = choose_minio_conn_id(config=config, minio_conn_id=minio_conn_id)
+    chosen_conn_id = choose_minio_conn_id(config=mini_config, minio_conn_id=minio_conn_id)
     s3 = S3Hook(aws_conn_id=chosen_conn_id)
 
     released_path = f"released/{resource_code}/{version_to_publish}/"
-
 
     table_paths = s3.list_prefixes(input_bucket, released_path, "/")
     for table_path in table_paths:
