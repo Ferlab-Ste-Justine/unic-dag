@@ -21,7 +21,7 @@ def parquet_to_excel(
         sheet_name: str = "sheet1",
         minio_conn_id: str = MINIO_CONN_ID,
         skip: bool = False,
-        config=None
+        config: dict = None
 ) -> None:
     """
     Create an Airflow task to convert multiple or single parquet from a specified directory from Minio into a single excel file.

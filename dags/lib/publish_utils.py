@@ -1,5 +1,6 @@
 import logging
 from enum import Enum
+from typing import Optional, Dict
 
 
 class FileType(Enum):
@@ -41,7 +42,7 @@ def print_extracted_config(resource_code: str, version_to_publish: str, mini_con
     logging.info("=" * 50)
 
 
-def choose_minio_conn_id(config, minio_conn_id) -> str:
+def choose_minio_conn_id(config: Optional[Dict], minio_conn_id: str) -> str:
     """
     Choose the Minio connection ID based on the provided input bucket from the
     mini-config or use the provided ID.
