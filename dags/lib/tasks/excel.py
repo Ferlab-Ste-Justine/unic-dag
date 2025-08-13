@@ -21,7 +21,6 @@ def parquet_to_excel(
         sheet_name: str = "sheet1",
         minio_conn_id: str = MINIO_CONN_ID,
         skip: bool = False,
-        config: dict = None
 ) -> None:
     """
     Create an Airflow task to convert multiple or single parquet from a specified directory from Minio into a single excel file.
@@ -43,9 +42,7 @@ def parquet_to_excel(
     if skip:
         raise AirflowSkipException()
 
-    chosen_minio_id = choose_minio_conn_id(config=config, minio_conn_id=minio_conn_id)
-
-    s3 = S3Hook(aws_conn_id=chosen_minio_id)
+    s3 = S3Hook(aws_conn_id=minio_conn_id)
 
     s3_client = s3.get_conn()
 

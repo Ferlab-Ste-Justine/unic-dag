@@ -286,6 +286,9 @@ def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_i
     if minio_conn_id is None:
         minio_conn_id = YELLOW_MINIO_CONN_ID
 
+    # Choose the appropriate conn id depending on the config
+    chosen_conn_id = choose_minio_conn_id(config=config, minio_conn_id=minio_conn_id)
+
     list_of_kwargs = []
     for (source_id, source_info) in config["sources"].items():
         table = source_info["table"]
@@ -295,7 +298,7 @@ def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_i
             "parquet_dir_key": f'released/{resource_code}/{version_to_publish}/{table}',
             "excel_bucket_name": source_info["output_bucket"],
             "excel_output_key": add_extension_to_path(source_info["output_path"], FileType.EXCEL),
-            "minio_conn_id": minio_conn_id,
+            "minio_conn_id": chosen_conn_id,
         })
 
     return list_of_kwargs
