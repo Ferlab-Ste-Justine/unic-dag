@@ -15,7 +15,7 @@ from lib.hooks.postgresca import PostgresCaHook
 from lib.postgres import get_pg_ca_hook, PostgresEnv
 from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_ID, DEFAULT_VERSION
 from lib.tasks.excel import parquet_to_excel
-from lib.publish_utils import FileType, add_extension_to_path
+from lib.publish_utils import FileType, add_extension_to_path, choose_minio_conn_id
 
 from sql.publish import update_dict_current_version_query, get_to_be_published_query, resource_query, dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query
 
@@ -209,7 +209,7 @@ def publish_dictionary(
     )
 
     # define connection vars
-    s3 = S3Hook(aws_conn_id=minio_conn_id)
+    s3 = S3Hook(aws_conn_id=choose_minio_conn_id(config, minio_conn_id))
     pg = get_pg_ca_hook(pg_conn_id=pg_conn_id)
 
     result_map = {
