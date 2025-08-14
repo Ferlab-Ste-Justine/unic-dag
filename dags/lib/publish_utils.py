@@ -47,7 +47,7 @@ def determine_minio_conn_id_from_config(minio_conn_id: str,
                                         output_bucket: str = None) -> str:
     """
     Choose the Minio connection ID based on the provided mini-config or use the provided ID.
-    You can either specify only an input bucket, or both. If just an output_bucket is specified,
+    You can either specify only an input bucket, or both.
 
 
     :param minio_conn_id: The default Minio connection ID to use if no input bucket is specified.
