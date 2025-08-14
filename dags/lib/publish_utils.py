@@ -69,7 +69,7 @@ def determine_minio_conn_id_from_config(minio_conn_id: str,
                 return RED_MINIO_CONN_ID
             else:
                 return minio_conn_id
-    else :
+    else:
         if input_bucket is None:
             if "clinical" in output_bucket:
                 return GREEN_MINIO_CONN_ID
@@ -77,7 +77,7 @@ def determine_minio_conn_id_from_config(minio_conn_id: str,
                 return RED_MINIO_CONN_ID
             else:
                 return minio_conn_id
-        if "clinical" in output_bucket and input_bucket == RELEASED_BUCKET:
+        elif "clinical" in output_bucket and input_bucket == RELEASED_BUCKET:
             return GREEN_MINIO_CONN_ID
         elif "clinical" in output_bucket and input_bucket == CATALOG_BUCKET:
             return YELLOW_MINIO_CONN_ID
