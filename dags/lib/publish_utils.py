@@ -42,28 +42,47 @@ def print_extracted_config(resource_code: str, version_to_publish: str, mini_con
     logging.info("=" * 50)
 
 
-def choose_minio_conn_id(config: Optional[Dict], minio_conn_id: str) -> str:
+def determine_minio_conn_id_from_config(minio_conn_id: str,
+                                        input_bucket: str = None,
+                                        output_bucket: str = None) -> str:
     """
-    Choose the Minio connection ID based on the provided input bucket from the
-    mini-config or use the provided ID.
+    Choose the Minio connection ID based on the provided mini-config or use the provided ID.
+    You can either specify only an input bucket, or both. If just an output_bucket is specified,
 
-    :param config: The configuration dictionary containing the input bucket from "extract_config_info".
+
     :param minio_conn_id: The default Minio connection ID to use if no input bucket is specified.
+    :param input_bucket: Input bucket from the resource configuration extracted by "extract_config_info".
+    :param output_bucket: Output bucket from the resource configuration extracted by "extract_config_info".
     """
     from lib.config import GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_ID, RED_MINIO_CONN_ID, RELEASED_BUCKET, \
         CATALOG_BUCKET, NOMINATIVE_BUCKET
 
-    if config is None:
-        return minio_conn_id
-    else:
-        input_bucket = config["input_bucket"]
-
-        if input_bucket == RELEASED_BUCKET:
+    if output_bucket is None:
+        if input_bucket is None:
+            return minio_conn_id
+        else:
+            if input_bucket == RELEASED_BUCKET:
+                return GREEN_MINIO_CONN_ID
+            elif input_bucket == CATALOG_BUCKET:
+                return YELLOW_MINIO_CONN_ID
+            elif input_bucket == NOMINATIVE_BUCKET:
+                return RED_MINIO_CONN_ID
+            else:
+                return minio_conn_id
+    else :
+        if input_bucket is None:
+            if "clinical" in output_bucket:
+                return GREEN_MINIO_CONN_ID
+            elif "nominative" in output_bucket:
+                return RED_MINIO_CONN_ID
+            else:
+                return minio_conn_id
+        if "clinical" in output_bucket and input_bucket == RELEASED_BUCKET:
             return GREEN_MINIO_CONN_ID
-        elif input_bucket == CATALOG_BUCKET:
+        elif "clinical" in output_bucket and input_bucket == CATALOG_BUCKET:
             return YELLOW_MINIO_CONN_ID
-        elif input_bucket == NOMINATIVE_BUCKET:
+        elif "nominative" in output_bucket:
             return RED_MINIO_CONN_ID
         else:
-            # If the input bucket does not match any known "released" buckets, return the provided Minio connection ID.
+            # If the output bucket does not match any known "released" buckets, return the provided Minio connection ID.
             return minio_conn_id

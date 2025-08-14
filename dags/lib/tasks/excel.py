@@ -8,7 +8,6 @@ from airflow.exceptions import AirflowFailException
 from airflow.exceptions import AirflowSkipException
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from lib.config import MINIO_CONN_ID
-from lib.publish_utils import choose_minio_conn_id
 
 
 @task(task_id="parquet_to_excel")
