@@ -15,7 +15,7 @@ from lib.hooks.postgresca import PostgresCaHook
 from lib.postgres import get_pg_ca_hook, PostgresEnv
 from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_ID, DEFAULT_VERSION
 from lib.tasks.excel import parquet_to_excel
-from lib.publish_utils import FileType, add_extension_to_path, choose_minio_conn_id
+from lib.publish_utils import FileType, add_extension_to_path, determine_minio_conn_id_from_config
 
 from sql.publish import update_dict_current_version_query, get_to_be_published_query, resource_query, dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query
 
@@ -105,7 +105,7 @@ def extract_config_info(
     from lib.hocon_parsing import parse_hocon_conf, get_bucket_name, get_dataset_published_path, get_released_bucket_name
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
     from lib.config import YELLOW_MINIO_CONN_ID, PUBLISHED_BUCKET
-    from lib.publish_utils import print_extracted_config, choose_minio_conn_id
+    from lib.publish_utils import print_extracted_config, determine_minio_conn_id_from_config
 
     config = parse_hocon_conf()
 
@@ -122,7 +122,7 @@ def extract_config_info(
     input_bucket = get_released_bucket_name(resource_code=resource_code, config=config)
     mini_config["input_bucket"] = input_bucket
 
-    chosen_conn_id = choose_minio_conn_id(config=mini_config, minio_conn_id=minio_conn_id)
+    chosen_conn_id = determine_minio_conn_id_from_config( minio_conn_id=minio_conn_id, input_bucket=mini_config.get("input_bucket"))
     s3 = S3Hook(aws_conn_id=chosen_conn_id)
 
     released_path = f"released/{resource_code}/{version_to_publish}/"
@@ -209,7 +209,7 @@ def publish_dictionary(
     )
 
     # define connection vars
-    s3 = S3Hook(aws_conn_id=choose_minio_conn_id(config, minio_conn_id))
+    s3 = S3Hook(aws_conn_id=determine_minio_conn_id_from_config(minio_conn_id, input_bucket=config.get("input_bucket")))
     pg = get_pg_ca_hook(pg_conn_id=pg_conn_id)
 
     result_map = {
@@ -286,12 +286,14 @@ def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_i
     if minio_conn_id is None:
         minio_conn_id = YELLOW_MINIO_CONN_ID
 
-    # Choose the appropriate conn id depending on the config
-    chosen_conn_id = choose_minio_conn_id(config=config, minio_conn_id=minio_conn_id)
-
     list_of_kwargs = []
     for (source_id, source_info) in config["sources"].items():
         table = source_info["table"]
+
+        # Choose the appropriate conn id depending on the config
+        chosen_conn_id = determine_minio_conn_id_from_config(minio_conn_id=minio_conn_id,
+                                                             input_bucket=config.get("input_bucket"),
+                                                             output_bucket=source_info.get("output_bucket"))
 
         list_of_kwargs.append({
             "parquet_bucket_name": config["input_bucket"],
@@ -302,6 +304,7 @@ def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_i
         })
 
     return list_of_kwargs
+
 
 def trigger_publish_dag(
         resource_code: str,
