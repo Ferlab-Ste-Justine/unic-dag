@@ -26,6 +26,12 @@
         {"dataset_id":"released_ferplq_laboratory_results"       , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []},
         {"dataset_id":"released_ferplq_patient"                  , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []}
       ]
+    },
+    {
+      "destination_zone": "green",
+      "destination_subzone": "published",
+      "pass_date": false,
+      "include_dictionary": true
     }
   ]
 }
