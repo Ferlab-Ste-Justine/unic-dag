@@ -193,11 +193,23 @@ with dag:
             dag=dag,
         )
 
+        enriched_central_catheters_details = SparkOperator(
+            task_id="enriched_indicateurssip_central_catheters_details",
+            name="enriched-indicateurssip-central-catheters-details",
+            arguments=enriched_arguments("enriched_indicateurssip_central_catheters_details") + ["--date", "{{ logical_date }}"],
+            zone=enriched_zone,
+            spark_class=enriched_main_class,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
+            spark_config="small-etl",
+            dag=dag,
+        )
+
 
 
         enriched_participant_index >> enriched_sejour >> [enriched_catheter, enriched_ventilation,
                                                           enriched_extubation, enriched_lits, enriched_infirmieres,
-                                                          enriched_ecmo, enriched_scores] >> enriched_infections
+                                                          enriched_ecmo, enriched_scores, enriched_infections] >> enriched_central_catheters_details
 
     ENRICHED_GROUP = enriched()
 
@@ -326,8 +338,20 @@ with dag:
             dag=dag,
         )
 
+        released_central_catheters_details = SparkOperator(
+            task_id="released_indicateurssip_central_catheters_details",
+            name="released-indicateurssip-central-catheters-details",
+            arguments=released_arguments("released_indicateurssip_central_catheters_details"),
+            zone=released_zone,
+            spark_class=released_main_class,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
+            spark_config="small-etl",
+            dag=dag,
+        )
 
-        [released_sejour, released_catheter, released_ventilation, released_extubation, released_lits, released_infirmieres, released_ecmo, released_scores, released_infections]
+
+        [released_sejour, released_catheter, released_ventilation, released_extubation, released_lits, released_infirmieres, released_ecmo, released_scores, released_infections, released_central_catheters_details]
 
     RELEASED_GROUP = released()
 
@@ -338,15 +362,16 @@ with dag:
         ca_cert = Variable.get('postgres_ca_certificate', None)
 
         copy_conf = [
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/catheter/catheter.csv"      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "catheter"   },
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/extubation/extubation.csv"  , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "extubation" },
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/sejour/sejour.csv"          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "sejour"     },
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ventilation/ventilation.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ventilation"},
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/lits/lits.csv"              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "lits"       },
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/infirmieres/infirmieres.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infirmieres"},
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ecmo/ecmo.csv"              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ecmo"}       ,
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/scores/scores.csv"          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "scores"}     ,
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/infections/infections.csv"  , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infections"}
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/catheter/catheter.csv"                                  , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "catheter"   }              ,
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/extubation/extubation.csv"                              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "extubation" }              ,
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/sejour/sejour.csv"                                      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "sejour"     }              ,
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ventilation/ventilation.csv"                            , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ventilation"}              ,
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/lits/lits.csv"                                          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "lits"       }              ,
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/infirmieres/infirmieres.csv"                            , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infirmieres"}              ,
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ecmo/ecmo.csv"                                          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ecmo"}                     ,
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/scores/scores.csv"                                      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "scores"}                   ,
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/infections/infections.csv"                              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infections"}               ,
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/central_catheters_details/central_catheters_details.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "central_catheters_details"}
 
         ]
 
