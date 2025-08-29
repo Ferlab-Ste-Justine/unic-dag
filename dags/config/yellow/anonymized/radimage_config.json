@@ -35,7 +35,7 @@
        {"dataset_id":"anonymized_radimage_patient*"               , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
        {"dataset_id":"anonymized_radimage_provenance*"            , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
        {"dataset_id":"anonymized_radimage_periodes_financieres"   , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
-       {"dataset_id":"anonymized_radimage_requete*"               , "cluster_type": "medium", "run_type": "initial", "pass_date": false, "dependencies": []},
+       {"dataset_id":"anonymized_radimage_requete*"               , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
        {"dataset_id":"anonymized_radimage_responsabilite_paiement", "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
        {"dataset_id":"anonymized_radimage_s*"                     , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []}
     ],
