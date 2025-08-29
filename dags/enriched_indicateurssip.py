@@ -196,7 +196,7 @@ with dag:
         enriched_central_catheters_details = SparkOperator(
             task_id="enriched_indicateurssip_central_catheters_details",
             name="enriched-indicateurssip-central-catheters-details",
-            arguments=enriched_arguments("enriched_indicateurssip_central_catheters_details") + ["--date", "{{ logical_date }}"],
+            arguments=enriched_arguments("enriched_indicateurssip_central_catheters_details"),
             zone=enriched_zone,
             spark_class=enriched_main_class,
             spark_jar=JAR,
