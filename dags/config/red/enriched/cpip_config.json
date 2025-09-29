@@ -13,6 +13,15 @@
       "datasets": [
         {"dataset_id":"enriched_cpip_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []}
       ]
+    },
+    {
+      "destination_zone": "red",
+      "destination_subzone": "released",
+      "main_class": "bio.ferlab.ui.etl.released.Main",
+      "multiple_main_methods": false,
+      "datasets": [
+        {"dataset_id":"released_cpip_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+      ]
     }
   ]
 }
