@@ -17,7 +17,7 @@ from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_
 from lib.tasks.excel import parquet_to_excel
 from lib.publish_utils import FileType, add_extension_to_path, determine_minio_conn_id_from_config
 
-from sql.publish import update_dict_current_version_query, get_to_be_published_query, resource_query, dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query
+from sql.publish import update_dict_current_version_query, get_publish_dictionary_query, resource_query, dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query
 
 
 @task
@@ -341,30 +341,30 @@ def trigger_publish_dag(
 )
 
 
-def get_to_be_published(resource_code: str, pg_conn_id: str) -> bool:
+def get_publish_dictionary(resource_code: str, pg_conn_id: str) -> bool:
     """
-    Get value of to_be_published for given resource code.
+    Get value of the publish_dictionary column for given resource code.
 
     :param resource_code: Resource code associated to the dict.
     :param pg_conn_id: Postgres connection id.
-    :return: Boolean indicating if the resource is to be published.
+    :return: Boolean indicating if the dictionary is to be published.
     """
 
     pg_conn = get_pg_ca_hook(pg_conn_id).get_conn()
 
     with pg_conn.cursor() as cur:
         try:
-            cur.execute(get_to_be_published_query(resource_code))
+            cur.execute(get_publish_dictionary_query(resource_code))
             return cur.fetchone()[0]
         except Exception as e:
-            logging.error(f"Failed to retrive to_be_published for {resource_code}: {e}")
+            logging.error(f"Failed to retrieve publish for {resource_code}: {e}")
             raise AirflowFailException()
 
 
 @task.short_circuit
-def validate_to_be_published(resource_code: str, pg_conn_id, skip: bool = False) -> bool:
+def validate_publish_dictionary(resource_code: str, pg_conn_id, skip: bool = False) -> bool:
     """
-    Validate if the resource is to be published.
+    Validate if the dictionary is to be published in the portal.
 
     :param resource_code: Resource code associated to the dict.
     :param pg_conn_id: Postgres connection id.
@@ -375,4 +375,4 @@ def validate_to_be_published(resource_code: str, pg_conn_id, skip: bool = False)
     if skip:
         raise AirflowSkipException()
 
-    return get_to_be_published(resource_code=resource_code, pg_conn_id=pg_conn_id)
+    return get_publish_dictionary(resource_code=resource_code, pg_conn_id=pg_conn_id)

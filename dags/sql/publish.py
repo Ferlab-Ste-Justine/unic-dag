@@ -6,7 +6,7 @@ def resource_query(resource_code: str) -> str:
     return f"""
         SELECT * FROM catalog.resource r
         WHERE r.code='{resource_code}'
-        AND r.to_be_published = true
+        AND r.publish_dictionary = true
     """
 
 def dict_table_query(resource_code: str) -> str:
@@ -19,7 +19,7 @@ def dict_table_query(resource_code: str) -> str:
         INNER JOIN catalog.resource r
         ON t.resource_id = r.id
         WHERE r.code='{resource_code}'
-        AND r.to_be_published = true
+        AND r.publish_dictionary = true
     """
 
 def variable_query(resource_code: str) -> str:
@@ -33,7 +33,7 @@ def variable_query(resource_code: str) -> str:
             INNER JOIN catalog.resource r
             ON t.resource_id = r.id
             WHERE r.code='{resource_code}'
-            AND r.to_be_published = true
+            AND r.publish_dictionary = true
         )
         SELECT v.* 
         FROM catalog.variable v
@@ -52,7 +52,7 @@ def value_set_query(resource_code: str) -> str:
             INNER JOIN catalog.resource r
             ON t.resource_id = r.id
             where r.code='{resource_code}'
-            AND r.to_be_published = true
+            AND r.publish_dictionary = true
         ),
         filt_variable AS (
             SELECT v.value_set_id AS filt_value_set_id
@@ -77,7 +77,7 @@ def value_set_code_query(resource_code: str) -> str:
             INNER JOIN catalog.resource r
             ON t.resource_id = r.id
             WHERE r.code='{resource_code}'
-            AND r.to_be_published = true
+            AND r.publish_dictionary = true
         ),
         filt_variable as (
             SELECT v.value_set_id AS filt_value_set_id
@@ -102,7 +102,7 @@ def mapping_query(resource_code: str) -> str:
             INNER JOIN catalog.resource r
             ON t.resource_id = r.id
             WHERE r.code='{resource_code}'
-            AND r.to_be_published = true
+            AND r.publish_dictionary = true
         ),
         filt_variable AS (
             SELECT v.value_set_id AS filt_value_set_id
@@ -132,12 +132,12 @@ def update_dict_current_version_query(resource_code: str, dict_version: str) -> 
         WHERE code = '{resource_code}';
     """
 
-def get_to_be_published_query(resource_code: str) -> str:
+def get_publish_dictionary_query(resource_code: str) -> str:
     """
-    Query that gets the value of 'to_be_published' for a given resource code.
+    Query that gets the value of 'publish_dictionary' for a given resource code.
     """
     return  f"""
-        SELECT to_be_published
+        SELECT publish_dictionary
         FROM catalog.resource
         WHERE code = '{resource_code}';
     """
