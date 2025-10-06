@@ -133,7 +133,7 @@ for env in PostgresEnv:
 
             excel_to_csv_task("analyst",
                               s3_source_key="catalog/analyst.xlsx",
-                              s3_destination_key=f"catalog/{env_name}/csv/output/analyst.csv")  # Directly put analyst in output directory since no transformations have to be run by the ETL
+                              s3_destination_key=f"catalog/{env_name}/csv/output/analyst/analyst.csv")  # Directly put analyst in output directory since no transformations have to be run by the ETL
             excel_to_csv_task("resource",
                               s3_source_key="catalog/resource.xlsx",
                               s3_destination_key=f"catalog/{env_name}/csv/input/resource.csv")
