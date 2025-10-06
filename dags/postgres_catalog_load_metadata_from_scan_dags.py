@@ -2,7 +2,7 @@
 Génération des DAGs pour le chargement dans le Catalogue des métadonnées en scannant les données du lac.
 Un DAG par environnement postgres est généré.
 """
-# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned
+# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, duplicate-code
 
 from datetime import datetime
 from typing import List
@@ -15,8 +15,8 @@ from airflow.utils.trigger_rule import TriggerRule
 from lib.config import JAR, SPARK_FAILURE_MSG, YELLOW_MINIO_CONN_ID, DEFAULT_ARGS
 from lib.operators.spark import SparkOperator
 from lib.operators.upsert_csv_to_postgres import UpsertCsvToPostgres
-from lib.postgres import skip_task, POSTGRES_VLAN2_CA_PATH, POSTGRES_CA_FILENAME, \
-    POSTGRES_VLAN2_CA_CERT, PostgresEnv, unic_postgres_vlan2_conn_id
+from lib.postgres import skip_task, POSTGRES_VLAN2_CA_PATH, POSTGRES_CA_FILENAME, PostgresEnv, \
+    unic_postgres_vlan2_conn_id, unic_postgres_vlan2_ca_cert
 from lib.slack import Slack
 from lib.tasks.notify import start, end
 
@@ -26,6 +26,7 @@ YELLOW_BUCKET = "yellow-prd"
 table_name_list = ["dict_table", "variable"]
 env_name = None
 conn_id = None
+ca_cert = None
 
 # Update default args
 args = DEFAULT_ARGS.copy()
@@ -58,6 +59,7 @@ def arguments(table_name: str, resource_code: str, resource_type: str) -> \
 for env in PostgresEnv:
     env_name = env.value
     conn_id = unic_postgres_vlan2_conn_id(env)
+    ca_cert = unic_postgres_vlan2_ca_cert(env)
 
     doc = f"""
     # Postgres **{env_name}** Scan Metadata DAG
@@ -138,7 +140,7 @@ for env in PostgresEnv:
                     postgres_conn_id=conn_id,
                     postgres_ca_path=POSTGRES_VLAN2_CA_PATH,
                     postgres_ca_filename=POSTGRES_CA_FILENAME,
-                    postgres_ca_cert=POSTGRES_VLAN2_CA_CERT,
+                    postgres_ca_cert=ca_cert,
                     schema_name="catalog",
                     table_name=table_name,
                     table_schema_path=f"sql/catalog/tables/{table_name}.sql",
