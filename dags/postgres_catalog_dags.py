@@ -12,8 +12,8 @@ from airflow.utils.trigger_rule import TriggerRule
 
 from lib.config import DEFAULT_ARGS
 from lib.groups.postgres.create_tables import create_tables
-from lib.postgres import POSTGRES_VLAN2_CA_PATH, POSTGRES_VLAN2_CA_CERT, \
-    PostgresEnv, unic_postgres_vlan2_conn_id
+from lib.postgres import POSTGRES_VLAN2_CA_PATH, \
+    PostgresEnv, unic_postgres_vlan2_conn_id, unic_postgres_vlan2_ca_cert
 from lib.slack import Slack
 from lib.tasks.notify import start, end
 from lib.tasks.postgres import create_resource, PostgresResource
@@ -46,6 +46,7 @@ args.update({
 for env in PostgresEnv:
     env_name = env.value
     conn_id = unic_postgres_vlan2_conn_id(env)
+    ca_cert = unic_postgres_vlan2_ca_cert(env)
 
     doc = f"""
     # Postgres **{env_name}** Catalog DAG
@@ -77,10 +78,10 @@ for env in PostgresEnv:
     ) as dag:
         start("start_postgres_catalog") \
         >> create_resource(PostgresResource.SCHEMA, sql_config, conn_id=conn_id, ca_path=POSTGRES_VLAN2_CA_PATH,
-                           ca_cert=POSTGRES_VLAN2_CA_CERT) \
+                           ca_cert=ca_cert) \
         >> create_resource(PostgresResource.TYPES, sql_config, conn_id=conn_id, ca_path=POSTGRES_VLAN2_CA_PATH,
-                           ca_cert=POSTGRES_VLAN2_CA_CERT) \
-        >> create_tables(sql_config, conn_id=conn_id, ca_path=POSTGRES_VLAN2_CA_PATH, ca_cert=POSTGRES_VLAN2_CA_CERT) \
+                           ca_cert=ca_cert) \
+        >> create_tables(sql_config, conn_id=conn_id, ca_path=POSTGRES_VLAN2_CA_PATH, ca_cert=ca_cert) \
         >> create_resource(PostgresResource.INDEXES, sql_config, conn_id=conn_id, ca_path=POSTGRES_VLAN2_CA_PATH,
-                           ca_cert=POSTGRES_VLAN2_CA_CERT) \
+                           ca_cert=ca_cert) \
         >> end("end_postgres_catalog")
