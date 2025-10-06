@@ -62,8 +62,7 @@
         "anonymized_opera_vstype_anesthesie_ref",
         "anonymized_opera_vssalle_ref",
         "anonymized_opera_vsspecialite_ref",
-        "anonymized_opera_vssuivi_ref",
-        "anonymized_opera_vsutilisateur"
+        "anonymized_opera_vssuivi_ref"
       ], "cluster_type" : "xsmall"},
       {"name": "greater_partition_counts", "destinations": [
         "anonymized_opera_vsa*",
