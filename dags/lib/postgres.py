@@ -5,7 +5,7 @@ from airflow.models import Variable
 from lib.hooks.postgresca import PostgresCaHook
 
 class PostgresEnv(Enum):
-    DEV = 'dev'
+    QA = 'qa'
     PROD = 'prod'
 
 

@@ -9,14 +9,14 @@ from airflow import DAG
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
+from lib.config import DEFAULT_ARGS
 from lib.groups.publish.index import index_opensearch
 from lib.groups.publish.publish import publish_research_project
-from lib.tasks.publish import validate_publish_dictionary, get_resource_code, get_version_to_publish, get_include_dictionary, get_skip_index
-from lib.tasks.notify import start, end
-from lib.opensearch import pg_env_os_env_mapping
-from lib.config import DEFAULT_ARGS
 from lib.postgres import PostgresEnv, unic_postgres_vlan2_conn_id
 from lib.slack import Slack
+from lib.tasks.notify import start, end
+from lib.tasks.publish import validate_publish_dictionary, get_resource_code, get_version_to_publish, \
+    get_include_dictionary, get_skip_index
 
 # Update default args
 dag_args = DEFAULT_ARGS.copy()
@@ -84,7 +84,7 @@ for env in PostgresEnv:
         ) \
         >>  index_opensearch(
             pg_env_name=env_name,
-            os_env_name=pg_env_os_env_mapping.get(env).value,
+            os_env_name=env_name,
             dag=dag,
             skip=get_skip_index_task
         ) \
