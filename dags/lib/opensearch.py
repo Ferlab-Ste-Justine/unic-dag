@@ -22,21 +22,6 @@ class OpensearchAlias(Enum):
     TABLE = 'table_centric'
     VARIABLE = 'variable_centric'
 
-"""
-Opensearch environment to Postgres environment mapping
-"""
-OS_ENV_PG_ENV_MAPPING: dict = {
-    OpensearchEnv.PROD: PostgresEnv.PROD,
-    OpensearchEnv.QA: PostgresEnv.DEV
-}
-
-"""
-Postgres environment to Opensearch environment mapping
-"""
-pg_env_os_env_mapping: dict = {
-    PostgresEnv.PROD: OpensearchEnv.PROD,
-    PostgresEnv.DEV: OpensearchEnv.QA
-}
 
 """
 Opensearch index templates

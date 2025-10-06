@@ -171,12 +171,12 @@ Navigate to **Admin → Connections** and add:
 #### 2. Set Airflow Variable
 Navigate to **Admin → Variables** and add:
 
-- pg_conn_id : `postgres` (Set to corresponding Postgres connection ID. Eg: `unic_dev_postgresql_vlan2_rw`)
+- pg_conn_id : `postgres` (Set to corresponding Postgres connection ID. Eg: `unic_qa_postgresql_vlan2_rw`)
 
 #### 3. Set Airflow Connection
 Navigate to **Admin → Connections** and add:
 
-- Connection ID : `postgres` (Set to corresponding Postgres connection ID. Eg: `unic_dev_postgresql_vlan2_rw`)
+- Connection ID : `postgres` (Set to corresponding Postgres connection ID. Eg: `unic_qa_postgresql_vlan2_rw`)
 - Connection Type : `Postgres`
 - Host: `postgres-unic`
 - Schema: `unic`
