@@ -19,5 +19,21 @@ CREATE TABLE IF NOT EXISTS indicateurs_sip.infections (
     indicatorValueOnP13 DECIMAL,
     totalIndicatorValue DECIMAL,
     indicatorValueOnPreviousYear INT,
-    denominator VARCHAR
+    denominatorName VARCHAR,
+    denominatorValue DECIMAL,
+    totalCatheterDaysOnP1 DECIMAL,
+    totalCatheterDaysOnP2 DECIMAL,
+    totalCatheterDaysOnP3 DECIMAL,
+    totalCatheterDaysOnP4 DECIMAL,
+    totalCatheterDaysOnP5 DECIMAL,
+    totalCatheterDaysOnP6 DECIMAL,
+    totalCatheterDaysOnP7 DECIMAL,
+    totalCatheterDaysOnP8 DECIMAL,
+    totalCatheterDaysOnP9 DECIMAL,
+    totalCatheterDaysOnP10 DECIMAL,
+    totalCatheterDaysOnP11 DECIMAL,
+    totalCatheterDaysOnP12 DECIMAL,
+    totalCatheterDaysOnP13 DECIMAL
 );
+
+
