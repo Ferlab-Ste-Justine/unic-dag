@@ -36,7 +36,7 @@ dag = DAG(
     dag_id="curated_radimage_hl7_obx",
     doc_md=DOC,
     start_date=datetime(2013, 10, 5, 7, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval=timedelta(days=1),
+    schedule_interval=None,
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=2),
     default_args=args,
