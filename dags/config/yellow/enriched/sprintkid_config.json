@@ -2,7 +2,7 @@
   "concurrency": 4,
   "start_date": "2024-02-27",
   "schedule": "0 6 * * 2",
-  "catchup": true,
+  "catchup": false,
   "timeout_hours": 4,
   "steps": [
     {
