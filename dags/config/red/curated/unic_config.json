@@ -9,7 +9,7 @@
     "multiple_main_methods": true,
     "pre_tests": [],
     "datasets": [
-      {"dataset_id":"curated_unic_patient_index", "cluster_type": "large", "run_type": "initial", "pass_date": false, "dependencies": []}
+      {"dataset_id":"curated_unic_patient_index", "cluster_type": "large", "run_type": "default", "pass_date": false, "dependencies": []}
     ],
     "optimize" : [],
     "post_tests": [
@@ -24,7 +24,7 @@
     "multiple_main_methods": false,
     "pre_tests": [],
     "datasets": [
-      {"dataset_id":"anonymized_unic_patient_index", "cluster_type": "medium", "run_type": "initial", "pass_date": false, "dependencies": []}
+      {"dataset_id":"anonymized_unic_patient_index", "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []}
     ],
     "optimize" : [],
     "post_tests": [{"name": "equal_counts", "destinations": ["anonymized_unic_patient_index"], "cluster_type" : "xsmall"}]
