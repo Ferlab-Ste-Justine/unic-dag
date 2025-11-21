@@ -12,7 +12,7 @@ from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
 from lib.hooks.postgresca import PostgresCaHook
-from lib.postgres import get_pg_ca_hook, PostgresEnv
+from lib.postgres import get_pg_ca_hook, PostgresEnv, unic_postgres_vlan2_ca_cert
 from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_ID, DEFAULT_VERSION
 from lib.tasks.excel import parquet_to_excel
 from lib.publish_utils import FileType, add_extension_to_path, determine_minio_conn_id_from_config
@@ -349,8 +349,8 @@ def get_publish_dictionary(resource_code: str, pg_conn_id: str) -> bool:
     :param pg_conn_id: Postgres connection id.
     :return: Boolean indicating if the dictionary is to be published.
     """
-
-    pg_conn = get_pg_ca_hook(pg_conn_id).get_conn()
+    ca_cert = unic_postgres_vlan2_ca_cert(PostgresEnv.PROD)  # We always publish to PROD
+    pg_conn = get_pg_ca_hook(pg_conn_id, ca_cert).get_conn()
 
     with pg_conn.cursor() as cur:
         try:
