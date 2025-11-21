@@ -7,6 +7,8 @@ from airflow.decorators import task
 from airflow.exceptions import AirflowFailException
 from airflow.exceptions import AirflowSkipException
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+from openpyxl.cell.cell import ILLEGAL_CHARACTERS_RE
+
 from lib.config import MINIO_CONN_ID
 
 
@@ -87,6 +89,9 @@ def parquet_to_excel(
     # Set the header if not provided
     if header is None:
         header = df.columns
+
+    # Remove illegal characters for Excel
+    df = df.applymap(lambda x: ILLEGAL_CHARACTERS_RE.sub('', x) if isinstance(x, str) else x)
 
     # Save the output to xlsx format
     local_excel_file = os.path.join(local_excel_directory, os.path.basename(excel_output_key))
