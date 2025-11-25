@@ -11,7 +11,7 @@
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.signature.Main",
       "multiple_main_methods": true,
       "datasets": [
-        {"dataset_id":"enriched_signature_participant_index" , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []},
+        {"dataset_id":"enriched_signature_participant_index" , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id":"enriched_signature_weekly_appointment", "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": ["enriched_signature_participant_index"]}
       ]
     },
@@ -21,8 +21,8 @@
       "main_class": "bio.ferlab.ui.etl.released.Main",
       "multiple_main_methods": false,
       "datasets": [
-        {"dataset_id":"released_signature_participant_index" , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []},
-        {"dataset_id":"released_signature_weekly_appointment", "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []}
+        {"dataset_id":"released_signature_participant_index" , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id":"released_signature_weekly_appointment", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
       ]
     },
     {
