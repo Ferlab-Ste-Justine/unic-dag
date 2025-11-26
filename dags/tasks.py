@@ -7,15 +7,14 @@ from typing import Optional
 from airflow import DAG
 from airflow.utils.task_group import TaskGroup
 
-from lib.config import RELEASED_BUCKET, RELEASED_PREFIX, DATE, PUBLISHED_BUCKET, PUBLISHED_PREFIX, UNDERSCORE_DATE, \
-    GREEN_MINIO_CONN_ID, UNDERSCORE_VERSION, VERSION, DEFAULT_MULTIPLE_MAIN_METHODS, V4_SUBZONES
+from lib.config import DATE, UNDERSCORE_DATE, \
+    UNDERSCORE_VERSION, VERSION, DEFAULT_MULTIPLE_MAIN_METHODS, V4_SUBZONES
 from lib.groups.qa import tests as qa_group
 from lib.operators.spark import SparkOperator
 from lib.tasks import notify
-from lib.tasks.excel import parquet_to_excel
 from lib.tasks.optimize import optimize
 from lib.tasks.publish import trigger_publish_dag
-from lib.utils import sanitize_string, extract_table_name
+from lib.utils import sanitize_string
 
 
 def _get_version(pass_date: bool, underscore: bool = False):
@@ -135,32 +134,6 @@ def _create_spark_task(destination: str,
     )
 
 
-def _create_publish_excel_task(destination: str,
-                               resource: str,
-                               pass_date: bool,
-                               skip: Optional[str] = None):
-    """
-    Create a Python task to convert Parquet files in released to Excel files in published.
-
-    :param destination: Dataset ID of the destination to publish
-    :param resource: Resource name
-    :param pass_date: True if the date should be passed as version. If False, the version provided to the DAG is passed.
-    :param skip: A Jinja template to evaluate whether a task should be skipped or not, defaults to None
-    :return: ParquetToExcel Python task
-    """
-    table_name = extract_table_name(destination, resource)
-    version = _get_version(pass_date, underscore=False)
-    underscore_version = _get_version(pass_date, underscore=True)
-    return parquet_to_excel.override(task_id=sanitize_string(destination, "_"))(
-        parquet_bucket_name=RELEASED_BUCKET,
-        parquet_dir_key=f"{RELEASED_PREFIX}/{resource}/{version}/{table_name}",
-        excel_bucket_name=PUBLISHED_BUCKET,
-        excel_output_key=f"{PUBLISHED_PREFIX}/{resource}/{version}/{resource}_{table_name}_{underscore_version}.xlsx",
-        minio_conn_id=GREEN_MINIO_CONN_ID,
-        skip=False if skip is None else skip
-    )
-
-
 def create_tasks(dag: DAG,
                  dag_config: dict,
                  config_file: str,
@@ -181,7 +154,7 @@ def create_tasks(dag: DAG,
     groups = []
     for step_config in dag_config['steps']:
         with TaskGroup(group_id=step_config['destination_subzone']) as subzone_group:
-            zone = step_config['destination_zone']
+            zone = step_config['destination_zone'] if 'destination_zone' in step_config else None
             subzone = step_config['destination_subzone']
             main_class = step_config['main_class'] if 'main_class' in step_config else None
             multiple_main_methods = step_config['multiple_main_methods'] if 'multiple_main_methods' in step_config else DEFAULT_MULTIPLE_MAIN_METHODS
@@ -209,9 +182,11 @@ def create_tasks(dag: DAG,
                 optimize_task = optimize(optimize_tables, resource, zone, subzone, config_file, jar, dag)
 
             if subzone == "published" and not main_class:
+                # Resource code to use for publishing can be overridden in the config file if needed
+                resource_code = step_config['resource_code'] if 'resource_code' in step_config else resource
                 # By default, if pass_date is not specified, we assume it is False, as most projects do have it as False
                 publish_dag = trigger_publish_dag(
-                    resource_code=resource,
+                    resource_code=resource_code,
                     version_to_publish=_get_version(pass_date=step_config.get('pass_date', False), underscore=False),
                     include_dictionary=step_config.get('include_dictionary', False),
                 )
