@@ -83,12 +83,12 @@ dag = DAG(
     dag_id="ingestion_philips",
     doc_md=DOC,
     start_date=datetime(2023, 8, 15, 5, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval=timedelta(days=1),  # every day at 2am timezone montreal
+    schedule="0 5 * * *",  # every day at 5am timezone montreal
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=12),
     default_args=args,
     is_paused_upon_creation=True,
-    catchup=True,
+    catchup=False,
     max_active_runs=1,
     max_active_tasks=2,
     tags=TAGS,
