@@ -21,8 +21,8 @@
       "main_class": "bio.ferlab.ui.etl.released.Main",
       "multiple_main_methods": false,
       "datasets": [
-        {"dataset_id":"released_signature_participant_index" , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id":"released_signature_weekly_appointment", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+        {"dataset_id":"released_signature_participant_index" , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []},
+        {"dataset_id":"released_signature_weekly_appointment", "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []}
       ]
     },
     {
