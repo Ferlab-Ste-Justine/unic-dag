@@ -114,15 +114,17 @@ def extract_config_info(
         minio_conn_id = YELLOW_MINIO_CONN_ID
 
     # Initialize the mini_config
-    mini_config = {}
-    mini_config["clinical_bucket"] = None
-    mini_config["nominative_bucket"] = None
-    mini_config["sources"] = {}
+    mini_config = {
+        "input_bucket": None,
+        "clinical_bucket": None,
+        "nominative_bucket": None,
+        "sources": {}
+    }
     # Set the input bucket
     input_bucket = get_released_bucket_name(resource_code=resource_code, config=config)
     mini_config["input_bucket"] = input_bucket
 
-    chosen_conn_id = determine_minio_conn_id_from_config( minio_conn_id=minio_conn_id, input_bucket=mini_config.get("input_bucket"))
+    chosen_conn_id = determine_minio_conn_id_from_config(minio_conn_id=minio_conn_id, input_bucket=mini_config.get("input_bucket"))
     s3 = S3Hook(aws_conn_id=chosen_conn_id)
 
     released_path = f"released/{resource_code}/{version_to_publish}/"
