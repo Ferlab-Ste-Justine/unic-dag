@@ -20,7 +20,7 @@ DOC = """
 ETL d'ingestion des données neonat de Philips
 
 ### Description
-Cet ETL roule quotidiennement à 3h le matin pour ingérer les données neonat enregistrées le jour précédent à partir de la BDD Philips.PatientData.
+Cet ETL roule quotidiennement à 5h le matin pour ingérer les données neonat enregistrées le jour précédent à partir de la BDD Philips.PatientData.
 La date de la run dans Airflow ingère les données de la journée précédente, exemple:
 la run du 15 Aout 2023 ingère les données du 14 Aout 2023  dans le lac.
 
@@ -28,7 +28,7 @@ la run du 15 Aout 2023 ingère les données du 14 Aout 2023  dans le lac.
 ### Horaire
 * __Date de début__ - 15 Aout 2023 
 * __Date de fin__ - aucune
-* __Jour et heure__ - Chaque jour, 3h heure de Montréal
+* __Jour et heure__ - Chaque jour, 5h heure de Montréal
 """
 
 def create_spark_task(destination: str, cluster_size: str, main_class: str, zone: str, steps: str = "default") -> SparkOperator:
@@ -74,7 +74,7 @@ ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.philips.Main"
 
 args = DEFAULT_ARGS.copy()
 args.update({
-    'start_date': datetime(2023, 8, 15, 2, tzinfo=pendulum.timezone("America/Montreal")),
+    'start_date': datetime(2023, 8, 15, 5, tzinfo=pendulum.timezone("America/Montreal")),
     'provide_context': True,  # to use date of ingested data as input in main
     'depends_on_past': True,
     'wait_for_downstream': True})
@@ -82,7 +82,7 @@ args.update({
 dag = DAG(
     dag_id="ingestion_philips",
     doc_md=DOC,
-    start_date=datetime(2023, 8, 15, 2, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2023, 8, 15, 5, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(days=1),  # every day at 2am timezone montreal
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=12),
