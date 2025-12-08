@@ -30,7 +30,6 @@ SKIP_EXIT_CODE = 99
 
 # Spark config
 SPARK_BUCKET = "spark-prd"
-SPARK_IMAGE = "ferlabcrsj/spark:3.5.5"
 
 # Spark jobs config
 CONFIG_FILE = "config/prod.conf"
