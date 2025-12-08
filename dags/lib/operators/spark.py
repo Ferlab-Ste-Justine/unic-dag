@@ -3,6 +3,7 @@ from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import Kubernete
 from kubernetes.client import models as k8s
 
 from lib.cleanup import Cleanup
+from lib.config import SPARK_IMAGE
 
 
 class SparkOperator(KubernetesPodOperator):
@@ -24,7 +25,7 @@ class SparkOperator(KubernetesPodOperator):
     ) -> None:
         super().__init__(
             is_delete_operator_pod=False,
-            image='ferlabcrsj/spark:10cc50d5f431244f9523ea76188300fac5173de1',
+            image=SPARK_IMAGE,
             service_account_name='spark',
             priority_weight=1,
             weight_rule="absolute",
