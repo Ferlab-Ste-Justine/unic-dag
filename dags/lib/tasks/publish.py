@@ -1,7 +1,7 @@
 import logging
-from datetime import datetime
 import os
 import re
+from datetime import datetime
 
 import pandas as pd
 import psycopg2
@@ -11,13 +11,11 @@ from airflow.models import DagRun
 from airflow.operators.trigger_dagrun import TriggerDagRunOperator
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
-from lib.hooks.postgresca import PostgresCaHook
+from lib.config import PUBLISHED_BUCKET, YELLOW_MINIO_CONN_ID, DEFAULT_VERSION
 from lib.postgres import get_pg_ca_hook, PostgresEnv, unic_postgres_vlan2_ca_cert
-from lib.config import PUBLISHED_BUCKET, GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_ID, DEFAULT_VERSION
-from lib.tasks.excel import parquet_to_excel
 from lib.publish_utils import FileType, add_extension_to_path, determine_minio_conn_id_from_config
-
-from sql.publish import update_dict_current_version_query, get_publish_dictionary_query, resource_query, dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query
+from sql.publish import (update_dict_current_version_query, get_publish_dictionary_query, resource_query,
+                         dict_table_query, variable_query, value_set_query, value_set_code_query, mapping_query)
 
 
 @task
@@ -105,7 +103,7 @@ def extract_config_info(
     from lib.hocon_parsing import parse_hocon_conf, get_bucket_name, get_dataset_published_path, get_released_bucket_name
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
     from lib.config import YELLOW_MINIO_CONN_ID, PUBLISHED_BUCKET
-    from lib.publish_utils import print_extracted_config, determine_minio_conn_id_from_config
+    from lib.publish_utils import determine_minio_conn_id_from_config
 
     config = parse_hocon_conf()
 
@@ -212,7 +210,8 @@ def publish_dictionary(
 
     # define connection vars
     s3 = S3Hook(aws_conn_id=determine_minio_conn_id_from_config(minio_conn_id, input_bucket=config.get("input_bucket")))
-    pg = get_pg_ca_hook(pg_conn_id=pg_conn_id)
+    ca_cert = unic_postgres_vlan2_ca_cert(PostgresEnv.PROD)
+    pg = get_pg_ca_hook(pg_conn_id, ca_cert)
 
     result_map = {
         "Resource" : pg.get_pandas_df(resource_query(resource_code)),
@@ -260,7 +259,8 @@ def update_dict_current_version(dict_version: str, resource_code: str, include_d
     if not include_dictionary:
         raise AirflowSkipException()
 
-    pg_conn = get_pg_ca_hook(pg_conn_id).get_conn()
+    ca_cert = unic_postgres_vlan2_ca_cert(PostgresEnv.PROD)
+    pg_conn = get_pg_ca_hook(pg_conn_id, ca_cert).get_conn()
 
     with pg_conn.cursor() as cur:
         try:
