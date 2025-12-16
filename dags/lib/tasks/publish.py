@@ -39,7 +39,9 @@ def get_version_to_publish(ti=None) -> str:
     elif version_to_publish == DEFAULT_VERSION or bool(datetime.strptime(version_to_publish, date_format)):
         return dag_run.conf['version_to_publish']
     else:
-        raise AirflowFailException(f"DAG param 'version_to_publish' is not in the correct format. Expected format: YYYY-MM-DD")
+        raise AirflowFailException(
+            f"DAG param 'version_to_publish' is not in the correct format. Expected format: YYYY-MM-DD")
+
 
 @task
 def get_include_dictionary(ti=None) -> bool:
@@ -63,7 +65,8 @@ def get_release_id(ti=None) -> str:
     elif re.fullmatch(regex, release_id):
         return dag_run.conf['release_id']
     else:
-        raise AirflowFailException(f"DAG param 'release_id' is not in the correct format. Expected format: re_xxxx where x is a digit.")
+        raise AirflowFailException(
+            f"DAG param 'release_id' is not in the correct format. Expected format: re_xxxx where x is a digit.")
 
 
 @task.virtualenv(requirements=["pyhocon==0.3.61"], system_site_packages=True)
@@ -100,7 +103,8 @@ def extract_config_info(
 
     """
 
-    from lib.hocon_parsing import parse_hocon_conf, get_bucket_name, get_dataset_published_path, get_released_bucket_name
+    from lib.hocon_parsing import (parse_hocon_conf, get_bucket_name, get_dataset_published_path,
+                                   get_released_bucket_name)
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
     from lib.config import YELLOW_MINIO_CONN_ID, PUBLISHED_BUCKET
     from lib.publish_utils import determine_minio_conn_id_from_config
@@ -122,7 +126,8 @@ def extract_config_info(
     input_bucket = get_released_bucket_name(resource_code=resource_code, config=config)
     mini_config["input_bucket"] = input_bucket
 
-    chosen_conn_id = determine_minio_conn_id_from_config(minio_conn_id=minio_conn_id, input_bucket=mini_config.get("input_bucket"))
+    chosen_conn_id = determine_minio_conn_id_from_config(minio_conn_id=minio_conn_id,
+                                                         input_bucket=mini_config.get("input_bucket"))
     s3 = S3Hook(aws_conn_id=chosen_conn_id)
 
     released_path = f"released/{resource_code}/{version_to_publish}/"
@@ -144,7 +149,7 @@ def extract_config_info(
 
         output_path = get_dataset_published_path(source_id=source_id, config=config)
         # Replacing the version in the filename with the underscore version to publish
-        output_path = output_path.replace("_{{version}}", f"_{version_to_publish.replace('-','_')}")
+        output_path = output_path.replace("_{{version}}", f"_{version_to_publish.replace('-', '_')}")
         # Replacing the version template for the folder with the dashed version to publish
         output_path = output_path.replace("{{version}}", version_to_publish)
 
@@ -214,12 +219,12 @@ def publish_dictionary(
     pg = get_pg_ca_hook(pg_conn_id, ca_cert)
 
     result_map = {
-        "Resource" : pg.get_pandas_df(resource_query(resource_code)),
-        "Dict Tables" : pg.get_pandas_df(dict_table_query(resource_code)),
-        "Variable" : pg.get_pandas_df(variable_query(resource_code)),
-        "Value Sets" : pg.get_pandas_df(value_set_query(resource_code)),
-        "Value Set Codes" : pg.get_pandas_df(value_set_code_query(resource_code)),
-        "Mappings" : pg.get_pandas_df(mapping_query(resource_code))
+        "Resource": pg.get_pandas_df(resource_query(resource_code)),
+        "Dict Tables": pg.get_pandas_df(dict_table_query(resource_code)),
+        "Variable": pg.get_pandas_df(variable_query(resource_code)),
+        "Value Sets": pg.get_pandas_df(value_set_query(resource_code)),
+        "Value Set Codes": pg.get_pandas_df(value_set_code_query(resource_code)),
+        "Mappings": pg.get_pandas_df(mapping_query(resource_code))
     }
 
     # set up local Excel file
@@ -246,7 +251,8 @@ def publish_dictionary(
 
 
 @task(task_id='update_dict_current_version')
-def update_dict_current_version(dict_version: str, resource_code: str, include_dictionary: bool, pg_conn_id: str) -> None:
+def update_dict_current_version(dict_version: str, resource_code: str, include_dictionary: bool,
+                                pg_conn_id: str) -> None:
     """
     Update dict version for a given resource.
 
@@ -314,7 +320,7 @@ def trigger_publish_dag(
         include_dictionary: bool = True,
         skip_index: bool = True,
         release_id: str = "",
-        env : PostgresEnv = PostgresEnv.PROD) -> TriggerDagRunOperator:
+        env: PostgresEnv = PostgresEnv.PROD) -> TriggerDagRunOperator:
     """
     Trigger the publish DAG with the given parameters.
 
@@ -327,20 +333,21 @@ def trigger_publish_dag(
     :return: TriggerDagRunOperator
     """
     return TriggerDagRunOperator(
-        task_id = f"trigger_publish_{resource_code}",
-        trigger_dag_id = f"unic_publish_project_{env.value}",
-        conf = {
+        task_id=f"trigger_publish_{resource_code}",
+        trigger_dag_id=f"unic_publish_project_{env.value}",
+        conf={
             "resource_code": resource_code,
             "version_to_publish": version_to_publish,
             "include_dictionary": include_dictionary,
             "skip_index": skip_index,
             "release_id": release_id
         },
-        wait_for_completion = True, # Wait for the triggered DAG to complete before continuing
-        poke_interval = 60, # Check the status of the triggered DAG every 60 seconds.
-        failed_states = ["failed"], # The default failed_states is None, thus provide "failed" as a failed state to check against.
-        retries = 3,  # Number of retries if the trigger fails
-)
+        wait_for_completion=True,  # Wait for the triggered DAG to complete before continuing
+        poke_interval=60,  # Check the status of the triggered DAG every 60 seconds.
+        # The default failed_states is None, thus provide "failed" as a failed state to check against.
+        failed_states=["failed"],
+        retries=3,  # Number of retries if the trigger fails
+    )
 
 
 def get_publish_dictionary(resource_code: str, pg_conn_id: str) -> bool:
