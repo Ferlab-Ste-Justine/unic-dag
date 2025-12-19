@@ -10,7 +10,7 @@
     "pre_tests": [],
     "datasets": [
       {"dataset_id": "warehouse_diagnostic_reference"                     , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
-      {"dataset_id": "warehouse_emergency_department_episode"             , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "warehouse_emergency_department_episode"             , "cluster_type": "large" , "run_type": "default", "pass_date": false, "dependencies": []},
       {"dataset_id": "warehouse_emergency_department_triage"              , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
       {"dataset_id": "warehouse_fetal_ultrasound"                         , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
       {"dataset_id": "warehouse_hospitalisation_diagnosis"                , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
