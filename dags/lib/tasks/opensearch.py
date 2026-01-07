@@ -214,7 +214,7 @@ def get_next_release_id(env_name: str,
                         increment: bool = True,
                         skip: bool = False) -> str:
     """
-    Get release id for openseach index.
+    Get release id for opensearch index.
 
     :param env_name: OpenSearch environment name (e.g. 'prod', 'qa')
     :param release_id: Release ID to use. If not provided, the current release ID will be fetched from OpenSearch and incremented by 1.
@@ -226,7 +226,7 @@ def get_next_release_id(env_name: str,
     import logging
 
     from lib.config import SKIP_EXIT_CODE
-    from lib.opensearch import MAX_RELEASE_ID_NUM, MIN_RELEASE_ID_NUM, load_cert, get_opensearch_client
+    from lib.opensearch import MAX_RELEASE_ID_NUM, MIN_RELEASE_ID, load_cert, get_opensearch_client
     from airflow.exceptions import AirflowFailException
 
     if skip:
@@ -246,6 +246,11 @@ def get_next_release_id(env_name: str,
 
     try:
         logging.info(f'No release id passed to DAG. Fetching release id from OS for all index {alias}.')
+        # Check if alias exists
+        if not os_client.indices.exists_alias(name=alias):
+            logging.info(f'Alias {alias} does not exist. Starting with min release id {MIN_RELEASE_ID}.')
+            return MIN_RELEASE_ID
+
         # Fetch current id from OS
         alias_info = os_client.indices.get_alias(name=alias)
         current_index = list(alias_info.keys())[0]
@@ -255,10 +260,11 @@ def get_next_release_id(env_name: str,
         raise AirflowFailException()
 
     if increment:
-        # Increment current id by 1
+        # If current id is max, reset to min
         if current_release_id_num == MAX_RELEASE_ID_NUM:
-            return f're_{str(MIN_RELEASE_ID_NUM).zfill(4)}'
+            return MIN_RELEASE_ID
 
+        # Increment current id by 1
         new_release_id = f're_{str(current_release_id_num + 1).zfill(4)}'
         logging.info(f'New release id: {new_release_id}')
         return new_release_id
