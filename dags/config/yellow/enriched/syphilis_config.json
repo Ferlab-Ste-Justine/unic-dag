@@ -20,7 +20,7 @@
     {
       "destination_zone": "green",
       "destination_subzone": "released",
-      "git checkout - b ": "bio.ferlab.ui.etl.released.Main",
+      "main_class": "bio.ferlab.ui.etl.released.Main",
       "multiple_main_methods": false,
       "datasets":
       [
