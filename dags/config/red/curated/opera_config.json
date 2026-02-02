@@ -141,7 +141,10 @@
       {"dataset_id":"anonymized_opera_vst*"                              , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
       {"dataset_id":"anonymized_opera_vsu*"                              , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []}
     ],
-    "optimize" : [],
+    "optimize" : [
+      "anonymized_opera_vsnomenclature",
+      "anonymized_opera_vsproduit"
+    ],
     "post_tests": [
       {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_opera_*"], "cluster_type" : "xsmall"},
       {"name": "equal_counts", "destinations": ["anonymized_opera_*"], "cluster_type" : "xsmall"}
