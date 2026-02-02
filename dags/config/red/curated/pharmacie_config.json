@@ -50,7 +50,7 @@
       ],
       "datasets": [
          {"dataset_id":"anonymized_pharmacie_g*"                , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
-         {"dataset_id":"anonymized_pharmacie_phfadmin*"         , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+         {"dataset_id":"anonymized_pharmacie_phfadmin*"         , "cluster_type": "medium", "run_type": "initial", "pass_date": false, "dependencies": []},
          {"dataset_id":"anonymized_pharmacie_phfchamb"          , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
          {"dataset_id":"anonymized_pharmacie_phfchtir"          , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
          {"dataset_id":"anonymized_pharmacie_phfhora1"          , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
