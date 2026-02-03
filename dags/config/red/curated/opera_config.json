@@ -62,7 +62,7 @@
         "anonymized_opera_vssalle_ref",
         "anonymized_opera_vsspecialite_ref",
         "anonymized_opera_vssuivi_ref"
-      ], "cluster_type" : "xsmall"},
+      ], "cluster_type" : "medium"},
       {"name": "greater_partition_counts", "destinations": [
         "anonymized_opera_vsa*",
         "anonymized_opera_vscdj",
@@ -104,7 +104,7 @@
         "anonymized_opera_vsstatut_programme",
         "anonymized_opera_vstemps_operatoires",
         "anonymized_opera_vsusager"
-      ], "cluster_type" : "xsmall"}
+      ], "cluster_type" : "medium"}
     ],
     "datasets": [
       {"dataset_id":"anonymized_opera_vsa*"                              , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
@@ -135,7 +135,7 @@
       {"dataset_id":"anonymized_opera_vsniveau_priorite_ref"             , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
       {"dataset_id":"anonymized_opera_vsno*"                             , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
       {"dataset_id":"anonymized_opera_vso*"                              , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
-      {"dataset_id":"anonymized_opera_vsp*"                              , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id":"anonymized_opera_vsp*"                              , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
       {"dataset_id":"anonymized_opera_vsr*"                              , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
       {"dataset_id":"anonymized_opera_vss*"                              , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
       {"dataset_id":"anonymized_opera_vst*"                              , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
@@ -146,8 +146,31 @@
       "anonymized_opera_vsproduit"
     ],
     "post_tests": [
-      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_opera_*"], "cluster_type" : "xsmall"},
-      {"name": "equal_counts", "destinations": ["anonymized_opera_*"], "cluster_type" : "xsmall"}
+      {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_opera_*"], "cluster_type" : "medium"},
+      {"name": "equal_counts", "destinations": [
+        "anonymized_opera_vsa*",
+        "anonymized_opera_vsc*",
+        "anonymized_opera_vsdelta_requete",
+        "anonymized_opera_vse*",
+        "anonymized_opera_vsfiche_urgence",
+        "anonymized_opera_vsgrille_infection",
+        "anonymized_opera_vshoraire_*",
+        "anonymized_opera_vsin*",
+        "anonymized_opera_vsl*",
+        "anonymized_opera_vsni_*",
+        "anonymized_opera_vsnotes_particulieres",
+        "anonymized_opera_vso*",
+        "anonymized_opera_vspa*",
+        "anonymized_opera_vspersonnel_*",
+        "anonymized_opera_vspo*",
+        "anonymized_opera_vspre*",
+        "anonymized_opera_vsproduit_*",
+        "anonymized_opera_vsprogramme*",
+        "anonymized_opera_vsr*",
+        "anonymized_opera_vss*",
+        "anonymized_opera_vst*",
+        "anonymized_opera_vsu*"
+      ], "cluster_type" : "medium"}
     ]
   }]
 }
