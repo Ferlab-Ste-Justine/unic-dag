@@ -39,27 +39,24 @@ with dag:
     MAIN_CLASS = "bio.ferlab.ui.etl.qa.ExcelReadWriteETL"
 
 
-    def arguments(entrypoint: str) -> List[str]:
+    def arguments() -> List[str]:
         """
-        Constructs cli arguments for etl entrypoint
+        Constructs cli arguments for etl
 
-        :param entrypoint: The entrypoint for which the arguments are generated.
-        :type entrypoint: str
         :return: A list of strings representing the constructed command-line arguments.
         :rtype: List[str]
         """
         return [
-            entrypoint,
             "--config", "config/prod.conf",
             "--steps", "default",
-            "--app-name", entrypoint,
+            "--app-name", "test_spark_excel_read_write",
         ]
 
 
     perform_test = SparkOperator(
         task_id="unic-test-excel-read-write",
         name="unic-test-excel-read-write",
-        arguments=arguments("perform_read_write"),
+        arguments=arguments(),
         zone=ZONE,
         spark_class=MAIN_CLASS,
         spark_jar=JAR,
