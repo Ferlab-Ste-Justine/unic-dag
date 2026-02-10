@@ -12,7 +12,6 @@ from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPAR
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import end, start
 
-
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
 DOC = """
@@ -25,7 +24,7 @@ ETL pour tester la lecture et écriture des fichiers Excel.
 args = DEFAULT_ARGS.copy()
 
 dag = DAG(
-    dag_id="test-spark-excel-read-write",
+    dag_id="test_spark_excel_read_write",
     doc_md=DOC,
     start_date=datetime(2023, 10, 20, 7, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=None,
@@ -41,15 +40,12 @@ with dag:
 
 
     def arguments(entrypoint: str) -> List[str]:
-        arguments = [
+        return [
             entrypoint,
             "--config", "config/prod.conf",
             "--steps", "default",
             "--app-name", entrypoint,
         ]
-
-        return arguments
-
 
 
     perform_test = SparkOperator(
@@ -63,7 +59,5 @@ with dag:
         spark_config="small-etl",
         dag=dag
     )
-
-
 
     start() >> perform_test >> end()
