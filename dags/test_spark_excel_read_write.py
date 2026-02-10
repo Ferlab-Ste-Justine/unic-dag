@@ -1,7 +1,7 @@
 """
 Test spark-excel package DAG
 """
-
+# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
 from datetime import datetime, timedelta
 from typing import List
 
@@ -40,6 +40,14 @@ with dag:
 
 
     def arguments(entrypoint: str) -> List[str]:
+        """
+        Constructs cli arguments for etl entrypoint
+
+        :param entrypoint: The entrypoint for which the arguments are generated.
+        :type entrypoint: str
+        :return: A list of strings representing the constructed command-line arguments.
+        :rtype: List[str]
+        """
         return [
             entrypoint,
             "--config", "config/prod.conf",
