@@ -13,7 +13,7 @@ from lib.operators.spark import SparkOperator
 from lib.tasks.notify import end, start
 
 
-JAR = 's3a://spark-prd/jars/unic-etl-UNIC-1951.jar'
+JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
 DOC = """
 # Test spark-excel package DAG
