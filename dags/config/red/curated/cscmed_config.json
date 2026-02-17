@@ -10,7 +10,7 @@
       "multiple_main_methods": true,
       "pre_tests": [{"name": "greater_or_equal_partition_counts", "destinations": ["curated_cscmed_*"], "cluster_type" : "large"}],
       "datasets": [
-        {"dataset_id":"curated_cscmed_jobs_sections", "cluster_type": "large", "run_type": "initial", "pass_date": false, "dependencies": []},
+        {"dataset_id":"curated_cscmed_jobs_sections", "cluster_type": "large", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id":"curated_cscmed_quickform"    , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
       ],
       "optimize" : [],
