@@ -37,7 +37,7 @@
           {"dataset_id": "anonymized_cscmed_cir*"       , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_cpa*"       , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_cra*"       , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
-          {"dataset_id": "anonymized_cscmed_crme*"      , "cluster_type": "small" , "run_type": "initial", "pass_date": false, "dependencies": []},
+          {"dataset_id": "anonymized_cscmed_crme*"      , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_ctc*"       , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_demographic", "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
           {"dataset_id": "anonymized_cscmed_den*"       , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
