@@ -55,7 +55,12 @@ with DAG(
     anonymized_task = SparkOperator(
         task_id="anonymized_participant_index",
         name="anonymized-participant-index",
-        arguments=[CONFIG_FILE, run_type(), destination()],
+        arguments=[
+            "--config", CONFIG_FILE,
+            "--steps", run_type(),
+            "--app-name", destination(),
+            "--destination", destination()
+        ],
         zone="yellow",
         spark_class="bio.ferlab.ui.etl.yellow.anonymized.Main",
         spark_jar=JAR,

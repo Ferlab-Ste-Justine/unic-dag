@@ -17,7 +17,7 @@ JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 DOC = """
 # Test spark-excel package DAG
 
-ETL pour tester la lecture et écriture des fichiers Excel. 
+ETL pour tester la lecture et écriture des fichiers Excel.
 """
 
 # Update default args
