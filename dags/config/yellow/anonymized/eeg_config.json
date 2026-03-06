@@ -1,6 +1,6 @@
 {
-  "concurrency": 3,
-  "schedule": null,
+  "concurrency": 4,
+  "schedule": "0 2 * * 3",
   "timeout_hours": 6,
   "steps": [{
     "destination_zone": "yellow",
@@ -8,22 +8,21 @@
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
     "multiple_main_methods": false,
     "datasets": [
-      {"dataset_id" : "anonymized_eeg_inf_data"         , "cluster_type" : "small"  , "run_type" : "default" , "pass_date" : false , "dependencies" : []} ,
-      {"dataset_id" : "anonymized_eeg_inf_exampatient"  , "cluster_type" : "xsmall" , "run_type" : "default" , "pass_date" : false , "dependencies" : []} ,
-      {"dataset_id" : "anonymized_eeg_inf_scheduleexam" , "cluster_type" : "xsmall" , "run_type" : "default" , "pass_date" : false , "dependencies" : []} ,
-      {"dataset_id" : "anonymized_eeg_inf_videodata"    , "cluster_type" : "small"  , "run_type" : "default" , "pass_date" : false , "dependencies" : []} ,
-      {"dataset_id" : "anonymized_eeg_mst_department"   , "cluster_type" : "xsmall" , "run_type" : "default" , "pass_date" : false , "dependencies" : []} ,
-      {"dataset_id" : "anonymized_eeg_mst_diskvolume"   , "cluster_type" : "xsmall" , "run_type" : "default" , "pass_date" : false , "dependencies" : []} ,
-      {"dataset_id" : "anonymized_eeg_mst_exam"         , "cluster_type" : "xsmall" , "run_type" : "default" , "pass_date" : false , "dependencies" : []} ,
-      {"dataset_id" : "anonymized_eeg_mst_instrument"   , "cluster_type" : "xsmall" , "run_type" : "default" , "pass_date" : false , "dependencies" : []} ,
-      {"dataset_id" : "anonymized_eeg_mst_machine"      , "cluster_type" : "xsmall" , "run_type" : "default" , "pass_date" : false , "dependencies" : []} ,
-      {"dataset_id" : "anonymized_eeg_mst_member"       , "cluster_type" : "xsmall" , "run_type" : "default" , "pass_date" : false , "dependencies" : []} ,
-      {"dataset_id" : "anonymized_eeg_mst_patient"      , "cluster_type" : "xsmall" , "run_type" : "default" , "pass_date" : false , "dependencies" : []} ,
-      {"dataset_id" : "anonymized_eeg_mst_protocol"     , "cluster_type" : "xsmall" , "run_type" : "default" , "pass_date" : false , "dependencies" : []} ,
-      {"dataset_id" : "anonymized_eeg_mst_rptdefault"   , "cluster_type" : "xsmall" , "run_type" : "default" , "pass_date" : false , "dependencies" : []} ,
-      {"dataset_id" : "anonymized_eeg_mst_status"       , "cluster_type" : "xsmall" , "run_type" : "default" , "pass_date" : false , "dependencies" : []} ,
-      {"dataset_id" : "anonymized_eeg_mst_version"      , "cluster_type" : "xsmall" , "run_type" : "default" , "pass_date" : false , "dependencies" : []}
-
+      {"dataset_id": "anonymized_eeg_inf_data"        , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_eeg_inf_exampatient" , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_eeg_inf_scheduleexam", "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_eeg_inf_videodata"   , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_eeg_mst_department"  , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_eeg_mst_diskvolume"  , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_eeg_mst_exam"        , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_eeg_mst_instrument"  , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_eeg_mst_machine"     , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_eeg_mst_member"      , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_eeg_mst_patient"     , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_eeg_mst_protocol"    , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_eeg_mst_rptdefault"  , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_eeg_mst_status"      , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+      {"dataset_id": "anonymized_eeg_mst_version"     , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []}
 
     ]
   }],
