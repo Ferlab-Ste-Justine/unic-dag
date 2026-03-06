@@ -28,7 +28,6 @@ La run du 2 janvier 2020 parse les données du 1 janvier dans le lac.
 
 ANONYMIZED_ZONE = "yellow"
 CURATED_ZONE = "red"
-ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
 CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
 args = DEFAULT_ARGS.copy()
 args.update({
@@ -90,30 +89,5 @@ with dag:
         dag=dag
     ) for task_name, cluster_size in radimage_hl7_curated_tasks]
 
-    # radimage_hl7_anonymized_tasks = [
-    #     ("anonymized_radimage_hl7_oru_r01_al1", "small-etl"),
-    #     ("anonymized_radimage_hl7_oru_r01_nte", "small-etl"),
-    #     ("anonymized_radimage_hl7_oru_r01_obr", "small-etl"),
-    #     ("anonymized_radimage_hl7_oru_r01_obx", "small-etl"),
-    #     ("anonymized_radimage_hl7_oru_r01_orc", "small-etl"),
-    #     ("anonymized_radimage_hl7_oru_r01_pid", "small-etl"),
-    #     ("anonymized_radimage_hl7_oru_r01_pv1", "small-etl"),
-    #     ("anonymized_radimage_hl7_oru_r01_zal", "small-etl"),
-    #     ("anonymized_radimage_hl7_oru_r01_zbr", "small-etl"),
-    #     ("anonymized_radimage_hl7_oru_r01_zdc", "small-etl"),
-    #     ("anonymized_radimage_hl7_oru_r01_zrc", "small-etl"),
-    # ]
-    #
-    # radimage_hl7_anonymized = [SparkOperator(
-    #     task_id=task_name,
-    #     name=task_name.replace("_","-"),
-    #     arguments=["config/prod.conf", "default", task_name, '{{ds}}'],
-    #     zone=ANONYMIZED_ZONE,
-    #     spark_class=ANONYMIZED_MAIN_CLASS,
-    #     spark_jar=jar,
-    #     spark_failure_msg=spark_failure_msg,
-    #     spark_config=cluster_size,
-    #     dag=dag
-    # ) for task_name, cluster_size in radimage_hl7_anonymized_tasks]
 
     start("start_curated_radimage_hl7") >> radimage_hl7_curated >> end("end_curated_radimage_hl7")
