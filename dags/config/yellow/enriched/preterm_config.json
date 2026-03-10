@@ -1,0 +1,25 @@
+{
+  "concurrency": 1,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [
+    {
+      "destination_zone": "yellow",
+      "destination_subzone": "enriched",
+      "main_class": "bio.ferlab.ui.etl.yellow.enriched.preterm.Main",
+      "multiple_main_methods": true,
+      "datasets": [
+         {"dataset_id":"enriched_preterm_participant_index", "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []}
+      ]
+    },
+    {
+      "destination_zone": "green",
+      "destination_subzone": "released",
+      "main_class": "bio.ferlab.ui.etl.released.Main",
+      "multiple_main_methods": false,
+      "datasets": [
+        {"dataset_id":"released_reterm_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+      ]
+    }
+  ]
+}
