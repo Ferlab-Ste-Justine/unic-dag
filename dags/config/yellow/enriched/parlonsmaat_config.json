@@ -35,12 +35,6 @@
         {"dataset_id": "released_parlonsmaat_mstp"                 , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "released_parlonsmaat_nurse_evaluation"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
       ]
-    },
-    {
-      "destination_zone": "green",
-      "destination_subzone": "published",
-      "pass_date": true,
-      "include_dictionary": false
     }
   ]
 }
