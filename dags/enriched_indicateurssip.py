@@ -1,7 +1,7 @@
 """
 Enriched Indicateurs SIP
 """
-# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
+# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned, too-many-locals
 from datetime import datetime, timedelta
 from typing import List
 
@@ -217,11 +217,23 @@ with dag:
             dag=dag,
         )
 
+        enriched_toutes_les_infections = SparkOperator(
+            task_id="enriched_indicateurssip_toutes_les_infections",
+            name="enriched-indicateurssip-toutes-les-infections",
+            arguments=enriched_arguments("enriched_indicateurssip_toutes_les_infections"),
+            zone=enriched_zone,
+            spark_class=enriched_main_class,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
+            spark_config="small-etl",
+            dag=dag,
+        )
+
 
 
         enriched_participant_index >> enriched_sejour >> [enriched_catheter, enriched_ventilation,
                                                           enriched_extubation, enriched_lits, enriched_infirmieres,
-                                                          enriched_ecmo, enriched_scores, enriched_infections, enriched_demandes_lits] >> enriched_central_catheters_details
+                                                          enriched_ecmo, enriched_scores, enriched_infections, enriched_demandes_lits,enriched_toutes_les_infections] >> enriched_central_catheters_details
 
     ENRICHED_GROUP = enriched()
 
@@ -374,8 +386,20 @@ with dag:
             dag=dag,
         )
 
+        released_toutes_les_infections = SparkOperator(
+            task_id="released_indicateurssip_toutes_les_infections",
+            name="released-indicateurssip-toutes-les-infections",
+            arguments=released_arguments("released_indicateurssip_toutes_les_infections"),
+            zone=released_zone,
+            spark_class=released_main_class,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
+            spark_config="small-etl",
+            dag=dag,
+        )
 
-        [released_sejour, released_catheter, released_ventilation, released_extubation, released_lits, released_infirmieres, released_ecmo, released_scores, released_infections, released_central_catheters_details, released_demandes_lits]
+
+        [released_sejour, released_catheter, released_ventilation, released_extubation, released_lits, released_infirmieres, released_ecmo, released_scores, released_infections, released_central_catheters_details, released_demandes_lits, released_toutes_les_infections]
 
     RELEASED_GROUP = released()
 
@@ -396,7 +420,8 @@ with dag:
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/scores/scores.csv"                                      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "scores"}                   ,
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/infections/infections.csv"                              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infections"}               ,
             {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/central_catheters_details/central_catheters_details.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "central_catheters_details"},
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/demandes_lits/demandes_lits.csv"                        , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "demandes_lits"}
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/demandes_lits/demandes_lits.csv"                        , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "demandes_lits"}            ,
+            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/toutes_les_infections/toutes_les_infections.csv"        , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "toutes_les_infections"}    ,
 
         ]
 

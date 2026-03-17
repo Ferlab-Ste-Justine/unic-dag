@@ -1,0 +1,35 @@
+-- noinspection SqlNoDataSourceInspectionForFile
+
+-- create toutes_les_infections  table
+
+CREATE TABLE IF NOT EXISTS indicateurs_sip.toutes_les_infections (
+   N0 Int,
+   INDICATEUR_ESTCALCULE BOOLEAN,
+   INDICATEUR_ANNEE VARCHAR,
+   INDICATEUR_UNITE Int,
+   NOM_UNITÉ VARCHAR,
+   INDICATEUR_NOM Int,
+   Calcul_NomIndicateur VARCHAR,
+   INDICATEUR_DENOMINATEUR Int,
+   LISTDENOMINATEUR_NOM VARCHAR,
+   INDICATEUR_P Int,
+   INDICATEUR_P2 Int,
+   INDICATEUR_P Int,
+   INDICATEUR_P Int,
+   INDICATEUR_P5 Int,
+   INDICATEUR_P6 Int,
+   INDICATEUR_P7 Int,
+   INDICATEUR_P8 Int,
+   INDICATEUR_P9 Int,
+   INDICATEUR_P Int,
+   INDICATEUR_P Int,
+   INDICATEUR_P2 Int,
+   INDICATEUR_P Int,
+   INDICATEUR_TOTAL Int,
+   INDICATEUR_TOTALANNEEPRECEDENTE Int,
+   INDICATEUR_CIBLE Int,
+   Calcul_ValeurCoefficient Int,
+   Calcul_Denominateur Int,
+   Calcul_Cible Double,
+   LISTDENOMINATEUR_ANNEE VARCHAR
+);
