@@ -43,6 +43,8 @@ sql_config = {
         {"name": "scores"                   , "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/scores_schema.sql"                   , "dependencies": []},
         {"name": "infections"               , "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/infections_schema.sql"               , "dependencies": []},
         {"name": "central_catheters_details", "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/central_catheters_details_schema.sql", "dependencies": []},
+        {"name": "demandes_lits"            , "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/demandes_lits_schema.sql"            , "dependencies": []},
+        {"name": "toutes_les_infections"    , "postgres_table_creation_sql_path": "sql/indicateurs_sip/tables/toutes_les_infections_schema.sql"    , "dependencies": []},
 
     ]
 }
