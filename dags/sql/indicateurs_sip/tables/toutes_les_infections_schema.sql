@@ -30,6 +30,6 @@ CREATE TABLE IF NOT EXISTS indicateurs_sip.toutes_les_infections (
    INDICATEUR_CIBLE Int,
    Calcul_ValeurCoefficient Int,
    Calcul_Denominateur Int,
-   Calcul_Cible Double,
+   Calcul_Cible DECIMAL,
    LISTDENOMINATEUR_ANNEE VARCHAR
 );
