@@ -257,7 +257,7 @@ with dag:
         anonymized_quanum_tasks = [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
-            arguments=["config/prod.conf", run_type(), task_name],
+            arguments=generate_spark_arguments(task_name, pass_date = False, steps= run_type()),
             zone=QUANUMCHARTMAXX_ANONYMIZED_ZONE,
             spark_class=QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS,
             spark_jar=JAR,
@@ -285,7 +285,7 @@ with dag:
         anonymized_quanum_chartmaxx_tasks = [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
-            arguments=["config/prod.conf", run_type(), task_name],
+            arguments=generate_spark_arguments(task_name, pass_date=False, steps=run_type()),
             zone=QUANUMCHARTMAXX_ANONYMIZED_ZONE,
             spark_class=QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS,
             spark_jar=JAR,

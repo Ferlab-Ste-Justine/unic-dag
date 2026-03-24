@@ -2,7 +2,6 @@ from datetime import timedelta, datetime
 
 import pendulum
 from airflow.models import Variable, Param
-
 from lib.failure import Failure
 from lib.slack import Slack
 
@@ -37,7 +36,7 @@ SPARK_FAILURE_MSG = "Spark job failed"
 JAR = f's3a://{SPARK_BUCKET}/jars/unic-etl-{{{{ params.branch }}}}.jar'
 MASTER_JAR = f's3a://{SPARK_BUCKET}/jars/unic-etl-master.jar'
 DEFAULT_MULTIPLE_MAIN_METHODS = False
-V4_SUBZONES = ["raw", "curated", "released", "enriched"]  # Subzones using ETL v4
+V4_SUBZONES = ["raw", "curated", "released", "enriched", "anonymized"]  # Subzones using ETL v4
 
 # Connection config
 MINIO_CONN_ID = "minio"
