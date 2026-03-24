@@ -35,6 +35,22 @@
         {"dataset_id": "released_parlonsmaat_mstp"                 , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "released_parlonsmaat_nurse_evaluation"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
       ]
+    },
+    {
+      "destination_zone": "green",
+      "destination_subzone": "published",
+      "main_class": "bio.ferlab.ui.etl.green.published.Main",
+      "multiple_main_methods": false,
+      "datasets": [
+        {"dataset_id": "published_parlonsmaat_clinic_ado_quickforms", "cluster_type": "small", "run_type": "default", "pass_date": true , "dependencies": []},
+        {"dataset_id": "published_parlonsmaat_clinic_end_quickforms", "cluster_type": "small", "run_type": "default", "pass_date": true , "dependencies": []},
+        {"dataset_id": "published_parlonsmaat_clinic_ped_quickforms", "cluster_type": "small", "run_type": "default", "pass_date": true , "dependencies": []},
+        {"dataset_id": "published_parlonsmaat_emergency"            , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "published_parlonsmaat_hospitalisations"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "published_parlonsmaat_laboratory_results"   , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "published_parlonsmaat_mstp"                 , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "published_parlonsmaat_nurse_evaluation"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+      ]
     }
   ]
 }
