@@ -136,7 +136,19 @@ with dag:
             dag=dag
         )
 
-        enriched_participant_index >> [enriched_last_visit_survey, enriched_monthly_visit]
+        enriched_monthly_visit_evaluation = SparkOperator(
+            task_id="enriched_signature_monthly_visit_evaluation",
+            name="enriched-signature-monthly-visit-evaluation",
+            arguments=enriched_arguments("enriched_signature_monthly_visit_evaluation", start_date=False, end_date=True),
+            zone=ENRICHED_ZONE,
+            spark_class=ENRICHED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
+            spark_config="medium-etl",
+            dag=dag
+        )
+
+        enriched_participant_index >> [enriched_last_visit_survey, enriched_monthly_visit] >> enriched_monthly_visit_evaluation
 
     with TaskGroup(group_id="released") as released:
         RELEASED_ZONE = "green"
@@ -169,6 +181,24 @@ with dag:
                 "--steps", "default",
                 "--app-name", "released_signature_monthly_visit",
                 "--destination", "released_signature_monthly_visit",
+                "--version", "{{ data_interval_end | ds }}"
+            ],
+            zone=RELEASED_ZONE,
+            spark_class=RELEASED_MAIN_CLASS,
+            spark_jar=JAR,
+            spark_failure_msg=SPARK_FAILURE_MSG,
+            spark_config="small-etl",
+            dag=dag
+        )
+
+        released_monthly_visit_evaluation = SparkOperator(
+            task_id="released_signature_monthly_visit_evaluation",
+            name="released-signature-monthly-visit-evaluation",
+            arguments=[
+                "--config", "config/prod.conf",
+                "--steps", "default",
+                "--app-name", "released_signature_monthly_visit_evaluation",
+                "--destination", "released_signature_monthly_visit_evaluation",
                 "--version", "{{ data_interval_end | ds }}"
             ],
             zone=RELEASED_ZONE,
