@@ -90,7 +90,7 @@ def generate_spark_arguments(destination: str, pass_date: bool, steps: str = "de
 
     if pass_date:
         arguments.append("--date")
-        arguments.append("{{ ds }}")
+        arguments.append("{{ data_interval_start.in_timezone('America/Montreal').format('YYYY-MM-DD') }}")
 
     return arguments
 
