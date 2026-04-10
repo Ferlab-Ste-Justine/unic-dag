@@ -66,7 +66,7 @@ args = DEFAULT_ARGS.copy()
 dag = DAG(
     dag_id="curated_cscmed_jobs",
     doc_md=DOC,
-    start_date=datetime(2026, 3, 12, 13, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2026, 4, 9, 13, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=4),
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=4),
