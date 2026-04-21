@@ -18,7 +18,7 @@
       "main_class": "bio.ferlab.ui.etl.released.Main",
       "multiple_main_methods": false,
       "datasets": [
-        {"dataset_id":"released_reterm_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+        {"dataset_id":"released_preterm_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
       ]
     }
   ]
