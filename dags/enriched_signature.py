@@ -33,7 +33,7 @@ données depuis le début de l'étude, ne sont pas exécutées.
 ### Horaire
 * __Date de début__ - 7 juillet 2023
 * __Date de fin__ - aucune
-* __Jour et heure__ - Vendredi, 6h heure de Montréal
+* __Jour et heure__ - Vendredi, 8h heure de Montréal
 * __Intervalle__ - Chaque 4 semaine
 
 ### Configuration
@@ -59,7 +59,7 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_signature",
     doc_md=DOC,
-    start_date=datetime(2023, 6, 9, 6, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2023, 6, 9, 8, tzinfo=pendulum.timezone("America/Montreal")),
     schedule_interval=timedelta(weeks=4),
     params=params,
     dagrun_timeout=timedelta(hours=DEFAULT_TIMEOUT_HOURS),
