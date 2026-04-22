@@ -75,6 +75,8 @@
           "anonymized_pharmacie_phfhora1",
           "anonymized_pharmacie_phfm*",
           "anonymized_pharmacie_phfposol",
+          "anonymized_pharmacie_phfprescripteur_objetprecrivable",
+          "anonymized_pharmacie_phfprescripteur_objetprecrivable_champsadditionnels",
           "anonymized_pharmacie_phfprescripteur_operations",
           "anonymized_pharmacie_phfprescripteur_poso",
           "anonymized_pharmacie_phfprescripteur_voie",
