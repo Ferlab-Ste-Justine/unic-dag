@@ -18,11 +18,13 @@
         "anonymized_radimage_s*"
       ], "cluster_type" : "xsmall"},
       {"name": "greater_partition_counts", "destinations": [
-        "anonymized_radimage_c*",
         "anonymized_radimage_i*",
         "anonymized_radimage_medecin",
         "anonymized_radimage_patient*",
-        "anonymized_radimage_requete*"
+        "anonymized_radimage_requete_examen",
+        "anonymized_radimage_requete_medecin_referan",
+        "anonymized_radimage_requete_proto_particul",
+        "anonymized_radimage_requete_protocolage"
       ], "cluster_type" : "xsmall"}
     ],
     "datasets": [
