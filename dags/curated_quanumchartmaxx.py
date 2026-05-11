@@ -178,12 +178,7 @@ with dag:
         curated_quanum_tasks = [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
-            # temp: force initial run for curated_quanum_c*. REVERT after rerun succeeds
-            arguments=generate_spark_arguments(
-                task_name,
-                pass_date=True,
-                steps="initial" if task_name == "curated_quanum_c*" else run_type(),
-            ),
+            arguments=generate_spark_arguments(task_name, pass_date=True, steps=run_type()),
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_MAIN_CLASS,
             spark_jar=JAR,
@@ -227,7 +222,12 @@ with dag:
         curated_quanum_chartmaxx_tasks = [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
-            arguments=generate_spark_arguments(task_name, pass_date=False, steps=run_type()),
+            # temp: force initial run for curated_quanum_chartmaxx_c*. REVERT after rerun succeeds
+            arguments=generate_spark_arguments(
+                task_name,
+                pass_date=False,
+                steps="initial" if task_name == "curated_quanum_chartmaxx_c*" else run_type(),
+            ),
             zone=QUANUMCHARTMAXX_CURATED_ZONE,
             spark_class=QUANUMCHARTMAXX_CURATED_MAIN_CLASS,
             spark_jar=JAR,
