@@ -129,8 +129,7 @@ with dag:
         curated_quanum_form_name_vw_task = SparkOperator(
             task_id="curated_quanum_form_name_vw",
             name="curated_quanum_form_name_vw".replace("_", "-"),
-            # temp: force initial run for curated_quanum_form_name_vw. REVERT after
-            arguments=generate_spark_arguments("curated_quanum_form_name_vw", pass_date=True, steps="initial"),
+            arguments=generate_spark_arguments("curated_quanum_form_name_vw", pass_date=True, steps=run_type()),
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_MAIN_CLASS,
             spark_jar=JAR,
@@ -176,10 +175,16 @@ with dag:
             ("curated_quanum_v*", "small-etl")
         ]
 
+        force_initial_tasks = {"curated_quanum_c*", "curated_quanum_i*", "curated_quanum_urogynecologie*"}
         curated_quanum_tasks = [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
-            arguments=generate_spark_arguments(task_name, pass_date=True, steps=run_type()),
+            # temp: force initial run for curated_quanum_c*, _i*, _urogynecologie*. REVERT after rerun succeeds
+            arguments=generate_spark_arguments(
+                task_name,
+                pass_date=True,
+                steps="initial" if task_name in force_initial_tasks else run_type(),
+            ),
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_MAIN_CLASS,
             spark_jar=JAR,
