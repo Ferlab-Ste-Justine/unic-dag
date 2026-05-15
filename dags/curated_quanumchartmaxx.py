@@ -129,8 +129,7 @@ with dag:
         curated_quanum_form_name_vw_task = SparkOperator(
             task_id="curated_quanum_form_name_vw",
             name="curated_quanum_form_name_vw".replace("_", "-"),
-            # temp: force initial run for curated_quanum_form_name_vw. REVERT after
-            arguments=generate_spark_arguments("curated_quanum_form_name_vw", pass_date=True, steps="initial"),
+            arguments=generate_spark_arguments("curated_quanum_form_name_vw", pass_date=True, steps=run_type()),
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_MAIN_CLASS,
             spark_jar=JAR,
