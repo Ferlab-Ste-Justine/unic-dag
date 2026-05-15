@@ -219,19 +219,10 @@ with dag:
             ("curated_quanum_chartmaxx_v*", "small-etl")
         ]
 
-        force_initial_chartmaxx_tasks = {
-            "curated_quanum_chartmaxx_c*",
-            "curated_quanum_chartmaxx_urogynecologie*",
-        }
         curated_quanum_chartmaxx_tasks = [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
-            # temp: force initial run for curated_quanum_chartmaxx_c*, _urogynecologie*. REVERT after rerun succeeds
-            arguments=generate_spark_arguments(
-                task_name,
-                pass_date=False,
-                steps="initial" if task_name in force_initial_chartmaxx_tasks else run_type(),
-            ),
+            arguments=generate_spark_arguments(task_name, pass_date=False, steps=run_type()),
             zone=QUANUMCHARTMAXX_CURATED_ZONE,
             spark_class=QUANUMCHARTMAXX_CURATED_MAIN_CLASS,
             spark_jar=JAR,
