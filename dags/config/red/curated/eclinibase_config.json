@@ -1,8 +1,35 @@
 {
-  "concurrency": 3,
+  "concurrency": 4,
   "schedule": "20 1 * * 2,5",
   "timeout_hours": 6,
-  "steps": [{
+  "steps": [
+    {
+      "destination_zone": "red",
+      "destination_subzone": "curated",
+      "main_class": "bio.ferlab.ui.etl.red.curated.eclinibase.Main",
+      "multiple_main_methods": false,
+      "pre_tests": [
+        {"name": "greater_or_equal_partition_counts", "destinations": [
+          "curated_eclinibase_v_identification",
+          "curated_eclinibase_v_identification_adresse",
+          "curated_eclinibase_v_identification_autre_dossier"
+        ], "cluster_type" : "xsmall"}
+      ],
+      "datasets": [
+        {"dataset_id": "curated_eclinibase_v_identification"              , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "curated_eclinibase_v_identification_adresse"      , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "curated_eclinibase_v_identification_autre_dossier", "cluster_type": "large" , "run_type": "default", "pass_date": false, "dependencies": []}
+
+      ],
+      "optimize" : [
+        "curated_eclinibase_v_identification",
+        "curated_eclinibase_v_identification_adresse",
+        "curated_eclinibase_v_identification_autre_dossier"
+      ],
+      "post_tests": []
+
+    },
+    {
     "destination_zone": "yellow",
     "destination_subzone": "anonymized",
     "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
