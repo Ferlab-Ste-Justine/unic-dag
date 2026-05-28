@@ -7,9 +7,12 @@
       "destination_zone": "yellow",
       "destination_subzone": "enriched",
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.preterm.Main",
-      "multiple_main_methods": false,
+      "multiple_main_methods": true,
       "datasets": [
-         {"dataset_id":"enriched_preterm_participant_index", "cluster_type": "medium" , "run_type": "initial", "pass_date": false, "dependencies": []}
+        {"dataset_id":"enriched_preterm_participant_index"          , "cluster_type": "medium" , "run_type": "initial", "pass_date": false, "dependencies": []},
+        {"dataset_id":"enriched_preterm_district_area_from_adt"     , "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": []},
+        {"dataset_id":"enriched_preterm_district_area_from_radimage", "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": []},
+        {"dataset_id":"enriched_preterm_district_area_from_birth"   , "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": []}
       ]
     },
     {
@@ -18,7 +21,10 @@
       "main_class": "bio.ferlab.ui.etl.released.Main",
       "multiple_main_methods": false,
       "datasets": [
-        {"dataset_id":"released_preterm_participant_index", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+        {"dataset_id":"released_preterm_participant_index"          , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id":"released_preterm_district_area_from_adt"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id":"released_preterm_district_area_from_radimage", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id":"released_preterm_district_area_from_birth"   , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
       ]
     }
   ]
