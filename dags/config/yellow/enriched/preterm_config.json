@@ -10,9 +10,9 @@
       "multiple_main_methods": true,
       "datasets": [
         {"dataset_id":"enriched_preterm_participant_index"          , "cluster_type": "medium" , "run_type": "initial", "pass_date": false, "dependencies": []},
-        {"dataset_id":"enriched_preterm_district_area_from_adt"     , "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": []},
-        {"dataset_id":"enriched_preterm_district_area_from_radimage", "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": []},
-        {"dataset_id":"enriched_preterm_district_area_from_birth"   , "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": []}
+        {"dataset_id":"enriched_preterm_district_area_from_adt"     , "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": ["enriched_preterm_participant_index"]},
+        {"dataset_id":"enriched_preterm_district_area_from_radimage", "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": ["enriched_preterm_participant_index"]},
+        {"dataset_id":"enriched_preterm_district_area_from_birth"   , "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": ["enriched_preterm_participant_index"]}
       ]
     },
     {
