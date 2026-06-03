@@ -13,7 +13,7 @@
         {"dataset_id": "curated_chartmaxx_cmformcapture"   , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "curated_chartmaxx_form_data_vw"    , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "curated_chartmaxx_form_metadata_vw", "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id": "curated_chartmaxx_form_name_vw"    , "cluster_type": "small" , "run_type": "initial", "pass_date": false, "dependencies": []},
+        {"dataset_id": "curated_chartmaxx_form_name_vw"    , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": []},
 
         {"dataset_id": "curated_chartmaxx_a*"              , "cluster_type": "large", "run_type": "default", "pass_date": false, "dependencies": ["curated_chartmaxx_form_name_vw", "curated_chartmaxx_form_data_vw"]},
         {"dataset_id": "curated_chartmaxx_b*"              , "cluster_type": "large", "run_type": "default", "pass_date": false, "dependencies": ["curated_chartmaxx_form_name_vw", "curated_chartmaxx_form_data_vw"]},
