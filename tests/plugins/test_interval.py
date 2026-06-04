@@ -1,0 +1,196 @@
+"""Unit tests for IntervalTimetable."""
+# pylint: disable=missing-function-docstring,protected-access,invalid-name
+from __future__ import annotations
+
+from datetime import timedelta
+
+import pendulum
+import pytest
+from freezegun import freeze_time
+
+from airflow.exceptions import AirflowTimetableInvalid
+from airflow.timetables.base import DataInterval, TimeRestriction
+
+from timetables.interval import IntervalTimetable
+
+TZ = pendulum.timezone("America/Montreal")
+START = pendulum.datetime(2026, 3, 13, 3, 0, 0, tz=TZ)
+INTERVAL = timedelta(weeks=4)
+
+
+def _tt() -> IntervalTimetable:
+    return IntervalTimetable(interval=INTERVAL)
+
+
+def _restriction(earliest=START, latest=None, catchup=True) -> TimeRestriction:
+    return TimeRestriction(earliest=earliest, latest=latest, catchup=catchup)
+
+
+# --- construction --------------------------------------------------------
+def test_construction_stores_interval():
+    tt = _tt()
+    assert tt._interval == INTERVAL
+
+
+@pytest.mark.parametrize("bad_interval", [timedelta(0), timedelta(seconds=-1)])
+def test_construction_rejects_non_positive_interval(bad_interval):
+    with pytest.raises(AirflowTimetableInvalid):
+        IntervalTimetable(interval=bad_interval)
+
+
+def test_construction_rejects_non_timedelta_interval():
+    with pytest.raises(AirflowTimetableInvalid):
+        IntervalTimetable(interval=42)  # type: ignore[arg-type]
+
+
+# --- alignment helpers (anchor passed explicitly) -----------------------
+@pytest.mark.parametrize(
+    "instant,expected",
+    [
+        (START, START),
+        (START - timedelta(days=1), START),
+        (START + INTERVAL - timedelta(seconds=1), START),
+        (START + INTERVAL, START + INTERVAL),
+        (START + 2 * INTERVAL - timedelta(seconds=1), START + INTERVAL),
+        (START + 5 * INTERVAL, START + 5 * INTERVAL),
+    ],
+)
+def test_align_to_prev(instant, expected):
+    assert _tt()._align_to_prev(instant, anchor=START) == expected
+
+
+@pytest.mark.parametrize(
+    "instant,expected",
+    [
+        (START, START),
+        (START - timedelta(days=1), START),
+        (START + timedelta(seconds=1), START + INTERVAL),
+        (START + INTERVAL, START + INTERVAL),
+        (START + INTERVAL + timedelta(seconds=1), START + 2 * INTERVAL),
+        (START + 5 * INTERVAL, START + 5 * INTERVAL),
+    ],
+)
+def test_align_to_next(instant, expected):
+    assert _tt()._align_to_next(instant, anchor=START) == expected
+
+
+# --- infer_manual_data_interval -----------------------------------------
+def test_infer_manual_data_interval_uses_delta_semantic():
+    """Manual triggers have no anchor info, so the interval ends at run_after."""
+    run_after = START + INTERVAL + timedelta(days=3)
+    di = _tt().infer_manual_data_interval(run_after=run_after)
+    assert di == DataInterval(start=run_after - INTERVAL, end=run_after)
+
+
+# --- next_dagrun_info: chaining off last_automated_data_interval --------
+def test_next_dagrun_info_chains_from_aligned_last_end():
+    last = DataInterval(start=START, end=START + INTERVAL)
+    info = _tt().next_dagrun_info(
+        last_automated_data_interval=last,
+        restriction=_restriction(),
+    )
+    assert info is not None
+    assert info.data_interval == DataInterval(
+        start=START + INTERVAL, end=START + 2 * INTERVAL
+    )
+
+
+def test_next_dagrun_info_realigns_after_anchor_shift():
+    """When the DAG's start_date is shifted, next slot re-anchors to the new grid.
+
+    Simulate a DAG that previously ran at 03:00 (last end = 2026-04-10 03:00),
+    then the user shifts the DAG's start_date to 04:00. The next run's data
+    interval end must align to the NEW grid (04:00), not chain off the old
+    03:00 end.
+    """
+    old_last_end = START + INTERVAL  # 2026-04-10 03:00
+    shifted_anchor = START.add(hours=1)  # 2026-03-13 04:00
+    info = _tt().next_dagrun_info(
+        last_automated_data_interval=DataInterval(start=START, end=old_last_end),
+        restriction=_restriction(earliest=shifted_anchor),
+    )
+    assert info is not None
+    # Grid is [shifted_anchor, shifted_anchor + INTERVAL, ...].
+    # _align_to_prev(2026-04-10 03:00 on the 04:00-anchored grid) lands on
+    # shifted_anchor (03:00 of Apr 10 is before 04:00 of Apr 10, so the
+    # previous aligned slot is shifted_anchor = 2026-03-13 04:00).
+    assert info.data_interval.end.hour == 4
+    assert info.data_interval == DataInterval(
+        start=shifted_anchor, end=shifted_anchor + INTERVAL
+    )
+
+
+# --- next_dagrun_info: catchup=True, first run --------------------------
+def test_next_dagrun_info_first_run_catchup_true_starts_at_anchor():
+    info = _tt().next_dagrun_info(
+        last_automated_data_interval=None,
+        restriction=_restriction(earliest=START, catchup=True),
+    )
+    assert info is not None
+    assert info.data_interval == DataInterval(start=START, end=START + INTERVAL)
+
+
+# --- next_dagrun_info: catchup=False ------------------------------------
+def test_next_dagrun_info_first_run_catchup_false_skips_to_latest_completed():
+    """catchup=False with no past run and anchor in the past should fire the
+    most recently completed interval (whose end has already passed)."""
+    # Freeze "now" two days past anchor + 3*INTERVAL (3 intervals completed).
+    frozen_now = START + 3 * INTERVAL + timedelta(days=2)
+    with freeze_time(frozen_now):
+        info = _tt().next_dagrun_info(
+            last_automated_data_interval=None,
+            restriction=_restriction(earliest=START, catchup=False),
+        )
+    assert info is not None
+    # Latest interval whose end <= now is [START + 2*INTERVAL, START + 3*INTERVAL].
+    assert info.data_interval == DataInterval(
+        start=START + 2 * INTERVAL, end=START + 3 * INTERVAL
+    )
+
+
+def test_next_dagrun_info_first_run_catchup_false_first_interval_in_progress():
+    """If now is before anchor + interval, the first interval hasn't ended;
+    schedule it at the anchor so run_after = anchor + interval (future)."""
+    frozen_now = START + timedelta(days=3)
+    with freeze_time(frozen_now):
+        info = _tt().next_dagrun_info(
+            last_automated_data_interval=None,
+            restriction=_restriction(earliest=START, catchup=False),
+        )
+    assert info is not None
+    assert info.data_interval == DataInterval(start=START, end=START + INTERVAL)
+
+
+# --- next_dagrun_info: edge cases ---------------------------------------
+def test_next_dagrun_info_returns_none_when_earliest_is_none():
+    info = _tt().next_dagrun_info(
+        last_automated_data_interval=None,
+        restriction=TimeRestriction(earliest=None, latest=None, catchup=True),
+    )
+    assert info is None
+
+
+def test_next_dagrun_info_returns_none_when_past_latest():
+    info = _tt().next_dagrun_info(
+        last_automated_data_interval=None,
+        restriction=_restriction(
+            earliest=START, latest=START - timedelta(days=1), catchup=True
+        ),
+    )
+    assert info is None
+
+
+# --- serialize / deserialize --------------------------------------------
+def test_serialize_round_trip():
+    original = _tt()
+    rebuilt = IntervalTimetable.deserialize(original.serialize())
+    assert rebuilt == original
+    assert rebuilt._interval == INTERVAL
+
+
+def test_serialize_only_carries_interval():
+    assert _tt().serialize() == {"interval": INTERVAL.total_seconds()}
+
+
+def test_summary_includes_interval():
+    assert "28 days" in _tt().summary
