@@ -274,25 +274,28 @@ with dag:
 
     @task_group(group_id="anonymized_quanumchartmaxx")
     def anonymized_quanumchartmaxx():
+        # UNIC-1987: dossier* and p* are forced to "initial" so their anonymized tables are reset and
+        # recreated with the new-logic schema (OverWritePartitionDynamic cannot evolve schemas).
+        # Revert to run_type() once the rebuild is done.
         anonymized_quanumchartmaxx_config = [
-            ("anonymized_quanum_chartmaxx_a*", "small-etl"),
-            ("anonymized_quanum_chartmaxx_childhood_asthma_test_4_11_years_old", "small-etl"),
-            ("anonymized_quanum_chartmaxx_dossier*", "medium-etl"),
-            ("anonymized_quanum_chartmaxx_p*", "medium-etl"),
-            ("anonymized_quanum_chartmaxx_clinique_*", "medium-etl")
+            ("anonymized_quanum_chartmaxx_a*", "small-etl", run_type()),
+            ("anonymized_quanum_chartmaxx_childhood_asthma_test_4_11_years_old", "small-etl", run_type()),
+            ("anonymized_quanum_chartmaxx_dossier*", "medium-etl", "initial"),
+            ("anonymized_quanum_chartmaxx_p*", "medium-etl", "initial"),
+            ("anonymized_quanum_chartmaxx_clinique_*", "medium-etl", run_type())
         ]
 
         anonymized_quanum_chartmaxx_tasks = [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
-            arguments=generate_spark_arguments(task_name, pass_date=False, steps=run_type()),
+            arguments=generate_spark_arguments(task_name, pass_date=False, steps=steps),
             zone=QUANUMCHARTMAXX_ANONYMIZED_ZONE,
             spark_class=QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config=cluster_size,
             dag=dag
-        ) for task_name, cluster_size in anonymized_quanumchartmaxx_config]
+        ) for task_name, cluster_size, steps in anonymized_quanumchartmaxx_config]
 
         anonymized_quanum_chartmaxx_optimization_tasks = optimize(
             ['anonymized_quanum_chartmaxx*'], "quanum_chartmaxx", QUANUMCHARTMAXX_ANONYMIZED_ZONE, "anonymized",
