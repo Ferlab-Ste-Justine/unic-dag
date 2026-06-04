@@ -278,11 +278,11 @@ with dag:
         # recreated with the new-logic schema (OverWritePartitionDynamic cannot evolve schemas).
         # Revert to run_type() once the rebuild is done.
         anonymized_quanumchartmaxx_config = [
-            ("anonymized_quanum_chartmaxx_a*", "small-etl", run_type()),
-            ("anonymized_quanum_chartmaxx_childhood_asthma_test_4_11_years_old", "small-etl", run_type()),
+            ("anonymized_quanum_chartmaxx_a*", "small-etl", "initial"),
+            ("anonymized_quanum_chartmaxx_childhood_asthma_test_4_11_years_old", "small-etl", "initial"),
             ("anonymized_quanum_chartmaxx_dossier*", "medium-etl", "initial"),
             ("anonymized_quanum_chartmaxx_p*", "medium-etl", "initial"),
-            ("anonymized_quanum_chartmaxx_clinique_*", "medium-etl", run_type())
+            ("anonymized_quanum_chartmaxx_clinique_*", "medium-etl", "initial")
         ]
 
         anonymized_quanum_chartmaxx_tasks = [SparkOperator(
