@@ -21,9 +21,9 @@
       "main_class": "bio.ferlab.ui.etl.released.Main",
       "multiple_main_methods": false,
       "datasets": [
-        {"dataset_id":"enriched_routiner_screening"                , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id":"enriched_routiner_characteristics"          , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id":"enriched_routiner_other_discharge_diagnosis", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+        {"dataset_id":"released_routiner_screening"                , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id":"released_routiner_characteristics"          , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id":"released_routiner_other_discharge_diagnosis", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
       ]
     }
   ]
