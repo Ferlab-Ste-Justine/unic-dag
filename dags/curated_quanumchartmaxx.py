@@ -102,6 +102,11 @@ def run_type() -> str:
 with dag:
     @task_group(group_id="curated_quanum")
     def curated_quanum():
+        # max_active_tis_per_dag=1: the three vw tasks MERGE into the same Delta table from every
+        # DAG run. With max_active_runs=3, concurrent instances of the same vw task race on the
+        # commit and the losers fail with ConcurrentAppendException, taking the whole run's
+        # downstream with them. Capping each vw task to one running instance across runs removes
+        # the race while different tasks still run in parallel.
         curated_quanum_form_data_vw_task = SparkOperator(
             task_id="curated_quanum_form_data_vw",
             name="curated_quanum_form_data_vw".replace("_", "-"),
@@ -111,6 +116,7 @@ with dag:
             spark_jar=JAR,
             spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
+            max_active_tis_per_dag=1,
             dag=dag
         )
 
@@ -123,6 +129,7 @@ with dag:
             spark_jar=JAR,
             spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
+            max_active_tis_per_dag=1,
             dag=dag
         )
 
@@ -135,6 +142,7 @@ with dag:
             spark_jar=JAR,
             spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
+            max_active_tis_per_dag=1,
             dag=dag
         )
 
