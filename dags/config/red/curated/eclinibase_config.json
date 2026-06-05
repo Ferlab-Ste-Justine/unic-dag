@@ -1,6 +1,5 @@
 {
   "concurrency": 4,
-  "schedule": "20 1 * * 2,5",
   "timeout_hours": 10,
   "steps": [
     {
@@ -16,8 +15,8 @@
         ], "cluster_type" : "xsmall"}
       ],
       "datasets": [
-        {"dataset_id": "curated_eclinibase_v_identification"              , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id": "curated_eclinibase_v_identification_adresse"      , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "curated_eclinibase_v_identification"              , "cluster_type": "large", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "curated_eclinibase_v_identification_adresse"      , "cluster_type": "large", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "curated_eclinibase_v_identification_autre_dossier", "cluster_type": "large" , "run_type": "default", "pass_date": false, "dependencies": []}
 
       ],
