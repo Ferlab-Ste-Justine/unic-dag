@@ -66,7 +66,7 @@ dag = DAG(
     schedule_interval="0 19 * * *",
     start_date=datetime(2023, 11, 2, tzinfo=LOCAL_TZ),
     params=params,
-    dagrun_timeout=timedelta(hours=20),
+    dagrun_timeout=timedelta(hours=48),  # initial rebuild replays all history for ~175 tables; 20h was too short
     default_args=args,
     is_paused_upon_creation=True,
     catchup=False,
