@@ -120,6 +120,53 @@ def test_next_dagrun_info_realigns_after_anchor_shift():
     )
 
 
+# --- next_dagrun_info: daylight-saving-time stability -------------------
+# A 03:00 schedule must keep firing at 03:00 *local* across DST transitions
+# (like a cron schedule), not drift by an hour the way absolute-duration
+# (timedelta) arithmetic does. 2026 transitions in America/Montreal:
+# spring-forward Mar 8, fall-back Nov 1.
+DST_SUMMER_ANCHOR = pendulum.datetime(2026, 9, 4, 3, 0, 0, tz=TZ)  # 03:00 EDT
+DST_WINTER_ANCHOR = pendulum.datetime(2026, 2, 13, 3, 0, 0, tz=TZ)  # 03:00 EST
+
+
+def test_next_dagrun_info_holds_wall_clock_across_fall_back():
+    """An interval whose end crosses fall-back (Nov 1) lands at 03:00, not 02:00."""
+    last_end = pendulum.datetime(2026, 10, 30, 3, 0, 0, tz=TZ)  # slot before fall-back
+    info = _tt().next_dagrun_info(
+        last_automated_data_interval=DataInterval(start=last_end - INTERVAL, end=last_end),
+        restriction=_restriction(earliest=DST_SUMMER_ANCHOR),
+    )
+    assert info is not None
+    assert info.data_interval.end.hour == 3
+    assert info.data_interval.end == pendulum.datetime(2026, 11, 27, 3, 0, 0, tz=TZ)
+
+
+def test_next_dagrun_info_holds_wall_clock_after_fall_back():
+    """Both endpoints of an interval entirely after fall-back stay at 03:00 local."""
+    last_end = pendulum.datetime(2026, 11, 27, 3, 0, 0, tz=TZ)  # 03:00 EST
+    info = _tt().next_dagrun_info(
+        last_automated_data_interval=DataInterval(start=last_end - INTERVAL, end=last_end),
+        restriction=_restriction(earliest=DST_SUMMER_ANCHOR),
+    )
+    assert info is not None
+    assert info.data_interval.start.hour == 3
+    assert info.data_interval.start == last_end
+    assert info.data_interval.end.hour == 3
+    assert info.data_interval.end == pendulum.datetime(2026, 12, 25, 3, 0, 0, tz=TZ)
+
+
+def test_next_dagrun_info_holds_wall_clock_across_spring_forward():
+    """An interval whose end crosses spring-forward (Mar 8) lands at 03:00, not 04:00."""
+    last_end = DST_WINTER_ANCHOR  # 2026-02-13 03:00 EST, the anchor slot
+    info = _tt().next_dagrun_info(
+        last_automated_data_interval=DataInterval(start=last_end - INTERVAL, end=last_end),
+        restriction=_restriction(earliest=DST_WINTER_ANCHOR),
+    )
+    assert info is not None
+    assert info.data_interval.end.hour == 3
+    assert info.data_interval.end == pendulum.datetime(2026, 3, 13, 3, 0, 0, tz=TZ)
+
+
 # --- next_dagrun_info: catchup=True, first run --------------------------
 def test_next_dagrun_info_first_run_catchup_true_starts_at_anchor():
     info = _tt().next_dagrun_info(

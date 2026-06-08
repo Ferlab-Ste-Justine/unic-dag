@@ -16,6 +16,15 @@ from ``TimeRestriction.earliest`` on each scheduler tick) on the grid
 re-align the next run on the next scheduler tick - no history clearing
 required.
 
+DST behaviour
+-------------
+The grid is computed in naive (DST-free) wall-clock space and then localized to
+the ``start_date`` timezone, so the *wall-clock* run time is held constant across
+daylight-saving transitions: a schedule anchored at 03:00 keeps firing at 03:00
+local year-round, exactly like a cron schedule. This differs from a plain
+``timedelta`` schedule (``DeltaDataIntervalTimetable``), which adds an absolute
+duration and therefore drifts the run by an hour after each DST transition.
+
 Usage
 -----
 Requires ``start_date=`` set on the DAG itself (not just on tasks). ::
@@ -46,7 +55,6 @@ from pendulum import DateTime
 
 from airflow.exceptions import AirflowTimetableInvalid
 from airflow.timetables.base import DagRunInfo, DataInterval, TimeRestriction, Timetable
-from airflow.timetables.interval import DeltaDataIntervalTimetable
 
 
 class IntervalTimetable(Timetable):
@@ -97,19 +105,39 @@ class IntervalTimetable(Timetable):
     def deserialize(cls, data: dict[str, Any]) -> IntervalTimetable:
         return cls(interval=timedelta(seconds=data["interval"]))
 
+    @staticmethod
+    def _localize(naive: DateTime, timezone) -> DateTime:
+        """Attach ``timezone`` to a naive wall-clock ``DateTime``, picking the correct UTC offset."""
+        return timezone.convert(naive)
+
+    def _grid_slot(self, anchor: DateTime, k: int) -> DateTime:
+        """The ``k``-th schedule slot: ``anchor``'s wall clock advanced ``k`` intervals.
+
+        Arithmetic is done in naive (DST-free) wall-clock space and then localized,
+        so the *wall-clock* time is held constant across DST transitions -- a 03:00
+        schedule keeps firing at 03:00, like cron -- rather than holding the absolute
+        elapsed duration (which would drift the run by an hour after each transition).
+        """
+        return self._localize(anchor.naive() + k * self._interval, anchor.timezone)
+
     def _slot_at(self, instant: DateTime, anchor: DateTime, round_fn) -> DateTime:
-        """Return ``anchor + k * interval`` where ``k = round_fn(elapsed / interval)``.
+        """Return grid slot ``k`` where ``k = round_fn(wall_clock_elapsed / interval)``.
 
         Pass ``math.floor`` to land on the slot at-or-before ``instant``, or
         ``math.ceil`` to land on the slot at-or-after. Clamped to ``anchor``
         when ``instant`` is at or before the anchor (no earlier slot exists).
+
+        ``elapsed`` is measured in naive wall-clock space (``instant`` rendered in
+        the anchor's timezone, tz stripped) so the division lands on an exact
+        integer ``k`` at grid points regardless of any DST transition in between.
         """
         if instant <= anchor:
             return anchor
-        elapsed = (instant - anchor).total_seconds()
+        timezone = anchor.timezone
+        elapsed = (instant.in_timezone(timezone).naive() - anchor.naive()).total_seconds()
         period = self._interval.total_seconds()
         k = round_fn(elapsed / period)
-        return anchor + k * self._interval
+        return self._grid_slot(anchor, k)
 
     def _align_to_prev(self, instant: DateTime, anchor: DateTime) -> DateTime:
         """Largest (``floor``) ``anchor + k*interval`` slot ``<= instant``.
@@ -138,7 +166,7 @@ class IntervalTimetable(Timetable):
         in progress, return ``anchor`` so the first run is scheduled.
         """
         now = DateTime.utcnow()
-        if now < anchor + self._interval:
+        if now < self._grid_slot(anchor, 1):
             return anchor
         return self._align_to_prev(now - self._interval, anchor)
 
@@ -177,5 +205,8 @@ class IntervalTimetable(Timetable):
 
         if restriction.latest is not None and start > restriction.latest:
             return None
-        end = start + self._interval
+        # Advance one interval on the wall-clock grid (not absolute seconds) so the
+        # interval end holds local time across a DST transition. ``start`` is always
+        # a grid slot, so this lands on the next slot and intervals stay contiguous.
+        end = self._localize(start.naive() + self._interval, anchor.timezone)
         return DagRunInfo.interval(start=start, end=end)
