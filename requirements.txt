@@ -19,3 +19,5 @@ pandas~=2.0.3
 typing_extensions
 psycopg2-binary~=2.9.7
 pendulum~=2.1.2
+pytest~=7.4.1
+freezegun~=1.5.0
