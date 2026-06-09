@@ -2,7 +2,7 @@
 Enriched signature DAG
 """
 # pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import List
 
 import pendulum
@@ -17,6 +17,7 @@ from lib.slack import Slack
 from lib.tasks.notify import end, start
 from lib.tasks.publish import trigger_publish_dag
 from tasks import _get_version
+from timetables import IntervalTimetable
 
 JAR = 's3a://spark-prd/jars/unic-etl-master.jar'
 
@@ -31,7 +32,7 @@ depuis les quatre dernières semaines. Par défaut, les tâches liées à la tab
 données depuis le début de l'étude, ne sont pas exécutées.
 
 ### Horaire
-* __Date de début__ - 7 juillet 2023
+* __Date de début__ - 5 juin 2026
 * __Date de fin__ - aucune
 * __Jour et heure__ - Vendredi, 8h heure de Montréal
 * __Intervalle__ - Chaque 4 semaine
@@ -59,13 +60,13 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_signature",
     doc_md=DOC,
-    start_date=datetime(2023, 6, 9, 8, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval=timedelta(weeks=4),
+    start_date=pendulum.datetime(2026, 6, 5, 8, tz="America/Montreal"),
+    schedule=IntervalTimetable(interval=timedelta(weeks=4)),
     params=params,
     dagrun_timeout=timedelta(hours=DEFAULT_TIMEOUT_HOURS),
     default_args=args,
     is_paused_upon_creation=True,
-    catchup=True,
+    catchup=False,
     max_active_runs=1,
     max_active_tasks=3,
     tags=["enriched"],
