@@ -241,3 +241,40 @@ def test_serialize_only_carries_interval():
 
 def test_summary_includes_interval():
     assert "28 days" in _tt().summary
+
+
+def test_summary_drops_zero_time_of_day():
+    # str(timedelta(weeks=4)) is "28 days, 0:00:00"; the "0:00:00" is misleading
+    # (it is not the run time) and must not leak into the UI label.
+    assert "0:00:00" not in _tt().summary
+
+
+def test_description_has_no_schedule_prefix():
+    # Airflow prepends "Schedule: " to the description in the UI tooltip, so the
+    # description itself must not start with it (else it doubles up).
+    assert not _tt().description.startswith("Schedule:")
+
+
+@pytest.mark.parametrize(
+    "interval, expected",
+    [
+        # whole-day intervals (the common case) drop the time-of-day noise
+        (timedelta(weeks=4), "28 days"),
+        (timedelta(weeks=2, days=3), "17 days"),
+        (timedelta(days=1), "1 day"),
+        # single non-day units
+        (timedelta(hours=12), "12 hours"),
+        (timedelta(minutes=30), "30 minutes"),
+        (timedelta(seconds=1), "1 second"),
+        # mixed units, with zero components skipped
+        (timedelta(days=3, hours=2), "3 days, 2 hours"),
+        (timedelta(hours=2, seconds=5), "2 hours, 5 seconds"),
+        (timedelta(minutes=90), "1 hour, 30 minutes"),
+        # every unit present, all singular
+        (timedelta(days=1, hours=1, minutes=1, seconds=1), "1 day, 1 hour, 1 minute, 1 second"),
+        # every unit present, all plural
+        (timedelta(days=10, hours=5, minutes=30, seconds=15), "10 days, 5 hours, 30 minutes, 15 seconds"),
+    ],
+)
+def test_humanize_formats_components(interval, expected):
+    assert IntervalTimetable._humanize(interval) == expected

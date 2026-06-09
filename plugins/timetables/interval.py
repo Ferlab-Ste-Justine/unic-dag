@@ -82,11 +82,28 @@ class IntervalTimetable(Timetable):
         if not isinstance(interval, timedelta) or interval <= timedelta(0):
             raise AirflowTimetableInvalid(f"interval must be a positive timedelta, got {interval!r}")
         self._interval = interval
-        self.description = f"Schedule: every {interval}, anchored on the DAG's start_date."
+        self.description = f"Every {self._humanize(interval)}, anchored on the DAG's start_date."
+
+    @staticmethod
+    def _humanize(interval: timedelta) -> str:
+        """Render ``interval`` as a compact human string, e.g. ``28 days`` or ``3 days, 2 hours``.
+
+        Built from the non-zero day/hour/minute/second components so the
+        misleading ``0:00:00`` time-of-day from ``str(timedelta)`` is dropped --
+        that suffix reads like a run time but isn't (the run time is set by the
+        DAG's ``start_date``, not the interval).
+        """
+        total = int(interval.total_seconds())
+        days, rem = divmod(total, 86400)
+        hours, rem = divmod(rem, 3600)
+        minutes, seconds = divmod(rem, 60)
+        units = [(days, "day"), (hours, "hour"), (minutes, "minute"), (seconds, "second")]
+        parts = [f"{value} {name}{'s' if value != 1 else ''}" for value, name in units if value]
+        return ", ".join(parts) if parts else "0 seconds"
 
     @property
     def summary(self) -> str:
-        return f"every {self._interval}"
+        return f"every {self._humanize(self._interval)}"
 
     def __eq__(self, other: Any) -> bool:
         """
