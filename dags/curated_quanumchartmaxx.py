@@ -4,7 +4,7 @@ DAG that processes Quanum and Chartmaxx data.
 # pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
 
 
-from datetime import timedelta, datetime
+from datetime import datetime
 from typing import List
 
 import pendulum
@@ -66,11 +66,10 @@ dag = DAG(
     schedule_interval="0 19 * * *",
     start_date=datetime(2023, 11, 2, tzinfo=LOCAL_TZ),
     params=params,
-    dagrun_timeout=timedelta(hours=48),  # initial rebuild replays all history for ~175 tables; 20h was too short
     default_args=args,
     is_paused_upon_creation=True,
     catchup=False,
-    max_active_runs=3,
+    max_active_runs=1,
     concurrency=8,
     tags=["curated", "anonymized"],
     on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
