@@ -2,7 +2,7 @@
 Curated CSCMED DAG
 """
 # pylint: disable=duplicate-code
-from datetime import datetime, timedelta
+from datetime import timedelta
 
 import pendulum
 from airflow import DAG
@@ -10,6 +10,7 @@ from airflow import DAG
 from lib.config import CONFIG_FILE, JAR, SPARK_FAILURE_MSG, DEFAULT_ARGS, DEFAULT_PARAMS
 from lib.slack import Slack
 from tasks import create_tasks
+from timetables import IntervalTimetable
 
 DOC = """
 # Curated CscMed DAG
@@ -28,8 +29,8 @@ Ce DAG traite les tables chargées lors de la seconde batch de chargement de Csc
 Les tables jobs et jobs_sections sont traitées par le DAG `curated_cscmed_jobs`.
 
 ### Horaire
-* __Date de début__ - 13 mars 2026
-* __Jour et heure__ - Vendredi, 3h heure de Montréal
+* __Date de début__ - 9 avril 2026
+* __Jour et heure__ - Jeudi, 20h heure de Montréal
 * __Intervalle__ - Chaque 4 semaines
 """
 
@@ -136,8 +137,8 @@ args = DEFAULT_ARGS.copy()
 dag = DAG(
     dag_id="curated_cscmed",
     doc_md=DOC,
-    start_date=datetime(2026, 3, 13, 3, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval=timedelta(weeks=4),
+    start_date=pendulum.datetime(2026, 4, 9, 20, tz="America/Montreal"),
+    schedule=IntervalTimetable(interval=timedelta(weeks=4)),
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=12),
     default_args=args,

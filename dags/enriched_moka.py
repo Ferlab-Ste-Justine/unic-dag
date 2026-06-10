@@ -2,7 +2,7 @@
 Enriched MoKa DAG
 """
 # pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import List
 
 import pendulum
@@ -16,6 +16,7 @@ from lib.slack import Slack
 from lib.tasks.notify import end, start
 from lib.tasks.publish import trigger_publish_dag
 from tasks import _get_version
+from timetables import IntervalTimetable
 
 JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
@@ -51,8 +52,8 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_moka",
     doc_md=DOC,
-    start_date=datetime(2023, 10, 20, 8, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval=timedelta(weeks=4),
+    start_date=pendulum.datetime(2023, 10, 20, 8, tz="America/Montreal"),
+    schedule=IntervalTimetable(interval=timedelta(weeks=4)),
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=DEFAULT_TIMEOUT_HOURS),
     default_args=args,
