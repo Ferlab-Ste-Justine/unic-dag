@@ -164,7 +164,8 @@ with dag:
         curated_quanum_config = [
             ("curated_quanum_a*", "medium-etl"),
             ("curated_quanum_c*", "medium-etl"),
-            ("curated_quanum_d*", "small-etl"),
+            # temp small --> medium
+            ("curated_quanum_d*", "medium-etl"),
             ("curated_quanum_e*", "medium-etl"),
             ("curated_quanum_f*", "small-etl"),
             ("curated_quanum_g*", "small-etl"),
