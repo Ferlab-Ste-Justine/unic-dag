@@ -73,6 +73,15 @@ One `unic_publish_project` DAG is generated per `PostgresEnv` (`qa`, `prod`). Si
 
 Central constants for connection IDs, S3 bucket names, Spark class defaults, Jinja date/version templates, and Airflow `DEFAULT_ARGS`. The Airflow `dags_path` variable controls the root path; defaults to `/opt/airflow/dags/repo/dags`.
 
+### Plugins (`plugins/`)
+
+Custom Airflow plugins live in `plugins/` (e.g. `timetables/interval.py`'s `IntervalTimetable`). In prod, plugins reach the cluster via git-sync, not the image: `AIRFLOW__CORE__PLUGINS_FOLDER` is set to `/opt/airflow/dags/repo/plugins` (the git-synced repo) in `unic-kubernetes-environments`. The Helm chart git-syncs the scheduler/triggerer/workers but **not** the webserver, so the webserver has a manually-added git-sync sidecar (`webserver.extraContainers`); without it, opening a DAG that uses a custom timetable 500s the UI with `_TimetableNotRegistered`.
+
+**git-sync refreshes plugin _files_ but does not reload them into a running process.** Airflow imports plugins **once at process startup** and never hot-reloads them — unlike DAG files, which the DAG processor re-parses on a timer. So:
+
+- Editing a **DAG file** → picked up automatically, no restart.
+- Adding or editing a **plugin** (incl. timetable `summary`/`description` or scheduling logic) → requires restarting the scheduler (and webserver) to take effect: `kubectl -n unic-prod rollout restart deployment unic-prod-airflow-scheduler unic-prod-airflow-webserver`. This is task-safe — tasks run as independent K8s pods, so a rolling scheduler restart does not stop running DAGs.
+
 ### Postgres DAGs
 
 Several hand-written DAGs manage Postgres schema and data loads (e.g., `postgres_catalog_dags.py`, `postgres_nrt_staturgence.py`). They use `PostgresCaOperator` / `PostgresCaHook` (custom TLS-aware wrappers in `dags/lib/operators/` and `dags/lib/hooks/`). Two Postgres environments exist: `vlan2` (main UNIC DB) and `bi` (BI database).
