@@ -2,7 +2,7 @@
 DAG pour le parsing le segment OBX des messages HL7 de Softpath
 """
 # pylint: disable=duplicate-code, expression-not-assigned
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import List
 
 import pendulum
@@ -11,6 +11,7 @@ from airflow import DAG
 from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import start, end
+from timetables import IntervalTimetable
 
 DOC = """
 # Anonymized Softpath HL7
@@ -28,9 +29,9 @@ args.update({
 dag = DAG(
     dag_id="anonymized_softpath_hl7_obx",
     doc_md=DOC,
-    start_date=datetime(2021, 1, 1, 0, tzinfo=pendulum.timezone("America/Montreal")),
-    end_date=datetime(2026, 5, 20, 0, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval=timedelta(days=1),
+    start_date=pendulum.datetime(2021, 1, 1, 0, tz="America/Montreal"),
+    end_date=pendulum.datetime(2026, 5, 20, 0, tz="America/Montreal"),
+    schedule=IntervalTimetable(interval=timedelta(days=1)),
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=2),
     default_args=args,

@@ -2,7 +2,7 @@
 Iceberg Table Maintenance DAG
 """
 # pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
-from datetime import datetime, timedelta
+from datetime import timedelta
 from typing import List
 
 import pendulum
@@ -13,6 +13,7 @@ from lib.operators.spark_iceberg import SparkIcebergOperator
 from lib.config import DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
 from lib.slack import Slack
 from lib.tasks.notify import end, start
+from timetables import IntervalTimetable
 
 DOC = """
 # Iceberg Table Maintenance DAG
@@ -33,8 +34,8 @@ DELETE_ORPHAN_FILES_MAIN = "deleteOrphanFilesInCatalog"
 dag = DAG(
     dag_id="iceberg_table_maintenance",
     doc_md=DOC,
-    start_date=datetime(2025, 7 , 29, 23, tzinfo=pendulum.timezone("America/Montreal")),
-    schedule_interval=timedelta(days=1),
+    start_date=pendulum.datetime(2025, 7, 29, 23, tz="America/Montreal"),
+    schedule=IntervalTimetable(interval=timedelta(days=1)),
     params={
         "branch": Param("master", type="string"),
         "catalog": Param("cdc", type="string")
