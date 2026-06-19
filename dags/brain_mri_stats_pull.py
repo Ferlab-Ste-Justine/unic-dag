@@ -1,0 +1,112 @@
+"""
+DAG to pull FreeSurfer .stats files from SD4Health VM back to UnIC yellow MinIO.
+"""
+from datetime import datetime
+
+import pendulum
+from airflow import DAG
+from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
+from kubernetes.client import models as k8s
+
+from lib.config import DEFAULT_ARGS
+from lib.slack import Slack
+from lib.tasks.notify import start, end
+
+DOC = """
+# Brain MRI Stats Pull DAG
+
+Rapatrie les fichiers `.stats` FreeSurfer depuis la VM SD4Health
+(`chusj-brain-mri` @ 198.168.188.36) vers `vna-clinique-yellow/stats/`.
+
+**TODO** : confirmer le chemin exact des stats FreeSurfer sur la VM
+(`SD4H_STATS_PATH`) avec l'équipe de Tomas Paus avant de merger.
+
+Credentials MinIO : user `brain-mri-sd4health`, secret `brain-mri-yellow-minio`.
+Clé SSH SFTP dans `brain-mri-ssh-key`.
+
+Trigger manuel uniquement depuis l'UI Airflow.
+"""
+
+SD4H_VM_HOST = "198.168.188.36"
+SD4H_VM_USER = "ubuntu"
+# TODO: confirmer le chemin des stats FreeSurfer avec l'équipe (ex: /data/UnIC/subjects/*/stats/)
+SD4H_STATS_PATH = "/data/UnIC/PLACEHOLDER_FREESURFER_STATS_PATH/"
+
+YELLOW_MINIO_ENDPOINT = "https://minio.unic.ferlab.bio"
+YELLOW_MINIO_USER = "brain-mri-sd4health"
+YELLOW_BUCKET = "vna-clinique-yellow"
+STATS_PATH = "stats"
+
+LOCAL_TZ = pendulum.timezone("America/Montreal")
+
+dag = DAG(
+    dag_id="brain_mri_stats_pull",
+    doc_md=DOC,
+    start_date=datetime(2026, 6, 1, tzinfo=LOCAL_TZ),
+    schedule_interval=None,
+    default_args=DEFAULT_ARGS,
+    is_paused_upon_creation=True,
+    catchup=False,
+    max_active_runs=1,
+    tags=['brain-mri', 'sd4health'],
+    on_failure_callback=Slack.notify_dag_failure,
+)
+
+with dag:
+    pull = KubernetesPodOperator(
+        task_id='rclone_stats_pull',
+        name='brain-mri-rclone-stats-pull',
+        namespace='unic-prod',
+        image='rclone/rclone:1.65',
+        cmds=['rclone'],
+        arguments=[
+            'copy',
+            f'sd4h:{SD4H_STATS_PATH}',
+            f'unic:{YELLOW_BUCKET}/{STATS_PATH}/',
+            '--include', '*.stats',
+            '--progress',
+            '--log-level=INFO',
+            '--transfers=4',
+        ],
+        env_vars=[
+            k8s.V1EnvVar(name='RCLONE_CONFIG_UNIC_TYPE', value='s3'),
+            k8s.V1EnvVar(name='RCLONE_CONFIG_UNIC_PROVIDER', value='Minio'),
+            k8s.V1EnvVar(name='RCLONE_CONFIG_UNIC_ACCESS_KEY_ID', value=YELLOW_MINIO_USER),
+            k8s.V1EnvVar(
+                name='RCLONE_CONFIG_UNIC_SECRET_ACCESS_KEY',
+                value_from=k8s.V1EnvVarSource(
+                    secret_key_ref=k8s.V1SecretKeySelector(
+                        name='brain-mri-yellow-minio',
+                        key='secret-key',
+                    )
+                )
+            ),
+            k8s.V1EnvVar(name='RCLONE_CONFIG_UNIC_ENDPOINT', value=YELLOW_MINIO_ENDPOINT),
+            k8s.V1EnvVar(name='RCLONE_CONFIG_UNIC_ENV_AUTH', value='false'),
+            k8s.V1EnvVar(name='RCLONE_CONFIG_SD4H_TYPE', value='sftp'),
+            k8s.V1EnvVar(name='RCLONE_CONFIG_SD4H_HOST', value=SD4H_VM_HOST),
+            k8s.V1EnvVar(name='RCLONE_CONFIG_SD4H_USER', value=SD4H_VM_USER),
+            k8s.V1EnvVar(name='RCLONE_CONFIG_SD4H_KEY_FILE', value='/etc/rclone-ssh/id_ed25519'),
+            k8s.V1EnvVar(name='RCLONE_CONFIG_SD4H_KNOWN_HOSTS_FILE', value='/etc/rclone-ssh/known_hosts'),
+        ],
+        volumes=[
+            k8s.V1Volume(
+                name='rclone-ssh-key',
+                secret=k8s.V1SecretVolumeSource(
+                    secret_name='brain-mri-ssh-key',
+                    default_mode=0o400,
+                ),
+            ),
+        ],
+        volume_mounts=[
+            k8s.V1VolumeMount(
+                name='rclone-ssh-key',
+                mount_path='/etc/rclone-ssh',
+                read_only=True,
+            ),
+        ],
+        is_delete_operator_pod=False,
+        get_logs=True,
+    )
+
+    start() >> pull >> end()
