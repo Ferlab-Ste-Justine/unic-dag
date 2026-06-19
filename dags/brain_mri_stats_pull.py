@@ -29,7 +29,7 @@ Trigger manuel uniquement depuis l'UI Airflow.
 
 SD4H_VM_HOST = "198.168.188.36"
 SD4H_VM_USER = "ubuntu"
-# TODO: confirmer le chemin des stats FreeSurfer avec l'équipe (ex: /data/UnIC/subjects/*/stats/)
+# NOTE: remplacer par le chemin réel FreeSurfer avant de merger (ex: /data/UnIC/subjects/*/stats/)
 SD4H_STATS_PATH = "/data/UnIC/PLACEHOLDER_FREESURFER_STATS_PATH/"
 
 YELLOW_MINIO_ENDPOINT = "https://minio.unic.ferlab.bio"
