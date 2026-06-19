@@ -15,7 +15,7 @@ from lib.tasks.notify import start, end
 DOC = """
 # Brain MRI Transfer DAG
 
-Transfère les NIfTIs anonymisés depuis `yellow-anonymized-vna-clinical/nifti/`
+Transfère les NIfTIs anonymisés depuis `vna-clinique-yellow/nifti/`
 vers la VM SD4Health (`chusj-brain-mri` @ 198.168.188.36, `/data/UnIC/`) pour
 traitement FreeSurfer.
 
@@ -27,7 +27,7 @@ Trigger manuel uniquement depuis l'UI Airflow.
 
 YELLOW_MINIO_ENDPOINT = "https://minio.unic.ferlab.bio"
 YELLOW_MINIO_USER = "brain-mri-sd4health"
-YELLOW_BUCKET = "yellow-anonymized-vna-clinical"
+YELLOW_BUCKET = "vna-clinique-yellow"
 NIFTI_PATH = "nifti"
 SD4H_VM_HOST = "198.168.188.36"
 SD4H_VM_USER = "ubuntu"
