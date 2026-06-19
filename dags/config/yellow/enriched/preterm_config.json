@@ -12,7 +12,8 @@
         {"dataset_id":"enriched_preterm_participant_index"          , "cluster_type": "medium" , "run_type": "initial", "pass_date": false, "dependencies": []},
         {"dataset_id":"enriched_preterm_district_area_from_adt"     , "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": ["enriched_preterm_participant_index"]},
         {"dataset_id":"enriched_preterm_district_area_from_radimage", "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": ["enriched_preterm_participant_index"]},
-        {"dataset_id":"enriched_preterm_district_area_from_birth"   , "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": ["enriched_preterm_participant_index"]}
+        {"dataset_id":"enriched_preterm_district_area_from_birth"   , "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": ["enriched_preterm_participant_index"]},
+        {"dataset_id":"enriched_preterm_mri"                        , "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": ["enriched_preterm_participant_index"]}
       ]
     },
     {
@@ -24,7 +25,8 @@
         {"dataset_id":"released_preterm_participant_index"          , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id":"released_preterm_district_area_from_adt"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id":"released_preterm_district_area_from_radimage", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id":"released_preterm_district_area_from_birth"   , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+        {"dataset_id":"released_preterm_district_area_from_birth"   , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id":"released_preterm_mri"                        , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
       ]
     }
   ]
