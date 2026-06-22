@@ -4,7 +4,7 @@ DAG that processes Quanum and Chartmaxx data.
 # pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
 
 
-from datetime import datetime
+from datetime import timedelta, datetime
 from typing import List
 
 import pendulum
@@ -66,11 +66,12 @@ dag = DAG(
     schedule_interval="0 19 * * *",
     start_date=datetime(2023, 11, 2, tzinfo=LOCAL_TZ),
     params=params,
+    dagrun_timeout=timedelta(hours=20),
     default_args=args,
     is_paused_upon_creation=True,
     catchup=False,
     max_active_runs=1,
-    concurrency=8,
+    concurrency=4,
     tags=["curated", "anonymized"],
     on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
 )
@@ -102,7 +103,7 @@ with dag:
     @task_group(group_id="curated_quanum")
     def curated_quanum():
         # max_active_tis_per_dag=1: the three vw tasks MERGE into the same Delta table from every
-        # DAG run. With max_active_runs=3, concurrent instances of the same vw task race on the
+        # DAG run. With max_active_runs>1, concurrent instances of the same vw task race on the
         # commit and the losers fail with ConcurrentAppendException, taking the whole run's
         # downstream with them. Capping each vw task to one running instance across runs removes
         # the race while different tasks still run in parallel.
@@ -164,8 +165,7 @@ with dag:
         curated_quanum_config = [
             ("curated_quanum_a*", "medium-etl"),
             ("curated_quanum_c*", "medium-etl"),
-            # temp small --> medium
-            ("curated_quanum_d*", "medium-etl"),
+            ("curated_quanum_d*", "small-etl"),
             ("curated_quanum_e*", "medium-etl"),
             ("curated_quanum_f*", "small-etl"),
             ("curated_quanum_g*", "small-etl"),
@@ -282,28 +282,25 @@ with dag:
 
     @task_group(group_id="anonymized_quanumchartmaxx")
     def anonymized_quanumchartmaxx():
-        # UNIC-1987: dossier* and p* are forced to "initial" so their anonymized tables are reset and
-        # recreated with the new-logic schema (OverWritePartitionDynamic cannot evolve schemas).
-        # Revert to run_type() once the rebuild is done.
         anonymized_quanumchartmaxx_config = [
-            ("anonymized_quanum_chartmaxx_a*", "small-etl", "initial"),
-            ("anonymized_quanum_chartmaxx_childhood_asthma_test_4_11_years_old", "small-etl", "initial"),
-            ("anonymized_quanum_chartmaxx_dossier*", "medium-etl", "initial"),
-            ("anonymized_quanum_chartmaxx_p*", "medium-etl", "initial"),
-            ("anonymized_quanum_chartmaxx_clinique_*", "medium-etl", "initial")
+            ("anonymized_quanum_chartmaxx_a*", "small-etl"),
+            ("anonymized_quanum_chartmaxx_childhood_asthma_test_4_11_years_old", "small-etl"),
+            ("anonymized_quanum_chartmaxx_dossier*", "medium-etl"),
+            ("anonymized_quanum_chartmaxx_p*", "medium-etl"),
+            ("anonymized_quanum_chartmaxx_clinique_*", "medium-etl")
         ]
 
         anonymized_quanum_chartmaxx_tasks = [SparkOperator(
             task_id=sanitize_string(task_name, "_"),
             name=sanitize_string(task_name[:40], '-'),
-            arguments=generate_spark_arguments(task_name, pass_date=False, steps=steps),
+            arguments=generate_spark_arguments(task_name, pass_date=False, steps=run_type()),
             zone=QUANUMCHARTMAXX_ANONYMIZED_ZONE,
             spark_class=QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS,
             spark_jar=JAR,
             spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config=cluster_size,
             dag=dag
-        ) for task_name, cluster_size, steps in anonymized_quanumchartmaxx_config]
+        ) for task_name, cluster_size in anonymized_quanumchartmaxx_config]
 
         anonymized_quanum_chartmaxx_optimization_tasks = optimize(
             ['anonymized_quanum_chartmaxx*'], "quanum_chartmaxx", QUANUMCHARTMAXX_ANONYMIZED_ZONE, "anonymized",
