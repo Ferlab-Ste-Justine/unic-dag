@@ -16,17 +16,13 @@ DOC = """
 # Brain MRI Transfer DAG
 
 Transfère les NIfTIs anonymisés depuis `yellow-anonymized-vna-clinical/nifti/`
-vers la VM SD4Health (`chusj-brain-mri` @ 198.168.188.36, `/data/UnIC/`) pour
-traitement FreeSurfer.
-
-Credentials MinIO : user `brain-mri-sd4health`, secret dans le K8s secret
-`brain-mri-yellow-minio`. Clé SSH SFTP dans `brain-mri-ssh-key`.
+vers la VM SD4Health (`chusj-brain-mri`, `/data/UnIC/`) pour traitement FreeSurfer.
 
 Trigger manuel uniquement depuis l'UI Airflow.
 """
 
 YELLOW_MINIO_ENDPOINT = "https://minio.unic.ferlab.bio"
-YELLOW_MINIO_USER = "brain-mri-sd4health"
+YELLOW_MINIO_USER = "spark_yellow"
 YELLOW_BUCKET = "yellow-anonymized-vna-clinical"
 NIFTI_PATH = "nifti"
 SD4H_VM_HOST = "198.168.188.36"
@@ -53,7 +49,7 @@ with dag:
         task_id='rclone_nifti_transfer',
         name='brain-mri-rclone-transfer',
         namespace='unic-prod',
-        image='rclone/rclone:1.65',
+        image='rclone/rclone:latest',
         cmds=['rclone'],
         arguments=[
             'copy',
