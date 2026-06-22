@@ -3,6 +3,7 @@
 disable=
   line-too-long,
   pointless-statement, #pylint doesn't understand statement like op1 >> op2
+  expression-not-assigned, #same as above for op1 >> op2 >> op3 chains
   too-many-arguments,
   different-operator-varname-taskid,
   too-many-branches
