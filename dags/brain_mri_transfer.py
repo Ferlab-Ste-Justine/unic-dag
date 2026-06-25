@@ -1,5 +1,5 @@
 """
-DAG to transfer anonymized brain MRI NIfTIs from UnIC yellow MinIO to SD4Health VM.
+DAG to transfer anonymized brain MRI NIfTIs from UnIC yellow MinIO to SD4Health Ceph bucket.
 """
 from datetime import datetime
 
@@ -16,11 +16,10 @@ DOC = """
 # Brain MRI Transfer DAG
 
 Transfère les NIfTIs anonymisés depuis `vna-clinique-yellow/nifti/`
-vers la VM SD4Health (`chusj-brain-mri` @ 198.168.188.36, `/data/UnIC/`) pour
-traitement FreeSurfer.
+vers le bucket Swift SD4Health `chusj-brain-mri` sur Calcul Québec (Juno).
 
 Credentials MinIO : user `brain-mri-sd4health`, secret dans le K8s secret
-`brain-mri-yellow-minio`. Clé SSH SFTP dans `brain-mri-ssh-key`.
+`brain-mri-yellow-minio`. Credentials Ceph EC2 dans `brain-mri-ceph-credentials`.
 
 Trigger manuel uniquement depuis l'UI Airflow.
 """
@@ -29,9 +28,8 @@ YELLOW_MINIO_ENDPOINT = "https://minio.unic.ferlab.bio"
 YELLOW_MINIO_USER = "brain-mri-sd4health"
 YELLOW_BUCKET = "vna-clinique-yellow"
 NIFTI_PATH = "nifti"
-SD4H_VM_HOST = "198.168.188.36"
-SD4H_VM_USER = "ubuntu"
-SD4H_DEST_PATH = "/data/UnIC"
+CEPH_ENDPOINT = "https://objets.juno.calculquebec.ca"
+CEPH_BUCKET = "chusj-brain-mri"
 
 LOCAL_TZ = pendulum.timezone("America/Montreal")
 
@@ -58,7 +56,7 @@ with dag:
         arguments=[
             'copy',
             f'yellow:{YELLOW_BUCKET}/{NIFTI_PATH}/',
-            f'sd4h:{SD4H_DEST_PATH}/',
+            f'ceph:{CEPH_BUCKET}/nifti/',
             '--progress',
             '--log-level=INFO',
             '--transfers=4',
@@ -78,27 +76,29 @@ with dag:
             ),
             k8s.V1EnvVar(name='RCLONE_CONFIG_YELLOW_ENDPOINT', value=YELLOW_MINIO_ENDPOINT),
             k8s.V1EnvVar(name='RCLONE_CONFIG_YELLOW_ENV_AUTH', value='false'),
-            k8s.V1EnvVar(name='RCLONE_CONFIG_SD4H_TYPE', value='sftp'),
-            k8s.V1EnvVar(name='RCLONE_CONFIG_SD4H_HOST', value=SD4H_VM_HOST),
-            k8s.V1EnvVar(name='RCLONE_CONFIG_SD4H_USER', value=SD4H_VM_USER),
-            k8s.V1EnvVar(name='RCLONE_CONFIG_SD4H_KEY_FILE', value='/etc/rclone-ssh/id_ed25519'),
-            k8s.V1EnvVar(name='RCLONE_CONFIG_SD4H_KNOWN_HOSTS_FILE', value='/etc/rclone-ssh/known_hosts'),
-        ],
-        volumes=[
-            k8s.V1Volume(
-                name='rclone-ssh-key',
-                secret=k8s.V1SecretVolumeSource(
-                    secret_name='brain-mri-ssh-key',
-                    default_mode=0o400,
-                ),
+            k8s.V1EnvVar(name='RCLONE_CONFIG_CEPH_TYPE', value='s3'),
+            k8s.V1EnvVar(name='RCLONE_CONFIG_CEPH_PROVIDER', value='Other'),
+            k8s.V1EnvVar(
+                name='RCLONE_CONFIG_CEPH_ACCESS_KEY_ID',
+                value_from=k8s.V1EnvVarSource(
+                    secret_key_ref=k8s.V1SecretKeySelector(
+                        name='brain-mri-ceph-credentials',
+                        key='access-key',
+                    )
+                )
             ),
-        ],
-        volume_mounts=[
-            k8s.V1VolumeMount(
-                name='rclone-ssh-key',
-                mount_path='/etc/rclone-ssh',
-                read_only=True,
+            k8s.V1EnvVar(
+                name='RCLONE_CONFIG_CEPH_SECRET_ACCESS_KEY',
+                value_from=k8s.V1EnvVarSource(
+                    secret_key_ref=k8s.V1SecretKeySelector(
+                        name='brain-mri-ceph-credentials',
+                        key='secret-key',
+                    )
+                )
             ),
+            k8s.V1EnvVar(name='RCLONE_CONFIG_CEPH_ENDPOINT', value=CEPH_ENDPOINT),
+            k8s.V1EnvVar(name='RCLONE_CONFIG_CEPH_ENV_AUTH', value='false'),
+            k8s.V1EnvVar(name='RCLONE_CONFIG_CEPH_NO_CHECK_BUCKET', value='true'),
         ],
         is_delete_operator_pod=False,
         get_logs=True,
