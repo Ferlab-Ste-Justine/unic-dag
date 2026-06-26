@@ -73,103 +73,34 @@ def get_release_id(ti=None) -> str:
     raise AirflowFailException(
         "DAG param 'release_id' is not in the correct format. Expected format: re_xxxx where x is a digit.")
 
-
 @task.virtualenv(requirements=["pyhocon==0.3.61"], system_site_packages=True)
-def extract_config_info(
+def extract_config_info_to_publish(
         resource_code: str,
         version_to_publish: str,
         minio_conn_id: str = None
 ) -> dict:
     """
-    This function retrieves the necessary table names, S3 paths WITHOUT their extension,
-    and bucket IDs for publishing data. The structure of the return dictionary is as follows:
+    Retrieve the table names, S3 paths (WITHOUT their extension), and bucket IDs needed for
+    publishing data. Thin wrapper that delegates to ``DatalakeConfig.extract_publish_config_info``;
+    see that method for the structure of the returned dictionary:
     {
-        "sources": {
-            "source_id1": {
-                "output_bucket": <bucket_name>,
-                "output_path": <s3_path>,
-                "table": <table_name>
-            },
-            "source_id2": {
-                ...,
-            }
-        }
-        ...,
-        "clinical_bucket": str - Name of the clinical bucket, if it exists, otherwise None.
-        "nominative_bucket": str - Name of the nominative bucket, if it exists, otherwise None.
-        "input_bucket": <bucket_name> - The bucket from which the data will be published.
-
+        "sources": {"<source_id>": {"output_bucket": ..., "output_path": ..., "table": ...}, ...},
+        "clinical_bucket": str | None,
+        "nominative_bucket": str | None,
+        "input_bucket": <bucket_name>,
     }
 
     :param resource_code: Resource code of the project to publish.
     :param version_to_publish: Version of the project to publish.
     :param minio_conn_id: Minio connection id, defaults to YELLOW_MINIO_CONN_ID.
     :returns : Dictionary containing the source IDs, input & output buckets, output paths, and table names.
-
     """
+    from lib.datalake_config import DatalakeConfig
 
-    from lib.hocon_parsing import (parse_hocon_conf, get_bucket_name, get_dataset_published_path,
-                                   get_released_bucket_name)
-    from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-    from lib.config import YELLOW_MINIO_CONN_ID, PUBLISHED_BUCKET
-    from lib.publish_utils import determine_minio_conn_id_from_config
-
-    config = parse_hocon_conf()
-
-    # Set default constants if not provided
-    if minio_conn_id is None:
-        minio_conn_id = YELLOW_MINIO_CONN_ID
-
-    # Initialize the mini_config
-    mini_config = {
-        "input_bucket": None,
-        "clinical_bucket": None,
-        "nominative_bucket": None,
-        "sources": {}
-    }
-    # Set the input bucket
-    input_bucket = get_released_bucket_name(resource_code=resource_code, config=config)
-    mini_config["input_bucket"] = input_bucket
-
-    chosen_conn_id = determine_minio_conn_id_from_config(minio_conn_id=minio_conn_id,
-                                                         input_bucket=mini_config.get("input_bucket"))
-    s3 = S3Hook(aws_conn_id=chosen_conn_id)
-
-    released_path = f"released/{resource_code}/{version_to_publish}/"
-
-    table_paths = s3.list_prefixes(input_bucket, released_path, "/")
-    for table_path in table_paths:
-        table = table_path.split("/")[-2]  # Extract table name from the path, assumes the path structure is consistent
-
-        # Reconstructing the source id of the table
-        source_id = f"published_{resource_code}_{table}"
-
-        output_bucket = get_bucket_name(source_id=source_id, config=config)
-
-        if "clinical" in output_bucket:
-            mini_config["clinical_bucket"] = output_bucket
-
-        if "nominative" in output_bucket:
-            mini_config["nominative_bucket"] = output_bucket
-
-        output_path = get_dataset_published_path(source_id=source_id, config=config)
-        # Replacing the version in the filename with the underscore version to publish
-        output_path = output_path.replace("_{{version}}", f"_{version_to_publish.replace('-', '_')}")
-        # Replacing the version template for the folder with the dashed version to publish
-        output_path = output_path.replace("{{version}}", version_to_publish)
-
-        # If the output bucket is the default green bucket, we must place the output path in the published folder
-        if output_bucket == PUBLISHED_BUCKET:
-            output_path = f"published{output_path}"
-
-        mini_config["sources"][source_id] = {
-            "output_bucket": output_bucket,
-            "output_path": output_path,
-            "table": table,
-        }
-    # Uncomment to print the extracted configuration
-    # print_extracted_config(resource_code, version_to_publish, mini_config)
-    return mini_config
+    # DatalakeConfig.__init__ defaults minio_conn_id to YELLOW_MINIO_CONN_ID when None.
+    config = DatalakeConfig(minio_conn_id=minio_conn_id)
+    return config.extract_publish_config_info(resource_code=resource_code,
+                                              version_to_publish=version_to_publish)
 
 
 def get_dictionary_output_bucket_name(clinical_bucket: str,
@@ -218,7 +149,7 @@ def publish_dictionary(
     )
 
     # define connection vars
-    s3 = S3Hook(aws_conn_id=determine_minio_conn_id_from_config(minio_conn_id, input_bucket=config.get("input_bucket")))
+    s3 = S3Hook(aws_conn_id=determine_minio_conn_id_from_config(minio_conn_id, config.get("input_bucket")))
     ca_cert = unic_postgres_vlan2_ca_cert(PostgresEnv.PROD)
     pg = get_pg_ca_hook(pg_conn_id, ca_cert)
 
@@ -303,8 +234,8 @@ def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_i
         table = source_info["table"]
 
         # Choose the appropriate conn id depending on the config
-        chosen_conn_id = determine_minio_conn_id_from_config(minio_conn_id=minio_conn_id,
-                                                             input_bucket=config.get("input_bucket"),
+        chosen_conn_id = determine_minio_conn_id_from_config(minio_conn_id,
+                                                             config.get("input_bucket"),
                                                              output_bucket=source_info.get("output_bucket"))
 
         list_of_kwargs.append({
