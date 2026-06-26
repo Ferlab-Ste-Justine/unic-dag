@@ -1,9 +1,9 @@
+# pylint: disable=import-outside-toplevel
 import subprocess
 from enum import Enum
 
 from airflow.models import Variable
 
-from lib.postgres import PostgresEnv
 from lib.templates.resource_centric import resource_centric_template
 from lib.templates.table_centric import table_centric_template
 from lib.templates.variable_centric import variable_centric_template
@@ -23,9 +23,7 @@ class OpensearchAlias(Enum):
     VARIABLE = 'variable_centric'
 
 
-"""
-Opensearch index templates
-"""
+# Opensearch index templates
 OS_TEMPLATES: dict = {
     OpensearchAlias.RESOURCE.value: resource_centric_template,
     OpensearchAlias.TABLE.value: table_centric_template,
@@ -71,9 +69,9 @@ def load_cert(env_name: str) -> None:
     """
     os_config = OS_ENV_CONFIG.get(env_name)
 
-    subprocess.run(["mkdir", "-p", os_config.get('ca_path')])
+    subprocess.run(["mkdir", "-p", os_config.get('ca_path')], check=True)
 
-    with open(os_config.get('ca_path') + os_config.get('ca_filename'), "w") as outfile:
+    with open(os_config.get('ca_path') + os_config.get('ca_filename'), "w", encoding="utf-8") as outfile:
         outfile.write(os_config.get('ca_cert'))
 
 def get_opensearch_client(env_name: str):

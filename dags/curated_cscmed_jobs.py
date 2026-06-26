@@ -1,7 +1,6 @@
 """
 Curated CSCMED Jobs DAG
 """
-# pylint: disable=duplicate-code
 from datetime import timedelta
 
 import pendulum

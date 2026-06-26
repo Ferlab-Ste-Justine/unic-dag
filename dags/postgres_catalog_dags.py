@@ -2,7 +2,6 @@
 Génération des DAGSs pour la création des tables dans la bd unic_db pour le catalogue de l'UnIC.
 Un DAG par environnement postgres est généré.
 """
-# pylint: disable=missing-function-docstring, expression-not-assigned, duplicate-code
 
 from datetime import datetime
 

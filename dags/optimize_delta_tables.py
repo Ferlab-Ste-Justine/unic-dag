@@ -1,7 +1,6 @@
 """
 DAG pour l'optimization des tables deltas
 """
-# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, too-many-ancestors
 
 from datetime import datetime
 from typing import List
@@ -96,11 +95,11 @@ with DAG(
             self.dataset_ids = dataset_ids
             self.number_of_versions = number_of_versions
 
-        def execute(self, **kwargs):
+        def execute(self, context):
             # Append dataset_ids to arguments at runtime, after dataset_ids has been templated. Otherwise, dataset_ids
             # is interpreted as XComArg and can't be appended to arguments.
             self.arguments = self.arguments + self.dataset_ids + ["--number-of-versions", str(self.number_of_versions)]
-            super().execute(**kwargs)
+            super().execute(context)
 
 
     def optimize_delta_tables(dataset_ids: List[str]):

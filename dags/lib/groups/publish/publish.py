@@ -1,12 +1,10 @@
 from airflow.decorators import task_group
 
-from lib.config import PUBLISHED_BUCKET, YELLOW_MINIO_CONN_ID
-from lib.opensearch import OpensearchAlias, OpensearchEnv
+from lib.config import YELLOW_MINIO_CONN_ID
 from lib.tasks.excel import parquet_to_excel
 from lib.tasks.notify import start, end
-from lib.tasks.opensearch import prepare_index, load_index, publish_index, get_next_release_id
-from lib.tasks.publish import get_resource_code, get_version_to_publish, get_include_dictionary, \
-    update_dict_current_version, publish_dictionary, get_publish_kwargs, extract_config_info
+from lib.tasks.publish import update_dict_current_version, publish_dictionary, get_publish_kwargs, \
+    extract_config_info
 
 
 @task_group(group_id="publish_research_project")

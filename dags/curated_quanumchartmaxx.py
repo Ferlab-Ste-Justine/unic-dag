@@ -1,7 +1,6 @@
 """
 DAG that processes Quanum and Chartmaxx data.
 """
-# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
 
 
 from datetime import timedelta, datetime

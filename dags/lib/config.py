@@ -2,7 +2,7 @@ from datetime import timedelta, datetime
 
 import pendulum
 from airflow.models import Variable, Param
-from lib.failure import Failure
+from lib.failure import task_on_failure_callback
 from lib.slack import Slack
 
 # DAGs config
@@ -16,7 +16,7 @@ DEFAULT_VERSION = "latest"
 DEFAULT_ARGS = {
     "owner": "unic",
     "depends_on_past": False,
-    "on_failure_callback": Failure.task_on_failure_callback,
+    "on_failure_callback": task_on_failure_callback,
     "on_retry_callback": Slack.notify_task_retry,
     "retries": 3,
     "retry_delay": timedelta(minutes=3),

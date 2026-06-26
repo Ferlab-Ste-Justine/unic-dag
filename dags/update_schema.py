@@ -1,7 +1,6 @@
 """
 Update Centro schema
 """
-# pylint: disable=missing-function-docstring, expression-not-assigned
 from datetime import datetime, timedelta
 from typing import List
 

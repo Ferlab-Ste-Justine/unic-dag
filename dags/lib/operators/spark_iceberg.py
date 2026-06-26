@@ -1,7 +1,6 @@
+# pylint: disable=too-many-instance-attributes
 from airflow.exceptions import AirflowSkipException
 from kubernetes.client import models as k8s
-
-from lib.cleanup import Cleanup
 
 from lib.operators.spark import SparkOperator
 
@@ -41,7 +40,7 @@ class SparkIcebergOperator(SparkOperator):
             **kwargs
         )
 
-    def execute(self, **kwargs):
+    def execute(self, context):
         if self.skip:
             raise AirflowSkipException()
 
@@ -72,5 +71,4 @@ class SparkIcebergOperator(SparkOperator):
         else:
             self.volume_mounts = new_volume_mounts
 
-        super().execute(**kwargs)
-
+        super().execute(context)

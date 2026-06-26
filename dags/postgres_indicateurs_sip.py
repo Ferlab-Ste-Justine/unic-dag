@@ -1,7 +1,6 @@
 """
 DAG pour la création des tables dans la bd unic_datamart pour le projet Indicateurs SIP
 """
-# pylint: disable=expression-not-assigned
 
 from datetime import datetime
 

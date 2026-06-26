@@ -1,7 +1,7 @@
 """
 Enriched Indicateurs SIP
 """
-# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned, too-many-locals
+# pylint: disable=too-many-locals
 from datetime import datetime, timedelta
 from typing import List
 

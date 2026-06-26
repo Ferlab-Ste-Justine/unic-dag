@@ -1,7 +1,6 @@
 """
 DAG pour l'ingestion quotidienne des data de philips a partir de Philips
 """
-# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
 
 from datetime import datetime, timedelta
 from typing import List

@@ -1,7 +1,6 @@
 """
 DAG pour l'ingestion des data de neonat se trouvant dans cathydb
 """
-# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
 
 
 from datetime import datetime, timedelta
