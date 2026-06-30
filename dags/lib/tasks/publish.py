@@ -1,3 +1,4 @@
+# pylint: disable=import-outside-toplevel, redefined-outer-name, reimported, too-many-locals
 import logging
 import os
 import re
@@ -25,8 +26,7 @@ def get_resource_code(ti=None) -> str:
 
     if not resource_code:
         raise AirflowFailException("DAG param 'resource_code' is required.")
-    else:
-        return resource_code
+    return resource_code
 
 
 @task
@@ -35,12 +35,18 @@ def get_version_to_publish(ti=None) -> str:
     version_to_publish = dag_run.conf['version_to_publish']
     date_format = "%Y-%m-%d"
     if not version_to_publish:
-        raise AirflowFailException(f"DAG param 'version_to_publish' is required. Expected format: YYYY-MM-DD")
-    elif version_to_publish == DEFAULT_VERSION or bool(datetime.strptime(version_to_publish, date_format)):
-        return dag_run.conf['version_to_publish']
-    else:
+        raise AirflowFailException("DAG param 'version_to_publish' is required. Expected format: YYYY-MM-DD")
+
+    if version_to_publish == DEFAULT_VERSION:
+        return version_to_publish
+
+    try:
+        datetime.strptime(version_to_publish, date_format)
+    except ValueError as error:
         raise AirflowFailException(
-            f"DAG param 'version_to_publish' is not in the correct format. Expected format: YYYY-MM-DD")
+            "DAG param 'version_to_publish' is not in the correct format. Expected format: YYYY-MM-DD") from error
+
+    return version_to_publish
 
 
 @task
@@ -59,14 +65,13 @@ def get_skip_index(ti=None) -> bool:
 def get_release_id(ti=None) -> str:
     dag_run: DagRun = ti.dag_run
     release_id = dag_run.conf['release_id']
-    regex = "^re_\d{4}$"
+    regex = r"^re_\d{4}$"
     if not release_id:
         return release_id
-    elif re.fullmatch(regex, release_id):
+    if re.fullmatch(regex, release_id):
         return dag_run.conf['release_id']
-    else:
-        raise AirflowFailException(
-            f"DAG param 'release_id' is not in the correct format. Expected format: re_xxxx where x is a digit.")
+    raise AirflowFailException(
+        "DAG param 'release_id' is not in the correct format. Expected format: re_xxxx where x is a digit.")
 
 
 @task.virtualenv(requirements=["pyhocon==0.3.61"], system_site_packages=True)
@@ -178,10 +183,9 @@ def get_dictionary_output_bucket_name(clinical_bucket: str,
     """
     if clinical_bucket is not None:
         return clinical_bucket
-    elif nominative_bucket is not None:
+    if nominative_bucket is not None:
         return nominative_bucket
-    else:
-        return PUBLISHED_BUCKET
+    return PUBLISHED_BUCKET
 
 
 @task(task_id="publish_dictionary")
@@ -234,20 +238,20 @@ def publish_dictionary(
 
     # convert to excel
     try:
-        with pd.ExcelWriter(local_excel_file) as excel_writer:
+        with pd.ExcelWriter(local_excel_file) as excel_writer:  # pylint: disable=abstract-class-instantiated
             for sheet, data in result_map.items():
                 data.to_excel(excel_writer, sheet_name=sheet, index=False)
     except Exception as e:
-        logging.error(f"Failed to convert {local_excel_file} to excel: {e}")
-        raise AirflowFailException()
+        logging.error('Failed to convert %s to excel: %s', local_excel_file, e)
+        raise AirflowFailException() from e
 
     # Upload to minio
     try:
         key = f"{version_to_publish}/{resource_code}_dictionary_{version_to_publish.replace('-', '_')}.xlsx"
         s3.load_file(local_excel_file, key=key, bucket_name=s3_destination_bucket, replace=True)
     except Exception as e:
-        logging.error(f"Failed to upload Excel file {local_excel_file} to minio: {e}")
-        raise AirflowFailException()
+        logging.error('Failed to upload Excel file %s to minio: %s', local_excel_file, e)
+        raise AirflowFailException() from e
 
 
 @task(task_id='update_dict_current_version')
@@ -274,8 +278,8 @@ def update_dict_current_version(dict_version: str, resource_code: str, include_d
             pg_conn.commit()
         except psycopg2.DatabaseError as e:
             pg_conn.rollback()
-            logging.error(f"Failed to update dict version for {resource_code}: {e}")
-            raise AirflowFailException()
+            logging.error('Failed to update dict version for %s: %s', resource_code, e)
+            raise AirflowFailException() from e
 
 
 @task
@@ -295,7 +299,7 @@ def get_publish_kwargs(resource_code: str, version_to_publish: str, minio_conn_i
         minio_conn_id = YELLOW_MINIO_CONN_ID
 
     list_of_kwargs = []
-    for (source_id, source_info) in config["sources"].items():
+    for source_info in config["sources"].values():
         table = source_info["table"]
 
         # Choose the appropriate conn id depending on the config
@@ -366,8 +370,8 @@ def get_publish_dictionary(resource_code: str, pg_conn_id: str) -> bool:
             cur.execute(get_publish_dictionary_query(resource_code))
             return cur.fetchone()[0]
         except Exception as e:
-            logging.error(f"Failed to retrieve publish for {resource_code}: {e}")
-            raise AirflowFailException()
+            logging.error('Failed to retrieve publish for %s: %s', resource_code, e)
+            raise AirflowFailException() from e
 
 
 @task.short_circuit

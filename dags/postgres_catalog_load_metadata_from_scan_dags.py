@@ -2,7 +2,7 @@
 Génération des DAGs pour le chargement dans le Catalogue des métadonnées en scannant les données du lac.
 Un DAG par environnement postgres est généré.
 """
-# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, duplicate-code
+# pylint: disable=cell-var-from-loop
 
 from datetime import datetime
 from typing import List
@@ -24,9 +24,6 @@ ZONE = "yellow"
 MAIN_CLASS = "bio.ferlab.ui.etl.catalog.scan.Main"
 YELLOW_BUCKET = "yellow-prd"
 table_name_list = ["dict_table", "variable"]
-env_name = None
-conn_id = None
-ca_cert = None
 
 # Update default args
 args = DEFAULT_ARGS.copy()

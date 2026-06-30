@@ -1,3 +1,4 @@
+# pylint: disable=import-outside-toplevel, too-many-locals
 def parse_hocon_conf(
         skip: bool = False
 ) -> dict:
@@ -23,7 +24,7 @@ def parse_hocon_conf(
         raise AirflowSkipException()
 
     # local dir for keeping the file
-    local_conf_directory = ("tmp/conf")
+    local_conf_directory = "tmp/conf"
     os.makedirs(local_conf_directory, exist_ok=True)
 
     # Get S3 client

@@ -1,4 +1,6 @@
+# pylint: disable=too-many-locals
 import csv
+from contextlib import ExitStack
 from tempfile import NamedTemporaryFile
 from typing import List, Dict
 
@@ -30,7 +32,7 @@ class CopyCsvToPostgres(PostgresCaOperator):
         self.minio_conn_id = minio_conn_id
         self.postgres_conn_id = kwargs.get("postgres_conn_id")
 
-    def execute(self, **kwargs):
+    def execute(self, context):
         super().load_cert()
 
         s3_hook = S3Hook(aws_conn_id=self.minio_conn_id)
@@ -38,39 +40,33 @@ class CopyCsvToPostgres(PostgresCaOperator):
 
         filedata = {}
 
-        for table in self.table_copy_conf:
-            s3_bucket = table['src_s3_bucket']
-            s3_key = table['src_s3_key']
-            postgres_schema = table['dts_postgres_schema']
-            postgres_tablename = table['dts_postgres_tablename']
-            local_file = NamedTemporaryFile(suffix='.csv')
+        with ExitStack() as stack:
+            for table in self.table_copy_conf:
+                s3_bucket = table['src_s3_bucket']
+                s3_key = table['src_s3_key']
+                postgres_schema = table['dts_postgres_schema']
+                postgres_tablename = table['dts_postgres_tablename']
+                local_file = stack.enter_context(NamedTemporaryFile(suffix='.csv'))
 
-            s3_conn = s3_hook.get_key(key=s3_key, bucket_name=s3_bucket)
-            s3_conn.download_fileobj(local_file)
-            local_file.flush()
-            local_file.seek(0)
+                s3_conn = s3_hook.get_key(key=s3_key, bucket_name=s3_bucket)
+                s3_conn.download_fileobj(local_file)
+                local_file.flush()
+                local_file.seek(0)
 
-            filedata[f"{postgres_schema}.{postgres_tablename}"] = local_file
+                filedata[f"{postgres_schema}.{postgres_tablename}"] = local_file
 
-        pg_conn = pg_hook.get_conn()
+            pg_conn = pg_hook.get_conn()
 
-        with pg_conn.cursor() as cur:
-            for tablename, file in filedata.items():
-                cur.execute(f"TRUNCATE {tablename};")
+            with pg_conn.cursor() as cur:
+                for tablename, file in filedata.items():
+                    cur.execute(f"TRUNCATE {tablename};")
 
-                with open(file.name, 'rt') as temp_file:
-                    cols = csv.DictReader(temp_file, delimiter=',').fieldnames
-                    format_cols = ', '.join(cols)
+                    with open(file.name, 'rt', encoding="utf-8") as temp_file:
+                        cols = csv.DictReader(temp_file, delimiter=',').fieldnames
+                        format_cols = ', '.join(cols)
 
-                cur.copy_expert(f"COPY {tablename} ({format_cols}) FROM stdin DELIMITER ',' CSV HEADER;", file)
+                    cur.copy_expert(f"COPY {tablename} ({format_cols}) FROM stdin DELIMITER ',' CSV HEADER;", file)
 
-            pg_conn.commit()
+                pg_conn.commit()
 
-        pg_conn.close()
-
-        for file in filedata.values():
-            file.close()
-
-
-
-
+            pg_conn.close()

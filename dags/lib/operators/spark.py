@@ -1,8 +1,9 @@
+# pylint: disable=too-many-instance-attributes
 from airflow.exceptions import AirflowSkipException
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 from kubernetes.client import models as k8s
 
-from lib.cleanup import Cleanup
+from lib.cleanup import cleanup_pods
 
 
 class SparkOperator(KubernetesPodOperator):
@@ -38,7 +39,7 @@ class SparkOperator(KubernetesPodOperator):
         self.spark_config = spark_config
         self.skip = skip
 
-    def execute(self, **kwargs):
+    def execute(self, context):
         if self.skip:
             raise AirflowSkipException()
 
@@ -124,7 +125,6 @@ class SparkOperator(KubernetesPodOperator):
                 ),
             )
 
-        super().execute(**kwargs)
+        super().execute(context)
 
-        Cleanup.cleanup_pods(self.pod.metadata.name, self.pod.metadata.namespace, self.spark_failure_msg)
-
+        cleanup_pods(self.pod.metadata.name, self.pod.metadata.namespace, self.spark_failure_msg)

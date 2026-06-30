@@ -1,7 +1,6 @@
 """
 DAG that handles the ETL process for curated Philips.
 """
-# pylint: disable=expression-not-assigned
 
 from datetime import datetime, timedelta
 

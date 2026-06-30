@@ -1,6 +1,5 @@
 from enum import Enum
 
-from airflow.decorators import task
 from lib.operators.postgresca import PostgresCaOperator
 from lib.postgres import POSTGRES_BI_CA_PATH, POSTGRES_CA_FILENAME, POSTGRES_BI_CA_CERT, POSTGRES_BI_CONN_ID
 

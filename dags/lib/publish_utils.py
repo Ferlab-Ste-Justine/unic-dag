@@ -1,6 +1,6 @@
+# pylint: disable=import-outside-toplevel
 import logging
 from enum import Enum
-from typing import Optional, Dict
 
 
 class FileType(Enum):
@@ -24,19 +24,19 @@ def add_extension_to_path(path: str, output_type: FileType) -> str:
 
 def print_extracted_config(resource_code: str, version_to_publish: str, mini_config: dict) -> None:
     logging.info((f" Extracted {resource_code} configuration").center(50, "="))
-    logging.info(f"+ Configuration for {resource_code} (version {version_to_publish})")
-    logging.info(f"+ Input bucket: {mini_config['input_bucket']}")
+    logging.info('+ Configuration for %s (version %s)', resource_code, version_to_publish)
+    logging.info('+ Input bucket: %s', mini_config['input_bucket'])
 
-    logging.info(f"+ Clinical bucket  : {mini_config['clinical_bucket']}")
-    logging.info(f"+ Nominative bucket: {mini_config['nominative_bucket']}")
+    logging.info('+ Clinical bucket  : %s', mini_config['clinical_bucket'])
+    logging.info('+ Nominative bucket: %s', mini_config['nominative_bucket'])
 
     # Extracted tables
     logging.info("Extracted Tables".center(50, "-"))
     for source_id, source_info in mini_config['sources'].items():
-        logging.info(f"  - {source_info['table']}:")
-        logging.info(f"    Source ID: {source_id}")
-        logging.info(f"    Output bucket: {source_info['output_bucket']}")
-        logging.info(f"    Output path: {source_info['output_path']}")
+        logging.info('  - %s:', source_info['table'])
+        logging.info('    Source ID: %s', source_id)
+        logging.info('    Output bucket: %s', source_info['output_bucket'])
+        logging.info('    Output path: %s', source_info['output_path'])
     logging.info("-" * 50)
 
     logging.info("=" * 50)
@@ -58,21 +58,17 @@ def determine_minio_conn_id_from_config(minio_conn_id: str,
         CATALOG_BUCKET, NOMINATIVE_BUCKET
 
     if output_bucket is None:
-        if input_bucket == RELEASED_BUCKET:
-            return GREEN_MINIO_CONN_ID
-        elif input_bucket == CATALOG_BUCKET:
-            return YELLOW_MINIO_CONN_ID
-        elif input_bucket == NOMINATIVE_BUCKET:
-            return RED_MINIO_CONN_ID
-        else:
-            return minio_conn_id
-    else:
-        if "clinical" in output_bucket and (input_bucket is None or input_bucket == RELEASED_BUCKET):
-            return GREEN_MINIO_CONN_ID
-        elif "clinical" in output_bucket and input_bucket == CATALOG_BUCKET:
-            return YELLOW_MINIO_CONN_ID
-        elif "nominative" in output_bucket:
-            return RED_MINIO_CONN_ID
-        else:
-            # If the output bucket does not match any known "released" buckets, return the provided Minio connection ID.
-            return minio_conn_id
+        return {
+            RELEASED_BUCKET: GREEN_MINIO_CONN_ID,
+            CATALOG_BUCKET: YELLOW_MINIO_CONN_ID,
+            NOMINATIVE_BUCKET: RED_MINIO_CONN_ID,
+        }.get(input_bucket, minio_conn_id)
+
+    if "clinical" in output_bucket and (input_bucket is None or input_bucket == RELEASED_BUCKET):
+        return GREEN_MINIO_CONN_ID
+    if "clinical" in output_bucket and input_bucket == CATALOG_BUCKET:
+        return YELLOW_MINIO_CONN_ID
+    if "nominative" in output_bucket:
+        return RED_MINIO_CONN_ID
+    # If the output bucket does not match any known "released" buckets, return the provided Minio connection ID.
+    return minio_conn_id

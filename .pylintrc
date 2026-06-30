@@ -2,7 +2,20 @@
 
 disable=
   line-too-long,
-  pointless-statement, #pylint doesn't understand statement like op1 >> op2
   too-many-arguments,
+  too-many-branches,
   different-operator-varname-taskid,
-  too-many-branches
+  pointless-statement, #op1 >> op2 dependency syntax
+  expression-not-assigned,
+  missing-module-docstring, #docstrings not required project-wide
+  missing-class-docstring,
+  missing-function-docstring,
+  duplicate-code #R0801 noise: DAG/template boilerplate
+
+[BASIC]
+# idioms: ti=task instance, s3=S3Hook, df=DataFrame, pg=postgres, e=exception
+good-names=i,j,k,ex,Run,_,ti,s3,df,pg,e
+
+[DESIGN]
+# Airflow operators have deep ancestor chains (up to 10)
+max-parents=10

@@ -1,3 +1,4 @@
+# pylint: disable=too-many-locals
 import os
 from io import BytesIO
 from typing import Union, List
@@ -64,7 +65,7 @@ def parquet_to_excel(
         if not keys:
             raise AirflowFailException(f"No files found in: {parquet_bucket_name}/{padded_parquet_dir_key}")
     except Exception as e:
-        raise AirflowFailException(f"Failed to list the files from: {parquet_bucket_name}/{padded_parquet_dir_key}: {e}")
+        raise AirflowFailException(f"Failed to list the files from: {parquet_bucket_name}/{padded_parquet_dir_key}: {e}") from e
 
     # Download parquet files
     parquet_files = []
@@ -75,7 +76,7 @@ def parquet_to_excel(
                 s3_client.download_file(parquet_bucket_name, key, local_file_path)
                 parquet_files.append(local_file_path)
             except Exception as e:
-                raise AirflowFailException(f"Failed to download the file: {parquet_bucket_name}/{key}: {e}")
+                raise AirflowFailException(f"Failed to download the file: {parquet_bucket_name}/{key}: {e}") from e
 
     if not parquet_files:
         raise AirflowFailException(f'No parquet files found in: {parquet_bucket_name}/{padded_parquet_dir_key}')
@@ -84,7 +85,7 @@ def parquet_to_excel(
     try:
         df = pd.concat([pd.read_parquet(file) for file in parquet_files], ignore_index=True)
     except Exception as e:
-        raise AirflowFailException(f"Failed to combine parquet files into single df: {e}")
+        raise AirflowFailException(f"Failed to combine parquet files into single df: {e}") from e
 
     # Set the header if not provided
     if header is None:
@@ -98,13 +99,13 @@ def parquet_to_excel(
     try:
         df.to_excel(local_excel_file, index=False, header=header, sheet_name=sheet_name)
     except Exception as e:
-        raise AirflowFailException(f"Failed to convert {local_excel_file} to excel: {e}")
+        raise AirflowFailException(f"Failed to convert {local_excel_file} to excel: {e}") from e
 
     # Upload to minio
     try:
         s3.load_file(local_excel_file, key=excel_output_key, bucket_name=excel_bucket_name, replace=True)
     except Exception as e:
-        raise AirflowFailException(f"Failed to upload Excel file {local_excel_file} to bucket {excel_bucket_name}: {e}")
+        raise AirflowFailException(f"Failed to upload Excel file {local_excel_file} to bucket {excel_bucket_name}: {e}") from e
 
 
 @task(task_id="csv_to_excel")
@@ -158,7 +159,7 @@ def csv_to_excel(
                 s3_client.download_file(csv_bucket_name, csv, local_csv_file)
                 csv_files.append(local_csv_file)
             except Exception as e:
-                raise AirflowFailException(f"Failed to download csv file: {csv_bucket_name}/{csv}: {e}")
+                raise AirflowFailException(f"Failed to download csv file: {csv_bucket_name}/{csv}: {e}") from e
 
     if not csv_files:
         raise AirflowFailException(f'No csv files found in: {csv_bucket_name}/{csv_dir_key}')
@@ -167,7 +168,7 @@ def csv_to_excel(
     try:
         df = pd.concat([pd.read_csv(file) for file in csv_files], ignore_index=True)
     except Exception as e:
-        raise AirflowFailException(f"Failed to combine csv files into single df: {e}")
+        raise AirflowFailException(f"Failed to combine csv files into single df: {e}") from e
 
     # Set the header if not provided
     if header is None:
@@ -178,13 +179,13 @@ def csv_to_excel(
     try:
         df.to_excel(local_excel_file, index=False, header=header, sheet_name=sheet_name)
     except Exception as e:
-        raise AirflowFailException(f"Failed to convert {local_excel_file} to excel: {e}")
+        raise AirflowFailException(f"Failed to convert {local_excel_file} to excel: {e}") from e
 
     # Upload to minio
     try:
         s3.load_file(local_excel_file, key=excel_output_key, bucket_name=excel_bucket_name, replace=True)
     except Exception as e:
-        raise AirflowFailException(f"Failed to upload Excel file {local_excel_file} to bucket {excel_bucket_name}: {e}")
+        raise AirflowFailException(f"Failed to upload Excel file {local_excel_file} to bucket {excel_bucket_name}: {e}") from e
 
 
 @task(task_id="excel_to_csv")

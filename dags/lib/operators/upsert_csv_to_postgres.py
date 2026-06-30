@@ -1,3 +1,4 @@
+# pylint: disable=too-many-instance-attributes, too-many-locals
 import csv
 import logging
 import re
@@ -73,7 +74,7 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         self.postgres_conn_id = postgres_conn_id
         self.skip = skip
 
-    def execute(self, **kwargs):
+    def execute(self, context):
         if self.skip:
             raise AirflowSkipException()
 
@@ -83,79 +84,78 @@ class UpsertCsvToPostgres(PostgresCaOperator):
         psql = PostgresHook(postgres_conn_id=self.postgres_conn_id)
 
         # Download CSV file to upsert
-        local_file = NamedTemporaryFile(suffix='.csv')
-        s3_transfer = s3.get_key(key=self.s3_key, bucket_name=self.s3_bucket)
-        s3_transfer.download_fileobj(local_file)
-        local_file.flush()
-        local_file.seek(0)
+        with NamedTemporaryFile(suffix='.csv') as local_file:
+            s3_transfer = s3.get_key(key=self.s3_key, bucket_name=self.s3_bucket)
+            s3_transfer.download_fileobj(local_file)
+            local_file.flush()
+            local_file.seek(0)
 
-        with open(local_file.name, 'rt') as temp_file:
-            columns = csv.DictReader(temp_file, delimiter=self.csv_sep).fieldnames
-            excluded_update_columns = self.primary_keys + self.excluded_columns
-            update_columns = [col for col in columns if col not in excluded_update_columns]
+            with open(local_file.name, 'rt', encoding="utf-8") as temp_file:
+                columns = csv.DictReader(temp_file, delimiter=self.csv_sep).fieldnames
+                excluded_update_columns = self.primary_keys + self.excluded_columns
+                update_columns = [col for col in columns if col not in excluded_update_columns]
 
-        # Generate create temp table query
-        staging_table_name = f"{self.table_name}_staging"
-        with open(self.table_schema_path, 'r') as file:
-            create_table_query = file.read() \
-                .replace(f"CREATE TABLE IF NOT EXISTS {self.schema_name}.{self.table_name}",
-                         f"CREATE TEMP TABLE {staging_table_name}")
+            # Generate create temp table query
+            staging_table_name = f"{self.table_name}_staging"
+            with open(self.table_schema_path, 'r', encoding="utf-8") as file:
+                create_table_query = file.read() \
+                    .replace(f"CREATE TABLE IF NOT EXISTS {self.schema_name}.{self.table_name}",
+                             f"CREATE TEMP TABLE {staging_table_name}")
 
-            # Remove foreign table constraints
-            create_table_query = re.sub(r"REFERENCES\s*\w+\.\w+\s*\(\w+\)\s*ON\s*DELETE\s*(CASCADE|SET\s*NULL)", "", create_table_query)
+                # Remove foreign table constraints
+                create_table_query = re.sub(r"REFERENCES\s*\w+\.\w+\s*\(\w+\)\s*ON\s*DELETE\s*(CASCADE|SET\s*NULL)", "", create_table_query)
 
-        # Generate copy query
-        copy_query = sql.SQL("COPY {staging_table} ({columns}) FROM STDIN DELIMITER {sep} CSV HEADER").format(
-            staging_table=sql.Identifier(staging_table_name),
-            sep=sql.Literal(self.csv_sep),
-            columns=sql.SQL(', ').join(map(sql.Identifier, columns)))
+            # Generate copy query
+            copy_query = sql.SQL("COPY {staging_table} ({columns}) FROM STDIN DELIMITER {sep} CSV HEADER").format(
+                staging_table=sql.Identifier(staging_table_name),
+                sep=sql.Literal(self.csv_sep),
+                columns=sql.SQL(', ').join(map(sql.Identifier, columns)))
 
-        # Generate upsert query
-        upsert_query = sql.SQL("""
-        INSERT INTO {target_table} ({columns})
-        SELECT {columns} FROM {staging_table}
-        ON CONFLICT ({primary_keys})
-        """).format(
-            target_table=sql.Identifier(self.schema_name, self.table_name),
-            columns=sql.SQL(', ').join(map(sql.Identifier, columns)),
-            staging_table=sql.Identifier(staging_table_name),
-            primary_keys=sql.SQL(", ").join(map(sql.Identifier, self.primary_keys)),
-        )
+            # Generate upsert query
+            upsert_query = sql.SQL("""
+            INSERT INTO {target_table} ({columns})
+            SELECT {columns} FROM {staging_table}
+            ON CONFLICT ({primary_keys})
+            """).format(
+                target_table=sql.Identifier(self.schema_name, self.table_name),
+                columns=sql.SQL(', ').join(map(sql.Identifier, columns)),
+                staging_table=sql.Identifier(staging_table_name),
+                primary_keys=sql.SQL(", ").join(map(sql.Identifier, self.primary_keys)),
+            )
 
-        conflict_statement = sql.SQL("DO NOTHING") if not update_columns else sql.SQL("DO UPDATE SET {set}").format(
-            set=sql.SQL(", ").join(
-                sql.SQL("{col} = EXCLUDED.{col}").format(col=sql.Identifier(col)) for col in update_columns))
+            conflict_statement = sql.SQL("DO NOTHING") if not update_columns else sql.SQL("DO UPDATE SET {set}").format(
+                set=sql.SQL(", ").join(
+                    sql.SQL("{col} = EXCLUDED.{col}").format(col=sql.Identifier(col)) for col in update_columns))
 
-        upsert_on_conflict_query = upsert_query + conflict_statement
+            upsert_on_conflict_query = upsert_query + conflict_statement
 
-        psql_conn = psql.get_conn()
-        with psql_conn.cursor() as cur:
-            try:
-                # Create staging table
-                cur.execute(create_table_query)
-                cur.execute(sql.SQL("select * from {}").format(sql.Identifier(staging_table_name)))
+            psql_conn = psql.get_conn()
+            with psql_conn.cursor() as cur:
+                try:
+                    # Create staging table
+                    cur.execute(create_table_query)
+                    cur.execute(sql.SQL("select * from {}").format(sql.Identifier(staging_table_name)))
 
-                # Copy data to staging table
-                cur.copy_expert(copy_query, local_file)
-                cur.execute(sql.SQL("select * from {}").format(sql.Identifier(staging_table_name)))
+                    # Copy data to staging table
+                    cur.copy_expert(copy_query, local_file)
+                    cur.execute(sql.SQL("select * from {}").format(sql.Identifier(staging_table_name)))
 
-                # Execute upsert
-                cur.execute(upsert_on_conflict_query)
-                cur.execute(sql.SQL("select * from {}").format(sql.Identifier(self.schema_name, self.table_name)))
+                    # Execute upsert
+                    cur.execute(upsert_on_conflict_query)
+                    cur.execute(sql.SQL("select * from {}").format(sql.Identifier(self.schema_name, self.table_name)))
 
-                # Drop staging table
-                cur.execute(
-                    sql.SQL("DROP TABLE {staging_table}").format(staging_table=sql.Identifier(staging_table_name)))
+                    # Drop staging table
+                    cur.execute(
+                        sql.SQL("DROP TABLE {staging_table}").format(staging_table=sql.Identifier(staging_table_name)))
 
-                # Commit all transactions at once
-                psql_conn.commit()
+                    # Commit all transactions at once
+                    psql_conn.commit()
 
-            except psycopg2.DatabaseError as error:
-                psql_conn.rollback()
-                logging.error(f'Failed to upsert CSV to Postgres: {error}')
-                raise error
+                except psycopg2.DatabaseError as error:
+                    psql_conn.rollback()
+                    logging.error('Failed to upsert CSV to Postgres: %s', error)
+                    raise error
 
-            finally:
-                local_file.close()
-                cur.close()
-                psql_conn.close()
+                finally:
+                    cur.close()
+                    psql_conn.close()

@@ -1,7 +1,6 @@
 """
 DAG pour la création des tables dans la bd unic_datamart pour le projet Near Real-Time (NRT) StatUrgence
 """
-# pylint: disable=expression-not-assigned
 from datetime import datetime
 
 from airflow import DAG

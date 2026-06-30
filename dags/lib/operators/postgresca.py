@@ -31,15 +31,15 @@ class PostgresCaOperator(PostgresOperator):
         self.skip = skip
         super().__init__(postgres_conn_id=self.postgres_conn_id, **kwargs)
 
-    def execute(self, **kwargs):
+    def execute(self, context):
         if self.skip:
             raise AirflowSkipException()
 
         self.load_cert()
-        super().execute(**kwargs)
+        super().execute(context)
 
     def load_cert(self):
-        subprocess.run(["mkdir", "-p", self.ca_path])
+        subprocess.run(["mkdir", "-p", self.ca_path], check=True)
 
-        with open(self.ca_path + self.ca_filename, "w") as outfile:
+        with open(self.ca_path + self.ca_filename, "w", encoding="utf-8") as outfile:
             outfile.write(self.ca_cert)

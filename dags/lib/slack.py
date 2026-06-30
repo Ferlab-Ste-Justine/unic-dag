@@ -15,7 +15,7 @@ class Slack:
     slack_hook_url = Variable.get('slack_hook_url', None)
 
     @staticmethod
-    def notify(markdown: str, type=INFO):
+    def notify(markdown: str, level=INFO):
         if Slack.slack_hook_url:
             airflow_link = f' *[*<{Slack.base_url}|Airflow>*]*' if Slack.base_url else ''
             Slack.http_post(Slack.slack_hook_url, {
@@ -24,7 +24,7 @@ class Slack:
                         'type': 'section',
                         'text': {
                             'type': 'mrkdwn',
-                            'text': f'{type} *PROD*{airflow_link} {markdown}',
+                            'text': f'{level} *PROD*{airflow_link} {markdown}',
                         },
                     },
                 ],
@@ -35,38 +35,32 @@ class Slack:
         dag_id = context['dag'].dag_id
         task_id = context['task'].task_id
 
-        slack_msg = """
-            *Execution Time*: {exec_date},  
-            *Log Url*: {log_url}
-            """.format(
-            exec_date=context['execution_date'],
-            log_url=context['task_instance'].log_url,
-        )
+        slack_msg = f"""
+            *Execution Time*: {context['execution_date']},
+            *Log Url*: {context['task_instance'].log_url}
+            """
 
         dag_link = Slack._dag_link(
             f'{dag_id}.{task_id}', dag_id, context['run_id'], task_id,
         )
 
-        Slack.notify(f'Task {dag_link} failed. {slack_msg}', type=Slack.ERROR)
+        Slack.notify(f'Task {dag_link} failed. {slack_msg}', level=Slack.ERROR)
 
     @staticmethod
     def notify_task_skip(context):
         dag_id = context['dag'].dag_id
         task_id = context['task'].task_id
 
-        slack_msg = """
-            *Execution Time*: {exec_date},  
-            *Log Url*: {log_url}
-            """.format(
-            exec_date=context['execution_date'],
-            log_url=context['task_instance'].log_url,
-        )
+        slack_msg = f"""
+            *Execution Time*: {context['execution_date']},
+            *Log Url*: {context['task_instance'].log_url}
+            """
 
         dag_link = Slack._dag_link(
             f'{dag_id}.{task_id}', dag_id, context['run_id'], task_id,
         )
 
-        Slack.notify(f'Task {dag_link} was skipped. {slack_msg}', type=Slack.WARNING)
+        Slack.notify(f'Task {dag_link} was skipped. {slack_msg}', level=Slack.WARNING)
 
     @staticmethod
     def notify_task_retry(context):
@@ -74,29 +68,25 @@ class Slack:
         task_id = context['task'].task_id
         ti = context['task_instance']
 
-        slack_msg = """
-                *Retry number*: {retry_number},
-                *Execution Time*: {exec_date},  
-                *Log Url*: {log_url}
-                """.format(
-            retry_number=ti.try_number,
-            exec_date=context['execution_date'],
-            log_url=ti.log_url,
-        )
+        slack_msg = f"""
+                *Retry number*: {ti.try_number},
+                *Execution Time*: {context['execution_date']},
+                *Log Url*: {ti.log_url}
+                """
 
         dag_link = Slack._dag_link(
             f'{dag_id}.{task_id}', dag_id, context['run_id'], task_id,
         )
 
-        Slack.notify(f'Task {dag_link} up for retry. {slack_msg}', type=Slack.WARNING)
+        Slack.notify(f'Task {dag_link} up for retry. {slack_msg}', level=Slack.WARNING)
 
     @staticmethod
     def notify_dag_failure(context):
         dag_id = context['dag'].dag_id
-        slack_msg = """*Execution Time*: {exec_date}""".format(exec_date=context['execution_date'])
+        slack_msg = f"""*Execution Time*: {context['execution_date']}"""
         dag_link = Slack._dag_link(dag_id, dag_id, context['run_id'])
 
-        Slack.notify(f'Dag {dag_link} failed. {slack_msg}', type=Slack.ERROR)
+        Slack.notify(f'Dag {dag_link} failed. {slack_msg}', level=Slack.ERROR)
 
     @staticmethod
     def notify_dag_start(context):
@@ -125,6 +115,6 @@ class Slack:
 
     @staticmethod
     def http_post(url: str, json: Any = None) -> requests.Response:
-        with requests.post(url, json=json) as response:
+        with requests.post(url, json=json, timeout=30) as response:
             response.raise_for_status()
             return response

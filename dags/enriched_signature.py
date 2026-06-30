@@ -1,7 +1,6 @@
 """
 Enriched signature DAG
 """
-# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
 from datetime import timedelta
 from typing import List
 

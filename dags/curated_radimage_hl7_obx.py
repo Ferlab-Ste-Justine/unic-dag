@@ -1,7 +1,6 @@
 """
 DAG pour le parsing le segment OBX des messages HL7 de Radimage
 """
-# pylint: disable=duplicate-code, expression-not-assigned
 from datetime import timedelta
 
 import pendulum

@@ -1,7 +1,6 @@
 """
 DAG pour le parsing des messages HL7 de Radimage
 """
-# pylint: disable=duplicate-code, expression-not-assigned
 from datetime import datetime, timedelta
 from typing import List
 

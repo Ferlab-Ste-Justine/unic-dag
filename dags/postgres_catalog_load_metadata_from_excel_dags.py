@@ -2,7 +2,7 @@
 Génération des DAGs pour le chargement dans le Catalogue des métadonnées se trouvant dans des fichiers Excel.
 Un DAG par environnement postgres est généré.
 """
-# pylint: disable=missing-function-docstring, invalid-name, expression-not-assigned, duplicate-code
+# pylint: disable=invalid-name
 
 from datetime import datetime
 from typing import List, Optional, Union

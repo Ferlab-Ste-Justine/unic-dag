@@ -1,5 +1,5 @@
 """Unit tests for IntervalTimetable."""
-# pylint: disable=missing-function-docstring,protected-access,invalid-name
+# pylint: disable=protected-access, invalid-name
 from __future__ import annotations
 
 from datetime import timedelta

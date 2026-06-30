@@ -1,7 +1,6 @@
 """
 Participant index anonymization DAG
 """
-# pylint: disable=missing-function-docstring, duplicate-code, expression-not-assigned
 from datetime import timedelta, datetime
 
 from airflow import DAG
