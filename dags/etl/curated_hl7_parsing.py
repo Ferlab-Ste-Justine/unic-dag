@@ -10,10 +10,8 @@ Generic pipeline that parses the base64-encoded PDF documents stored in the
 For a given resource it:
   1. resolves the curated input table's S3 URI from the datalake config (``resolve_input``);
   2. reads the requested ``dte_of_message`` range, decodes each PDF, parses it with docling, and
-     writes back two Delta outputs — markdown report text and extracted tables — keyed by
-     ``hl7_id`` (``parse_and_write``, Phase B — not yet implemented).
-
-Manually triggered (``schedule_interval=None``).
+     writes back the markdown report (Delta table) and the extracted tables (date-first CSV tree),
+     keyed by ``dte_of_message, hl7_id`` (``parse_and_write``).
 """
 
 from datetime import datetime
@@ -30,8 +28,7 @@ from lib.slack import Slack
 DEFAULT_DATASET_SUFFIX = "hl7_oru_r01_obx"
 
 # Dependencies installed into the parse_and_write venv at task runtime.
-# NOTE (integration): these pins must be verified against the worker image's Python (3.9) before
-# prod use — docling pulls a heavy PyTorch + ML-model stack and version compatibility is strict.
+# NOTE (integration): Docling needs a newer python version, while the Airflow worker env is pinned to 3.8
 PARSE_REQUIREMENTS = [
     "docling==2.55.1",
     "polars==1.12.0",
@@ -39,10 +36,8 @@ PARSE_REQUIREMENTS = [
     "pyarrow==17.0.0",
 ]
 
-# parse_and_write runs docling (PyTorch + multi-GB models) in its own KubernetesExecutor pod.
-# executor_config / pod_override is resolved at DAG-parse time and is NOT Jinja-templatable, so the
-# pod size is a hardcoded constant here (change via PR). One shared model copy + threaded
-# doc_batch_concurrency keeps this modest; bump if concurrency or OCR is raised.
+# parse_and_write runs docling in its own KubernetesExecutor pod.
+# executor_config / pod_override is resolved at DAG-parse time and is NOT Jinja-templatable
 PARSE_POD_MEMORY = "8Gi"
 PARSE_POD_CPU = "2"
 PARSE_EXECUTOR_CONFIG = {
@@ -70,11 +65,8 @@ dag_args.update({
 
 @task.virtualenv(requirements=["pyhocon==0.3.61"], system_site_packages=True)
 def resolve_input(resource_code: str, dataset_suffix: str,
-                  output_text_path: str, output_tables_path: str) -> dict:
+                  output_text_path: str, output_tables_tree_path: str) -> dict:
     """
-    Resolve everything ``parse_and_write`` needs to read the curated input table and write its
-    output paths
-
     Builds the curated source id ``curated_{resource_code}_{dataset_suffix}``, looks it up via
     :class:`DatalakeConfig`, and returns its primitive dict:
         {
@@ -82,15 +74,13 @@ def resolve_input(resource_code: str, dataset_suffix: str,
             "minio_conn_id": <connection id chosen for that bucket>,
             "config":        <DatalakeConfig.to_dict() — the populated source/storage>,
             "text_uri":      <s3:// output uri for the parsed-report Delta table>,
-            "tables_uri":    <s3:// output uri for the extracted-tables Delta table>,
+            "tables_tree_uri": <s3:// base uri of the extracted-tables CSV tree>,
         }
-
-    Both output paths are **required**
 
     :param resource_code: Short resource code, e.g. "radimage" or "softpath".
     :param dataset_suffix: Completes the curated source id; defaults to "hl7_oru_r01_obx".
-    :param output_text_path: Required s3:// uri for the parsed-report Delta output.
-    :param output_tables_path: Required s3:// uri for the extracted-tables Delta output.
+    :param output_text_path: s3:// uri for the parsed-report Delta output.
+    :param output_tables_tree_path: s3:// base uri for the extracted-tables CSV tree.
     :return: Dict consumed by ``parse_and_write``.
     """
     from lib.datalake_config import DatalakeConfig
@@ -111,7 +101,7 @@ def resolve_input(resource_code: str, dataset_suffix: str,
         "minio_conn_id": minio_conn_id,
         "config": config.to_dict(),
         "text_uri": output_text_path,
-        "tables_uri": output_tables_path,
+        "tables_tree_uri": output_tables_tree_path,
     }
 
 
@@ -121,8 +111,8 @@ def parse_and_write(input_info: dict, start_date: str, end_date: str, row_limit:
                     doc_batch_concurrency: int, enable_ocr: bool) -> dict:
     """
     Read the curated OBX PDFs for the given date range, parse each with docling, and write two
-    Delta outputs (keyed by ``hl7_id``): a parsed-report table (markdown) and an extracted-tables
-    table (one row per table, CSV string).
+    outputs (keyed by ``hl7_id``): a parsed-report Delta table (markdown), and the extracted tables
+    as a date-first CSV tree (one CSV per table) via ``etl.utils.hl7_io_utils.write_tables``.
 
     Helpers are nested (a fresh venv interpreter cannot see the DAG module's globals). Docling runs
     in-process with threaded multi-document concurrency (``settings.perf.doc_batch_concurrency``);
@@ -147,7 +137,8 @@ def parse_and_write(input_info: dict, start_date: str, end_date: str, row_limit:
     import tempfile
 
     import polars as pl
-    from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+
+    from etl.utils.hl7_io_utils import build_storage_options, write_tables
 
     # Explicit column types for the two output frames declared so that:
     # (1) an empty result still yields a correctly-columned frame;
@@ -164,22 +155,6 @@ def parse_and_write(input_info: dict, start_date: str, end_date: str, row_limit:
         "table_index": pl.Int64, "table_csv": pl.Utf8,
         "n_rows": pl.Int64, "n_cols": pl.Int64, "page_no": pl.Int64,
     }
-
-    # ---- S3 / delta-rs credentials ----
-    def build_storage_options(conn_id: str) -> dict:
-        conn = S3Hook(aws_conn_id=conn_id).get_connection(conn_id)
-        endpoint = conn.extra_dejson.get("endpoint_url") or conn.extra_dejson.get("host") or conn.host
-        opts = {
-            "AWS_ACCESS_KEY_ID": conn.login,
-            "AWS_SECRET_ACCESS_KEY": conn.password,
-            "AWS_REGION": "us-east-1",
-            "AWS_ALLOW_HTTP": "true",
-            # delta-rs needs this to write to S3-compatible stores without a locking provider (MinIO).
-            "AWS_S3_ALLOW_UNSAFE_RENAME": "true",
-        }
-        if endpoint:
-            opts["AWS_ENDPOINT_URL"] = endpoint
-        return opts
 
     # ---- input read: lazy scan + project + date filter + cap, single collect ----
     def read_obx_pdfs(storage_options: dict) -> pl.DataFrame:
@@ -303,7 +278,8 @@ def parse_and_write(input_info: dict, start_date: str, end_date: str, row_limit:
         report_df, tables_df = build_outputs(results, meta_by_stem, skipped_rows)
 
     write_delta_overwrite(report_df, input_info["text_uri"], storage_options)
-    write_delta_overwrite(tables_df, input_info["tables_uri"], storage_options)
+    write_tables(tables_df, tree_base_uri=input_info["tables_tree_uri"],
+                 minio_conn_id=input_info["minio_conn_id"])
     logging.info("Wrote %d report rows and %d table rows", report_df.height, tables_df.height)
 
     return {"rows_read": df.height, "pdfs_parsed": len(pdf_files),
@@ -342,9 +318,9 @@ with DAG(
         resource_code="{{ params.resource_code }}",
         dataset_suffix="{{ params.dataset_suffix }}",
         # Hardcoded s3:// destinations (polars/deltalake use s3://, not s3a://), built inline so the
-        # resource_code + dataset_suffix make each resource's output tables unique. Replace <bucket>/<key>.
-        output_text_path="s3://yellow-prd/robertcaterev01/hl7_pipeline_1/{{ params.resource_code }}_{{ params.dataset_suffix }}_report_markdown",
-        output_tables_path="s3://yellow-prd/robertcaterev01/hl7_pipeline_1/{{ params.resource_code }}_{{ params.dataset_suffix }}_extracted_tables",
+        # resource_code + dataset_suffix make each resource's outputs unique. Replace <bucket>/<key>.
+        output_text_path="s3://yellow-prd/robertcaterev01/hl7_pipeline_2/{{ params.resource_code }}_{{ params.dataset_suffix }}_report_markdown_v1",
+        output_tables_tree_path="s3://yellow-prd/robertcaterev01/hl7_pipeline_2/{{ params.resource_code }}_{{ params.dataset_suffix }}_extracted_tables_v1",
     )
 
     parse_and_write(
