@@ -9,18 +9,20 @@ Generic pipeline that parses the base64-encoded PDF documents stored in the
 
 For a given resource it:
   1. resolves the curated input table's S3 URI from the datalake config (``resolve_input``);
-  2. reads the requested ``dte_of_message`` range, decodes each PDF, parses it with docling, and
+  2. reads the run's ``dte_of_message`` interval window, decodes each PDF, parses it with docling, and
      writes back the markdown report (Delta table) and the extracted tables (date-first CSV tree),
      keyed by ``dte_of_message, hl7_id`` (``parse_and_write``).
 """
 
-from datetime import datetime
+from datetime import timedelta
 
+import pendulum
 from airflow import DAG
 from airflow.decorators import task
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 from kubernetes.client import models as k8s
+from timetables import IntervalTimetable
 
 from lib.config import DEFAULT_ARGS
 from lib.slack import Slack
@@ -107,7 +109,7 @@ def resolve_input(resource_code: str, dataset_suffix: str,
 
 @task.virtualenv(requirements=PARSE_REQUIREMENTS, system_site_packages=True,
                  executor_config=PARSE_EXECUTOR_CONFIG)
-def parse_and_write(input_info: dict, start_date: str, end_date: str, row_limit: int,
+def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
                     doc_batch_concurrency: int, enable_ocr: bool) -> dict:
     """
     Read the curated OBX PDFs for the given date range, parse each with docling, and write two
@@ -125,9 +127,8 @@ def parse_and_write(input_info: dict, start_date: str, end_date: str, row_limit:
       * the MinIO endpoint key on the Airflow connection (``extra.endpoint_url``).
 
     :param input_info: Output of ``resolve_input`` (input_uri, minio_conn_id, text/tables uris).
-    :param start_date: Inclusive start of the ``dte_of_message`` range (yyyy-MM-dd).
-    :param end_date: Inclusive end of the ``dte_of_message`` range (yyyy-MM-dd).
-    :param row_limit: Max PDFs processed this run (cap applied after the date filter).
+    :param interval_start: Inclusive start of the run's ``dte_of_message`` window (yyyy-MM-dd).
+    :param interval_end: Exclusive end of the run's ``dte_of_message`` window (yyyy-MM-dd).
     :param doc_batch_concurrency: docling threaded multi-document concurrency.
     :param enable_ocr: Run OCR (for scanned PDFs). Table-structure detection is always on.
     :return: Small dict of counts for logging/observability.
@@ -161,8 +162,8 @@ def parse_and_write(input_info: dict, start_date: str, end_date: str, row_limit:
         return (
             pl.scan_delta(input_info["input_uri"], storage_options=storage_options)
             .select(["hl7_id", "message_id", "set_id", "observation_value_base64", "dte_of_message"])
-            .filter(pl.col("dte_of_message").is_between(pl.lit(start_date), pl.lit(end_date)))
-            .limit(row_limit)
+            .filter(pl.col("dte_of_message").is_between(
+                pl.lit(interval_start), pl.lit(interval_end), closed="left"))
             .collect()
         )
 
@@ -253,7 +254,10 @@ def parse_and_write(input_info: dict, start_date: str, end_date: str, row_limit:
 
     # ---- Delta write: overwrite only the processed date range (idempotent re-runs) ----
     def write_delta_overwrite(df: pl.DataFrame, uri: str, storage_options: dict):
-        predicate = f"dte_of_message >= '{start_date}' AND dte_of_message <= '{end_date}'"
+        # replaceWhere: atomically replace ONLY this run's window, leaving other windows intact.
+        # Half-open [interval_start, interval_end) — must match read_obx_pdfs's filter exactly, else a
+        # boundary date owned by the next run could be deleted here without being re-inserted (data loss).
+        predicate = f"dte_of_message >= '{interval_start}' AND dte_of_message < '{interval_end}'"
         try:
             df.write_delta(uri, mode="overwrite", storage_options=storage_options,
                            delta_write_options={"partition_by": ["dte_of_message"],
@@ -267,7 +271,7 @@ def parse_and_write(input_info: dict, start_date: str, end_date: str, row_limit:
     # ---- orchestration ----
     storage_options = build_storage_options(input_info["minio_conn_id"])
     df = read_obx_pdfs(storage_options)
-    logging.info("Read %d OBX rows for %s..%s (cap %d)", df.height, start_date, end_date, row_limit)
+    logging.info("Read %d OBX rows for [%s, %s)", df.height, interval_start, interval_end)
 
     with tempfile.TemporaryDirectory() as tmp_dir:
         pdf_files, meta_by_stem, skipped_rows = materialize_pdfs(df, tmp_dir)
@@ -294,12 +298,6 @@ with DAG(
             "dataset_suffix": Param(DEFAULT_DATASET_SUFFIX, type="string",
                                     description="Completes the curated source id "
                                                 "curated_<resource_code>_<dataset_suffix>."),
-            "start_date": Param("", type="string",
-                                description="Inclusive start of the dte_of_message range. Ex: 2025-08-15"),
-            "end_date": Param("", type="string",
-                              description="Inclusive end of the dte_of_message range. Ex: 2025-08-20"),
-            "row_limit": Param(1000, type="integer",
-                               description="Max number of PDFs processed per run (cap applied after the date filter)."),
             "doc_batch_concurrency": Param(4, type="integer",
                                            description="docling threaded multi-document concurrency (1 = sequential)."),
             "enable_ocr": Param(False, type="boolean",
@@ -307,10 +305,12 @@ with DAG(
         },
         default_args=dag_args,
         doc_md=__doc__,
-        start_date=datetime(2024, 12, 16),
+        start_date=pendulum.datetime(1999, 1, 1, 0, tz="America/Montreal"),
+        schedule=IntervalTimetable(interval=timedelta(weeks=13)),  # ~3 months, anchored on start_date
+        catchup=True,
+        max_active_runs=1,  # docling is heavy -> process backfill windows one at a time
         is_paused_upon_creation=True,
         render_template_as_native_obj=True,
-        schedule_interval=None,
         tags=["curated", "hl7", "docling"],
         on_failure_callback=Slack.notify_dag_failure,
 ) as dag:
@@ -325,9 +325,8 @@ with DAG(
 
     parse_and_write(
         input_info=resolved_input,
-        start_date="{{ params.start_date }}",
-        end_date="{{ params.end_date }}",
-        row_limit="{{ params.row_limit }}",
+        interval_start="{{ data_interval_start.in_timezone('America/Montreal').format('YYYY-MM-DD') }}",
+        interval_end="{{ data_interval_end.in_timezone('America/Montreal').format('YYYY-MM-DD') }}",
         doc_batch_concurrency="{{ params.doc_batch_concurrency }}",
         enable_ocr="{{ params.enable_ocr }}",
     )
