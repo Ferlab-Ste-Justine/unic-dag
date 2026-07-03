@@ -1,36 +1,24 @@
 """
 ============================================================
-                  curated_hl7_parsing
+              hl7_pdf_docling_parsing (task group)
 ============================================================
 
-Generic pipeline that parses the base64-encoded PDF documents stored in the
-``observation_value_base64`` column of curated HL7 OBX Delta tables (e.g.
-``curated_radimage_hl7_oru_r01_obx``, ``curated_softpath_hl7_oru_r01_obx``).
+Reusable TaskGroup that parses the base64-encoded PDF documents stored in the
+``observation_value_base64`` column of a curated HL7 OBX Delta table (e.g.
+``curated_radimage_hl7_oru_r01_obx``, ``curated_softpath_hl7_oru_r01_obx``) with docling,
+and writes back a markdown report (Delta table) + the extracted tables (date-first CSV tree),
+with a primary key of the format ``dte_of_message, hl7_id``.
 
-For a given resource it:
-  1. resolves the curated input table's S3 URI from the datalake config (``resolve_input``);
-  2. reads the run's ``dte_of_message`` interval window, decodes each PDF, parses it with docling, and
-     writes back the markdown report (Delta table) and the extracted tables (date-first CSV tree),
-     keyed by ``dte_of_message, hl7_id`` (``parse_and_write``).
+Two ``@task.virtualenv`` consecutive tasks:
+  1. ``resolve_input``   — resolve the curated input table URI + MinIO connection from ``DatalakeConfig``;
+  2. ``parse_and_write`` — read the run's ``dte_of_message`` interval window, parse with docling, write outputs.
 """
 
-from datetime import timedelta
-
-import pendulum
-from airflow import DAG
-from airflow.decorators import task
-from airflow.models import Param
-from airflow.utils.trigger_rule import TriggerRule
+from airflow.decorators import task, task_group
 from kubernetes.client import models as k8s
-from timetables import IntervalTimetable
-
-from lib.config import DEFAULT_ARGS
-from lib.slack import Slack
-
-DEFAULT_DATASET_SUFFIX = "hl7_oru_r01_obx"
 
 # Dependencies installed into the parse_and_write venv at task runtime.
-# NOTE (integration): Docling needs a newer python version, while the Airflow worker env is pinned to 3.8
+# TODO (integration): Docling needs a newer python version, while the Airflow worker env is pinned to 3.8
 PARSE_REQUIREMENTS = [
     "docling==2.55.1",
     "polars==1.12.0",
@@ -58,11 +46,6 @@ PARSE_EXECUTOR_CONFIG = {
         )
     )
 }
-
-dag_args = DEFAULT_ARGS.copy()
-dag_args.update({
-    'trigger_rule': TriggerRule.NONE_FAILED,
-    'on_failure_callback': Slack.notify_task_failure})
 
 
 @task.virtualenv(requirements=["pyhocon==0.3.61"], system_site_packages=True)
@@ -114,17 +97,7 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
     """
     Read the curated OBX PDFs for the given date range, parse each with docling, and write two
     outputs (keyed by ``hl7_id``): a parsed-report Delta table (markdown), and the extracted tables
-    as a date-first CSV tree (one CSV per table) via ``etl.utils.hl7_io_utils.write_tables``.
-
-    Helpers are nested (a fresh venv interpreter cannot see the DAG module's globals). Docling runs
-    in-process with threaded multi-document concurrency (``settings.perf.doc_batch_concurrency``);
-    one shared model copy keeps memory bounded on the single pod.
-
-    NOTE (integration — could not be run offline; verify against the pinned lib versions):
-      * docling API: ``DocumentConverter.convert_all`` / ``ConversionResult.{input.file, status,
-        document}`` / ``TableItem.export_to_dataframe`` (signature varies — handled defensively);
-      * polars/deltalake ``write_delta`` replaceWhere predicate + first-run table creation;
-      * the MinIO endpoint key on the Airflow connection (``extra.endpoint_url``).
+    as a date-first CSV tree (one CSV per table) via ``lib.hl7_io_utils.write_tables``.
 
     :param input_info: Output of ``resolve_input`` (input_uri, minio_conn_id, text/tables uris).
     :param interval_start: Inclusive start of the run's ``dte_of_message`` window (yyyy-MM-dd).
@@ -138,8 +111,9 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
     import tempfile
 
     import polars as pl
+    from airflow.exceptions import AirflowFailException
 
-    from etl.utils.hl7_io_utils import build_storage_options, write_tables
+    from lib.hl7_io_utils import build_storage_options, write_tables
 
     # Explicit column types for the two output frames declared so that:
     # (1) an empty result still yields a correctly-columned frame;
@@ -157,8 +131,14 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
         "n_rows": pl.Int64, "n_cols": pl.Int64, "page_no": pl.Int64,
     }
 
-    # ---- input read: lazy scan + project + date filter + cap, single collect ----
+    # ---- input read: lazy scan + project + date filter, single collect ----
     def read_obx_pdfs(storage_options: dict) -> pl.DataFrame:
+        # The half-open window [interval_start, interval_end) must span at least one day.
+        if interval_start >= interval_end:
+            raise AirflowFailException(
+                f"Empty dte_of_message window [{interval_start}, {interval_end}), "
+                f"this DAG's schedule interval must be daily or coarser."
+            )
         return (
             pl.scan_delta(input_info["input_uri"], storage_options=storage_options)
             .select(["hl7_id", "message_id", "set_id", "observation_value_base64", "dte_of_message"])
@@ -290,43 +270,32 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
             "skipped": len(skipped_rows), "tables_extracted": tables_df.height}
 
 
-with DAG(
-        dag_id="curated_hl7_parsing",
-        params={
-            "resource_code": Param("softpath", type="string",
-                                   description="Short resource code. Ex: radimage | softpath"),
-            "dataset_suffix": Param(DEFAULT_DATASET_SUFFIX, type="string",
-                                    description="Completes the curated source id "
-                                                "curated_<resource_code>_<dataset_suffix>."),
-            "doc_batch_concurrency": Param(4, type="integer",
-                                           description="docling threaded multi-document concurrency (1 = sequential)."),
-            "enable_ocr": Param(False, type="boolean",
-                                description="Run OCR for scanned PDFs (slower). Table detection is always on."),
-        },
-        default_args=dag_args,
-        doc_md=__doc__,
-        start_date=pendulum.datetime(1999, 1, 1, 0, tz="America/Montreal"),
-        schedule=IntervalTimetable(interval=timedelta(weeks=13)),  # ~3 months, anchored on start_date
-        catchup=True,
-        max_active_runs=1,  # docling is heavy -> process backfill windows one at a time
-        is_paused_upon_creation=True,
-        render_template_as_native_obj=True,
-        tags=["curated", "hl7", "docling"],
-        on_failure_callback=Slack.notify_dag_failure,
-) as dag:
+@task_group(group_id="hl7_pdf_docling_parsing")
+def hl7_pdf_docling_parsing(resource_code: str, dataset_suffix: str,
+                            output_text_path: str, output_tables_tree_path: str,
+                            doc_batch_concurrency: int = 4, enable_ocr: bool = False) -> None:
+    """Resolve the curated OBX table, then parse its PDFs and write report + tables.
+
+    The date window is each run's own ``data_interval`` (half-open ``[start, end)``)
+
+    :param resource_code: Short resource code (e.g. "softpath" / "radimage").
+    :param dataset_suffix: Completes the curated source id ``curated_<resource_code>_<dataset_suffix>``.
+    :param output_text_path: s3:// uri for the parsed-report Delta output.
+    :param output_tables_tree_path: s3:// base uri for the extracted-tables CSV tree.
+    :param doc_batch_concurrency: docling threaded multi-document concurrency (1 = sequential).
+    :param enable_ocr: Run OCR for scanned PDFs (table-structure detection is always on).
+    """
     resolved_input = resolve_input(
-        resource_code="{{ params.resource_code }}",
-        dataset_suffix="{{ params.dataset_suffix }}",
-        # Hardcoded s3:// destinations (polars/deltalake use s3://, not s3a://), built inline so the
-        # resource_code + dataset_suffix make each resource's outputs unique. Replace <bucket>/<key>.
-        output_text_path="s3://yellow-prd/robertcaterev01/hl7_pipeline_2/{{ params.resource_code }}_{{ params.dataset_suffix }}_report_markdown_v1",
-        output_tables_tree_path="s3://yellow-prd/robertcaterev01/hl7_pipeline_2/{{ params.resource_code }}_{{ params.dataset_suffix }}_extracted_tables_v1",
+        resource_code=resource_code,
+        dataset_suffix=dataset_suffix,
+        output_text_path=output_text_path,
+        output_tables_tree_path=output_tables_tree_path,
     )
 
     parse_and_write(
         input_info=resolved_input,
         interval_start="{{ data_interval_start.in_timezone('America/Montreal').format('YYYY-MM-DD') }}",
         interval_end="{{ data_interval_end.in_timezone('America/Montreal').format('YYYY-MM-DD') }}",
-        doc_batch_concurrency="{{ params.doc_batch_concurrency }}",
-        enable_ocr="{{ params.enable_ocr }}",
+        doc_batch_concurrency=doc_batch_concurrency,
+        enable_ocr=enable_ocr,
     )
