@@ -2,6 +2,7 @@
 from airflow.exceptions import AirflowSkipException
 from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
 from kubernetes.client import models as k8s
+from kubernetes.client.exceptions import ApiException
 
 from lib.cleanup import cleanup_pods
 
@@ -128,3 +129,16 @@ class SparkOperator(KubernetesPodOperator):
         super().execute(context)
 
         cleanup_pods(self.pod.metadata.name, self.pod.metadata.namespace, self.spark_failure_msg)
+
+    def on_kill(self) -> None:
+        # A killed, timed-out, or manually-cleared task interrupts execute() before cleanup_pods()
+        # runs, leaving the Spark driver (and its executors, via owner reference) running. Reap them
+        # here so a retry or manual clear does not start a second cluster alongside the orphaned one.
+        super().on_kill()  # deletes the Airflow-launched client pod
+        if self.pod:
+            try:
+                cleanup_pods(self.pod.metadata.name, self.pod.metadata.namespace, self.spark_failure_msg,
+                             failed=True)
+            except ApiException:
+                self.log.exception("Failed to clean up Spark driver pod %s-driver on kill",
+                                   self.pod.metadata.name)
