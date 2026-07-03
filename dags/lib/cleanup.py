@@ -6,10 +6,13 @@ from airflow.exceptions import AirflowFailException
 
 def cleanup_pods(name, namespace, spark_failure_msg, failed=False):
     """
-    cleanup kubernetes pods
-    :param name: pod name
-    :param namespace: pod namespace
-    :param is_failure: True if cleanup after job failure.
+    Clean up the Spark pods launched by a task: log and delete the driver pod (its executors are
+    garbage-collected via their owner reference to the driver) and delete the client pod.
+
+    :param name: client pod name; the driver pod is expected to be named "{name}-driver"
+    :param namespace: namespace the pods run in
+    :param spark_failure_msg: message for the AirflowFailException raised when the driver did not succeed
+    :param failed: True when cleaning up after a kill/failure, to skip raising on a non-succeeded driver
     :return:
     """
     try:
