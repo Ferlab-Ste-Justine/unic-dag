@@ -80,9 +80,9 @@ def extract_config_info_to_publish(
         minio_conn_id: str = None
 ) -> dict:
     """
-    Retrieve the table names, S3 paths (WITHOUT their extension), and bucket IDs needed for
-    publishing data. Thin wrapper that delegates to ``DatalakeConfig.extract_publish_config_info``;
-    see that method for the structure of the returned dictionary:
+   This function retrieves the necessary table names, S3 paths WITHOUT their extension,
+    and bucket IDs for publishing data. The logic for the retrieval is contained inside
+    ``DatalakeConfig.extract_publish_config_info``; see that method for the structure of the returned dictionary:
     {
         "sources": {"<source_id>": {"output_bucket": ..., "output_path": ..., "table": ...}, ...},
         "clinical_bucket": str | None,

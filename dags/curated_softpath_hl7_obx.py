@@ -7,7 +7,6 @@ import pendulum
 from airflow import DAG
 
 from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE, LOCAL_TZ
-# from core.slack import Slack
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import start, end
 from timetables import IntervalTimetable

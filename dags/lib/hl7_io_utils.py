@@ -18,6 +18,9 @@ inside ``@task.virtualenv`` bodies.
 from __future__ import annotations
 
 
+# pylint: disable=import-outside-toplevel, import-error, too-many-locals
+
+
 def build_storage_options(minio_conn_id: str) -> dict:
     """Airflow MinIO connection -> delta-rs / object-store ``storage_options`` (AWS_* keys)."""
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
@@ -134,6 +137,6 @@ def read_report(hl7_id: str, dte_of_message: str, *, report_uri: str, minio_conn
     import polars as pl
 
     return (pl.scan_delta(report_uri, storage_options=build_storage_options(minio_conn_id))
-              .filter((pl.col("hl7_id") == hl7_id) & (pl.col("dte_of_message") == dte_of_message))
-              .collect()
-              .to_dicts())
+            .filter((pl.col("hl7_id") == hl7_id) & (pl.col("dte_of_message") == dte_of_message))
+            .collect()
+            .to_dicts())
