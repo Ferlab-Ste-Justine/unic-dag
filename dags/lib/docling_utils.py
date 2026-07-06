@@ -33,7 +33,7 @@ def build_converter(doc_batch_concurrency: int, enable_ocr: bool):
 def run(converter, pdf_files) -> list:
     """Convert ``pdf_files`` with an already-built ``converter`` and return the ConversionResults.
 
-    Takes the converter + the input document paths and calls ``convert_all``. Input is file paths
-    for now; a future task may switch to in-memory ``DocumentStream``s.
+    Takes the converter + the input document paths and calls ``convert_all``. Input is file paths, intended for
+    docling-jobkit eventually.
     """
     return list(converter.convert_all(pdf_files, raises_on_error=False))
