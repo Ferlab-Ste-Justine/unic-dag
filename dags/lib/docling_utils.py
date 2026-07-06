@@ -11,6 +11,9 @@ to be called from inside a `@task.virtualenv` with the appropriate dependencies.
 """
 
 
+# pylint: disable=import-outside-toplevel, import-error
+
+
 def build_converter(doc_batch_concurrency: int, enable_ocr: bool):
     """Build a docling ``DocumentConverter`` (table-structure on, OCR optional)."""
     from docling.datamodel.base_models import InputFormat
@@ -24,7 +27,7 @@ def build_converter(doc_batch_concurrency: int, enable_ocr: bool):
     settings.perf.doc_batch_size = doc_batch_concurrency
 
     pipe_opts = PdfPipelineOptions()
-    pipe_opts.do_table_structure = True   # required for Task 2 (table extraction)
+    pipe_opts.do_table_structure = True  # required for Task 2 (table extraction)
     pipe_opts.do_ocr = enable_ocr
     return DocumentConverter(
         format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pipe_opts)})

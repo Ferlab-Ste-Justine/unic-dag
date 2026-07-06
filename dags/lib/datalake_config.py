@@ -1,5 +1,6 @@
 from __future__ import annotations
 
+# pylint: disable=import-outside-toplevel, too-many-locals
 from dataclasses import dataclass
 
 # Frozen dataclasses are immutable and hashable, thus set-safe.

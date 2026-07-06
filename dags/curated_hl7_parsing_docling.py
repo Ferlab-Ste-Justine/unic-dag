@@ -11,7 +11,7 @@ markdown report (Delta table) and the extracted tables, keyed by
 ``dte_of_message, hl7_id``.
 
 """
-# pylint: disable=duplicate-code, expression-not-assigned
+# pylint: disable=duplicate-code, expression-not-assigned, fixme, invalid-name
 from datetime import timedelta
 
 import pendulum
@@ -58,7 +58,8 @@ dag = DAG(
 )
 
 with dag:
-    start_task = start("start_curated_hl7_parsing_docling", notify=False) #TODO: Turn notify=True once the DAG is stable and tested in prod env.
+    # TODO: Turn notify=True once the DAG is stable and tested in prod env.
+    start_task = start("start_curated_hl7_parsing_docling", notify=False)
     end_task = end("end_curated_hl7_parsing_docling", notify=False)
     hl7_docling_pipeline = hl7_pdf_docling_parsing(
         resource_code="{{ params.resource_code }}",

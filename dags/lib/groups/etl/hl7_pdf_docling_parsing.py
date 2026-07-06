@@ -13,6 +13,7 @@ Two ``@task.virtualenv`` consecutive tasks:
   1. ``resolve_input``   — resolve the curated input table URI + MinIO connection from ``DatalakeConfig``;
   2. ``parse_and_write`` — read the run's ``dte_of_message`` interval window, parse with docling, write outputs.
 """
+# pylint: disable=import-outside-toplevel, import-error, too-many-locals, too-many-statements, fixme
 
 from airflow.decorators import task, task_group
 from kubernetes.client import models as k8s
