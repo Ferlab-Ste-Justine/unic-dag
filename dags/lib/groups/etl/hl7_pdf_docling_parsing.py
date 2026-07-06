@@ -221,8 +221,7 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
     # ---- Delta write: overwrite only the processed date range (idempotent re-runs) ----
     def write_delta_overwrite(df: pl.DataFrame, uri: str, storage_options: dict):
         # replaceWhere: atomically replace ONLY this run's window, leaving other windows intact.
-        # Half-open [interval_start, interval_end) — must match read_obx_pdfs's filter exactly, else a
-        # boundary date owned by the next run could be deleted here without being re-inserted (data loss).
+        # Half-open [interval_start, interval_end) matching read_obx_pdfs's filter exactly
         predicate = f"dte_of_message >= '{interval_start}' AND dte_of_message < '{interval_end}'"
         try:
             df.write_delta(uri, mode="overwrite", storage_options=storage_options,
