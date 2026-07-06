@@ -3,7 +3,7 @@
               hl7_pdf_docling_parsing (task group)
 ============================================================
 
-Reusable TaskGroup that parses the base64-encoded PDF documents stored in the
+TaskGroup that parses the base64-encoded PDF documents stored in the
 ``observation_value_base64`` column of a curated HL7 OBX Delta table (e.g.
 ``curated_radimage_hl7_oru_r01_obx``, ``curated_softpath_hl7_oru_r01_obx``) with docling,
 and writes back a markdown report (Delta table) + the extracted tables (date-first CSV tree),
@@ -104,7 +104,7 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
     :param interval_end: Exclusive end of the run's ``dte_of_message`` window (yyyy-MM-dd).
     :param doc_batch_concurrency: docling threaded multi-document concurrency.
     :param enable_ocr: Run OCR (for scanned PDFs). Table-structure detection is always on.
-    :return: Small dict of counts for logging/observability.
+    :return: Small dict of counts for logging.
     """
     import base64
     import logging
@@ -113,6 +113,7 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
     import polars as pl
     from airflow.exceptions import AirflowFailException
 
+    from lib.docling_utils import build_converter, run
     from lib.hl7_io_utils import build_storage_options, write_tables
 
     # Explicit column types for the two output frames declared so that:
@@ -181,22 +182,6 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
             meta_by_stem[stem] = keys
         return pdf_files, meta_by_stem, skipped_rows
 
-    # ---- docling: threaded multi-document conversion ----
-    def build_converter():
-        from docling.datamodel.base_models import InputFormat
-        from docling.datamodel.pipeline_options import PdfPipelineOptions
-        from docling.datamodel.settings import settings
-        from docling.document_converter import DocumentConverter, PdfFormatOption
-
-        settings.perf.doc_batch_concurrency = doc_batch_concurrency
-        settings.perf.doc_batch_size = doc_batch_concurrency
-
-        pipe_opts = PdfPipelineOptions()
-        pipe_opts.do_table_structure = True   # required for Task 2 (table extraction)
-        pipe_opts.do_ocr = enable_ocr
-        return DocumentConverter(
-            format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pipe_opts)})
-
     def table_to_csv(table, document) -> "tuple[str, int, int, int]":
         try:
             tdf = table.export_to_dataframe(document)   # newer docling wants the doc
@@ -257,8 +242,8 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
         pdf_files, meta_by_stem, skipped_rows = materialize_pdfs(df, tmp_dir)
         logging.info("Materialized %d PDFs (%d skipped non-PDF/decode)",
                      len(pdf_files), len(skipped_rows))
-        results = list(build_converter().convert_all(pdf_files, raises_on_error=False)) \
-            if pdf_files else []
+        converter = build_converter(doc_batch_concurrency, enable_ocr)
+        results = run(converter, pdf_files) if pdf_files else []
         report_df, tables_df = build_outputs(results, meta_by_stem, skipped_rows)
 
     write_delta_overwrite(report_df, input_info["text_uri"], storage_options)

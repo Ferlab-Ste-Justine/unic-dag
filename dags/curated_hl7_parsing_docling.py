@@ -19,6 +19,7 @@ from airflow import DAG
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
+from lib.tasks.notify import start, end
 from lib.config import DEFAULT_ARGS
 from lib.groups.etl.hl7_pdf_docling_parsing import hl7_pdf_docling_parsing
 from lib.slack import Slack
@@ -40,14 +41,14 @@ dag = DAG(
                                 description="Completes the curated source id "
                                             "curated_<resource_code>_<dataset_suffix>."),
         "doc_batch_concurrency": Param(4, type="integer",
-                                       description="docling threaded multi-document concurrency (1 = sequential)."),
-        "enable_ocr": Param(False, type="boolean",
+                                       description="docling multi-document batch"),
+        "enable_ocr": Param(True, type="boolean",
                             description="Run OCR for scanned PDFs (slower). Table detection is always on."),
     },
     default_args=dag_args,
     doc_md=__doc__,
     start_date=pendulum.datetime(1999, 1, 1, 0, tz="America/Montreal"),
-    schedule=IntervalTimetable(interval=timedelta(weeks=13)),  # ~3 months, anchored on start_date
+    schedule=IntervalTimetable(interval=timedelta(weeks=13)),  # ~3 months
     catchup=True,
     max_active_runs=1,  # docling is heavy -> process backfill windows one at a time
     is_paused_upon_creation=True,
@@ -57,13 +58,16 @@ dag = DAG(
 )
 
 with dag:
-    hl7_pdf_docling_parsing(
+    start_task = start("start_curated_hl7_parsing_docling", notify=False) #TODO: Turn notify=True once the DAG is stable and tested in prod env.
+    end_task = end("end_curated_hl7_parsing_docling", notify=False)
+    hl7_docling_pipeline = hl7_pdf_docling_parsing(
         resource_code="{{ params.resource_code }}",
         dataset_suffix="{{ params.dataset_suffix }}",
         # Hardcoded dev s3:// destinations (polars/deltalake use s3://, not s3a://); resource_code +
         # dataset_suffix make each resource's outputs unique.
-        output_text_path="s3://yellow-prd/robertcaterev01/hl7_pipeline_2/{{ params.resource_code }}_{{ params.dataset_suffix }}_report_markdown_v1",
-        output_tables_tree_path="s3://yellow-prd/robertcaterev01/hl7_pipeline_2/{{ params.resource_code }}_{{ params.dataset_suffix }}_extracted_tables_v1",
+        output_text_path="s3://red-prd/curated/{{ params.resource_code }}/hl7/{{ params.dataset_suffix }}_parsed_reports",
+        output_tables_tree_path="s3://red-prd/curated/{{ params.resource_code }}/hl7/{{ params.dataset_suffix }}_extracted_tables",
         doc_batch_concurrency="{{ params.doc_batch_concurrency }}",
         enable_ocr="{{ params.enable_ocr }}",
     )
+    start_task >> hl7_docling_pipeline >> end_task
