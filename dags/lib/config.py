@@ -9,7 +9,8 @@ from lib.slack import Slack
 ROOT = Variable.get('dags_path', '/opt/airflow/dags/repo/dags')
 DAGS_CONFIG_PATH = f"{ROOT}/config"
 EXTRACT_RESOURCE = '(.*)_config.json'
-DEFAULT_START_DATE = datetime(2021, 1, 1, tzinfo=pendulum.timezone("America/Montreal"))
+LOCAL_TZ = pendulum.timezone("America/Montreal")
+DEFAULT_START_DATE = datetime(2021, 1, 1, tzinfo=LOCAL_TZ)
 DEFAULT_TIMEOUT_HOURS = 4
 DEFAULT_CONCURRENCY = 1
 DEFAULT_VERSION = "latest"
