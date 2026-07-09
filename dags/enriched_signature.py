@@ -12,6 +12,7 @@ from airflow.utils.trigger_rule import TriggerRule
 
 from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG
 from lib.operators.spark import SparkOperator
+from lib.sensors.external_task import wait_for
 from lib.slack import Slack
 from lib.tasks.notify import end, start
 from lib.tasks.publish import trigger_publish_dag
@@ -217,4 +218,6 @@ with dag:
             skip_index=True
         )
 
-    start() >> enriched >> released >> published >> end()
+    wait_for_lab_results = wait_for("warehouse_unic", "warehouse.warehouse_lab_results",
+                                    task_id="wait_for_warehouse_lab_results")
+    start() >> wait_for_lab_results >> enriched >> released >> published >> end()
