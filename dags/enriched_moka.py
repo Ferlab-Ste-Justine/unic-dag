@@ -11,6 +11,7 @@ from airflow.utils.trigger_rule import TriggerRule
 
 from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, DATE
 from lib.operators.spark import SparkOperator
+from lib.sensors.external_task import wait_for
 from lib.slack import Slack
 from lib.tasks.notify import end, start
 from lib.tasks.publish import trigger_publish_dag
@@ -157,4 +158,6 @@ with dag:
             skip_index=True
         )
 
-    start() >> enriched >> released >> published >> end()
+    wait_for_patient_index = wait_for("curated_unic", task_id="wait_for_curated_unic",
+                                      external_task_group_id="curated")
+    start() >> wait_for_patient_index >> enriched >> released >> published >> end()
