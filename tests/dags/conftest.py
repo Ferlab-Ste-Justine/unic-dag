@@ -4,7 +4,7 @@ import pytest
 from airflow.models import DagBag
 
 
-DAGS_DIR = Path(__file__).parent.parent / 'dags'
+DAGS_DIR = Path(__file__).parents[2] / 'dags'
 
 @pytest.fixture(scope='session')
 def dag_bag():
