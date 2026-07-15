@@ -1,6 +1,7 @@
 # pylint: disable=too-many-instance-attributes
 from airflow.exceptions import AirflowSkipException
-from airflow.providers.cncf.kubernetes.operators.kubernetes_pod import KubernetesPodOperator
+from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
+from airflow.providers.cncf.kubernetes.utils.pod_manager import OnFinishAction
 from kubernetes.client import models as k8s
 from kubernetes.client.exceptions import ApiException
 
@@ -25,7 +26,7 @@ class SparkOperator(KubernetesPodOperator):
             **kwargs,
     ) -> None:
         super().__init__(
-            is_delete_operator_pod=False,
+            on_finish_action=OnFinishAction.KEEP_POD,
             image='ferlabcrsj/spark-legacy:847a0dad2a80afcfafcc377997ca56ec4668527e',
             service_account_name='spark',
             priority_weight=1,

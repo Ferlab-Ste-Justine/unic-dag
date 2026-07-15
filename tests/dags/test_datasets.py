@@ -12,6 +12,6 @@ def test_curated_unic_publishes_patient_index_dataset(dag_bag):
 
 def test_warehouse_unic_scheduled_on_patient_index_dataset(dag_bag):
     dag = dag_bag.dags["warehouse_unic"]
-    triggers = dag.dataset_triggers
-    uris = [d.uri for d in (getattr(triggers, "objects", None) or triggers)]
+    condition = dag.timetable.dataset_condition
+    uris = [d.uri for _, d in condition.iter_datasets()]
     assert uris == [anonymized_unic_patient_index.uri]

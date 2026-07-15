@@ -3,8 +3,8 @@
 disable=
   line-too-long,
   too-many-arguments,
+  too-many-positional-arguments,
   too-many-branches,
-  different-operator-varname-taskid,
   pointless-statement, #op1 >> op2 dependency syntax
   expression-not-assigned,
   missing-module-docstring, #docstrings not required project-wide
@@ -14,7 +14,7 @@ disable=
 
 [BASIC]
 # idioms: ti=task instance, s3=S3Hook, df=DataFrame, pg=postgres, e=exception
-good-names=i,j,k,ex,Run,_,ti,s3,df,pg,e
+good-names=i,j,k,ex,Run,_,ti,s3,df,pg,e,dagid,doc,conn_id,pg_conn_id
 
 [DESIGN]
 # Airflow operators have deep ancestor chains (up to 10)
