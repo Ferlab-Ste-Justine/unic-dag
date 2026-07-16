@@ -37,10 +37,6 @@ ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
 CURATED_DESTINATION = "curated_trigonix_document_index"
 ANONYMIZED_DESTINATION = "anonymized_trigonix_document_index"
 
-args = DEFAULT_ARGS.copy()
-args.update({
-    'provide_context': True})
-
 params = DEFAULT_PARAMS.copy()
 params.update({'run_type': Param('default', enum=['default', 'initial'])})
 
@@ -51,7 +47,7 @@ dag = DAG(
     schedule="0 1 * * *",
     params=params,
     dagrun_timeout=timedelta(hours=2),
-    default_args=args,
+    default_args=DEFAULT_ARGS,
     is_paused_upon_creation=True,
     catchup=True,
     max_active_runs=3,
