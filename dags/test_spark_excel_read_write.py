@@ -4,14 +4,12 @@ Test spark-excel package DAG
 from datetime import datetime, timedelta
 from typing import List
 
-import pendulum
 from airflow import DAG
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG
+from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, \
+    CONFIG_FILE, LOCAL_TZ
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import end, start
-
-JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
 DOC = """
 # Test spark-excel package DAG
@@ -25,7 +23,7 @@ args = DEFAULT_ARGS.copy()
 dag = DAG(
     dag_id="test_spark_excel_read_write",
     doc_md=DOC,
-    start_date=datetime(2023, 10, 20, 7, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2023, 10, 20, 7, tzinfo=LOCAL_TZ),
     schedule_interval=None,
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=DEFAULT_TIMEOUT_HOURS),
@@ -46,7 +44,7 @@ with dag:
         :rtype: List[str]
         """
         return [
-            "--config", "config/prod.conf",
+            "--config", CONFIG_FILE,
             "--steps", "default",
             "--app-name", "test_spark_excel_read_write",
         ]

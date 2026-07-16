@@ -6,7 +6,7 @@ from typing import List
 
 from airflow import DAG
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -55,7 +55,7 @@ def arguments(destination: str, steps: str = "default") -> List[str]:
     Generate Spark task arguments for the ETL process
     """
     return [
-        "--config", "config/prod.conf",
+        "--config", CONFIG_FILE,
         "--steps", steps,
         "--app-name", destination,
         "--destination", destination,

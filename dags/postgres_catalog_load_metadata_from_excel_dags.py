@@ -13,7 +13,7 @@ from airflow.exceptions import AirflowFailException
 from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import JAR, SPARK_FAILURE_MSG, YELLOW_MINIO_CONN_ID, DEFAULT_ARGS
+from lib.config import JAR, SPARK_FAILURE_MSG, YELLOW_MINIO_CONN_ID, DEFAULT_ARGS, CONFIG_FILE, CATALOG_BUCKET
 from lib.operators.spark import SparkOperator
 from lib.operators.upsert_csv_to_postgres import UpsertCsvToPostgres
 from lib.postgres import skip_task, POSTGRES_VLAN2_CA_PATH, POSTGRES_CA_FILENAME, \
@@ -24,7 +24,6 @@ from lib.tasks.notify import start, end
 
 ZONE = "yellow"
 MAIN_CLASS = "bio.ferlab.ui.etl.catalog.csv.Main"
-YELLOW_BUCKET = "yellow-prd"
 table_name_list = ["resource", "analyst", "dict_table", "value_set", "value_set_code", "variable", "mapping"]
 env_name = None
 conn_id = None
@@ -39,7 +38,7 @@ def arguments(table_name: str, app_name: str, project_name: Optional[str] = None
         List[str]:
     args = [
         table_name,
-        "--config", "config/prod.conf",
+        "--config", CONFIG_FILE,
         "--steps", "default",
         "--app-name", app_name,
         "--env", env_name
@@ -122,9 +121,9 @@ for env in PostgresEnv:
             def excel_to_csv_task(table_name: str, s3_source_key: Optional[str] = None,
                                   s3_destination_key: Optional[str] = None, sheet_name: Union[str, int] = 0):
                 return excel_to_csv.override(task_id=f"excel_to_csv_{table_name}")(
-                    s3_source_bucket=YELLOW_BUCKET,
+                    s3_source_bucket=CATALOG_BUCKET,
                     s3_source_key=s3_source_key,
-                    s3_destination_bucket=YELLOW_BUCKET,
+                    s3_destination_bucket=CATALOG_BUCKET,
                     s3_destination_key=s3_destination_key,
                     s3_conn_id=YELLOW_MINIO_CONN_ID,
                     sheet_name=sheet_name,
@@ -184,7 +183,7 @@ for env in PostgresEnv:
             def load_table(table_name: str, s3_key: str, primary_keys: List[str]):
                 return UpsertCsvToPostgres(
                     task_id=f"load_{table_name}_table",
-                    s3_bucket="yellow-prd",
+                    s3_bucket=CATALOG_BUCKET,
                     s3_key=s3_key,
                     s3_conn_id=YELLOW_MINIO_CONN_ID,
                     postgres_conn_id=conn_id,

@@ -9,7 +9,7 @@ from airflow import DAG
 from airflow.models import Param
 
 from lib.operators.spark_iceberg import SparkIcebergOperator
-from lib.config import DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
+from lib.config import DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, LOCAL_TZ
 from lib.slack import Slack
 from lib.tasks.notify import end, start
 from timetables import IntervalTimetable
@@ -33,7 +33,7 @@ DELETE_ORPHAN_FILES_MAIN = "deleteOrphanFilesInCatalog"
 dag = DAG(
     dag_id="iceberg_table_maintenance",
     doc_md=DOC,
-    start_date=pendulum.datetime(2025, 7, 29, 23, tz="America/Montreal"),
+    start_date=pendulum.datetime(2025, 7, 29, 23, tz=LOCAL_TZ),
     schedule=IntervalTimetable(interval=timedelta(days=1)),
     params={
         "branch": Param("master", type="string"),

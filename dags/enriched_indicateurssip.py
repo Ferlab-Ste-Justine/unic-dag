@@ -5,19 +5,17 @@ Enriched Indicateurs SIP
 from datetime import datetime, timedelta
 from typing import List
 
-import pendulum
 from airflow import DAG
 from airflow.decorators import task_group
 from airflow.models import Variable
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, GREEN_MINIO_CONN_ID
+from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, \
+    GREEN_MINIO_CONN_ID, JAR, CONFIG_FILE, RELEASED_BUCKET, LOCAL_TZ
 from lib.operators.copy_csv_to_postgres import CopyCsvToPostgres
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
-
-JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 
 DOC = """
 # Enriched Indicateurs SIP
@@ -44,7 +42,7 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_indicateurssip",
     doc_md=DOC,
-    start_date=datetime(2023, 12, 12, 18, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2023, 12, 12, 18, tzinfo=LOCAL_TZ),
     schedule_interval="0 22 * * *",
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=DEFAULT_TIMEOUT_HOURS),
@@ -67,7 +65,7 @@ with dag:
         def enriched_arguments(destination: str) -> List[str]:
             return [
                 destination,
-                "--config", "config/prod.conf",
+                "--config", CONFIG_FILE,
                 "--steps", "initial",
                 "--app-name", destination,
             ]
@@ -247,7 +245,7 @@ with dag:
             Generate Spark task arguments for the released ETL process
             """
             return [
-                "--config", "config/prod.conf",
+                "--config", CONFIG_FILE,
                 "--steps", steps,
                 "--app-name", destination,
                 "--destination", destination
@@ -410,18 +408,18 @@ with dag:
         ca_cert = Variable.get('postgres_ca_certificate', None)
 
         copy_conf = [
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/catheter/catheter.csv"                                  , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "catheter"   }              ,
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/extubation/extubation.csv"                              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "extubation" }              ,
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/sejour/sejour.csv"                                      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "sejour"     }              ,
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ventilation/ventilation.csv"                            , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ventilation"}              ,
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/lits/lits.csv"                                          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "lits"       }              ,
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/infirmieres/infirmieres.csv"                            , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infirmieres"}              ,
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/ecmo/ecmo.csv"                                          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ecmo"}                     ,
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/scores/scores.csv"                                      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "scores"}                   ,
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/infections/infections.csv"                              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infections"}               ,
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/central_catheters_details/central_catheters_details.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "central_catheters_details"},
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/demandes_lits/demandes_lits.csv"                        , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "demandes_lits"}            ,
-            {"src_s3_bucket" :  "green-prd", "src_s3_key" :  "released/indicateurssip/toutes_les_infections/toutes_les_infections.csv"        , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "toutes_les_infections"}    ,
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/catheter/catheter.csv"                                  , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "catheter"   }              ,
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/extubation/extubation.csv"                              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "extubation" }              ,
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/sejour/sejour.csv"                                      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "sejour"     }              ,
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/ventilation/ventilation.csv"                            , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ventilation"}              ,
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/lits/lits.csv"                                          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "lits"       }              ,
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/infirmieres/infirmieres.csv"                            , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infirmieres"}              ,
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/ecmo/ecmo.csv"                                          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ecmo"}                     ,
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/scores/scores.csv"                                      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "scores"}                   ,
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/infections/infections.csv"                              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infections"}               ,
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/central_catheters_details/central_catheters_details.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "central_catheters_details"},
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/demandes_lits/demandes_lits.csv"                        , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "demandes_lits"}            ,
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/toutes_les_infections/toutes_les_infections.csv"        , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "toutes_les_infections"}    ,
 
         ]
 

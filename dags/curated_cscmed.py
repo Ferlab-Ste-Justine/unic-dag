@@ -6,7 +6,7 @@ from datetime import timedelta
 import pendulum
 from airflow import DAG
 
-from lib.config import CONFIG_FILE, JAR, SPARK_FAILURE_MSG, DEFAULT_ARGS, DEFAULT_PARAMS
+from lib.config import CONFIG_FILE, JAR, SPARK_FAILURE_MSG, DEFAULT_ARGS, DEFAULT_PARAMS, LOCAL_TZ
 from lib.slack import Slack
 from tasks import create_tasks
 from timetables import IntervalTimetable
@@ -136,7 +136,7 @@ args = DEFAULT_ARGS.copy()
 dag = DAG(
     dag_id="curated_cscmed",
     doc_md=DOC,
-    start_date=pendulum.datetime(2026, 4, 9, 20, tz="America/Montreal"),
+    start_date=pendulum.datetime(2026, 4, 9, 20, tz=LOCAL_TZ),
     schedule=IntervalTimetable(interval=timedelta(weeks=4)),
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=12),

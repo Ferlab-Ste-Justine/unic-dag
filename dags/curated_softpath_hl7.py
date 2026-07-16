@@ -4,10 +4,9 @@ DAG pour le parsing des messages HL7 de Softpath
 from datetime import datetime, timedelta
 from typing import List
 
-import pendulum
 from airflow import DAG
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE, LOCAL_TZ
 # from core.slack import Slack
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
@@ -39,7 +38,7 @@ args.update({
 dag = DAG(
     dag_id="curated_softpath_hl7",
     doc_md=DOC,
-    start_date=datetime(1999, 12, 3, 1, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(1999, 12, 3, 1, tzinfo=LOCAL_TZ),
     schedule="0 1 * * *",
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=2),
@@ -58,7 +57,7 @@ with dag:
         Generate Spark task arguments for the ETL process.
         """
         return [
-            "--config", "config/prod.conf",
+            "--config", CONFIG_FILE,
             "--steps", steps,
             "--app-name", destination,
             "--destination", destination,

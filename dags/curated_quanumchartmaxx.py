@@ -6,14 +6,13 @@ DAG that processes Quanum and Chartmaxx data.
 from datetime import timedelta, datetime
 from typing import List
 
-import pendulum
 from airflow import DAG
 from airflow.decorators import task_group
 from airflow.models import Param
 from airflow.operators.empty import EmptyOperator
 
 from lib.tasks.optimize import optimize
-from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE, LOCAL_TZ
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -47,8 +46,6 @@ QUANUM_CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.quanum.Main"
 QUANUMCHARTMAXX_ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
 QUANUMCHARTMAXX_CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.quanumchartmaxx.Main"
 QUANUM_CURATED_NEW_FORM_CHECKER_CLASS = "bio.ferlab.ui.etl.script.QuanumNewFormChecker"
-
-LOCAL_TZ = pendulum.timezone("America/Montreal")
 
 args = DEFAULT_ARGS.copy()
 args.update({
@@ -149,7 +146,7 @@ with dag:
         curated_quanum_new_form_checker_task = SparkOperator(
             task_id="curated_quanum_new_form_checker",
             name="curated_quanum_new_form_checker".replace("_", "-"),
-            arguments=["config/prod.conf", "default"],
+            arguments=[CONFIG_FILE, "default"],
             zone=QUANUM_CURATED_ZONE,
             spark_class=QUANUM_CURATED_NEW_FORM_CHECKER_CLASS,
             spark_jar=JAR,

@@ -3,7 +3,7 @@ from typing import List
 from airflow import DAG
 from airflow.decorators import task_group
 
-from lib.config import SPARK_FAILURE_MSG, MASTER_JAR
+from lib.config import SPARK_FAILURE_MSG, MASTER_JAR, CONFIG_FILE
 from lib.opensearch import OpensearchAlias
 from lib.tasks.opensearch import prepare_index, load_index, publish_index, get_next_release_id
 
@@ -16,7 +16,7 @@ def index_opensearch(pg_env_name: str, os_env_name: str, dag: DAG, skip: bool = 
     def prepare_index_arguments(task_id: str) -> List[str]:
         return [
             task_id,
-            "--config", "config/prod.conf",
+            "--config", CONFIG_FILE,
             "--steps", "initial",
             "--app-name", f"prepare_{task_id}",
             "--env", pg_env_name

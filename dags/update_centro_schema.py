@@ -6,12 +6,11 @@ from typing import List
 
 from airflow import DAG
 
-from lib.config import DEFAULT_ARGS, DEFAULT_TIMEOUT_HOURS, SPARK_FAILURE_MSG
+from lib.config import DEFAULT_ARGS, DEFAULT_TIMEOUT_HOURS, SPARK_FAILURE_MSG, MASTER_JAR, CONFIG_FILE
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
 
-JAR = 's3a://spark-prd/jars/unic-etl-master.jar'
 ZONE = 'red'
 MAIN_CLASS = 'bio.ferlab.ui.etl.schema.UpdateSchema'
 DOC = """
@@ -39,7 +38,7 @@ dag = DAG(
 
 with dag:
     def arguments(dataset_regex: str) -> List[str]:
-        return ["config/prod.conf", "default", dataset_regex]
+        return [CONFIG_FILE, "default", dataset_regex]
 
     aid = SparkOperator(
         task_id="update_centro_schema_aid",
@@ -47,7 +46,7 @@ with dag:
         arguments=arguments("raw_centro_aid_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -59,7 +58,7 @@ with dag:
         arguments=arguments("raw_centro_chi_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -71,7 +70,7 @@ with dag:
         arguments=arguments("raw_centro_chusj_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -83,7 +82,7 @@ with dag:
         arguments=arguments("raw_centro_cirene_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -95,7 +94,7 @@ with dag:
         arguments=arguments("raw_centro_ctc_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -107,7 +106,7 @@ with dag:
         arguments=arguments("raw_centro_dev_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -119,7 +118,7 @@ with dag:
         arguments=arguments("raw_centro_fkp_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -131,7 +130,7 @@ with dag:
         arguments=arguments("raw_centro_gen_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -143,7 +142,7 @@ with dag:
         arguments=arguments("raw_centro_inh_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -155,7 +154,7 @@ with dag:
         arguments=arguments("raw_centro_neo_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -167,7 +166,7 @@ with dag:
         arguments=arguments("raw_centro_neu_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -179,7 +178,7 @@ with dag:
         arguments=arguments("raw_centro_obg_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -191,7 +190,7 @@ with dag:
         arguments=arguments("raw_centro_obs_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -203,7 +202,7 @@ with dag:
         arguments=arguments("raw_centro_ped_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -215,7 +214,7 @@ with dag:
         arguments=arguments("raw_centro_psy_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
@@ -227,7 +226,7 @@ with dag:
         arguments=arguments("raw_centro_pul_*"),
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
         dag=dag
