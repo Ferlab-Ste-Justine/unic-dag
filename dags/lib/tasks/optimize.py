@@ -7,7 +7,8 @@ from lib.config import OPTIMIZATION_MAIN_CLASS, OPTIMIZATION_CLUSTER_TYPE, OPTIM
 from lib.operators.spark import SparkOperator
 
 def optimize(destinations: List[str], resource: str, zone: str, subzone: str,
-         config_file: str, jar: str, dag: DAG) -> SparkOperator:
+         config_file: str, jar: str, dag: DAG,
+         cluster_type: str = OPTIMIZATION_CLUSTER_TYPE) -> SparkOperator:
     """
     Create optimize task.
 
@@ -18,6 +19,8 @@ def optimize(destinations: List[str], resource: str, zone: str, subzone: str,
     :param config_file: Path of the ETL configuration file.
     :param jar: Path of the Spark jar.
     :param dag: Reference to the DAG.
+    :param cluster_type: Spark cluster size for the optimization task. Defaults to
+        OPTIMIZATION_CLUSTER_TYPE.
     :return: SparkOperator task instance of the optimization.
     """
     task_id = "_".join([subzone, resource, "optimization"])
@@ -37,7 +40,7 @@ def optimize(destinations: List[str], resource: str, zone: str, subzone: str,
         spark_class=OPTIMIZATION_MAIN_CLASS,
         spark_jar=jar,
         spark_failure_msg=OPTIMIZATION_SPARK_FAILURE_MSG,
-        spark_config=f"{OPTIMIZATION_CLUSTER_TYPE}-etl",
+        spark_config=f"{cluster_type}-etl",
         retries=OPTIMIZATION_RETRIES,
         dag=dag
     )
