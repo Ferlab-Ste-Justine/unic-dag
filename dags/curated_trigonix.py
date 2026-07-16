@@ -1,14 +1,12 @@
 """
 Curated Trigonix DAG
 """
-# pylint: disable=duplicate-code, expression-not-assigned
 from datetime import datetime, timedelta
 
-import pendulum
 from airflow import DAG
 from airflow.models import Param
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE, DEFAULT_START_DATE
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -16,25 +14,19 @@ from lib.tasks.notify import start, end
 DOC = """
 # Curated Trigonix DAG
 ## Description
-Builds the Trigonix scanning document index, one row per scanned document.
-
-This DAG runs once a day. Each run processes a single landing-date folder
-(`/quanum/numerisation/{date}/metadata/*.idx`); the `*` glob picks up every .idx batch
-(am + pm) that landed in that folder. The .tif images themselves are NOT ingested -- they
-stay in the red zone and are fetched later using the document barcode kept in clear in the index.
-
-The run of YYYY-MM-DD+1 processes the folder dated YYYY-MM-DD (logical date `{{ ds }}`).
+Builds the Trigonix scanning document index, one row per scanned document. Runs daily on the
+day's `.idx` manifest (`/quanum/numerisation/{{ ds }}/metadata/*.idx`); no `.idx` for the day
+means nothing is written.
 
 ## Steps
-1. **curated** -- `DocumentIndexETL` reads the day's .idx manifest and the `types_de_documents`
-   reference, enriches each document with its name/barcode, and upserts
-   `curated_trigonix_document_index` (keyed on `documentId`, idempotent). patientId is kept in clear.
-2. **anonymized** -- the generic anonymized Main SHA1-pseudonymizes `patientId` into
-   `anonymized_trigonix_document_index`; every other column is kept in clear on purpose.
+1. **curated** (red zone) -- `DocumentIndexETL` reads the `.idx` index, joins the
+   `types_de_documents` reference to add the document-type name and barcode, and upserts
+   `curated_trigonix_document_index` (key `documentId`).
+2. **anonymized** (yellow zone) -- `Main` applies `TrigonixMappings` into `anonymized_trigonix_document_index`.
 
 ## Configuration
-* `run_type` parameter: `default` or `initial`. Defaults to `default`. Use `initial` to reset and
-  rebuild the destination tables (e.g. during a backfill).
+* `run_type` parameter: `default` or `initial`. Defaults to `default`. `initial` rebuilds the
+  destination tables.
 """
 
 CURATED_ZONE = "red"
@@ -45,11 +37,8 @@ ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.Main"
 CURATED_DESTINATION = "curated_trigonix_document_index"
 ANONYMIZED_DESTINATION = "anonymized_trigonix_document_index"
 
-LOCAL_TZ = pendulum.timezone("America/Montreal")
-
 args = DEFAULT_ARGS.copy()
 args.update({
-    'start_date': datetime(2026, 7, 1, tzinfo=LOCAL_TZ),
     'provide_context': True})
 
 params = DEFAULT_PARAMS.copy()
@@ -58,7 +47,7 @@ params.update({'run_type': Param('default', enum=['default', 'initial'])})
 dag = DAG(
     dag_id="curated_trigonix",
     doc_md=DOC,
-    start_date=datetime(2025, 2, 26, tzinfo=LOCAL_TZ),
+    start_date=datetime(2026, 7, 1, tzinfo=DEFAULT_START_DATE.tzinfo),
     schedule="0 1 * * *",
     params=params,
     dagrun_timeout=timedelta(hours=2),
