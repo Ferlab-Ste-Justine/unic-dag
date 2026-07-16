@@ -10,7 +10,8 @@ from airflow.models import Param
 from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG
+from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, MASTER_JAR, \
+    CONFIG_FILE, DATE, LOCAL_TZ
 from lib.operators.spark import SparkOperator
 from lib.sensors.external_task import wait_for
 from lib.slack import Slack
@@ -18,8 +19,6 @@ from lib.tasks.notify import end, start
 from lib.tasks.publish import trigger_publish_dag
 from tasks import _get_version
 from timetables import IntervalTimetable
-
-JAR = 's3a://spark-prd/jars/unic-etl-master.jar'
 
 DOC = """
 # Enriched Signature DAG
@@ -60,7 +59,7 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_signature",
     doc_md=DOC,
-    start_date=pendulum.datetime(2026, 6, 5, 8, tz="America/Montreal"),
+    start_date=pendulum.datetime(2026, 6, 5, 8, tz=LOCAL_TZ),
     schedule=IntervalTimetable(interval=timedelta(weeks=4)),
     params=params,
     dagrun_timeout=timedelta(hours=DEFAULT_TIMEOUT_HOURS),
@@ -86,7 +85,7 @@ with dag:
         def enriched_arguments(destination: str, start_date: bool, end_date: bool) -> List[str]:
             arguments = [
                 destination,
-                "--config", "config/prod.conf",
+                "--config", CONFIG_FILE,
                 "--steps", "default",
                 "--app-name", destination,
             ]
@@ -106,7 +105,7 @@ with dag:
             arguments=enriched_arguments("enriched_signature_participant_index", start_date=False, end_date=False),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
-            spark_jar=JAR,
+            spark_jar=MASTER_JAR,
             spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
             dag=dag
@@ -118,7 +117,7 @@ with dag:
             arguments=enriched_arguments("enriched_signature_last_visit_survey", start_date=True, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
-            spark_jar=JAR,
+            spark_jar=MASTER_JAR,
             spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag,
@@ -131,7 +130,7 @@ with dag:
             arguments=enriched_arguments("enriched_signature_monthly_visit", start_date=True, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
-            spark_jar=JAR,
+            spark_jar=MASTER_JAR,
             spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
@@ -143,7 +142,7 @@ with dag:
             arguments=enriched_arguments("enriched_signature_monthly_visit_evaluation", start_date=False, end_date=True),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
-            spark_jar=JAR,
+            spark_jar=MASTER_JAR,
             spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="medium-etl",
             dag=dag
@@ -159,15 +158,15 @@ with dag:
             task_id="released_signature_last_visit_survey",
             name="released-signature-last-visit-survey",
             arguments=[
-                "--config", "config/prod.conf",
+                "--config", CONFIG_FILE,
                 "--steps", "default",
                 "--app-name", "released_signature_last_visit_survey",
                 "--destination", "released_signature_last_visit_survey",
-                "--version", "{{ data_interval_end | ds }}"
+                "--version", DATE
             ],
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
-            spark_jar=JAR,
+            spark_jar=MASTER_JAR,
             spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
             dag=dag,
@@ -178,15 +177,15 @@ with dag:
             task_id="released_signature_monthly_visit",
             name="released-signature-monthly-visit",
             arguments=[
-                "--config", "config/prod.conf",
+                "--config", CONFIG_FILE,
                 "--steps", "default",
                 "--app-name", "released_signature_monthly_visit",
                 "--destination", "released_signature_monthly_visit",
-                "--version", "{{ data_interval_end | ds }}"
+                "--version", DATE
             ],
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
-            spark_jar=JAR,
+            spark_jar=MASTER_JAR,
             spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
             dag=dag
@@ -196,15 +195,15 @@ with dag:
             task_id="released_signature_monthly_visit_evaluation",
             name="released-signature-monthly-visit-evaluation",
             arguments=[
-                "--config", "config/prod.conf",
+                "--config", CONFIG_FILE,
                 "--steps", "default",
                 "--app-name", "released_signature_monthly_visit_evaluation",
                 "--destination", "released_signature_monthly_visit_evaluation",
-                "--version", "{{ data_interval_end | ds }}"
+                "--version", DATE
             ],
             zone=RELEASED_ZONE,
             spark_class=RELEASED_MAIN_CLASS,
-            spark_jar=JAR,
+            spark_jar=MASTER_JAR,
             spark_failure_msg=SPARK_FAILURE_MSG,
             spark_config="small-etl",
             dag=dag

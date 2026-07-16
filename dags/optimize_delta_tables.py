@@ -10,7 +10,7 @@ from airflow.decorators import task
 from airflow.models import Param, DagRun
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import JAR, SPARK_FAILURE_MSG, DEFAULT_ARGS
+from lib.config import JAR, SPARK_FAILURE_MSG, DEFAULT_ARGS, CONFIG_FILE
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -57,7 +57,7 @@ with DAG(
 ) as dag:
     def arguments(app_name: str) -> List[str]:
         args = [
-            "--config", "config/prod.conf",
+            "--config", CONFIG_FILE,
             "--steps", "default",
             "--app-name", app_name
         ]

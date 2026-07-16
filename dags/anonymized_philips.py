@@ -5,10 +5,9 @@ DAG to continue the ingestion for High-Resolution data from Philips
 
 from datetime import datetime, timedelta
 
-import pendulum
 from airflow import DAG
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, LOCAL_TZ, CONFIG_FILE
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -28,7 +27,6 @@ CURATED_MAIN_CLASS = 'bio.ferlab.ui.etl.red.curated.philips.Main'
 ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.philips.Main"
 
 args = DEFAULT_ARGS.copy()
-LOCAL_TZ = pendulum.timezone("America/Montreal")
 
 args.update({
     'depends_on_past': True,
@@ -66,7 +64,7 @@ def create_spark_task(destination: str, cluster_size: str, main_class: str, zone
     """
 
     spark_args = [
-        "--config", "config/prod.conf",
+        "--config", CONFIG_FILE,
         "--steps", steps,
         "--app-name", destination,
         "--destination", destination,

@@ -10,7 +10,7 @@ import pendulum
 from airflow import DAG
 
 from lib.config import DAGS_CONFIG_PATH, EXTRACT_RESOURCE, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, CONFIG_FILE, \
-    SPARK_FAILURE_MSG, JAR, DEFAULT_PARAMS, DEFAULT_START_DATE, DEFAULT_CONCURRENCY
+    SPARK_FAILURE_MSG, JAR, DEFAULT_PARAMS, DEFAULT_START_DATE, DEFAULT_CONCURRENCY, LOCAL_TZ
 from lib.slack import Slack
 from tasks import create_tasks
 
@@ -29,7 +29,7 @@ for (r, zones, _) in os.walk(DAGS_CONFIG_PATH):
                                 timeout_hours = config['timeout_hours'] if 'timeout_hours' in config else DEFAULT_TIMEOUT_HOURS
                                 exec_timeout_hours = 3 / 4 * timeout_hours
 
-                                start_date = pendulum.parse(config['start_date'], tz="America/Montreal") \
+                                start_date = pendulum.parse(config['start_date'], tz=LOCAL_TZ) \
                                     if 'start_date' in config else DEFAULT_START_DATE
 
                                 args = DEFAULT_ARGS.copy()

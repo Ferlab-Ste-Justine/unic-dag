@@ -4,10 +4,9 @@ DAG that handles the ETL process for curated Philips.
 
 from datetime import datetime, timedelta
 
-import pendulum
 from airflow import DAG
 
-from lib.config import DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, DEFAULT_PARAMS, CONFIG_FILE
+from lib.config import DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, DEFAULT_PARAMS, CONFIG_FILE, LOCAL_TZ
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -21,7 +20,7 @@ DOC = 'DAG that handles the ETL process for curated Philips data.'
 
 dag_args = DEFAULT_ARGS.copy()
 dag_args.update({
-    'start_date': datetime(2023, 9, 27, tzinfo=pendulum.timezone("America/Montreal")), # put this date only to test
+    'start_date': datetime(2023, 9, 27, tzinfo=LOCAL_TZ), # put this date only to test
     'provide_context': True,
     'depends_on_past': True,
     'wait_for_downstream': True
@@ -31,7 +30,7 @@ dag_args.update({
 dag = DAG(
     dag_id=DAG_ID,
     doc_md=DOC,
-    start_date=datetime(2023, 9, 27, tzinfo=pendulum.timezone("America/Montreal")), # put this date only to test
+    start_date=datetime(2023, 9, 27, tzinfo=LOCAL_TZ), # put this date only to test
     schedule_interval=None,
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=8),

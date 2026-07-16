@@ -10,7 +10,8 @@ from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG
+from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, \
+    CONFIG_FILE, DATE, LOCAL_TZ
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
@@ -18,7 +19,6 @@ from lib.tasks.publish import trigger_publish_dag
 from tasks import _get_version
 from timetables import IntervalTimetable
 
-JAR = 's3a://spark-prd/jars/unic-etl-{{ params.branch }}.jar'
 DOC = """
 # Enriched Triceps DAG
 
@@ -56,7 +56,7 @@ args.update({'trigger_rule': TriggerRule.NONE_FAILED})
 dag = DAG(
     dag_id="enriched_triceps",
     doc_md=DOC,
-    start_date=pendulum.datetime(2023, 9, 29, 7, tz="America/Montreal"),
+    start_date=pendulum.datetime(2023, 9, 29, 7, tz=LOCAL_TZ),
     schedule=IntervalTimetable(interval=timedelta(weeks=4)),
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=DEFAULT_TIMEOUT_HOURS),
@@ -81,7 +81,7 @@ with dag:
         def enriched_arguments(destination: str, start_date: bool, end_date: bool) -> List[str]:
             arguments = [
                 destination,
-                "--config", "config/prod.conf",
+                "--config", CONFIG_FILE,
                 "--steps", "default",
                 "--app-name", destination,
             ]
@@ -300,11 +300,11 @@ with dag:
         def released_arguments(destination: str) -> List[str]:
             # {{ ds }} is the DAG run’s logical date as YYYY-MM-DD. This date is used as the released version.
             return [
-                "--config", "config/prod.conf",
+                "--config", CONFIG_FILE,
                 "--steps", "default",
                 "--app-name", destination,
                 "--destination", destination,
-                "--version", "{{ data_interval_end | ds }}"
+                "--version", DATE
             ]
 
 

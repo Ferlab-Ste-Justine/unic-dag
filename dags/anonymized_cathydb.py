@@ -6,10 +6,9 @@ DAG pour l'ingestion des data de neonat se trouvant dans cathydb
 from datetime import datetime, timedelta
 from typing import List
 
-import pendulum
 from airflow import DAG
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, LOCAL_TZ, CONFIG_FILE
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -28,7 +27,6 @@ ANONYMIZED_ZONE = "yellow"
 ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.cathydb.Main"
 
 args = DEFAULT_ARGS.copy()
-LOCAL_TZ = pendulum.timezone("America/Montreal")
 
 args.update({
     'depends_on_past': True,
@@ -57,7 +55,7 @@ def arguments(destination: str, steps: str = "default") -> List[str]:
     Generate Spark task arguments for the ETL process
     """
     return [
-        "--config", "config/prod.conf",
+        "--config", CONFIG_FILE,
         "--steps", steps,
         "--app-name", destination,
         "--destination", destination,

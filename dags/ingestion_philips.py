@@ -5,10 +5,9 @@ DAG pour l'ingestion quotidienne des data de philips a partir de Philips
 from datetime import datetime, timedelta
 from typing import List
 
-import pendulum
 from airflow import DAG
 
-from lib.config import JAR, SPARK_FAILURE_MSG, DEFAULT_PARAMS, DEFAULT_ARGS
+from lib.config import JAR, SPARK_FAILURE_MSG, DEFAULT_PARAMS, DEFAULT_ARGS, CONFIG_FILE, DATE, LOCAL_TZ
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -44,7 +43,7 @@ def create_spark_task(destination: str, cluster_size: str, main_class: str, zone
     """
 
     spark_args = [
-        "--config", "config/prod.conf",
+        "--config", CONFIG_FILE,
         "--steps", steps,
         "--app-name", destination,
         "--destination", destination,
@@ -73,7 +72,7 @@ ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.philips.Main"
 
 args = DEFAULT_ARGS.copy()
 args.update({
-    'start_date': datetime(2023, 8, 15, 5, tzinfo=pendulum.timezone("America/Montreal")),
+    'start_date': datetime(2023, 8, 15, 5, tzinfo=LOCAL_TZ),
     'provide_context': True,  # to use date of ingested data as input in main
     'depends_on_past': True,
     'wait_for_downstream': True})
@@ -81,7 +80,7 @@ args.update({
 dag = DAG(
     dag_id="ingestion_philips",
     doc_md=DOC,
-    start_date=datetime(2023, 8, 15, 5, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2023, 8, 15, 5, tzinfo=LOCAL_TZ),
     schedule="0 5 * * *",  # every day at 5am timezone montreal
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=12),
@@ -97,11 +96,11 @@ dag = DAG(
 with dag:
     def arguments(destination: str) -> List[str]:
         return [
-            "--config", "config/prod.conf",
+            "--config", CONFIG_FILE,
             "--steps", "default",
             "--app-name", destination,
             "--destination", destination,
-            "--date", "{{ data_interval_end | ds }}"
+            "--date", DATE
         ]
 
     philips_curated_tasks_config = [

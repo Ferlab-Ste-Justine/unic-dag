@@ -4,10 +4,9 @@ DAG pour l'ingestion des data de ICCA htr se trouvant dans cathydb
 from datetime import datetime, timedelta
 from typing import List
 
-import pendulum
 from airflow import DAG
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE, LOCAL_TZ
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -31,7 +30,7 @@ ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.highresolution.Main
 
 args = DEFAULT_ARGS.copy()
 args.update({
-    'start_date': datetime(2015, 5, 21, tzinfo=pendulum.timezone("America/Montreal")),
+    'start_date': datetime(2015, 5, 21, tzinfo=LOCAL_TZ),
     'provide_context': True,
     'depends_on_past': True,
     'wait_for_downstream': True})
@@ -39,7 +38,7 @@ args.update({
 dag = DAG(
     dag_id="ingestion_icca_htr",
     doc_md=DOC,
-    start_date=datetime(2015, 5, 21, tzinfo=pendulum.timezone("America/Montreal")),
+    start_date=datetime(2015, 5, 21, tzinfo=LOCAL_TZ),
     schedule_interval="@daily",
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=2),

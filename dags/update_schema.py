@@ -7,12 +7,11 @@ from typing import List
 from airflow import DAG
 from airflow.models import Param
 
-from lib.config import DEFAULT_ARGS, DEFAULT_TIMEOUT_HOURS, SPARK_FAILURE_MSG
+from lib.config import DEFAULT_ARGS, DEFAULT_TIMEOUT_HOURS, SPARK_FAILURE_MSG, MASTER_JAR, CONFIG_FILE
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
 
-JAR = 's3a://spark-prd/jars/unic-etl-master.jar'
 ZONE = 'red'
 MAIN_CLASS = 'bio.ferlab.ui.etl.schema.UpdateSchema'
 DOC = """
@@ -54,16 +53,16 @@ dag = DAG(
 
 with dag:
     def arguments(dataset_regex: str) -> List[str]:
-        return ["config/prod.conf", "default", dataset_regex]
+        return [CONFIG_FILE, "default", dataset_regex]
 
 
     update_schema = SparkOperator(
         task_id="update_schema",
         name="update-schema",
-        arguments=["config/prod.conf", "default", get_dataset()],
+        arguments=[CONFIG_FILE, "default", get_dataset()],
         zone=ZONE,
         spark_class=MAIN_CLASS,
-        spark_jar=JAR,
+        spark_jar=MASTER_JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config=f"{get_cluster_type()}-etl",
         dag=dag

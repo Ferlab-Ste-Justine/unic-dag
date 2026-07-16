@@ -7,7 +7,7 @@ from typing import List
 import pendulum
 from airflow import DAG
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE, LOCAL_TZ
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import start, end
 from timetables import IntervalTimetable
@@ -28,8 +28,8 @@ args.update({
 dag = DAG(
     dag_id="anonymized_softpath_hl7_obx",
     doc_md=DOC,
-    start_date=pendulum.datetime(2021, 1, 1, 0, tz="America/Montreal"),
-    end_date=pendulum.datetime(2026, 5, 20, 0, tz="America/Montreal"),
+    start_date=pendulum.datetime(2021, 1, 1, 0, tz=LOCAL_TZ),
+    end_date=pendulum.datetime(2026, 5, 20, 0, tz=LOCAL_TZ),
     schedule=IntervalTimetable(interval=timedelta(days=1)),
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=2),
@@ -47,7 +47,7 @@ with dag:
         Generate Spark task arguments for the ETL process.
         """
         return [
-            "--config", "config/prod.conf",
+            "--config", CONFIG_FILE,
             "--steps", steps,
             "--app-name", destination,
             "--destination", destination,
