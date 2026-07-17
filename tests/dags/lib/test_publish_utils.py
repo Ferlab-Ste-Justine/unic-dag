@@ -46,4 +46,4 @@ def test_add_extension_to_path(output_type, expected):
 ])
 def test_determine_minio_conn_id_from_config(input_bucket, output_bucket, expected):
     assert determine_minio_conn_id_from_config(
-        DEFAULT_CONN, input_bucket=input_bucket, output_bucket=output_bucket) == expected
+        DEFAULT_CONN, input_bucket, output_bucket=output_bucket) == expected
