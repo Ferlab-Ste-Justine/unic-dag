@@ -43,7 +43,7 @@ params.update({'run_type': Param('default', enum=['default', 'initial'])})
 dag = DAG(
     dag_id="curated_trigonix",
     doc_md=DOC,
-    start_date=datetime(2026, 7, 1, tzinfo=DEFAULT_START_DATE.tzinfo),
+    start_date=datetime(2026, 1, 1, tzinfo=DEFAULT_START_DATE.tzinfo),
     schedule="0 1 * * *",
     params=params,
     dagrun_timeout=timedelta(hours=2),
