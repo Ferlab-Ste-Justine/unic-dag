@@ -43,14 +43,14 @@ params.update({'run_type': Param('default', enum=['default', 'initial'])})
 dag = DAG(
     dag_id="curated_trigonix",
     doc_md=DOC,
-    start_date=datetime(2026, 1, 1, tzinfo=DEFAULT_START_DATE.tzinfo),
+    start_date=datetime(2025, 2, 26, tzinfo=DEFAULT_START_DATE.tzinfo),
     schedule="0 1 * * *",
     params=params,
     dagrun_timeout=timedelta(hours=2),
     default_args=DEFAULT_ARGS,
     is_paused_upon_creation=True,
     catchup=True,
-    max_active_runs=1,
+    max_active_runs=3,
     max_active_tasks=3,
     tags=["curated", "anonymized"],
     on_failure_callback=Slack.notify_dag_failure  # Should send notification to Slack when DAG exceeds timeout
@@ -76,6 +76,7 @@ with dag:
         spark_jar=JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
+        max_active_tis_per_dag=1,
         dag=dag
     )
 
@@ -93,6 +94,7 @@ with dag:
         spark_jar=JAR,
         spark_failure_msg=SPARK_FAILURE_MSG,
         spark_config="small-etl",
+        max_active_tis_per_dag=1,
         dag=dag
     )
 
