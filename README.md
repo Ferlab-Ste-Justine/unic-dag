@@ -194,12 +194,12 @@ Navigate to **Admin → Variables** and add:
 Navigate to **Admin → Connections** and add:
 
 - Connection ID : `minio`
-- Connection Type : `Amazon S3`
+- Connection Type : `Amazon Web Services`
 - Extra :
 
 ```json
 {
-  "host": "http://minio:9000",
+  "endpoint_url": "http://minio:9000",
   "aws_access_key_id": "minioadmin",
   "aws_secret_access_key": "minioadmin"
 }

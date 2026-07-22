@@ -108,4 +108,3 @@ with dag:
                               for destination, cluster_size in philips_anonymized_tasks_config]
 
     start('start_curated_philips') >> curated_spark_tasks >> end('end_curated_philips') >> start('start_anonymized_philips') >> anonymized_spark_tasks >> end('end_ingestion_philips')
-    

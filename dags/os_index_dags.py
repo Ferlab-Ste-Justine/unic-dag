@@ -28,7 +28,7 @@ for os_env in OpensearchEnv:
     # pg_env_name: str = os_env_pg_env_mapping[os_env].value
 
     doc = f"""
-    # Prepare and Load {pg_env_name} Index into OpenSeach {os_env_name} 
+    # Prepare and Load {pg_env_name} Index into OpenSeach {os_env_name}
     
     DAG pour la préparation et le load des index PROD dans OpenSearch {os_env_name}.
     

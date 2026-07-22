@@ -169,6 +169,7 @@ def create_tasks(dag: DAG,
             post_tests = step_config['post_tests'] if 'post_tests' in step_config else []
             pre_test_sub_group = None
             post_test_sub_group = None
+            optimize_task = None
 
             if pre_tests:
                 pre_test_sub_group = qa_group.tests.override(group_id="pre_tests")(

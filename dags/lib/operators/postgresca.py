@@ -2,10 +2,10 @@ import subprocess
 from typing import Sequence
 
 from airflow.exceptions import AirflowSkipException
-from airflow.providers.postgres.operators.postgres import PostgresOperator
+from airflow.providers.common.sql.operators.sql import SQLExecuteQueryOperator
 
 
-class PostgresCaOperator(PostgresOperator):
+class PostgresCaOperator(SQLExecuteQueryOperator):
     """
     Execute SQL in Postgres with CA certificate
 
@@ -14,7 +14,7 @@ class PostgresCaOperator(PostgresOperator):
     :param ca_filename: Filename where ca certificate file will be written (.crt)
     :param ca_cert: Ca certificate
     """
-    template_fields: Sequence[str] = (*PostgresOperator.template_fields, 'skip', 'postgres_conn_id')
+    template_fields: Sequence[str] = (*SQLExecuteQueryOperator.template_fields, 'skip', 'postgres_conn_id')
     def __init__(
             self,
             postgres_conn_id: str,
@@ -29,7 +29,7 @@ class PostgresCaOperator(PostgresOperator):
         self.ca_filename = ca_filename
         self.ca_cert = ca_cert
         self.skip = skip
-        super().__init__(postgres_conn_id=self.postgres_conn_id, **kwargs)
+        super().__init__(conn_id=self.postgres_conn_id, **kwargs)
 
     def execute(self, context):
         if self.skip:

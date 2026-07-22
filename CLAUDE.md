@@ -17,7 +17,7 @@ pip install -r requirements.txt
 ## Linting
 
 ```bash
-pylint --load-plugins=pylint_airflow --fail-under=10.0 $(git ls-files '*.py')
+pylint --fail-under=10.0 $(git ls-files '*.py')
 ```
 
 CI runs this (and `pytest`) on every PR targeting `master`. Linting all tracked `.py` files via `git ls-files` is what keeps the `dags/lib/` subtree and `tests/` covered. Project-wide disabled checks live in `.pylintrc` (each with an inline comment explaining why) — see that file for the authoritative list. Checks that only apply to specific files are disabled with a `# pylint: disable=...` header in that file.

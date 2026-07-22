@@ -182,7 +182,7 @@ class IntervalTimetable(Timetable):
         corresponding DagRun fires immediately. If the first interval is still
         in progress, return ``anchor`` so the first run is scheduled.
         """
-        now = DateTime.utcnow()
+        now = DateTime.now("UTC")
         if now < self._grid_slot(anchor, 1):
             return anchor
         return self._align_to_prev(now - self._interval, anchor)
