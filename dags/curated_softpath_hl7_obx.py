@@ -68,4 +68,7 @@ with dag:
         dag=dag
     )
 
-    start("start_curated_softpath_hl7_obx", notify=False) >> softpath_hl7_curated >> end("end_curated_softpath_hl7_obx", notify=False)
+    start_task = start("start_curated_softpath_hl7_obx", notify=False)
+    end_task = end("end_curated_softpath_hl7_obx", notify=False)
+
+    start_task >> softpath_hl7_curated >> end_task

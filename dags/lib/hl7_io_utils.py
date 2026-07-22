@@ -11,11 +11,12 @@ The extracted **tables** are stored as a date-first CSV tree, one CSV per table:
 
 **Reports** are a Delta table (markdown), partitioned by ``dte_of_message``.
 
-Both tables and reports are retrieved by an exact ``(hl7_id, dte_of_message)`` pair. Heavy imports
-are deferred into the functions, so this module is safe to import
-inside ``@task.virtualenv`` bodies.
+The tables/markdown tree is foldered by ``hl7_id``; the report Delta is keyed by ``(dte_of_message, hl7_id)``.
+Heavy imports are deferred into the functions, so this module is safe to import inside ``@task.virtualenv`` bodies.
 """
 from __future__ import annotations
+
+from typing import Literal
 
 
 # pylint: disable=import-outside-toplevel, import-error, too-many-locals
@@ -40,6 +41,17 @@ def build_storage_options(minio_conn_id: str) -> dict:
     return opts
 
 
+# ---- input document helpers ----
+
+def _detect_format(raw: bytes) -> Literal["pdf", "rtf", "other"]:
+    """Magic-byte sniff of a decoded document: ``%PDF-`` -> pdf, ``{\\rtf`` -> rtf, else other."""
+    if raw[:5] == b"%PDF-":
+        return "pdf"
+    if raw[:5] == b"{\\rtf":
+        return "rtf"
+    return "other"
+
+
 # ---- path / uri helpers ----
 
 def _split_uri(uri: str) -> tuple[str, str]:
@@ -50,14 +62,14 @@ def _split_uri(uri: str) -> tuple[str, str]:
 
 
 def _sanitize_id(hl7_id: str) -> str:
-    """Make an ``hl7_id`` safe to use as a single S3 path segment."""
+    """Make a ``hl7_id`` safe to use as a single S3 path segment."""
     import re
 
-    return re.sub(r"[^A-Za-z0-9._-]", "_", str(hl7_id))
+    return re.sub(r"[^A-Za-z0-9._]", "_", str(hl7_id))
 
 
 def _tree_dir(base_key: str, dte_of_message: str, hl7_id: str) -> str:
-    """Directory holding one document's tables: ``<base_key>/<yyyy>/<mm>/<dd>/<sanitized hl7_id>``."""
+    """Directory holding one document's outputs: ``<base_key>/<yyyy>/<mm>/<dd>/<sanitized hl7_id>``."""
     from datetime import date
 
     parsed = date.fromisoformat(str(dte_of_message)[:10])  # dte_of_message is yyyy-MM-dd
@@ -69,15 +81,9 @@ def _tree_key(base_key: str, dte_of_message: str, hl7_id: str, table_index: int)
     return f"{_tree_dir(base_key, dte_of_message, hl7_id)}/table_{table_index}.csv"
 
 
-def _table_index_from_key(key: str):
-    """Parse the ``table_<index>.csv`` leaf of a tree key -> ``int`` (or ``None`` if it doesn't match)."""
-    filename = key.rstrip("/").split("/")[-1]
-    if not filename.startswith("table_") or not filename.endswith(".csv"):
-        return None
-    try:
-        return int(filename[len("table_"):-len(".csv")])
-    except ValueError:
-        return None
+def _tree_report_key(base_key: str, dte_of_message: str, hl7_id: str) -> str:
+    """``<base_key>/<yyyy>/<mm>/<dd>/<sanitized hl7_id>/report.md`` (key, no bucket)."""
+    return f"{_tree_dir(base_key, dte_of_message, hl7_id)}/report.md"
 
 
 # ---- tables: write (CSV tree) ----
@@ -99,44 +105,72 @@ def write_tables(tables_df, *, tree_base_uri: str, minio_conn_id: str) -> None:
         s3.load_string(string_data=row["table_csv"], key=key, bucket_name=bucket, replace=True)
 
 
-# ---- retrieval (exact (hl7_id, dte_of_message) pair) ----
+# ---- reports: write (markdown into the CSV tree) ----
 
-def read_tables_by_id(hl7_id: str, dte_of_message: str, *, tree_base_uri: str, minio_conn_id: str) -> list:
-    """Return every extracted table for one ``(hl7_id, dte_of_message)`` key.
+def write_report_markdown_tree(report_df, *, tree_base_uri: str, minio_conn_id: str) -> int:
+    """Write each successfully-parsed report's Markdown in the same date-first tree
+    as the extracted tables. Rows whose ``report_markdown`` is null are ignored.
 
-    Lists the leaf prefix ``<base>/<yyyy>/<mm>/<dd>/<hl7_id>/`` and reads each CSV with polars.
-
-    :return: list of ``{"hl7_id", "dte_of_message", "table_index", "table": pl.DataFrame}``.
+    :param report_df: polars frame with ``hl7_id``, ``dte_of_message``, ``report_markdown``.
+    :param tree_base_uri: s3:// root of the CSV tree (shared with the extracted tables).
+    :param minio_conn_id: Airflow MinIO connection id.
+    :returns: number of report.md files written.
     """
-    import io
-
-    import polars as pl
     from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
     bucket, base_key = _split_uri(tree_base_uri)
-    prefix = _tree_dir(base_key, dte_of_message, hl7_id) + "/"
-
     s3 = S3Hook(aws_conn_id=minio_conn_id)
-    records = []
-    for key in s3.list_keys(bucket_name=bucket, prefix=prefix) or []:
-        table_index = _table_index_from_key(key)
-        if table_index is None:
+    written = 0
+    for row in report_df.iter_rows(named=True):
+        markdown = row["report_markdown"]
+        if markdown is None:
             continue
-        content = s3.read_key(key, bucket_name=bucket)
-        table = pl.read_csv(io.StringIO(content)) if content else pl.DataFrame()
-        records.append({"hl7_id": hl7_id, "dte_of_message": dte_of_message,
-                        "table_index": table_index, "table": table})
-    return records
+        key = _tree_report_key(base_key, row["dte_of_message"], row["hl7_id"])
+        s3.load_string(string_data=markdown, key=key, bucket_name=bucket, replace=True)
+        written += 1
+    return written
 
 
-def read_report(hl7_id: str, dte_of_message: str, *, report_uri: str, minio_conn_id: str) -> list:
-    """Return the parsed report row(s) for ``(hl7_id, dte_of_message)`` from the Delta report table.
+# ---- reports: write (Delta, window-scoped overwrite) ----
 
-    :return: list of report rows as dicts (markdown + metadata).
+def write_report_delta(report_df, *, report_uri: str, storage_options: dict,
+                       window_start: str, window_end: str,
+                       partition_col: str = "dte_of_message") -> None:
+    """Overwrite the report Delta table for a single half-open window [window_start, window_end).
+
+    - Empty ``report_df`` raises an error.
+    - Existing table -> overwrite with a predicate filter which replaces this window only.
+
+    :param report_df: polars frame matching the report schema (partitioned by ``partition_col``).
+    :param report_uri: s3:// uri of the report Delta table.
+    :param storage_options: delta-rs AWS_* options.
+    :param window_start: inclusive window start (yyyy-MM-dd).
+    :param window_end: exclusive window end (yyyy-MM-dd).
+    :param partition_col: partition column; defaults to ``dte_of_message``.
+    :raises AirflowFailException: if ``report_df`` is empty, or on a schema mismatch.
     """
-    import polars as pl
+    import logging
 
-    return (pl.scan_delta(report_uri, storage_options=build_storage_options(minio_conn_id))
-            .filter((pl.col("hl7_id") == hl7_id) & (pl.col("dte_of_message") == dte_of_message))
-            .collect()
-            .to_dicts())
+    from airflow.exceptions import AirflowFailException
+    from deltalake import DeltaTable
+    from deltalake.exceptions import DeltaError, SchemaMismatchError
+
+    if report_df.is_empty():
+        raise AirflowFailException(
+            f"No report rows for window [{window_start}, {window_end}); ")
+
+    write_options: dict[str, object] = {"partition_by": [partition_col]}
+    if DeltaTable.is_deltatable(report_uri, storage_options):
+        write_options["predicate"] = (
+            f"{partition_col} >= '{window_start}' AND {partition_col} < '{window_end}'")
+
+    try:
+        report_df.write_delta(report_uri, mode="overwrite", storage_options=storage_options,
+                              delta_write_options=write_options)
+    except SchemaMismatchError as exc:
+        raise AirflowFailException(
+            f"Schema mismatch writing report Delta at {report_uri}: {exc}") from exc
+    except DeltaError as exc:
+        logging.error("Delta write of parsed reports failed for window [%s, %s) at %s: %s",
+                      window_start, window_end, report_uri, exc)
+        raise

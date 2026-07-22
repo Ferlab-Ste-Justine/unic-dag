@@ -6,9 +6,10 @@
 docling orchestration helpers for the HL7 PDF-parsing pipeline: constructing the
 ``DocumentConverter`` and running the conversion.
 
-All imports are deferred into the function bodies, the latter of which are intended
+All heavy imports are deferred into the function bodies, the latter of which are intended
 to be called from inside a `@task.virtualenv` with the appropriate dependencies.
 """
+from pathlib import Path
 
 
 # pylint: disable=import-outside-toplevel, import-error
@@ -33,7 +34,7 @@ def build_converter(doc_batch_concurrency: int, enable_ocr: bool):
         format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=pipe_opts)})
 
 
-def run(converter, pdf_files) -> list:
+def run(converter, pdf_files: list[Path]) -> list:
     """Convert ``pdf_files`` with an already-built ``converter`` and return the ConversionResults.
 
     Takes the converter + the input document paths and calls ``convert_all``. Input is file paths, intended for

@@ -92,7 +92,7 @@ def extract_config_info_to_publish(
 
     :param resource_code: Resource code of the project to publish.
     :param version_to_publish: Version of the project to publish.
-    :param minio_conn_id: Minio connection id, defaults to YELLOW_MINIO_CONN_ID.
+    :param minio_conn_id: Minio connection id, if null determined by the ``DatalakeConfig`` class.
     :returns : Dictionary containing the source IDs, input & output buckets, output paths, and table names.
     """
     from lib.datalake_config import DatalakeConfig

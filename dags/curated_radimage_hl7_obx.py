@@ -69,4 +69,7 @@ with dag:
         dag=dag
     )
 
-    start("start_curated_radimage_hl7_obx", notify=False) >> radimage_hl7_curated >> end("end_curated_radimage_hl7_obx", notify=False)
+    start_task = start("start_curated_radimage_hl7_obx", notify=False)
+    end_task = end("end_curated_radimage_hl7_obx", notify=False)
+
+    start_task >> radimage_hl7_curated >> end_task
