@@ -10,7 +10,8 @@ and writes back a markdown report (Delta table) + the extracted tables (date-fir
 with a primary key of the format ``dte_of_message, hl7_id``.
 
 Two ``@task.virtualenv`` consecutive tasks:
-  1. ``resolve_input``   — resolve the curated input table URI + MinIO connection from ``DatalakeConfig``;
+  1. ``extract_config`` — resolve the input + two output datasets into a ``DatalakeConfig`` and validate the
+     outputs are in the nominative zone.
   2. ``parse_and_write`` — read the run's ``dte_of_message`` interval window, parse with docling, write outputs.
 """
 # pylint: disable=import-outside-toplevel, import-error, too-many-locals, too-many-statements, fixme
@@ -29,8 +30,8 @@ PARSE_REQUIREMENTS = [
 
 # parse_and_write runs docling in its own KubernetesExecutor pod.
 # executor_config / pod_override is resolved at DAG-parse time and is NOT Jinja-templatable
-PARSE_POD_MEMORY = "8Gi"
-PARSE_POD_CPU = "2"
+PARSE_POD_MEMORY = "12Gi"
+PARSE_POD_CPU = "4"
 PARSE_EXECUTOR_CONFIG = {
     "pod_override": k8s.V1Pod(
         spec=k8s.V1PodSpec(
@@ -50,57 +51,50 @@ PARSE_EXECUTOR_CONFIG = {
 
 
 @task.virtualenv(requirements=["pyhocon==0.3.61"], system_site_packages=True)
-def resolve_input(resource_code: str, dataset_suffix: str,
-                  output_text_path: str, output_tables_tree_path: str) -> dict:
+def extract_config(input_dataset_id: str, text_dataset_id: str,
+                   tables_tree_dataset_id: str) -> dict:
     """
-    Builds the curated source id ``curated_{resource_code}_{dataset_suffix}``, looks it up via
-    :class:`DatalakeConfig`, and returns its primitive dict:
-        {
-            "input_uri":    <s3:// uri of the curated OBX table>,
-            "minio_conn_id": <connection id chosen for that bucket>,
-            "config":        <DatalakeConfig.to_dict() — the populated source/storage>,
-            "text_uri":      <s3:// output uri for the parsed-report Delta table>,
-            "tables_tree_uri": <s3:// base uri of the extracted-tables CSV tree>,
-        }
+    Load ``config/prod.conf``, resolve the input, output, and validate that the output paths
+    are nominative.
 
-    :param resource_code: Short resource code, e.g. "radimage" or "softpath".
-    :param dataset_suffix: Completes the curated source id; defaults to "hl7_oru_r01_obx".
-    :param output_text_path: s3:// uri for the parsed-report Delta output.
-    :param output_tables_tree_path: s3:// base uri for the extracted-tables CSV tree.
-    :return: Dict consumed by ``parse_and_write``.
+    :param input_dataset_id: datalake.sources id of the curated OBX Delta input table.
+    :param text_dataset_id: datalake.sources id of the parsed-report Delta output.
+    :param tables_tree_dataset_id: datalake.sources id of the extracted-tables CSV-tree output.
+    :return: ``DatalakeConfig.to_dict()``
     """
+    from airflow.exceptions import AirflowFailException
+
+    from lib.config import NOMINATIVE_BUCKET
     from lib.datalake_config import DatalakeConfig
-    from lib.publish_utils import determine_minio_conn_id_from_config
 
-    source_id = f"curated_{resource_code}_{dataset_suffix}"
+    config = DatalakeConfig(
+        sources_id_list={input_dataset_id, text_dataset_id, tables_tree_dataset_id})
 
-    # Builds-from-scratch (load + parse) -> this task needs pyhocon + system_site_packages.
-    config = DatalakeConfig(sources_id_list={source_id})
+    # The parsed HL7 outputs hold nominative data.
+    for dataset_id in (text_dataset_id, tables_tree_dataset_id):
+        bucket = config.bucket_for_source(dataset_id)
+        if bucket != NOMINATIVE_BUCKET:
+            raise AirflowFailException(
+                f"Output dataset '{dataset_id}' resolves to bucket '{bucket}', "
+                f"expected the nominative bucket '{NOMINATIVE_BUCKET}'.")
 
-    # polars / deltalake read the object store via the s3:// scheme (not s3a://).
-    input_uri = config.source_s3_path(source_id, scheme="s3")
-    minio_conn_id = determine_minio_conn_id_from_config(
-        config.minio_conn_id, config.bucket_for_source(source_id))
-
-    return {
-        "input_uri": input_uri,
-        "minio_conn_id": minio_conn_id,
-        "config": config.to_dict(),
-        "text_uri": output_text_path,
-        "tables_tree_uri": output_tables_tree_path,
-    }
+    return config.to_dict()
 
 
 @task.virtualenv(requirements=PARSE_REQUIREMENTS, system_site_packages=True,
                  executor_config=PARSE_EXECUTOR_CONFIG)
-def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
+def parse_and_write(config_dict: dict, input_dataset_id: str, text_dataset_id: str,
+                    tables_tree_dataset_id: str, interval_start: str, interval_end: str,
                     doc_batch_concurrency: int, enable_ocr: bool) -> dict:
     """
     Read the curated OBX PDFs for the given date range, parse each with docling, and write two
     outputs (keyed by ``hl7_id``): a parsed-report Delta table (markdown), and the extracted tables
     as a date-first CSV tree (one CSV per table) via ``lib.hl7_io_utils.write_tables``.
 
-    :param input_info: Output of ``resolve_input`` (input_uri, minio_conn_id, text/tables uris).
+    :param config_dict: ``DatalakeConfig.to_dict()``
+    :param input_dataset_id: datalake.sources id of the curated OBX Delta input table.
+    :param text_dataset_id: datalake.sources id of the parsed-report Delta output.
+    :param tables_tree_dataset_id: datalake.sources id of the extracted-tables CSV-tree output.
     :param interval_start: Inclusive start of the run's ``dte_of_message`` window (yyyy-MM-dd).
     :param interval_end: Exclusive end of the run's ``dte_of_message`` window (yyyy-MM-dd).
     :param doc_batch_concurrency: docling threaded multi-document concurrency.
@@ -113,9 +107,13 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
 
     import polars as pl
     from airflow.exceptions import AirflowFailException
+    from typing import Tuple
 
+    from lib.datalake_config import DatalakeConfig
     from lib.docling_utils import build_converter, run
-    from lib.hl7_io_utils import build_storage_options, write_tables
+    from lib.hl7_io_utils import build_storage_options, write_report_delta, write_tables
+
+    config = DatalakeConfig.from_dict(config_dict)
 
     # Explicit column types for the two output frames declared so that:
     # (1) an empty result still yields a correctly-columned frame;
@@ -142,7 +140,8 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
                 f"this DAG's schedule interval must be daily or coarser."
             )
         return (
-            pl.scan_delta(input_info["input_uri"], storage_options=storage_options)
+            pl.scan_delta(config.source_s3_path(input_dataset_id, scheme="s3"),
+                          storage_options=storage_options)
             .select(["hl7_id", "message_id", "set_id", "observation_value_base64", "dte_of_message"])
             .filter(pl.col("dte_of_message").is_between(
                 pl.lit(interval_start), pl.lit(interval_end), closed="left"))
@@ -183,7 +182,7 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
             meta_by_stem[stem] = keys
         return pdf_files, meta_by_stem, skipped_rows
 
-    def table_to_csv(table, document) -> "tuple[str, int, int, int]":
+    def table_to_csv(table, document) -> Tuple[str, int, int, int]:
         try:
             tdf = table.export_to_dataframe(document)   # newer docling wants the doc
         except TypeError:
@@ -218,23 +217,8 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
         return (pl.DataFrame(report_rows, schema=report_schema),
                 pl.DataFrame(table_rows, schema=tables_schema))
 
-    # ---- Delta write: overwrite only the processed date range (idempotent re-runs) ----
-    def write_delta_overwrite(df: pl.DataFrame, uri: str, storage_options: dict):
-        # replaceWhere: atomically replace ONLY this run's window, leaving other windows intact.
-        # Half-open [interval_start, interval_end) matching read_obx_pdfs's filter exactly
-        predicate = f"dte_of_message >= '{interval_start}' AND dte_of_message < '{interval_end}'"
-        try:
-            df.write_delta(uri, mode="overwrite", storage_options=storage_options,
-                           delta_write_options={"partition_by": ["dte_of_message"],
-                                                "predicate": predicate})
-        except Exception as exc:  # pylint: disable=broad-except
-            # First run: no table to replaceWhere against -> create it (partitioned, full overwrite).
-            logging.warning("replaceWhere overwrite failed (%s); creating table at %s", exc, uri)
-            df.write_delta(uri, mode="overwrite", storage_options=storage_options,
-                           delta_write_options={"partition_by": ["dte_of_message"]})
-
     # ---- orchestration ----
-    storage_options = build_storage_options(input_info["minio_conn_id"])
+    storage_options = build_storage_options(config.minio_conn_id)
     df = read_obx_pdfs(storage_options)
     logging.info("Read %d OBX rows for [%s, %s)", df.height, interval_start, interval_end)
 
@@ -246,9 +230,11 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
         results = run(converter, pdf_files) if pdf_files else []
         report_df, tables_df = build_outputs(results, meta_by_stem, skipped_rows)
 
-    write_delta_overwrite(report_df, input_info["text_uri"], storage_options)
-    write_tables(tables_df, tree_base_uri=input_info["tables_tree_uri"],
-                 minio_conn_id=input_info["minio_conn_id"])
+    write_report_delta(report_df, report_uri=config.source_s3_path(text_dataset_id, scheme="s3"),
+                       storage_options=storage_options,
+                       window_start=interval_start, window_end=interval_end)
+    write_tables(tables_df, tree_base_uri=config.source_s3_path(tables_tree_dataset_id, scheme="s3"),
+                 minio_conn_id=config.minio_conn_id)
     logging.info("Wrote %d report rows and %d table rows", report_df.height, tables_df.height)
 
     return {"rows_read": df.height, "pdfs_parsed": len(pdf_files),
@@ -256,29 +242,29 @@ def parse_and_write(input_info: dict, interval_start: str, interval_end: str,
 
 
 @task_group(group_id="hl7_pdf_docling_parsing")
-def hl7_pdf_docling_parsing(resource_code: str, dataset_suffix: str,
-                            output_text_path: str, output_tables_tree_path: str,
+def hl7_pdf_docling_parsing(input_dataset_id: str, text_dataset_id: str, tables_tree_dataset_id: str,
                             doc_batch_concurrency: int = 4, enable_ocr: bool = False) -> None:
     """Resolve the curated OBX table, then parse its PDFs and write report + tables.
 
     The date window is each run's own ``data_interval`` (half-open ``[start, end)``)
 
-    :param resource_code: Short resource code (e.g. "softpath" / "radimage").
-    :param dataset_suffix: Completes the curated source id ``curated_<resource_code>_<dataset_suffix>``.
-    :param output_text_path: s3:// uri for the parsed-report Delta output.
-    :param output_tables_tree_path: s3:// base uri for the extracted-tables CSV tree.
+    :param input_dataset_id: datalake.sources id of the curated OBX Delta input table.
+    :param text_dataset_id: datalake.sources id of the parsed-report Delta output dataset.
+    :param tables_tree_dataset_id: datalake.sources id of the extracted-tables CSV-tree output dataset.
     :param doc_batch_concurrency: docling threaded multi-document concurrency (1 = sequential).
     :param enable_ocr: Run OCR for scanned PDFs (table-structure detection is always on).
     """
-    resolved_input = resolve_input(
-        resource_code=resource_code,
-        dataset_suffix=dataset_suffix,
-        output_text_path=output_text_path,
-        output_tables_tree_path=output_tables_tree_path,
+    config_dict = extract_config(
+        input_dataset_id=input_dataset_id,
+        text_dataset_id=text_dataset_id,
+        tables_tree_dataset_id=tables_tree_dataset_id,
     )
 
     parse_and_write(
-        input_info=resolved_input,
+        config_dict=config_dict,
+        input_dataset_id=input_dataset_id,
+        text_dataset_id=text_dataset_id,
+        tables_tree_dataset_id=tables_tree_dataset_id,
         interval_start="{{ data_interval_start.in_timezone('America/Montreal').format('YYYY-MM-DD') }}",
         interval_end="{{ data_interval_end.in_timezone('America/Montreal').format('YYYY-MM-DD') }}",
         doc_batch_concurrency=doc_batch_concurrency,

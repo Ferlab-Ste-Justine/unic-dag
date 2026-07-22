@@ -25,8 +25,6 @@ from lib.groups.etl.hl7_pdf_docling_parsing import hl7_pdf_docling_parsing
 from lib.slack import Slack
 from timetables import IntervalTimetable
 
-DEFAULT_DATASET_SUFFIX = "hl7_oru_r01_obx"
-
 dag_args = DEFAULT_ARGS.copy()
 dag_args.update({
     'trigger_rule': TriggerRule.NONE_FAILED,
@@ -35,11 +33,13 @@ dag_args.update({
 dag = DAG(
     dag_id="curated_hl7_parsing_docling",
     params={
-        "resource_code": Param("softpath", type="string",
-                               description="Short resource code. Ex: radimage | softpath"),
-        "dataset_suffix": Param(DEFAULT_DATASET_SUFFIX, type="string",
-                                description="Completes the curated source id "
-                                            "curated_<resource_code>_<dataset_suffix>."),
+        "input_dataset_id": Param("curated_softpath_hl7_oru_r01_obx", type="string",
+                                  description="datalake.sources id of the curated OBX Delta input table."),
+        "text_dataset_id": Param("curated_softpath_hl7_obx_parsed_reports", type="string",
+                                 description="datalake.sources id of the parsed-report Delta output."),
+        "tables_tree_dataset_id": Param("curated_softpath_hl7_obx_extracted_tables", type="string",
+                                        description="datalake.sources id of the extracted-tables "
+                                                    "CSV-tree output."),
         "doc_batch_concurrency": Param(4, type="integer",
                                        description="docling multi-document batch"),
         "enable_ocr": Param(True, type="boolean",
@@ -62,12 +62,9 @@ with dag:
     start_task = start("start_curated_hl7_parsing_docling", notify=False)
     end_task = end("end_curated_hl7_parsing_docling", notify=False)
     hl7_docling_pipeline = hl7_pdf_docling_parsing(
-        resource_code="{{ params.resource_code }}",
-        dataset_suffix="{{ params.dataset_suffix }}",
-        # Hardcoded dev s3:// destinations (polars/deltalake use s3://, not s3a://); resource_code +
-        # dataset_suffix make each resource's outputs unique.
-        output_text_path="s3://red-prd/curated/{{ params.resource_code }}/hl7/{{ params.dataset_suffix }}_parsed_reports",
-        output_tables_tree_path="s3://red-prd/curated/{{ params.resource_code }}/hl7/{{ params.dataset_suffix }}_extracted_tables",
+        input_dataset_id="{{ params.input_dataset_id }}",
+        text_dataset_id="{{ params.text_dataset_id }}",
+        tables_tree_dataset_id="{{ params.tables_tree_dataset_id }}",
         doc_batch_concurrency="{{ params.doc_batch_concurrency }}",
         enable_ocr="{{ params.enable_ocr }}",
     )

@@ -6,9 +6,7 @@ from datetime import timedelta
 import pendulum
 from airflow import DAG
 
-from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR
-from lib.groups.etl.hl7_pdf_docling_parsing import hl7_pdf_docling_parsing
-# from core.slack import Slack
+from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE, LOCAL_TZ
 from lib.operators.spark import SparkOperator
 from lib.tasks.notify import start, end
 from timetables import IntervalTimetable
@@ -28,8 +26,6 @@ La run du 2 janvier 2020 parse les données du 1 janvier dans le lac.
 
 CURATED_ZONE = "red"
 CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
-# When True, append the docling PDF-parse + table-extract group as the final step. Off until backfill is completed.
-PARSE_AND_EXTRACT_TABLES_WITH_DOCLING = False
 args = DEFAULT_ARGS.copy()
 args.update({
     'provide_context': True})
@@ -37,8 +33,8 @@ args.update({
 dag = DAG(
     dag_id="curated_softpath_hl7_obx",
     doc_md=DOC,
-    start_date=pendulum.datetime(2025, 8, 15, 0, tz="America/Montreal"),
-    end_date=pendulum.datetime(2025, 10, 25, 0, tz="America/Montreal"),
+    start_date=pendulum.datetime(2025, 8, 15, 0, tz=LOCAL_TZ),
+    end_date=pendulum.datetime(2025, 10, 25, 0, tz=LOCAL_TZ),
     schedule=IntervalTimetable(interval=timedelta(days=1)),
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=2),
@@ -53,7 +49,7 @@ dag = DAG(
 
 with dag:
     arguments = [
-        "--config", "config/prod.conf",
+        "--config", CONFIG_FILE,
         "--steps", "default",
         "--app-name", "curated_softpath_hl7_oru_r01_obx",
         "--destination", "curated_softpath_hl7_oru_r01_obx",
@@ -75,14 +71,4 @@ with dag:
     start_task = start("start_curated_softpath_hl7_obx", notify=False)
     end_task = end("end_curated_softpath_hl7_obx", notify=False)
 
-    if PARSE_AND_EXTRACT_TABLES_WITH_DOCLING:
-        start_task >> softpath_hl7_curated >> hl7_pdf_docling_parsing(
-            resource_code="softpath",
-            dataset_suffix="hl7_oru_r01_obx",
-            output_text_path="s3://yellow-prd/robertcaterev01/hl7_pipeline_2/softpath_hl7_oru_r01_obx_report_markdown_v1",
-            output_tables_tree_path="s3://yellow-prd/robertcaterev01/hl7_pipeline_2/softpath_hl7_oru_r01_obx_extracted_tables_v1",
-            doc_batch_concurrency=4,
-            enable_ocr=False,
-        ) >> end_task
-    else:
-        start_task >> softpath_hl7_curated >> end_task
+    start_task >> softpath_hl7_curated >> end_task

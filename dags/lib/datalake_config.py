@@ -17,7 +17,7 @@ class StorageConf:
         return self.path.split("/")[2]
 
     def base_uri(self, scheme: str = "s3a") -> str:
-        """Full storage addres uri , re-schemed to ``scheme`` (e.g. s3a -> s3)."""
+        """Full storage address uri , re-schemed to ``scheme`` (e.g. s3a -> s3)."""
         _, _, remainder = self.path.partition("://")
         return f"{scheme}://{remainder.rstrip('/')}"
 
@@ -75,22 +75,20 @@ class DatalakeConfig:
         Imports of ``lib.*`` and Airflow are made inside methods because this module is imported inside
         ``@task.virtualenv`` task bodies.
 
-        ``__init__`` loads + parses the config and, when a selector (``resource_code`` or
-        ``sources_id_list``) is provided, populates :attr:`sources` / :attr:`storages`. Without a
-        selector it is load-only; callers populate later via `extract_config_info`.
+        ``__init__`` loads + parses the config and, when ``sources_id_list`` is provided, populates
+        :attr:`sources` / :attr:`storages`.
     ============================================================
     """
 
-    def __init__(self, minio_conn_id: str = None, resource_code: str = None,
-                 sources_id_list: set[str] = None):
+    def __init__(self, minio_conn_id: str = None, sources_id_list: set[str] = None):
         from lib.publish_utils import determine_minio_conn_id_from_config
 
         self.sources: list[SourceConf] = []
         self.storages: list[StorageConf] = []
         self.raw_config = self.load()
 
-        if resource_code is not None or sources_id_list is not None:
-            self.extract_config_info(sources_id_list=sources_id_list, resource_code=resource_code)
+        if sources_id_list is not None:
+            self.extract_config_info(sources_id_list=sources_id_list)
 
         # flatmap each populated source to its backing bucket, then let the function fold the
         # buckets down to the widest-access connection id (red > yellow > green).
@@ -129,37 +127,35 @@ class DatalakeConfig:
 
     # ---- Config extraction ----
 
-    def extract_config_info(self, sources_id_list: set[str] = None,
-                            resource_code: str = None) -> None:
-        """Populate `sources` (selected by either a ``resource_code`` substring, an exact
-        ``sources_id_list``, or all when neither is given) and `storages` (always all
+    def extract_config_info(self, sources_id_list: set[str] = None) -> None:
+        """Populate `sources` (sources_id_list) and `storages` (always all
         storages)."""
-        self.extract_source(sources_id_list=sources_id_list, resource_code=resource_code)
+        self.extract_source(sources_id_list=sources_id_list)
 
         have_storages = {storage.storage_id for storage in self.storages}
         for storage in self.raw_config.get("datalake.storages"):
             if storage["id"] not in have_storages:
                 self.storages.append(StorageConf(storage_id=storage["id"], path=storage["path"]))
 
-    def extract_source(self, sources_id_list: set[str] = None,
-                       resource_code: str = None) -> None:
-        """Append the matching ``datalake.sources`` entries to sources, with the following logic:
-
-        - If ``resource_code`` is provided, select all sources whose ``id`` contains that substring.
-
-        - If ``sources_id_list`` is provided, select all sources whose ``id`` is in that list.
-
-        - If neither is provided, select all sources.
-
+    def extract_source(self, sources_id_list: set[str]) -> None:
+        """Append the corresponding ``datalake.sources`` entries whose ``id`` is in ``sources_id_list`` to
+        `sources`.
+        Logs the requested source ids for visibility. Raises ``AirflowFailException`` if no
+        requested id matches any configured source.
         """
+        import logging
+        from airflow.exceptions import AirflowFailException
+
         raw_sources = self.raw_config.get("datalake.sources")
 
-        if resource_code is not None:
-            selected = [s for s in raw_sources if resource_code in s["id"]]
-        elif sources_id_list is not None:
-            selected = [s for s in raw_sources if s["id"] in sources_id_list]
-        else:
-            selected = raw_sources
+        logging.info("extract_source: requested %d source id(s): %s",
+                     len(sources_id_list), sorted(sources_id_list))
+
+        selected = [s for s in raw_sources if s["id"] in sources_id_list]
+        if not selected:
+            raise AirflowFailException(
+                "extract_source: no requested source id matched datalake.sources "
+                f"(requested: {sorted(sources_id_list)}).")
 
         # Avoid duplicates if ever extract_source is called multiple times with overlapping selectors.
         have_sources = {source.source_id for source in self.sources}
@@ -239,7 +235,6 @@ class DatalakeConfig:
         tasks should only need a read-only view of the sources/storages that were populated in the first task.
         """
         obj = cls.__new__(cls)  # bypass __init__ → no S3 download
-        # minio_conn_id is always present in to_dict() output; pure reconstruction, no default needed.
         obj.minio_conn_id = data.get("minio_conn_id")
         obj.raw_config = None
         obj.sources = [SourceConf.from_dict(x) for x in data.get("sources", [])]
