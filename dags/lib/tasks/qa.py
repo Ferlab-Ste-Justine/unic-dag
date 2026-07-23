@@ -9,7 +9,7 @@ from lib.operators.spark import SparkOperator
 
 def test(test_name: str, destinations: List[str], resource: str, zone: str, subzone: str,
          config_file: str, jar: str, dag: DAG, cluster_type : str = QA_TEST_CLUSTER_TYPE,
-         suffix: str = None) -> SparkOperator:
+         task_id_suffix: str = None) -> SparkOperator:
     """
     Create QA test task.
 
@@ -22,11 +22,11 @@ def test(test_name: str, destinations: List[str], resource: str, zone: str, subz
     :param jar: Path of the Spark jar.
     :param dag: Reference to the DAG.
     :param cluster_type: Spark cluster size to run the test on.
-    :param suffix: Optional discriminator appended to the task id. Lets several test entries
-                   have the same.
+    :param task_id_suffix: Optional discriminator appended to the task id. Lets several test entries
+                           have the same test name.
     :return: SparkOperator task instance of the QA test.
     """
-    task_id = "_".join([subzone, resource, test_name] + ([suffix] if suffix else []))
+    task_id = "_".join([subzone, resource, test_name] + ([task_id_suffix] if task_id_suffix else []))
 
     args = [
         test_name,

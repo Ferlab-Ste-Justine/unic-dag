@@ -16,4 +16,4 @@ def tests(test_confs: List[Dict], resource: str, zone: str, subzone: str,
         test_cluster_type = test['cluster_type']
         test_suffix = test.get('suffix')
         qa.test(test_name, test_destinations, resource, zone, subzone, config_file, jar, dag,
-                cluster_type = test_cluster_type, suffix = test_suffix)
+                cluster_type=test_cluster_type, task_id_suffix=test_suffix)

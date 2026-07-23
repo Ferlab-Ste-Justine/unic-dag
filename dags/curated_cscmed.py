@@ -29,10 +29,8 @@ Ce DAG traite les tables chargées lors de la seconde batch de chargement de Csc
 Les tables jobs et jobs_sections sont traitées par le DAG `curated_cscmed_jobs`.
 
 ### Tests QA
-Les tests QA anonymized (`pre_tests` / `post_tests`) sont découpés par première lettre de table
-(`anonymized_cscmed_a*`, `anonymized_cscmed_c*`, ...) plutot qu'exécutés en un seul job.
-Les lettres sont dérivées de la liste des datasets ci-dessous : toute
-nouvelle table est automatiquement couverte par le test de sa lettre.
+Les tests QA anonymized (`pre_tests` / `post_tests`) sont découpés par dataset plutôt qu'exécutés
+en un seul job.Les tests sont dérivés de la liste des datasets ci-dessous.
 
 ### Horaire
 * __Date de début__ - 9 avril 2026
@@ -111,16 +109,18 @@ ANON_DATASETS = [
 ]
 
 
-def anon_letters() -> List[str]:
-    """First letter of each anonymized table name (after the ANON_PREFIX), sorted and deduplicated."""
-    return sorted({dataset["dataset_id"][len(ANON_PREFIX)] for dataset in ANON_DATASETS})
+def dataset_suffix(dataset_id: str) -> str:
+    """
+    e.g. 'anonymized_cscmed_rped*' -> 'rped'.
+    """
+    return dataset_id[len(ANON_PREFIX):].rstrip("*").rstrip("_")
 
 
-def split_by_letter(test_name: str, cluster_type: str = "small") -> List[Dict]:
+def split_by_dataset(test_name: str) -> List[Dict]:
     return [
-        {"name": test_name, "destinations": [f"{ANON_PREFIX}{letter}*"],
-         "cluster_type": cluster_type, "suffix": letter}
-        for letter in anon_letters()
+        {"name": test_name, "destinations": [dataset["dataset_id"]],
+         "cluster_type": dataset["cluster_type"], "suffix": dataset_suffix(dataset["dataset_id"])}
+        for dataset in ANON_DATASETS
     ]
 
 
@@ -143,10 +143,10 @@ dag_config = {
             "destination_subzone": "anonymized",
             "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
             "multiple_main_methods": False,
-            "pre_tests": split_by_letter("greater_or_equal_partition_counts"),
+            "pre_tests": split_by_dataset("greater_or_equal_partition_counts"),
             "datasets": ANON_DATASETS,
             "optimize": [],
-            "post_tests": split_by_letter("lower_or_equal_null_counts") + split_by_letter("equal_counts")
+            "post_tests": split_by_dataset("lower_or_equal_null_counts") + split_by_dataset("equal_counts")
         }
     ]
 }
