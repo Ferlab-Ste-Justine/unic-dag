@@ -1,6 +1,7 @@
 """
-Cross-DAG gates. Wait for an upstream DAG's task(s) to succeed in its run from the same day,
-tolerating a dataset-triggered upstream whose logical date is not a clean cron date.
+Cross-DAG gates. Wait for the upstream DAG's run covering the same interval to succeed,
+matching it by ``data_interval_end`` so it works for both cron and dataset-triggered
+upstreams and stays correct across reruns.
 """
 from typing import Callable, Optional
 
@@ -19,13 +20,19 @@ DEFAULT_TIMEOUT = 3600  # one hour
 
 def _same_day_execution_date(external_dag_id: str) -> Callable[..., DateTime]:
     @provide_session
-    def _fn(logical_date: DateTime, data_interval_end: Optional[DateTime] = None,
+    def _fn(logical_date: DateTime, data_interval_end: Optional[DateTime] = None,  # pylint: disable=unused-argument
             session: Session = NEW_SESSION, **_) -> DateTime:
-        day = (data_interval_end or logical_date).in_timezone(LOCAL_TZ).replace(
+        day = data_interval_end.in_timezone(LOCAL_TZ).replace(
             hour=0, minute=0, second=0, microsecond=0)
-        runs = DagRun.find(dag_id=external_dag_id, execution_start_date=day,
-                           execution_end_date=day.add(days=1), session=session)
-        return max((run.execution_date for run in runs), default=logical_date)
+        # Match the upstream run whose interval ends on this day. data_interval_end lands on the
+        # run's actual day and is stable across reruns.
+        runs = session.query(DagRun).filter(
+            DagRun.dag_id == external_dag_id,
+            DagRun.data_interval_end >= day,
+            DagRun.data_interval_end < day.add(days=1),
+        ).all()
+        # No run covers this day yet: return the day we expect a run for, so the sensor waits for it.
+        return max((run.execution_date for run in runs), default=day)
     return _fn
 
 
