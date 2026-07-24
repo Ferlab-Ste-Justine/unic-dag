@@ -11,7 +11,7 @@ from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 
 from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, MASTER_JAR, \
-    CONFIG_FILE, DATE, LOCAL_TZ
+    CONFIG_FILE, DATE, LOCAL_TZ, INTERVAL_START_DATE, INTERVAL_END_DATE
 from lib.operators.spark import SparkOperator
 from lib.sensors.external_task import wait_for
 from lib.slack import Slack
@@ -91,10 +91,10 @@ with dag:
             ]
 
             if start_date:
-                arguments += ["--start-date", "{{ data_interval_start }}"]
+                arguments += ["--start-date", INTERVAL_START_DATE]
 
             if end_date:
-                arguments += ["--end-date", "{{ data_interval_end }}"]
+                arguments += ["--end-date", INTERVAL_END_DATE]
 
             return arguments
 

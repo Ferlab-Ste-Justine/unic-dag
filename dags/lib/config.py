@@ -49,6 +49,12 @@ GREEN_MINIO_CONN_ID = "green_minio"
 DATE = '{{ data_interval_end | ds }}'
 UNDERSCORE_DATE = '{{ data_interval_end | ds | replace("-", "_") }}'
 
+# Interval date config
+# Need to call `.isoformat()` on both dates to convert date to 'T' separated ISO format for ETL.
+INTERVAL_START_DATE = '{{ data_interval_start.isoformat() }}'
+INTERVAL_END_DATE = '{{ data_interval_end.isoformat() }}'
+LOGICAL_DATE = '{{ logical_date.isoformat() }}'
+
 # Version config
 VERSION = '{{ params.version }}'
 UNDERSCORE_VERSION = '{{ params.version | replace("-", "_") }}'

@@ -11,7 +11,7 @@ from airflow.models import Variable
 from airflow.utils.trigger_rule import TriggerRule
 
 from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, \
-    GREEN_MINIO_CONN_ID, JAR, CONFIG_FILE, RELEASED_BUCKET, LOCAL_TZ
+    GREEN_MINIO_CONN_ID, JAR, CONFIG_FILE, RELEASED_BUCKET, LOCAL_TZ, LOGICAL_DATE
 from lib.operators.copy_csv_to_postgres import CopyCsvToPostgres
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
@@ -182,7 +182,7 @@ with dag:
         enriched_infections = SparkOperator(
             task_id="enriched_indicateurssip_infections",
             name="enriched-indicateurssip-infections",
-            arguments=enriched_arguments("enriched_indicateurssip_infections") + ["--date", "{{ logical_date }}"],
+            arguments=enriched_arguments("enriched_indicateurssip_infections") + ["--date", LOGICAL_DATE],
             zone=enriched_zone,
             spark_class=enriched_main_class,
             spark_jar=JAR,
