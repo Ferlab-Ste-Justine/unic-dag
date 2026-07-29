@@ -2,7 +2,7 @@
 Curated CSCMED DAG
 """
 from datetime import timedelta
-from typing import Dict, List
+from typing import Dict, List, Optional
 
 import pendulum
 from airflow import DAG
@@ -116,11 +116,13 @@ def dataset_suffix(dataset_id: str) -> str:
     return dataset_id[len(ANON_PREFIX):].rstrip("*").rstrip("_")
 
 
-def split_by_dataset(test_name: str) -> List[Dict]:
+def split_by_dataset(test_name: str, exclude: Optional[List[str]] = None) -> List[Dict]:
+    exclude = exclude or []
     return [
         {"name": test_name, "destinations": [dataset["dataset_id"]],
          "cluster_type": dataset["cluster_type"], "suffix": dataset_suffix(dataset["dataset_id"])}
         for dataset in ANON_DATASETS
+        if dataset["dataset_id"] not in exclude
     ]
 
 
@@ -146,7 +148,11 @@ dag_config = {
             "pre_tests": split_by_dataset("greater_or_equal_partition_counts"),
             "datasets": ANON_DATASETS,
             "optimize": [],
-            "post_tests": split_by_dataset("lower_or_equal_null_counts") + split_by_dataset("equal_counts")
+            # equal_counts is skipped for demographic: the anonymization intentionally filters out
+            # test-patient records (ExcludedTestIds), so its row count will always differ from raw
+            # by design.
+            "post_tests": split_by_dataset("lower_or_equal_null_counts")
+                          + split_by_dataset("equal_counts", exclude=["anonymized_cscmed_demographic"])
         }
     ]
 }
