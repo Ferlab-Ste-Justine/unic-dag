@@ -40,6 +40,13 @@ en un seul job.Les tests sont dérivés de la liste des datasets ci-dessous.
 
 ANON_PREFIX = "anonymized_cscmed_"
 
+CURATED_DATASETS = [
+    {"dataset_id": "curated_cscmed_quickform"                , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+    {"dataset_id": "curated_cscmed_gas_notemedicalebreve_v"   , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+    {"dataset_id": "curated_cscmed_hem_bilan_inr_entete_p"    , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+    {"dataset_id": "curated_cscmed_hem_thrombophilie_entete_p", "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []}
+]
+
 ANON_DATASETS = [
     {"dataset_id": "anonymized_cscmed_ado*"       , "cluster_type": "small" , "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_aid*"       , "cluster_type": "small" , "run_type": "default", "pass_date": False, "dependencies": []},
@@ -133,10 +140,10 @@ dag_config = {
             "destination_subzone": "curated",
             "main_class": "bio.ferlab.ui.etl.red.curated.Main",
             "multiple_main_methods": True,
-            "pre_tests": [{"name": "greater_or_equal_partition_counts", "destinations": ["curated_cscmed_quickform"], "cluster_type": "small"}],
-            "datasets": [
-                {"dataset_id": "curated_cscmed_quickform", "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []}
-            ],
+            "pre_tests": [{"name": "greater_or_equal_partition_counts",
+                           "destinations": [dataset["dataset_id"] for dataset in CURATED_DATASETS],
+                           "cluster_type": "small"}],
+            "datasets": CURATED_DATASETS,
             "optimize": [],
             "post_tests": []
         },
