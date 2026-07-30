@@ -55,13 +55,15 @@ def determine_minio_conn_id_from_config(minio_conn_id: str,
     :param output_bucket: Output bucket from the resource configuration extracted by "extract_config_info".
     """
     from lib.config import GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_ID, RED_MINIO_CONN_ID, RELEASED_BUCKET, \
-        CATALOG_BUCKET, NOMINATIVE_BUCKET
+        CATALOG_BUCKET, NOMINATIVE_BUCKET, VNA_CLINIQUE_RED_BUCKET, VNA_CLINIQUE_YELLOW_BUCKET
 
     if output_bucket is None:
         return {
             RELEASED_BUCKET: GREEN_MINIO_CONN_ID,
             CATALOG_BUCKET: YELLOW_MINIO_CONN_ID,
             NOMINATIVE_BUCKET: RED_MINIO_CONN_ID,
+            VNA_CLINIQUE_RED_BUCKET: RED_MINIO_CONN_ID,
+            VNA_CLINIQUE_YELLOW_BUCKET: YELLOW_MINIO_CONN_ID,
         }.get(input_bucket, minio_conn_id)
 
     if "clinical" in output_bucket and (input_bucket is None or input_bucket == RELEASED_BUCKET):

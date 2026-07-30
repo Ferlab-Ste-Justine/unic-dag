@@ -76,6 +76,14 @@ RELEASED_PREFIX = "released"
 PUBLISHED_BUCKET = "green-prd"
 PUBLISHED_PREFIX = "published"
 
+# VNA imaging config
+VNA_CLINIQUE_RED_BUCKET = "vna-clinique-red"
+VNA_CLINIQUE_YELLOW_BUCKET = "vna-clinique-yellow"
+DICOM_PREFIX = "dicoms"
+NIFTI_PREFIX = "nifti"
+NIFTI_SIDECARS_PREFIX = "nifti_sidecars"
+DCM2NIIX_VERSION = "1.0.20260416"
+
 # QA tests config
 QA_TEST_MAIN_CLASS = "bio.ferlab.ui.etl.qa.Main"
 QA_TEST_CLUSTER_TYPE = "xsmall"
