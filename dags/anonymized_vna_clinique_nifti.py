@@ -73,11 +73,10 @@ args.update({
 with DAG(
         dag_id="anonymized_vna_clinique_nifti",
         params={
-            "paths": Param([], type=["array"],
-                           examples=["dicoms/2026/01/01/RA202600012345",
-                                     "dicoms/2026/01/01/RA2026000*",
-                                     "dicoms/2026/01/*"],
-                           description="Study prefixes to convert. Wildcards allowed in any segment. Mutually exclusive with 'accession_file_key'."),
+            "paths": Param([], type=["null", "array"],
+                           description="Study prefixes to convert, one per line. Wildcards allowed in any segment. "
+                                       "Ex: dicoms/2026/01/01/RA202600012345, dicoms/2026/01/01/RA2026000*, "
+                                       "dicoms/2026/01/*. Mutually exclusive with 'accession_file_key'."),
             "accession_file_bucket": Param(None, type=["null", "string"],
                                            description="(Optional) Bucket holding the accession number CSV file. Required with 'accession_file_key'."),
             "accession_file_key": Param(None, type=["null", "string"],
