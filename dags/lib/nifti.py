@@ -22,6 +22,7 @@ from typing import List
 import pandas as pd
 from airflow.exceptions import AirflowFailException
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+from botocore.config import Config
 
 from lib.config import DICOM_PREFIX, MINIO_CONN_ID, NIFTI_PREFIX, NIFTI_SIDECARS_PREFIX, \
     VNA_CLINIQUE_RED_BUCKET, VNA_CLINIQUE_YELLOW_BUCKET
@@ -107,9 +108,14 @@ def vna_s3_hook(bucket: str) -> S3Hook:
     """
     Hook for a VNA bucket, routed to its zone's Minio connection.
 
+    The connection pool is sized to the concurrency the conversion drives, since botocore defaults to
+    10 and one client is shared by every worker. Too small a pool still works, but urllib3 discards
+    the surplus connections instead of reusing them, so each request pays a fresh TLS handshake.
+
     :param bucket: VNA bucket name.
     """
-    return S3Hook(aws_conn_id=determine_minio_conn_id_from_config(MINIO_CONN_ID, bucket))
+    return S3Hook(aws_conn_id=determine_minio_conn_id_from_config(MINIO_CONN_ID, bucket),
+                  config=Config(max_pool_connections=STUDY_WORKERS * DOWNLOAD_WORKERS))
 
 
 def read_accession_patterns(s3: S3Hook, bucket: str, key: str,
