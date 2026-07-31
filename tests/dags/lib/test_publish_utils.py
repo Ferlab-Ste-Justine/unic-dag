@@ -11,6 +11,8 @@ from lib.config import (
     NOMINATIVE_BUCKET,
     RED_MINIO_CONN_ID,
     RELEASED_BUCKET,
+    VNA_CLINIQUE_RED_BUCKET,
+    VNA_CLINIQUE_YELLOW_BUCKET,
     YELLOW_MINIO_CONN_ID,
 )
 from lib.publish_utils import (
@@ -43,6 +45,12 @@ def test_add_extension_to_path(output_type, expected):
     (CATALOG_BUCKET, "yellow-prd-clinical", YELLOW_MINIO_CONN_ID),
     (None, "red-prd-nominative", RED_MINIO_CONN_ID),
     (None, "some-other-bucket", DEFAULT_CONN),
+    # imaging buckets
+    (VNA_CLINIQUE_RED_BUCKET, None, RED_MINIO_CONN_ID),
+    (VNA_CLINIQUE_YELLOW_BUCKET, None, YELLOW_MINIO_CONN_ID),
+    # published buckets given as the input bucket, matched on their zone marker
+    ("published-clinical-cpip", None, GREEN_MINIO_CONN_ID),
+    ("published-nominative-cpip", None, RED_MINIO_CONN_ID),
 ])
 def test_determine_minio_conn_id_from_config(input_bucket, output_bucket, expected):
     assert determine_minio_conn_id_from_config(
