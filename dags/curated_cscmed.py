@@ -174,7 +174,7 @@ dag = DAG(
     params=DEFAULT_PARAMS,
     dagrun_timeout=timedelta(hours=12),
     default_args=args,
-    concurrency=3,
+    concurrency=5,
     catchup=False,
     max_active_runs=1,
     tags=["curated"],
