@@ -109,7 +109,7 @@ def convert_studies(studies: List[str], skip_existing: bool) -> None:
     :param skip_existing: True to leave studies whose NIfTI output already exists untouched.
     """
     import logging
-    from concurrent.futures import ThreadPoolExecutor
+    from concurrent.futures import ThreadPoolExecutor, as_completed
     from typing import Tuple
 
     from airflow.exceptions import AirflowFailException
@@ -129,24 +129,29 @@ def convert_studies(studies: List[str], skip_existing: bool) -> None:
         try:
             return study, convert_study(study=study, red_s3=red_s3, yellow_s3=yellow_s3,
                                         skip_existing=skip_existing)
-        # Broad on purpose: a failure has to stay scoped to its own study, because executor.map drops
-        # every result once one item raises, successes included. Enumerating what dcm2niix, zlib,
-        # botocore and the filesystem can raise would fail the batch on whatever the tuple missed.
+        # Broad on purpose: a failure has to stay scoped to its own study, because one raising study
+        # would otherwise abandon the rest of the batch. Enumerating what dcm2niix, zlib, botocore and
+        # the filesystem can raise would fail the batch on whatever the tuple missed.
         except Exception as e:  # pylint: disable=broad-exception-caught
             logging.exception('%s: conversion failed', study)  # keep the traceback for unexpected errors
             return study, f"FAILED: {type(e).__name__}: {e}"
 
+    # Results are consumed as they land rather than all at the end, so a long backfill reports progress
+    # instead of staying silent until the last study.
+    results = []
     with ThreadPoolExecutor(max_workers=STUDY_WORKERS) as executor:
-        results = list(executor.map(_convert, studies))
+        futures = [executor.submit(_convert, study) for study in studies]
+        for future in as_completed(futures):
+            study, status = future.result()
+            results.append((study, status))
+            log = logging.warning if status.startswith(("WARNING", "FAILED")) else logging.info
+            log('[%s/%s] %s: %s', len(results), len(studies), study, status)
 
-    for study, status in results:
-        if status.startswith(("WARNING", "FAILED")):
-            logging.warning('%s: %s', study, status)
-        else:
-            logging.info('%s: %s', study, status)
+    def _tally(prefix: str) -> int:
+        return sum(1 for _, status in results if status.startswith(prefix))
 
     failed = [study for study, status in results if status.startswith("FAILED")]
-    logging.info('%s converted, %s failed, out of %s study folder(s)',
-                 len(results) - len(failed), len(failed), len(results))
+    logging.info('%s converted, %s skipped, %s with warnings, %s failed, out of %s study folder(s)',
+                 _tally("ok"), _tally("skipped"), _tally("WARNING"), len(failed), len(results))
     if failed:
         raise AirflowFailException(f"{len(failed)} of {len(results)} studies failed: {failed[:20]}")
