@@ -120,8 +120,8 @@ def convert_studies(studies: List[str], skip_existing: bool) -> None:
     red_s3 = vna_s3_hook(VNA_CLINIQUE_RED_BUCKET)
     yellow_s3 = vna_s3_hook(VNA_CLINIQUE_YELLOW_BUCKET)
 
-    # Build both clients up front: botocore sessions are not thread-safe for client creation, and the
-    # hooks are shared by every worker below.
+    # boto3 is only unsafe while a client is being created, so build both before the workers start.
+    # The clients themselves are thread-safe, which is what lets one hook per bucket be shared below.
     red_s3.get_conn()
     yellow_s3.get_conn()
 
