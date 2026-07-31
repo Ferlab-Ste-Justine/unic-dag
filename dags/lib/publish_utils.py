@@ -58,13 +58,22 @@ def determine_minio_conn_id_from_config(minio_conn_id: str,
         CATALOG_BUCKET, NOMINATIVE_BUCKET, VNA_CLINIQUE_RED_BUCKET, VNA_CLINIQUE_YELLOW_BUCKET
 
     if output_bucket is None:
-        return {
+        zone_conn_id = {
             RELEASED_BUCKET: GREEN_MINIO_CONN_ID,
             CATALOG_BUCKET: YELLOW_MINIO_CONN_ID,
             NOMINATIVE_BUCKET: RED_MINIO_CONN_ID,
             VNA_CLINIQUE_RED_BUCKET: RED_MINIO_CONN_ID,
             VNA_CLINIQUE_YELLOW_BUCKET: YELLOW_MINIO_CONN_ID,
-        }.get(input_bucket, minio_conn_id)
+        }.get(input_bucket)
+        if zone_conn_id:
+            return zone_conn_id
+        # The published buckets are one per resource, so they are matched on their zone marker rather
+        # than listed one by one.
+        if input_bucket and "clinical" in input_bucket:
+            return GREEN_MINIO_CONN_ID
+        if input_bucket and "nominative" in input_bucket:
+            return RED_MINIO_CONN_ID
+        return minio_conn_id
 
     if "clinical" in output_bucket and (input_bucket is None or input_bucket == RELEASED_BUCKET):
         return GREEN_MINIO_CONN_ID
