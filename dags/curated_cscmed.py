@@ -19,7 +19,9 @@ ETL curated et anonymized pour toutes les tables CscMed à l'exception des table
 
 ### Description
 Ce DAG traite les tables chargées lors de la seconde batch de chargement de CscMed par Talend :
-- **curated_cscmed_quickform** (zone rouge, curated)
+- Les tables **curated_cscmed_*** (zone rouge, curated), soit : quickform,
+  gas_notemedicalebreve_v, hem_bilan_inr_entete_p, hem_thrombophilie_entete_p,
+  scol_autresparametresradiologiques_p
 - Toutes les tables **anonymized_cscmed_*** (zone jaune, anonymized), soit :
   ado, aid, all, anes, atoe, aud, car, chi, chusj, cir, cpa, cra, crme, ctc, demographic, den, der,
   dev, devcirene, devd, deve, dia, div, dou, end, esej, fkp, gas, ge, hem, imm, inh, mep, min, mmo,
@@ -41,10 +43,11 @@ en un seul job.Les tests sont dérivés de la liste des datasets ci-dessous.
 ANON_PREFIX = "anonymized_cscmed_"
 
 CURATED_DATASETS = [
-    {"dataset_id": "curated_cscmed_quickform"                , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
-    {"dataset_id": "curated_cscmed_gas_notemedicalebreve_v"   , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
-    {"dataset_id": "curated_cscmed_hem_bilan_inr_entete_p"    , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
-    {"dataset_id": "curated_cscmed_hem_thrombophilie_entete_p", "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []}
+    {"dataset_id": "curated_cscmed_quickform"                           , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+    {"dataset_id": "curated_cscmed_gas_notemedicalebreve_v"             , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+    {"dataset_id": "curated_cscmed_hem_bilan_inr_entete_p"              , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+    {"dataset_id": "curated_cscmed_hem_thrombophilie_entete_p"          , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+    {"dataset_id": "curated_cscmed_scol_autresparametresradiologiques_p", "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []}
 ]
 
 ANON_DATASETS = [
