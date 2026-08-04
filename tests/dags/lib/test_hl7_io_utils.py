@@ -10,8 +10,8 @@ import json
 import pytest
 
 from lib import hl7_io_utils
-from lib.hl7_io_utils import (_detect_format, _sanitize_id, _split_uri, _tree_dir, _tree_key,
-                              _tree_report_key, build_storage_options)
+from lib.hl7_io_utils import (_detect_format, _sanitize_id, _split_uri, _tree_date_prefix, _tree_dir,
+                              _tree_key, _tree_report_key, build_storage_options)
 
 
 @pytest.mark.parametrize("uri, expected", [
@@ -57,6 +57,42 @@ def test_tree_dir_and_key_date_first_layout():
 def test_tree_report_key_layout():
     assert _tree_report_key("hl7/tables", "2025-08-15", "RAD/00018") == \
         "hl7/tables/2025/08/15/RAD_00018/report.md"
+
+
+# _tree_date_prefix: the day folder (no hl7_id) that delete_report_tree_for_date clears
+def test_tree_date_prefix():
+    assert _tree_date_prefix("hl7/tables", "2025-08-15") == "hl7/tables/2025/08/15"
+    assert _tree_date_prefix("hl7/tables", "2025-08-15T10:00:00") == "hl7/tables/2025/08/15"
+
+
+def test_delete_report_tree_for_date(monkeypatch):
+    import airflow.providers.amazon.aws.hooks.s3 as s3mod
+
+    captured = {}
+    day_keys = ["hl7/tables/2025/08/15/RAD_1/table_0.csv",
+                "hl7/tables/2025/08/15/RAD_1/report.md",
+                "hl7/tables/2025/08/15/RAD_2/report.md"]
+
+    class FakeS3Hook:
+        def __init__(self, aws_conn_id=None):
+            captured["conn_id"] = aws_conn_id
+
+        def list_keys(self, bucket_name=None, prefix=None):
+            captured["list"] = (bucket_name, prefix)
+            return list(day_keys)
+
+        def delete_objects(self, bucket=None, keys=None):
+            captured.setdefault("deleted", []).append((bucket, list(keys)))
+
+    monkeypatch.setattr(s3mod, "S3Hook", FakeS3Hook)
+
+    deleted = hl7_io_utils.delete_report_tree_for_date(
+        "s3://red-prd/hl7/tables", "2025-08-15", "redminio")
+
+    assert deleted == 3
+    assert captured["conn_id"] == "redminio"
+    assert captured["list"] == ("red-prd", "hl7/tables/2025/08/15/")  # the day prefix, no hl7_id
+    assert captured["deleted"] == [("red-prd", day_keys)]             # one delete batch (<1000)
 
 
 def test_write_report_delta_raises_on_empty_frame():

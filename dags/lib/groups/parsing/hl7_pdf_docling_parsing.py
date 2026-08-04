@@ -89,7 +89,9 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
     Read the curated OBX PDFs for the given date range, parse each with docling, and write three
     outputs (keyed by ``hl7_id``): a parsed-report Delta table (markdown), the extracted tables as a
     date-first CSV tree (one CSV per table), and a ``report.md`` per document in that same tree — via
-    ``lib.hl7_io_utils.{write_report_delta, write_tables, write_report_markdown_tree}``.
+    ``lib.hl7_io_utils.{write_report_delta, write_tables, write_report_markdown_tree}``. Documents are
+    processed one ``dte_of_message`` partition at a time (each overwriting its own partition), bounding
+    peak memory to a single day.
 
     :param config_dict: ``DatalakeConfig.to_dict()``
     :param input_source_id: datalake.sources id of the curated OBX Delta input table.
@@ -99,11 +101,13 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
     :param interval_end: Exclusive end of the run's ``dte_of_message`` window (yyyy-MM-dd).
     :param doc_batch_concurrency: docling threaded multi-document concurrency.
     :param enable_ocr: Run OCR (for scanned PDFs). Table-structure detection is always on.
-    :return: Small dict of counts for logging.
+    :return: Per-window counts (``rows_read``, ``pdfs_parsed``, ``skipped``, ``tables_extracted``,
+        ``reports_written``) plus ``dates`` — the number of ``dte_of_message`` partitions processed.
     """
     import base64
     import logging
     import tempfile
+    from datetime import date, timedelta
     from pathlib import Path
 
     import polars as pl
@@ -112,10 +116,20 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
 
     from lib.datalake_config import DatalakeConfig
     from lib.docling_utils import build_converter, run
-    from lib.hl7_io_utils import (_detect_format, build_storage_options, write_report_delta,
-                                   write_report_markdown_tree, write_tables)
+    from lib.hl7_io_utils import (_detect_format, build_storage_options, delete_report_tree_for_date,
+                                   write_report_delta, write_report_markdown_tree, write_tables)
 
     config = DatalakeConfig.from_dict(config_dict)
+
+    # The half-open window [interval_start, interval_end) must span at least one day.
+    if interval_start >= interval_end:
+        raise AirflowFailException(
+            f"Empty dte_of_message window [{interval_start}, {interval_end}), must be daily or coarser."
+        )
+
+    storage_options = build_storage_options(config.minio_conn_id)
+    report_uri = config.source_s3_path(report_delta_destination_id, scheme="s3")
+    tables_tree_uri = config.source_s3_path(tables_and_md_report_destination_id, scheme="s3")
 
     # Explicit column types for the two output frames declared so that:
     # (1) an empty result still yields a correctly-columned frame;
@@ -133,22 +147,24 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
         "n_rows": pl.Int64, "n_cols": pl.Int64, "page_no": pl.Int64,
     }
 
-    # ---- input read: lazy scan + project + date filter, single collect ----
-    def _read_obx_pdfs(storage_options: dict) -> pl.DataFrame:
-        # The half-open window [interval_start, interval_end) must span at least one day.
-        if interval_start >= interval_end:
-            raise AirflowFailException(
-                f"Empty dte_of_message window [{interval_start}, {interval_end}), "
-                f"this DAG's schedule interval must be daily or coarser."
-            )
+    # ---- input read: per-date, partition-pruned ----
+    def _partition_dates_in_window() -> list[str]:
+        # Distinct dte_of_message partitions overlapping [interval_start, interval_end), read from the
+        # Delta metadata (no data files scanned). dte_of_message is a yyyy-MM-dd string, so the bound
+        # comparison is chronological.
+        from deltalake import DeltaTable
+
+        table = DeltaTable(config.source_s3_path(input_source_id, scheme="s3"),
+                           storage_options=storage_options)
+        dates = {part["dte_of_message"] for part in table.partitions()}
+        return sorted(d for d in dates if interval_start <= d < interval_end)
+
+    def _read_obx_pdfs_for_date(d: str) -> pl.DataFrame:
         return (
             pl.scan_delta(config.source_s3_path(input_source_id, scheme="s3"),
                           storage_options=storage_options)
             .select(["hl7_id", "observation_value_base64", "dte_of_message"])
-            # dte_of_message and the interval bounds are all date-only yyyy-MM-dd strings, so this
-            # lexicographic is_between equals a chronological date compare (no pl.Date cast needed).
-            .filter(pl.col("dte_of_message").is_between(
-                pl.lit(interval_start), pl.lit(interval_end), closed="left"))
+            .filter(pl.col("dte_of_message") == d)  # equality on the partition column prunes to one date
             .collect()
         )
 
@@ -210,32 +226,46 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
         return (pl.DataFrame(report_rows, schema=report_schema),
                 pl.DataFrame(table_rows, schema=tables_schema))
 
-    # ---- orchestration ----
-    storage_options = build_storage_options(config.minio_conn_id)
-    df = _read_obx_pdfs(storage_options)
-    logging.info("Read %d OBX rows for [%s, %s)", df.height, interval_start, interval_end)
+    # ---- process one dte_of_message partition end-to-end ----
+    def _process_date(d: str, converter, tmp_dir: str) -> dict:
+        """Read, parse, and overwrite a single ``dte_of_message`` partition; return its counts.
 
-    with tempfile.TemporaryDirectory() as tmp_dir:
-        pdf_files, meta_by_stem, skipped_rows = _materialize_pdfs(df, tmp_dir)
-        logging.info("Materialized %d PDFs (%d skipped non-PDF/decode)",
-                     len(pdf_files), len(skipped_rows))
-        converter = build_converter(doc_batch_concurrency, enable_ocr)
+        ``tmp_dir`` is shared across dates: each date's PDFs are materialized, parsed, and written before
+        the next date runs, and ``run`` only ever receives this date's ``pdf_files`` — so per-date stems
+        may overwrite an earlier date's files harmlessly.
+        """
+        next_d = (date.fromisoformat(d) + timedelta(days=1)).isoformat()  # exclusive upper of the 1-day window
+        df_d = _read_obx_pdfs_for_date(d)
+        pdf_files, meta_by_stem, skipped_rows = _materialize_pdfs(df_d, tmp_dir)
         results = run(converter, pdf_files) if pdf_files else []
         report_df, tables_df = _build_outputs(results, meta_by_stem, skipped_rows)
 
-    tables_tree_uri = config.source_s3_path(tables_and_md_report_destination_id, scheme="s3")
-    write_report_delta(report_df, report_uri=config.source_s3_path(report_delta_destination_id, scheme="s3"),
-                       storage_options=storage_options,
-                       window_start=interval_start, window_end=interval_end)
-    write_tables(tables_df, tree_base_uri=tables_tree_uri, minio_conn_id=config.minio_conn_id)
-    reports_written = write_report_markdown_tree(
-        report_df, tree_base_uri=tables_tree_uri, minio_conn_id=config.minio_conn_id)
-    logging.info("Wrote %d report rows, %d table rows, %d report.md files",
-                 report_df.height, tables_df.height, reports_written)
+        # Overwrite this date only: clear the tree day-folder, then replace the report Delta partition.
+        delete_report_tree_for_date(tables_tree_uri, d, config.minio_conn_id)
+        write_report_delta(report_df, report_uri=report_uri, storage_options=storage_options,
+                           window_start=d, window_end=next_d)
+        write_tables(tables_df, tree_base_uri=tables_tree_uri, minio_conn_id=config.minio_conn_id)
+        reports_written = write_report_markdown_tree(
+            report_df, tree_base_uri=tables_tree_uri, minio_conn_id=config.minio_conn_id)
 
-    return {"rows_read": df.height, "pdfs_parsed": len(pdf_files),
-            "skipped": len(skipped_rows), "tables_extracted": tables_df.height,
-            "reports_written": reports_written}
+        logging.info("[%s] %d rows, %d PDFs, %d skipped, %d tables, %d report.md",
+                     d, df_d.height, len(pdf_files), len(skipped_rows), tables_df.height, reports_written)
+        return {"rows_read": df_d.height, "pdfs_parsed": len(pdf_files), "skipped": len(skipped_rows),
+                "tables_extracted": tables_df.height, "reports_written": reports_written}
+
+    # ---- orchestration: process each date partition, accumulate counts ----
+    converter = build_converter(doc_batch_concurrency, enable_ocr)
+    dates = _partition_dates_in_window()
+    logging.info("Processing %d date partition(s) in [%s, %s)", len(dates), interval_start, interval_end)
+
+    logging_statistics = {"rows_read": 0, "pdfs_parsed": 0, "skipped": 0,
+                          "tables_extracted": 0, "reports_written": 0}
+    with tempfile.TemporaryDirectory() as tmp_dir:  # one temp dir shared by every date in this run
+        for d in dates:
+            for key, count in _process_date(d, converter, tmp_dir).items():
+                logging_statistics[key] += count
+
+    return {**logging_statistics, "dates": len(dates)}
 
 
 @task_group(group_id="hl7_pdf_docling_parsing")

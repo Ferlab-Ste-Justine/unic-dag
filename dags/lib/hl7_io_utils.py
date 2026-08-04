@@ -86,6 +86,14 @@ def _tree_report_key(base_key: str, dte_of_message: str, hl7_id: str) -> str:
     return f"{_tree_dir(base_key, dte_of_message, hl7_id)}/report.md"
 
 
+def _tree_date_prefix(base_key: str, dte_of_message: str) -> str:
+    """The day folder holding all of a date's document leaves: ``<base_key>/<yyyy>/<mm>/<dd>`` (no hl7_id)."""
+    from datetime import date
+
+    parsed = date.fromisoformat(str(dte_of_message)[:10])  # dte_of_message is yyyy-MM-dd
+    return f"{base_key}/{parsed.year:04d}/{parsed.month:02d}/{parsed.day:02d}"
+
+
 # ---- tables: write (CSV tree) ----
 
 def write_tables(tables_df, *, tree_base_uri: str, minio_conn_id: str) -> None:
@@ -129,6 +137,23 @@ def write_report_markdown_tree(report_df, *, tree_base_uri: str, minio_conn_id: 
         s3.load_string(string_data=markdown, key=key, bucket_name=bucket, replace=True)
         written += 1
     return written
+
+
+# ---- tree: delete (per-date idempotency) ----
+
+def delete_report_tree_for_date(tree_base_uri: str, dte_of_message: str, minio_conn_id: str) -> int:
+    """Delete every object under a day's tree folder (``<base>/yyyy/mm/dd/``) so a subsequent per-date
+    write leaves no orphaned ``table_<i>.csv`` / ``report.md`` from an earlier run. Returns the key count.
+    """
+    from airflow.providers.amazon.aws.hooks.s3 import S3Hook
+
+    bucket, base_key = _split_uri(tree_base_uri)
+    prefix = f"{_tree_date_prefix(base_key, dte_of_message)}/"
+    s3 = S3Hook(aws_conn_id=minio_conn_id)
+    keys = s3.list_keys(bucket_name=bucket, prefix=prefix) or []
+    for start in range(0, len(keys), 1000):  # S3 DeleteObjects caps at 1000 keys per call
+        s3.delete_objects(bucket=bucket, keys=keys[start:start + 1000])
+    return len(keys)
 
 
 # ---- reports: write (Delta, window-scoped overwrite) ----

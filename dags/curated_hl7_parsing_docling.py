@@ -1,7 +1,6 @@
 """
-============================================================
                 curated_hl7_parsing_docling
-============================================================
+-------------------------------------------------------------------------
 
 Dedicated pipeline that parses the base64-encoded PDF documents stored in the
 ``observation_value_base64`` column of curated HL7 OBX Delta tables (e.g.
@@ -35,9 +34,9 @@ dag = DAG(
     params={
         "input_source_id": Param("curated_softpath_hl7_oru_r01_obx", type="string",
                                   description="datalake.sources id of the curated OBX Delta input table."),
-        "report_delta_destination_id": Param("curated_softpath_hl7_obx_parsed_reports", type="string",
+        "report_delta_destination_id": Param("curated_softpath_hl7_oru_r01_obx_parsing_reports_delta", type="string",
                                  description="datalake.sources id of the parsed-report Delta output."),
-        "tables_and_md_report_destination_id": Param("curated_softpath_hl7_obx_extracted_tables", type="string",
+        "tables_and_md_report_destination_id": Param("curated_softpath_hl7_oru_r01_obx_parsing_extracted", type="string",
                                         description="datalake.sources id of the extracted-tables "
                                                     "CSV-tree output."),
         "doc_batch_concurrency": Param(4, type="integer",
