@@ -55,6 +55,10 @@ INTERVAL_START_DATE = '{{ data_interval_start.isoformat() }}'
 INTERVAL_END_DATE = '{{ data_interval_end.isoformat() }}'
 LOGICAL_DATE = '{{ logical_date.isoformat() }}'
 
+# Interval bound as yyyy-MM-dd day strings
+INTERVAL_START_DAY = "{{ data_interval_start.in_timezone('America/Montreal').format('YYYY-MM-DD') }}"
+INTERVAL_END_DAY = "{{ data_interval_end.in_timezone('America/Montreal').format('YYYY-MM-DD') }}"
+
 # Version config
 VERSION = '{{ params.version }}'
 UNDERSCORE_VERSION = '{{ params.version | replace("-", "_") }}'

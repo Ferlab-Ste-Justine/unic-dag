@@ -19,6 +19,8 @@ Two ``@task.virtualenv`` consecutive tasks:
 from airflow.decorators import task, task_group
 from kubernetes.client import models as k8s
 
+from lib.config import INTERVAL_START_DAY, INTERVAL_END_DAY
+
 # Dependencies installed into the parse_and_write venv at task runtime.
 PARSE_REQUIREMENTS = [
     "docling==2.55.1",
@@ -50,15 +52,15 @@ PARSE_EXECUTOR_CONFIG = {
 
 
 @task.virtualenv(requirements=["pyhocon==0.3.61"], system_site_packages=True)
-def extract_config(input_dataset_id: str, text_dataset_id: str,
-                   tables_tree_dataset_id: str) -> dict:
+def extract_config(input_source_id: str, report_delta_destination_id: str,
+                   tables_and_md_report_destination_id: str) -> dict:
     """
     Load ``config/prod.conf``, resolve the input, output, and validate that the output paths
     are nominative.
 
-    :param input_dataset_id: datalake.sources id of the curated OBX Delta input table.
-    :param text_dataset_id: datalake.sources id of the parsed-report Delta output.
-    :param tables_tree_dataset_id: datalake.sources id of the extracted-tables CSV-tree output.
+    :param input_source_id: datalake.sources id of the curated OBX Delta input table.
+    :param report_delta_destination_id: datalake.sources id of the parsed-report Delta output.
+    :param tables_and_md_report_destination_id: datalake.sources id of the extracted-tables CSV-tree output.
     :return: ``DatalakeConfig.to_dict()``
     """
     from airflow.exceptions import AirflowFailException
@@ -67,10 +69,10 @@ def extract_config(input_dataset_id: str, text_dataset_id: str,
     from lib.datalake_config import DatalakeConfig
 
     config = DatalakeConfig(
-        sources_id_list={input_dataset_id, text_dataset_id, tables_tree_dataset_id})
+        sources_id_list={input_source_id, report_delta_destination_id, tables_and_md_report_destination_id})
 
     # The parsed HL7 outputs hold nominative data.
-    for dataset_id in (text_dataset_id, tables_tree_dataset_id):
+    for dataset_id in (report_delta_destination_id, tables_and_md_report_destination_id):
         bucket = config.bucket_for_source(dataset_id)
         if bucket != NOMINATIVE_BUCKET:
             raise AirflowFailException(
@@ -282,9 +284,9 @@ def hl7_pdf_docling_parsing(input_source_id: str, report_delta_destination_id: s
     :param enable_ocr: Run OCR for scanned PDFs (table-structure detection is always on).
     """
     config_dict = extract_config(
-        input_dataset_id=input_source_id,
-        text_dataset_id=report_delta_destination_id,
-        tables_tree_dataset_id=tables_and_md_report_destination_id,
+        input_source_id=input_source_id,
+        report_delta_destination_id=report_delta_destination_id,
+        tables_and_md_report_destination_id=tables_and_md_report_destination_id,
     )
 
     parse_and_write(
@@ -292,8 +294,8 @@ def hl7_pdf_docling_parsing(input_source_id: str, report_delta_destination_id: s
         input_source_id=input_source_id,
         report_delta_destination_id=report_delta_destination_id,
         tables_and_md_report_destination_id=tables_and_md_report_destination_id,
-        interval_start="{{ data_interval_start.in_timezone('America/Montreal').format('YYYY-MM-DD') }}",
-        interval_end="{{ data_interval_end.in_timezone('America/Montreal').format('YYYY-MM-DD') }}",
+        interval_start=INTERVAL_START_DAY,
+        interval_end=INTERVAL_END_DAY,
         doc_batch_concurrency=doc_batch_concurrency,
         enable_ocr=enable_ocr,
     )
