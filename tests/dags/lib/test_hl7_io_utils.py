@@ -41,7 +41,7 @@ def test_sanitize_id(raw, expected):
     (b"", "other"),                             # empty input
     (b"%PD", "other"),                          # shorter than the 5-byte prefix
 ])
-def test__detect_format(raw, expected):
+def test_detect_format(raw, expected):
     assert _detect_format(raw) == expected
 
 
@@ -65,26 +65,11 @@ def test_tree_date_prefix():
     assert _tree_date_prefix("hl7/tables", "2025-08-15T10:00:00") == "hl7/tables/2025/08/15"
 
 
-def test_delete_report_tree_for_date(monkeypatch):
-    import airflow.providers.amazon.aws.hooks.s3 as s3mod
-
-    captured = {}
+def test_delete_report_tree_for_date(fake_s3_hook):
     day_keys = ["hl7/tables/2025/08/15/RAD_1/table_0.csv",
                 "hl7/tables/2025/08/15/RAD_1/report.md",
                 "hl7/tables/2025/08/15/RAD_2/report.md"]
-
-    class FakeS3Hook:
-        def __init__(self, aws_conn_id=None):
-            captured["conn_id"] = aws_conn_id
-
-        def list_keys(self, bucket_name=None, prefix=None):
-            captured["list"] = (bucket_name, prefix)
-            return list(day_keys)
-
-        def delete_objects(self, bucket=None, keys=None):
-            captured.setdefault("deleted", []).append((bucket, list(keys)))
-
-    monkeypatch.setattr(s3mod, "S3Hook", FakeS3Hook)
+    captured = fake_s3_hook(day_keys)
 
     deleted = hl7_io_utils.delete_report_tree_for_date(
         "s3://red-prd/hl7/tables", "2025-08-15", "redminio")
@@ -106,18 +91,10 @@ def test_write_report_delta_raises_on_empty_frame():
             window_start="2025-08-15", window_end="2025-08-16")
 
 
-def test_write_report_delta_adds_predicate_when_table_exists(monkeypatch):
-    import deltalake
+def test_write_report_delta_adds_predicate_when_table_exists(fake_write_delta):
     import polars as pl
 
-    monkeypatch.setattr(deltalake.DeltaTable, "is_deltatable",
-                        staticmethod(lambda table_uri, storage_options=None: True))
-    captured = {}
-
-    def fake_write_delta(*_args, **kwargs):
-        captured["options"] = kwargs["delta_write_options"]
-
-    monkeypatch.setattr(pl.DataFrame, "write_delta", fake_write_delta)
+    captured = fake_write_delta(is_deltatable=True)
     df = pl.DataFrame({"dte_of_message": ["2025-08-15"], "report_markdown": ["x"]})
     hl7_io_utils.write_report_delta(
         df, report_uri="s3://red-prd/hl7/reports", storage_options={},
@@ -128,18 +105,10 @@ def test_write_report_delta_adds_predicate_when_table_exists(monkeypatch):
         "dte_of_message >= '2025-08-15' AND dte_of_message < '2025-08-16'"
 
 
-def test_write_report_delta_omits_predicate_when_table_absent(monkeypatch):
-    import deltalake
+def test_write_report_delta_omits_predicate_when_table_absent(fake_write_delta):
     import polars as pl
 
-    monkeypatch.setattr(deltalake.DeltaTable, "is_deltatable",
-                        staticmethod(lambda table_uri, storage_options=None: False))
-    captured = {}
-
-    def fake_write_delta(*_args, **kwargs):
-        captured["options"] = kwargs["delta_write_options"]
-
-    monkeypatch.setattr(pl.DataFrame, "write_delta", fake_write_delta)
+    captured = fake_write_delta(is_deltatable=False)
     df = pl.DataFrame({"dte_of_message": ["2025-08-15"], "report_markdown": ["x"]})
     hl7_io_utils.write_report_delta(
         df, report_uri="s3://red-prd/hl7/reports", storage_options={},
