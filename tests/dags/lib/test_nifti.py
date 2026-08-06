@@ -2,8 +2,10 @@
 """Unit tests for the pure helpers in lib.nifti.
 
 Covers Orthanc decompression, exam date parsing, source-to-output prefix mapping, the study folder
-walk including wildcards, and accession file parsing.
+walk including wildcards, accession file parsing, and the run report.
 """
+import csv
+import io
 import zlib
 from datetime import date
 from unittest.mock import MagicMock
@@ -16,11 +18,19 @@ from lib.nifti import (
     DICOM_MAGIC,
     DICOM_PREAMBLE_LEN,
     ORTHANC_HEADER_LEN,
+    ConversionStatus,
+    build_report_csv,
+    conversion_result,
+    dcm2niix_output,
     get_output_prefix,
+    is_report_only,
     list_study_folders,
     orthanc_decompress,
     parse_exam_date,
     read_accession_patterns,
+    report_key,
+    report_row,
+    sanitize_dcm2niix_output,
     study_pattern,
 )
 
@@ -127,25 +137,134 @@ def test_list_study_folders_walks_and_matches(pattern, expected):
     assert list_study_folders(s3=s3_stub(folders), bucket=BUCKET, pattern=pattern) == expected
 
 
-def accession_file_stub(csv: str):
-    """S3Hook stub returning `csv` as the body of the accession number file."""
+def accession_file_stub(csv_content: str):
+    """S3Hook stub returning `csv_content` as the body of the accession number file."""
     body = MagicMock()
-    body.read.return_value = csv.encode()
+    body.read.return_value = csv_content.encode()
     s3 = MagicMock()
     s3.get_key.return_value.get.return_value = {'Body': body}
     return s3
 
 
 def test_read_accession_patterns_builds_dated_prefixes():
-    csv = "accessionNumber,examDate\nRA202600012345,2026-01-01\nRA2026000*,2026-02-03\n"
-    patterns = read_accession_patterns(s3=accession_file_stub(csv), bucket=BUCKET, key="lists/cohort.csv",
+    csv_content = "accessionNumber,examDate\nRA202600012345,2026-01-01\nRA2026000*,2026-02-03\n"
+    patterns = read_accession_patterns(s3=accession_file_stub(csv_content), bucket=BUCKET,
+                                       key="lists/cohort.csv",
                                        accession_number_column="accessionNumber", exam_date_column="examDate")
     assert patterns == ["dicoms/2026/01/01/RA202600012345", "dicoms/2026/02/03/RA2026000*"]
 
 
 def test_read_accession_patterns_reports_missing_columns():
     """It should name the missing columns and what the file actually holds."""
-    csv = "accession,date\nRA202600012345,2026-01-01\n"
+    csv_content = "accession,date\nRA202600012345,2026-01-01\n"
     with pytest.raises(AirflowFailException, match="accessionNumber"):
-        read_accession_patterns(s3=accession_file_stub(csv), bucket=BUCKET, key="lists/cohort.csv",
+        read_accession_patterns(s3=accession_file_stub(csv_content), bucket=BUCKET,
+                                key="lists/cohort.csv",
                                 accession_number_column="accessionNumber", exam_date_column="examDate")
+
+
+# A verbatim excerpt of dcm2niix output, including the long UID filenames that get trimmed out of the
+# report.
+DCM2NIIX_OUTPUT = (
+    "Found 1772 DICOM file(s)\n"
+    "Skipping non-image DICOM: /tmp/dcm_RA1_x9/RA1/IRM cérébrale C-/AX T2 TSE/"
+    "1.3.46.670589.11.70851.5.24.5.1.5132.2018022808544539710-45f6b2d4-3587-4c9b-9168-dd7dbe755592.dcm\n"
+    "Convert 160 DICOM as /tmp/dcm_RA1_x9/anonymized/RA1_eeSAG_T1_3D_TFE_FILTRE_20180228085211_502 "
+    "(288x288x160x1)\n"
+    "Error: Converted 886 of 1772 files\n"
+)
+
+
+def test_sanitize_drops_the_uid_filename_but_keeps_the_series():
+    """It should leave the series path readable while removing the DICOM instance identifier."""
+    clean = sanitize_dcm2niix_output(DCM2NIIX_OUTPUT, work_dir="/tmp/dcm_RA1_x9")
+
+    assert "IRM cérébrale C-/AX T2 TSE" in clean          # which series was skipped is still visible
+    assert "1.3.46.670589" not in clean                   # SOP Instance UID gone
+    assert "45f6b2d4-3587-4c9b" not in clean              # and the Orthanc id with it
+    assert "/tmp/dcm_RA1_x9" not in clean                 # staging path stripped
+    assert "Error: Converted 886 of 1772 files" in clean   # the diagnosis survives
+
+
+def test_sanitize_leaves_output_without_identifiers_alone():
+    assert sanitize_dcm2niix_output("Found 12 DICOM file(s)") == "Found 12 DICOM file(s)"
+
+
+def test_dcm2niix_output_joins_both_streams():
+    """It should read stdout too, since dcm2niix writes its errors there rather than to stderr."""
+    proc = MagicMock(stdout="Error: Converted 886 of 1772 files\n", stderr="")
+    assert dcm2niix_output(proc) == "Error: Converted 886 of 1772 files"
+
+    proc = MagicMock(stdout="on stdout", stderr="on stderr")
+    assert dcm2niix_output(proc) == "on stdout\non stderr"
+
+
+def stage(tmp_path, *relative_paths):
+    """Create empty staged files at the given paths under tmp_path."""
+    for relative in relative_paths:
+        path = tmp_path / relative
+        path.parent.mkdir(parents=True, exist_ok=True)
+        path.write_bytes(b"")
+    return str(tmp_path)
+
+
+def test_is_report_only_detects_a_study_holding_just_a_report(tmp_path):
+    staged = stage(tmp_path, "IRM cérébrale C-/FUJI Basic Text SR for HL7 Radiological Report/a.dcm")
+    assert is_report_only(staged) is True
+
+
+@pytest.mark.parametrize("relative_paths", [
+    ("IRM cérébrale C-/AX T2 TSE/a.dcm",),                                    # images only
+    ("IRM cérébrale C-/Basic Text SR/a.dcm", "IRM cérébrale C-/AX T2/b.dcm"),  # images alongside
+])
+def test_is_report_only_false_when_image_series_present(tmp_path, relative_paths):
+    assert is_report_only(stage(tmp_path, *relative_paths)) is False
+
+
+def test_is_report_only_false_for_an_empty_directory(tmp_path):
+    assert is_report_only(str(tmp_path)) is False
+
+
+def test_report_key_names_the_attempt():
+    """It should keep one key per attempt, since a re-run reports a smaller set than the first."""
+    assert report_key("20260731T173459_try1") == \
+           "nifti_reports/20260731T173459_try1_conversion_report.csv"
+    assert report_key("20260731T173459_try1") != report_key("20260731T173459_try2")
+
+
+def test_report_row_splits_the_path():
+    result = conversion_result(ConversionStatus.PARTIAL, exit_code=8, files_converted=19, uploaded=True,
+                              output="Error: Converted 886 of 1772 files")
+    row = report_row("dicoms/2018/02/28/RA201801877901", result)
+
+    assert row["accession"] == "RA201801877901"
+    assert row["exam_date"] == "2018-02-28"
+    assert row["path"] == "dicoms/2018/02/28/RA201801877901"
+    assert row["status"] == ConversionStatus.PARTIAL
+    assert row["exit_code"] == 8
+    assert row["uploaded"] == "yes"
+    assert row["files_converted"] == 19
+
+
+def test_report_row_blanks_a_missing_exit_code():
+    row = report_row("dicoms/2018/01/19/RA201800539901", conversion_result(ConversionStatus.MISSING))
+    assert row["exit_code"] == ""
+    assert row["uploaded"] == "no"
+
+
+def test_build_report_csv_round_trips_multiline_output():
+    """It should quote the multi-line dcm2niix output so the CSV survives a reader."""
+    row = report_row("dicoms/2018/02/28/RA201801877901",
+                     conversion_result(ConversionStatus.PARTIAL, exit_code=8, uploaded=True,
+                                       output=sanitize_dcm2niix_output(DCM2NIIX_OUTPUT, "/tmp/dcm_RA1_x9")))
+    parsed = list(csv.DictReader(io.StringIO(build_report_csv([row]))))
+
+    assert len(parsed) == 1
+    assert parsed[0]["accession"] == "RA201801877901"
+    assert "Error: Converted 886 of 1772 files" in parsed[0]["output"]
+    assert "1.3.46.670589" not in parsed[0]["output"]
+
+
+def test_build_report_csv_writes_a_header_when_there_is_nothing_to_report():
+    assert build_report_csv([]).strip() == ",".join(
+        ["accession", "exam_date", "path", "status", "exit_code", "uploaded", "files_converted", "output"])

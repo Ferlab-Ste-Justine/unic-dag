@@ -82,6 +82,7 @@ VNA_CLINIQUE_YELLOW_BUCKET = "vna-clinique-yellow"
 DICOM_PREFIX = "dicoms"
 NIFTI_PREFIX = "nifti"
 NIFTI_SIDECARS_PREFIX = "nifti_sidecars"
+NIFTI_REPORTS_PREFIX = "nifti_reports"
 DCM2NIIX_VERSION = "1.0.20260416"
 
 # QA tests config

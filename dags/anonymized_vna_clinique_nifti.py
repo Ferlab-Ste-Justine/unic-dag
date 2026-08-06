@@ -57,11 +57,34 @@ rapporte 0 étude convertie signifie que le lot est terminé.
 * Paramètre `skip_existing` : Si `True`, les études dont les NIfTI existent déjà sont laissées
   intactes. Si `False`, ces sorties sont **supprimées** puis reconverties.
 
+### Rapport d'exécution
+Chaque tentative écrit un CSV dans
+`vna-clinique-yellow/nifti_reports/<horodatage>_try<n>_conversion_report.csv` listant uniquement les
+études problématiques, avec la sortie complète de `dcm2niix`. Le numéro de tentative fait partie du nom
+parce qu'une reprise ignore ce que la tentative précédente a déjà converti : son rapport couvre donc
+moins d'études, et l'écraser effacerait la trace de ce qui a été converti. Les statuts :
+
+* `ok` : convertie au complet.
+* `partial` : `dcm2niix` a écarté des séries (localisateurs, reformats, objets non-image) mais les
+  séries anatomiques ont été converties. **La sortie est quand même copiée** : un code de retour non
+  nul ne dit rien sur les séries qui ont bien été converties.
+* `report only` : l'étude ne contient qu'un rapport (SR), donc rien à convertir. Rien n'est copié.
+* `skipped` : la sortie existait déjà.
+* `missing` : aucun objet sous le préfixe source dans `vna-clinique-red`.
+* `failed` : échec réel. Seul ce statut fait échouer la task.
+
+Les noms de fichiers DICOM sont retirés de la sortie, qui reste autrement intégrale : ce sont des UID
+d'une centaine de caractères qui rendraient la colonne illisible. Le chemin de la série est conservé.
+
 ### Sidecars des études déjà converties
 Les études converties avant ce DAG n'ont pas de sidecars JSON. Avec `skip_existing` à `True` elles
 seront toujours ignorées; les reconvertir avec `skip_existing` à `False` est le seul moyen de leur
 générer des sidecars.
 """
+
+# Names the run report. The attempt number is part of it because a re-run skips whatever the previous
+# attempt converted, so its report covers fewer studies rather than more.
+RUN_STAMP = '{{ ts_nodash }}_try{{ ti.try_number }}'
 
 # Update default args
 args = DEFAULT_ARGS.copy()
@@ -102,5 +125,6 @@ with DAG(
     get_skip_existing_task = get_skip_existing()
 
     start("start_anonymized_vna_clinique_nifti") >> [resolve_studies_task, get_skip_existing_task] \
-    >> convert_studies(studies=resolve_studies_task, skip_existing=get_skip_existing_task) \
+    >> convert_studies(studies=resolve_studies_task, skip_existing=get_skip_existing_task,
+                       run_stamp=RUN_STAMP) \
     >> end("end_anonymized_vna_clinique_nifti")
