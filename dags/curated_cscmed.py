@@ -74,8 +74,7 @@ ANON_DATASETS = [
     {"dataset_id": "anonymized_cscmed_end*"       , "cluster_type": "small" , "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_esej*"      , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_fkp*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
-    # temp
-    {"dataset_id": "anonymized_cscmed_gas*"       , "cluster_type": "medium", "run_type": "initial", "pass_date": False, "dependencies": []},
+    {"dataset_id": "anonymized_cscmed_gas*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_ge*"        , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_hem*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_imm*"       , "cluster_type": "small" , "run_type": "default", "pass_date": False, "dependencies": []},
