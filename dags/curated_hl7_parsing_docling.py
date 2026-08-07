@@ -36,9 +36,10 @@ dag = DAG(
                                   description="datalake.sources id of the curated OBX Delta input table."),
         "report_delta_destination_id": Param("curated_softpath_hl7_oru_r01_obx_parsing_reports_delta", type="string",
                                  description="datalake.sources id of the parsed-report Delta output."),
-        "tables_and_md_report_destination_id": Param("curated_softpath_hl7_oru_r01_obx_parsing_extracted", type="string",
-                                        description="datalake.sources id of the extracted-tables "
-                                                    "CSV-tree output."),
+        "tables_destination_id": Param("curated_softpath_hl7_oru_r01_obx_parsing_tables", type="string",
+                                       description="datalake.sources id of the extracted-tables CSV-tree output."),
+        "report_md_destination_id": Param("curated_softpath_hl7_oru_r01_obx_parsing_report_md", type="string",
+                                          description="datalake.sources id of the per-document report.md tree output."),
         "doc_batch_concurrency": Param(4, type="integer",
                                        description="docling multi-document batch"),
         "enable_ocr": Param(True, type="boolean",
@@ -63,7 +64,8 @@ with dag:
     hl7_docling_pipeline = hl7_pdf_docling_parsing(
         input_source_id="{{ params.input_source_id }}",
         report_delta_destination_id="{{ params.report_delta_destination_id }}",
-        tables_and_md_report_destination_id="{{ params.tables_and_md_report_destination_id }}",
+        tables_destination_id="{{ params.tables_destination_id }}",
+        report_md_destination_id="{{ params.report_md_destination_id }}",
         doc_batch_concurrency="{{ params.doc_batch_concurrency }}",
         enable_ocr="{{ params.enable_ocr }}",
     )

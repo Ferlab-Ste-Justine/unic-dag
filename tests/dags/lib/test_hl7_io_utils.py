@@ -10,8 +10,8 @@ import json
 import pytest
 
 from lib import hl7_io_utils
-from lib.hl7_io_utils import (_detect_format, _sanitize_id, _split_uri, _tree_date_prefix, _tree_dir,
-                              _tree_key, _tree_report_key, build_storage_options)
+from lib.hl7_io_utils import (_detect_format, _fill_parsing_path, _parsing_date_prefix, _sanitize_id,
+                              _split_uri, build_storage_options)
 
 
 @pytest.mark.parametrize("uri, expected", [
@@ -45,38 +45,40 @@ def test_detect_format(raw, expected):
     assert _detect_format(raw) == expected
 
 
-def test_tree_dir_and_key_date_first_layout():
-    assert _tree_dir("hl7/tables", "2025-08-15", "RAD-00018_1") == \
-        "hl7/tables/2025/08/15/RAD_00018_1"
-    # dte with a time part is truncated to the date; hl7_id is path-sanitized
-    assert _tree_key("hl7/tables", "2025-08-15T10:00:00", "RAD/00018", 2) == \
-        "hl7/tables/2025/08/15/RAD_00018/table_2.csv"
+def test_fill_parsing_path_tables():
+    pattern = "hl7/extracted/{{date}}/{{hl7_id}}/table_{{table_no}}.csv"
+    assert _fill_parsing_path(pattern, "2025-08-15", "RAD-00018_1", 2) == \
+        "hl7/extracted/2025/08/15/RAD_00018_1/table_2.csv"
+    assert _fill_parsing_path(pattern, "2025-08-15T10:00:00", "RAD/00018", 0) == \
+        "hl7/extracted/2025/08/15/RAD_00018/table_0.csv"
 
 
-# report.md lives in the same document leaf folder as the tables
-def test_tree_report_key_layout():
-    assert _tree_report_key("hl7/tables", "2025-08-15", "RAD/00018") == \
-        "hl7/tables/2025/08/15/RAD_00018/report.md"
+# report_md has no {{table_no}} -> called with table_index=None, leaving report.md intact;
+def test_fill_parsing_path_report_md():
+    pattern = "hl7/extracted/{{date}}/{{hl7_id}}/report.md"
+    assert _fill_parsing_path(pattern, "2025-08-15", "RAD/00018") == \
+        "hl7/extracted/2025/08/15/RAD_00018/report.md"
 
 
-# _tree_date_prefix: the day folder (no hl7_id) that delete_report_tree_for_date clears
-def test_tree_date_prefix():
-    assert _tree_date_prefix("hl7/tables", "2025-08-15") == "hl7/tables/2025/08/15"
-    assert _tree_date_prefix("hl7/tables", "2025-08-15T10:00:00") == "hl7/tables/2025/08/15"
+def test_parsing_date_prefix():
+    pattern = "hl7/extracted/{{date}}/{{hl7_id}}/table_{{table_no}}.csv"
+    assert _parsing_date_prefix(pattern, "2025-08-15") == "hl7/extracted/2025/08/15"
+    assert _parsing_date_prefix(pattern, "2025-08-15T10:00:00") == "hl7/extracted/2025/08/15"
 
 
 def test_delete_report_tree_for_date(fake_s3_hook):
-    day_keys = ["hl7/tables/2025/08/15/RAD_1/table_0.csv",
-                "hl7/tables/2025/08/15/RAD_1/report.md",
-                "hl7/tables/2025/08/15/RAD_2/report.md"]
+    # tables and report.md are stored in the same tree, so a single delete of the day folder sweeps both
+    day_keys = ["hl7/extracted/2025/08/15/RAD_1/table_0.csv",
+                "hl7/extracted/2025/08/15/RAD_1/report.md",
+                "hl7/extracted/2025/08/15/RAD_2/table_0.csv"]
     captured = fake_s3_hook(day_keys)
 
     deleted = hl7_io_utils.delete_report_tree_for_date(
-        "s3://red-prd/hl7/tables", "2025-08-15", "redminio")
+        "s3://red-prd/hl7/extracted/{{date}}/{{hl7_id}}/table_{{table_no}}.csv", "2025-08-15", "redminio")
 
     assert deleted == 3
     assert captured["conn_id"] == "redminio"
-    assert captured["list"] == ("red-prd", "hl7/tables/2025/08/15/")  # the day prefix, no hl7_id
+    assert captured["list"] == ("red-prd", "hl7/extracted/2025/08/15/")  # the day prefix, no hl7_id
     assert captured["deleted"] == [("red-prd", day_keys)]             # one delete batch (<1000)
 
 

@@ -53,14 +53,15 @@ PARSE_EXECUTOR_CONFIG = {
 
 @task.virtualenv(requirements=["pyhocon==0.3.61"], system_site_packages=True)
 def extract_config(input_source_id: str, report_delta_destination_id: str,
-                   tables_and_md_report_destination_id: str) -> dict:
+                   tables_destination_id: str, report_md_destination_id: str) -> dict:
     """
-    Load ``config/prod.conf``, resolve the input, output, and validate that the output paths
+    Load ``config/prod.conf``, resolve the input + three outputs, and validate that the output paths
     are nominative.
 
     :param input_source_id: datalake.sources id of the curated OBX Delta input table.
     :param report_delta_destination_id: datalake.sources id of the parsed-report Delta output.
-    :param tables_and_md_report_destination_id: datalake.sources id of the extracted-tables CSV-tree output.
+    :param tables_destination_id: datalake.sources id of the extracted-tables CSV-tree output pattern.
+    :param report_md_destination_id: datalake.sources id of the per-document report.md tree output pattern.
     :return: ``DatalakeConfig.to_dict()``
     """
     from airflow.exceptions import AirflowFailException
@@ -68,11 +69,11 @@ def extract_config(input_source_id: str, report_delta_destination_id: str,
     from lib.config import NOMINATIVE_BUCKET
     from lib.datalake_config import DatalakeConfig
 
-    config = DatalakeConfig(
-        sources_id_list={input_source_id, report_delta_destination_id, tables_and_md_report_destination_id})
+    output_ids = (report_delta_destination_id, tables_destination_id, report_md_destination_id)
+    config = DatalakeConfig(sources_id_list={input_source_id, *output_ids})
 
     # The parsed HL7 outputs hold nominative data.
-    for dataset_id in (report_delta_destination_id, tables_and_md_report_destination_id):
+    for dataset_id in output_ids:
         bucket = config.bucket_for_source(dataset_id)
         if bucket != NOMINATIVE_BUCKET:
             raise AirflowFailException(
@@ -85,7 +86,8 @@ def extract_config(input_source_id: str, report_delta_destination_id: str,
 @task.virtualenv(requirements=PARSE_REQUIREMENTS, system_site_packages=True,
                  executor_config=PARSE_EXECUTOR_CONFIG)
 def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destination_id: str,
-                    tables_and_md_report_destination_id: str, interval_start: str, interval_end: str,
+                    tables_destination_id: str, report_md_destination_id: str,
+                    interval_start: str, interval_end: str,
                     doc_batch_concurrency: int, enable_ocr: bool) -> dict:
     """
     Read the curated OBX PDFs for the given date range, parse each with docling, and write three
@@ -98,7 +100,8 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
     :param config_dict: ``DatalakeConfig.to_dict()``
     :param input_source_id: datalake.sources id of the curated OBX Delta input table.
     :param report_delta_destination_id: datalake.sources id of the parsed-report Delta output.
-    :param tables_and_md_report_destination_id: datalake.sources id of the extracted-tables CSV-tree output.
+    :param tables_destination_id: datalake.sources id of the extracted-tables CSV-tree output pattern.
+    :param report_md_destination_id: datalake.sources id of the per-document report.md tree output pattern.
     :param interval_start: Inclusive start of the run's ``dte_of_message`` window (yyyy-MM-dd).
     :param interval_end: Exclusive end of the run's ``dte_of_message`` window (yyyy-MM-dd).
     :param doc_batch_concurrency: docling threaded multi-document concurrency.
@@ -130,8 +133,9 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
         )
 
     storage_options = build_storage_options(config.minio_conn_id)
-    report_uri = config.source_s3_path(report_delta_destination_id, scheme="s3")
-    tables_tree_uri = config.source_s3_path(tables_and_md_report_destination_id, scheme="s3")
+    report_delta_uri = config.source_s3_path(report_delta_destination_id, scheme="s3")
+    tables_pattern_uri = config.source_s3_path(tables_destination_id, scheme="s3")
+    report_md_pattern_uri = config.source_s3_path(report_md_destination_id, scheme="s3")
 
     # Explicit column types for the two output frames declared so that:
     # (1) an empty result still yields a correctly-columned frame;
@@ -242,13 +246,13 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
         results = run(converter, pdf_files) if pdf_files else []
         report_df, tables_df = _build_outputs(results, meta_by_stem, skipped_rows)
 
-        # Overwrite this date only: clear the tree day-folder, then replace the report Delta partition.
-        delete_report_tree_for_date(tables_tree_uri, d, config.minio_conn_id)
-        write_report_delta(report_df, report_uri=report_uri, storage_options=storage_options,
+        # Overwrite this date only: clear the shared day-folder, then replace the report Delta partition.
+        delete_report_tree_for_date(tables_pattern_uri, d, config.minio_conn_id)
+        write_report_delta(report_df, report_uri=report_delta_uri, storage_options=storage_options,
                            window_start=d, window_end=next_d)
-        write_tables(tables_df, tree_base_uri=tables_tree_uri, minio_conn_id=config.minio_conn_id)
+        write_tables(tables_df, tables_pattern_uri=tables_pattern_uri, minio_conn_id=config.minio_conn_id)
         reports_written = write_report_markdown_tree(
-            report_df, tree_base_uri=tables_tree_uri, minio_conn_id=config.minio_conn_id)
+            report_df, report_md_pattern_uri=report_md_pattern_uri, minio_conn_id=config.minio_conn_id)
 
         logging.info("[%s] %d rows, %d PDFs, %d skipped, %d tables, %d report.md",
                      d, df_d.height, len(pdf_files), len(skipped_rows), tables_df.height, reports_written)
@@ -271,7 +275,8 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
 
 
 @task_group(group_id="hl7_pdf_docling_parsing")
-def hl7_pdf_docling_parsing(input_source_id: str, report_delta_destination_id: str, tables_and_md_report_destination_id: str,
+def hl7_pdf_docling_parsing(input_source_id: str, report_delta_destination_id: str,
+                            tables_destination_id: str, report_md_destination_id: str,
                             doc_batch_concurrency: int = 4, enable_ocr: bool = False) -> None:
     """Resolve the curated OBX table, then parse its PDFs and write report + tables.
 
@@ -279,21 +284,24 @@ def hl7_pdf_docling_parsing(input_source_id: str, report_delta_destination_id: s
 
     :param input_source_id: datalake.sources id of the curated OBX Delta input table.
     :param report_delta_destination_id: datalake.sources id of the parsed-report Delta output dataset.
-    :param tables_and_md_report_destination_id: datalake.sources id of the extracted-tables CSV-tree output dataset.
-    :param doc_batch_concurrency: docling threaded multi-document concurrency (1 = sequential).
+    :param tables_destination_id: datalake.sources id of the extracted-tables CSV-tree output pattern.
+    :param report_md_destination_id: datalake.sources id of the per-document report.md tree output pattern.
+    :param doc_batch_concurrency: docling threaded multi-document concurrencdatasety (1 = sequential).
     :param enable_ocr: Run OCR for scanned PDFs (table-structure detection is always on).
     """
     config_dict = extract_config(
         input_source_id=input_source_id,
         report_delta_destination_id=report_delta_destination_id,
-        tables_and_md_report_destination_id=tables_and_md_report_destination_id,
+        tables_destination_id=tables_destination_id,
+        report_md_destination_id=report_md_destination_id,
     )
 
     parse_and_write(
         config_dict=config_dict,
         input_source_id=input_source_id,
         report_delta_destination_id=report_delta_destination_id,
-        tables_and_md_report_destination_id=tables_and_md_report_destination_id,
+        tables_destination_id=tables_destination_id,
+        report_md_destination_id=report_md_destination_id,
         interval_start=INTERVAL_START_DAY,
         interval_end=INTERVAL_END_DAY,
         doc_batch_concurrency=doc_batch_concurrency,
