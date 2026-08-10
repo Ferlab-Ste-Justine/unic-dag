@@ -7,7 +7,6 @@ import pendulum
 from airflow import DAG
 
 from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE, LOCAL_TZ
-# from core.slack import Slack
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import start, end
@@ -70,4 +69,7 @@ with dag:
         dag=dag
     )
 
-    start("start_curated_radimage_hl7_obx", notify=False) >> radimage_hl7_curated >> end("end_curated_radimage_hl7_obx", notify=False)
+    start_task = start("start_curated_radimage_hl7_obx", notify=False)
+    end_task = end("end_curated_radimage_hl7_obx", notify=False)
+
+    start_task >> radimage_hl7_curated >> end_task
