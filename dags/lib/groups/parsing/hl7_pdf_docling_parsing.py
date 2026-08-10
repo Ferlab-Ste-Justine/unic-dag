@@ -31,8 +31,8 @@ PARSE_REQUIREMENTS = [
 
 # parse_and_write runs docling in its own KubernetesExecutor pod.
 # executor_config / pod_override is resolved at DAG-parse time and is NOT Jinja-templatable
-PARSE_POD_MEMORY = "12Gi"
-PARSE_POD_CPU = "4"
+PARSE_POD_MEMORY = "24Gi"
+PARSE_POD_CPU = "8"
 PARSE_EXECUTOR_CONFIG = {
     "pod_override": k8s.V1Pod(
         spec=k8s.V1PodSpec(
