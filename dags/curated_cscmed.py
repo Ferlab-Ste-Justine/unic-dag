@@ -2,7 +2,6 @@
 Curated CSCMED DAG
 """
 from datetime import timedelta
-from typing import Dict, List, Optional
 
 import pendulum
 from airflow import DAG
@@ -31,16 +30,13 @@ Ce DAG traite les tables chargées lors de la seconde batch de chargement de Csc
 Les tables jobs et jobs_sections sont traitées par le DAG `curated_cscmed_jobs`.
 
 ### Tests QA
-Les tests QA anonymized (`pre_tests` / `post_tests`) sont découpés par dataset plutôt qu'exécutés
-en un seul job.Les tests sont dérivés de la liste des datasets ci-dessous.
+Les tests QA anonymized sont répartis en 5 shards par test.
 
 ### Horaire
 * __Date de début__ - 9 avril 2026
 * __Jour et heure__ - Jeudi, 20h heure de Montréal
 * __Intervalle__ - Chaque 4 semaines
 """
-
-ANON_PREFIX = "anonymized_cscmed_"
 
 CURATED_DATASETS = [
     {"dataset_id": "curated_cscmed_quickform"                           , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
@@ -78,10 +74,9 @@ ANON_DATASETS = [
     {"dataset_id": "anonymized_cscmed_end*"       , "cluster_type": "small" , "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_esej*"      , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_fkp*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
-    # temp
-    {"dataset_id": "anonymized_cscmed_gas*"       , "cluster_type": "medium", "run_type": "initial", "pass_date": False, "dependencies": []},
-    {"dataset_id": "anonymized_cscmed_ge*"        , "cluster_type": "large" , "run_type": "default", "pass_date": False, "dependencies": []},
-    {"dataset_id": "anonymized_cscmed_hem*"       , "cluster_type": "large" , "run_type": "default", "pass_date": False, "dependencies": []},
+    {"dataset_id": "anonymized_cscmed_gas*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
+    {"dataset_id": "anonymized_cscmed_ge*"        , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
+    {"dataset_id": "anonymized_cscmed_hem*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_imm*"       , "cluster_type": "small" , "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_inh*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_mep*"       , "cluster_type": "small" , "run_type": "default", "pass_date": False, "dependencies": []},
@@ -97,7 +92,7 @@ ANON_DATASETS = [
     {"dataset_id": "anonymized_cscmed_orl*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_ort*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_pal*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
-    {"dataset_id": "anonymized_cscmed_ped*"       , "cluster_type": "large" , "run_type": "default", "pass_date": False, "dependencies": []},
+    {"dataset_id": "anonymized_cscmed_ped*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_phy*"       , "cluster_type": "small" , "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_pla*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_psc*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
@@ -112,28 +107,29 @@ ANON_DATASETS = [
     {"dataset_id": "anonymized_cscmed_rphy*"      , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_rsat*"      , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_scol*"      , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
-    {"dataset_id": "anonymized_cscmed_sjm*"       , "cluster_type": "large" , "run_type": "default", "pass_date": False, "dependencies": []},
+    {"dataset_id": "anonymized_cscmed_sjm*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_soc*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_sto*"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_tel*"       , "cluster_type": "small" , "run_type": "default", "pass_date": False, "dependencies": []},
     {"dataset_id": "anonymized_cscmed_uro*"       , "cluster_type": "small" , "run_type": "default", "pass_date": False, "dependencies": []}
 ]
 
+_SIZE_RANK = {"large": 0, "medium": 1, "small": 2}
+ANON_DESTINATIONS = [dataset["dataset_id"] for dataset in
+                     sorted(ANON_DATASETS, key=lambda d: _SIZE_RANK[d["cluster_type"].strip()])]
 
-def dataset_suffix(dataset_id: str) -> str:
-    """
-    e.g. 'anonymized_cscmed_rped*' -> 'rped'.
-    """
-    return dataset_id[len(ANON_PREFIX):].rstrip("*").rstrip("_")
+# equal_counts is skipped for demographic: the anonymization intentionally filters out
+# test-patient records (ExcludedTestIds), so its row count will always differ from raw by design.
+EQUAL_COUNTS_DESTINATIONS = [d for d in ANON_DESTINATIONS if d != "anonymized_cscmed_demographic"]
+
+QA_SHARDS = 5
 
 
-def split_by_dataset(test_name: str, exclude: Optional[List[str]] = None) -> List[Dict]:
-    exclude = exclude or []
+def shard_tests(test_name: str, destinations: list, cluster_type: str) -> list:
     return [
-        {"name": test_name, "destinations": [dataset["dataset_id"]],
-         "cluster_type": dataset["cluster_type"], "suffix": dataset_suffix(dataset["dataset_id"])}
-        for dataset in ANON_DATASETS
-        if dataset["dataset_id"] not in exclude
+        {"name": test_name, "destinations": destinations[shard::QA_SHARDS],
+         "cluster_type": cluster_type, "suffix": str(shard + 1)}
+        for shard in range(QA_SHARDS)
     ]
 
 
@@ -156,14 +152,11 @@ dag_config = {
             "destination_subzone": "anonymized",
             "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
             "multiple_main_methods": False,
-            "pre_tests": split_by_dataset("greater_or_equal_partition_counts"),
+            "pre_tests": shard_tests("greater_or_equal_partition_counts", ANON_DESTINATIONS, "medium"),
             "datasets": ANON_DATASETS,
             "optimize": [],
-            # equal_counts is skipped for demographic: the anonymization intentionally filters out
-            # test-patient records (ExcludedTestIds), so its row count will always differ from raw
-            # by design.
-            "post_tests": split_by_dataset("lower_or_equal_null_counts")
-                          + split_by_dataset("equal_counts", exclude=["anonymized_cscmed_demographic"])
+            "post_tests": shard_tests("lower_or_equal_null_counts", ANON_DESTINATIONS, "medium")
+                          + shard_tests("equal_counts", EQUAL_COUNTS_DESTINATIONS, "medium")
         }
     ]
 }
