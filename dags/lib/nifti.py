@@ -6,6 +6,7 @@ Source DICOMs are Orthanc-compressed (`.cmp`) and laid out as
 `dicoms/<year>/<month>/<day>/<accession number>/`. Outputs keep that date structure under one prefix
 per representation: `nifti/` in the yellow bucket and `nifti_sidecars/` in the red one.
 """
+import csv
 import fnmatch
 import io
 import os
@@ -17,15 +18,16 @@ import tempfile
 import zlib
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime
-from typing import List
+from enum import Enum
+from typing import List, Optional
 
 import pandas as pd
 from airflow.exceptions import AirflowFailException
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from botocore.config import Config
 
-from lib.config import DICOM_PREFIX, MINIO_CONN_ID, NIFTI_PREFIX, NIFTI_SIDECARS_PREFIX, \
-    VNA_CLINIQUE_RED_BUCKET, VNA_CLINIQUE_YELLOW_BUCKET
+from lib.config import DICOM_PREFIX, MINIO_CONN_ID, NIFTI_PREFIX, NIFTI_REPORTS_PREFIX, \
+    NIFTI_SIDECARS_PREFIX, VNA_CLINIQUE_RED_BUCKET, VNA_CLINIQUE_YELLOW_BUCKET
 from lib.publish_utils import determine_minio_conn_id_from_config
 
 # Orthanc StorageCompression (.cmp) layout
@@ -48,6 +50,48 @@ DOWNLOAD_WORKERS = 8  # objects downloaded concurrently within a study, so 64 co
 # Generous ceiling on a single dcm2niix call. The DAG run itself is unbounded, so without this a study
 # dcm2niix cannot parse would stall its worker for the lifetime of the run.
 DCM2NIIX_TIMEOUT_SECONDS = 1800
+
+# The two dcm2niix exit codes worth handling. Any other non-zero code is a genuine failure.
+DCM2NIIX_RC_NO_IMAGES = 2  # nothing convertible in the study
+DCM2NIIX_RC_PARTIAL = 8  # some series converted, others were skipped
+
+
+class ConversionStatus(str, Enum):
+    """
+    How a study's conversion ended. Declaration order is the order the run summary reports them, best
+    outcome first.
+    """
+    OK = "ok"
+    PARTIAL = "partial"
+    REPORT_ONLY = "report only"
+    SKIPPED = "skipped"
+    MISSING = "missing"
+    FAILED = "failed"
+
+    def __str__(self) -> str:
+        # So a log line or a CSV cell gets the value rather than the member name. Without this, `%s`
+        # renders "ConversionStatus.PARTIAL", and the f-string result differs between Python 3.9 and
+        # the 3.12 that runs in prod.
+        return self.value
+
+
+# Statuses worth reporting. OK and SKIPPED are the uneventful ones.
+PROBLEM_STATUSES = [ConversionStatus.PARTIAL, ConversionStatus.REPORT_ONLY,
+                    ConversionStatus.MISSING, ConversionStatus.FAILED]
+
+# A series whose path carries one of these holds a report rather than images. Used to confirm that a
+# dcm2niix "no images" exit really is a report-only study.
+REPORT_MARKERS = ["sr for hl7", "basic text sr", "structured report", "radiological report",
+                  "rapport", "dose report"]
+
+# dcm2niix quotes the full path of every file it skips, and a DICOM filename is a ~130 character UID.
+# A study can skip a dozen of them, so the names are trimmed to keep the report's output column
+# readable. The series path around them is what says which series was skipped.
+DICOM_FILENAME_RE = re.compile(r"[^/\s]+\.dcm(?:\.cmp)?\b")
+UID_RE = re.compile(r"\b\d+(?:\.\d+){4,}\b")
+
+REPORT_COLUMNS = ["accession", "exam_date", "path", "status", "exit_code", "uploaded",
+                  "files_converted", "output"]
 
 
 def orthanc_decompress(raw: bytes) -> bytes:
@@ -223,6 +267,7 @@ def delete_prefix(s3: S3Hook, bucket: str, prefix: str) -> int:
     :param s3: Hook for the bucket being cleaned.
     :param bucket: Bucket name to clean.
     :param prefix: Folder prefix, without a trailing slash.
+    :return: Number of objects deleted.
     """
     client = s3.get_conn()
     keys = [{"Key": k} for k in list_prefix_keys(s3=s3, bucket=bucket, prefix=prefix) if not k.endswith("/")]
@@ -240,6 +285,7 @@ def download_study(s3: S3Hook, bucket: str, study: str, local_dir: str) -> int:
     :param bucket: Bucket name holding the study.
     :param study: Study prefix relative to the bucket root, without a trailing slash.
     :param local_dir: Directory to download into.
+    :return: Number of objects downloaded. Zero means the study prefix holds nothing.
     """
     client = s3.get_conn()
     prefix = study + "/"
@@ -269,6 +315,7 @@ def upload_dir(s3: S3Hook, local_dir: str, bucket: str, prefix: str) -> int:
     :param local_dir: Directory to upload.
     :param bucket: Destination bucket name.
     :param prefix: Destination folder prefix, without a trailing slash.
+    :return: Number of files uploaded.
     """
     uploaded = 0
     for root, _, files in os.walk(local_dir):
@@ -294,28 +341,87 @@ def dcm2niix_path() -> str:
     raise AirflowFailException("dcm2niix is not installed in the task virtualenv nor on PATH")
 
 
-def run_dcm2niix(options: List[str], in_dir: str, out_dir: str) -> None:
+def run_dcm2niix(options: List[str], in_dir: str, out_dir: str) -> subprocess.CompletedProcess:
     """
-    Run `dcm2niix` over a folder of DICOMs.
+    Run `dcm2niix` over a folder of DICOMs and hand the completed process back to the caller.
+
+    The exit code is deliberately not raised on: dcm2niix reports both a partial conversion and a study
+    with no convertible images through it, and each needs a different outcome.
 
     :param options: Options controlling what is written, e.g. `["-b", "y", "-ba", "y", "-z", "y"]`.
     :param in_dir: Directory holding the DICOMs. Its name becomes the output filename stem.
     :param out_dir: Directory to write to.
     """
-    proc = subprocess.run([dcm2niix_path(), *options, "-o", out_dir, in_dir],
+    return subprocess.run([dcm2niix_path(), *options, "-o", out_dir, in_dir],
                           capture_output=True, text=True, errors="replace", check=False,
                           timeout=DCM2NIIX_TIMEOUT_SECONDS)
-    if proc.returncode != 0:
-        raise AirflowFailException(f"dcm2niix rc={proc.returncode}: {proc.stderr[-300:]}")
 
 
-def convert_study(study: str, red_s3: S3Hook, yellow_s3: S3Hook, skip_existing: bool) -> str:
+def dcm2niix_output(proc: subprocess.CompletedProcess) -> str:
+    """
+    Both output streams of a dcm2niix run, joined.
+
+    dcm2niix writes nearly everything to stdout, including the errors, so reading stderr alone leaves
+    the reason for a failure empty.
+
+    :param proc: A completed `run_dcm2niix` call.
+    """
+    return "\n".join(stream.strip() for stream in (proc.stdout, proc.stderr) if stream and stream.strip())
+
+
+def sanitize_dcm2niix_output(text: str, work_dir: str = "") -> str:
+    """
+    Trim the noise out of dcm2niix output so it reads in a CSV cell.
+
+    Only the DICOM filenames and the staging path go: the series path around them is kept, since it is
+    what says which series was skipped.
+
+    :param text: Raw dcm2niix output.
+    :param work_dir: Staging directory to strip from the paths, so they read relative to the study.
+    """
+    if work_dir:
+        text = text.replace(work_dir.rstrip(os.sep) + os.sep, "")
+    return UID_RE.sub("<uid>", DICOM_FILENAME_RE.sub("<file>", text))
+
+
+def is_report_only(local_dir: str) -> bool:
+    """
+    Whether every staged file sits in a series whose path marks it as a report rather than images.
+
+    :param local_dir: Directory holding the staged DICOMs.
+    """
+    staged = [os.path.join(root, name) for root, _, names in os.walk(local_dir) for name in names]
+    if not staged:
+        return False
+    return all(any(marker in path.lower() for marker in REPORT_MARKERS) for path in staged)
+
+
+def conversion_result(status: ConversionStatus, exit_code: Optional[int] = None, files_converted: int = 0,
+                      uploaded: bool = False, output: str = "", detail: str = "") -> dict:
+    """
+    One study's outcome, as consumed by the progress log and the run report.
+
+    :param status: How the conversion ended.
+    :param exit_code: dcm2niix exit code, when it got as far as running.
+    :param files_converted: Number of files uploaded to the yellow bucket.
+    :param uploaded: Whether anything was written to the destination.
+    :param output: Sanitized dcm2niix output, kept for any non-zero exit code.
+    :param detail: Short phrase for the progress line.
+    """
+    return {"status": status, "exit_code": exit_code, "files_converted": files_converted,
+            "uploaded": uploaded, "output": output, "detail": detail}
+
+
+def convert_study(study: str, red_s3: S3Hook, yellow_s3: S3Hook, skip_existing: bool) -> dict:
     """
     Convert one study: stage the DICOMs, run both `dcm2niix` passes, upload, then drop the staged copy.
 
     Two passes are needed because the anonymized and nominative sidecars differ only by `-ba`. The
     anonymizing pass runs first and is the one that produces the NIfTI, so the images published to the
     yellow bucket never originate from a nominative run.
+
+    A partial conversion is still uploaded: dcm2niix exits non-zero when it skips localizers, derived
+    reformats, or non-image objects, which says nothing about the anatomical series it did convert.
 
     :param study: Source study prefix relative to the bucket root.
     :param red_s3: Hook for the red bucket, holding the DICOMs and the nominative sidecars.
@@ -328,7 +434,7 @@ def convert_study(study: str, red_s3: S3Hook, yellow_s3: S3Hook, skip_existing: 
     sidecar_prefix = get_output_prefix(study=study, parent_prefix=NIFTI_SIDECARS_PREFIX)
 
     if skip_existing and prefix_has_objects(s3=yellow_s3, bucket=VNA_CLINIQUE_YELLOW_BUCKET, prefix=nifti_prefix):
-        return "skipped (output exists)"
+        return conversion_result(ConversionStatus.SKIPPED, detail="output exists")
 
     with tempfile.TemporaryDirectory(prefix=f"dcm_{accession_number}_") as work:
         # dcm2niix builds its output filenames from the input folder name, so naming it after the
@@ -340,15 +446,31 @@ def convert_study(study: str, red_s3: S3Hook, yellow_s3: S3Hook, skip_existing: 
             os.makedirs(directory, exist_ok=True)
 
         if download_study(s3=red_s3, bucket=VNA_CLINIQUE_RED_BUCKET, study=study, local_dir=in_dir) == 0:
-            return "WARNING: no input objects"
+            return conversion_result(ConversionStatus.MISSING, detail="no input objects")
 
         # NIfTI + anonymized sidecar
-        run_dcm2niix(["-b", "y", "-ba", "y", "-z", "y"], in_dir=in_dir, out_dir=anonymized_dir)
-        # nominative sidecar only
+        anonymized = run_dcm2niix(["-b", "y", "-ba", "y", "-z", "y"], in_dir=in_dir, out_dir=anonymized_dir)
+        exit_code = anonymized.returncode
+        output = sanitize_dcm2niix_output(dcm2niix_output(anonymized), work)
+
+        if exit_code == DCM2NIIX_RC_NO_IMAGES:
+            # Confirmed against the staged files rather than trusted: a study holding image series that
+            # dcm2niix refused is a different problem from one holding only a report.
+            if not is_report_only(in_dir):
+                raise AirflowFailException(
+                    f"dcm2niix rc={exit_code} but the study holds image series: {output[-300:]}")
+            return conversion_result(ConversionStatus.REPORT_ONLY, exit_code=exit_code, output=output,
+                                     detail="no image series to convert")
+
+        if exit_code not in (0, DCM2NIIX_RC_PARTIAL):
+            raise AirflowFailException(f"dcm2niix rc={exit_code}: {output[-300:]}")
+
+        # The nominative pass sees the same DICOMs, so it exits the same way. Its code is not checked
+        # again: failing here would discard the output the first pass already earned.
         run_dcm2niix(["-b", "o", "-ba", "n"], in_dir=in_dir, out_dir=nominative_dir)
 
         if not os.listdir(anonymized_dir):
-            return "WARNING: no NIfTI produced"
+            raise AirflowFailException(f"dcm2niix rc={exit_code} produced no output: {output[-300:]}")
 
         if not skip_existing:
             delete_prefix(s3=yellow_s3, bucket=VNA_CLINIQUE_YELLOW_BUCKET, prefix=nifti_prefix)
@@ -359,4 +481,50 @@ def convert_study(study: str, red_s3: S3Hook, yellow_s3: S3Hook, skip_existing: 
         sidecar_count = upload_dir(s3=red_s3, local_dir=nominative_dir,
                                    bucket=VNA_CLINIQUE_RED_BUCKET, prefix=sidecar_prefix)
 
-    return f"ok ({nifti_count} files, {sidecar_count} nominative sidecars)"
+    partial = exit_code == DCM2NIIX_RC_PARTIAL
+    return conversion_result(ConversionStatus.PARTIAL if partial else ConversionStatus.OK,
+                             exit_code=exit_code, files_converted=nifti_count, uploaded=True,
+                             output=output if partial else "",
+                             detail=f"{nifti_count} files, {sidecar_count} nominative sidecars")
+
+
+def report_key(run_stamp: str) -> str:
+    """
+    Key of a run's report in the yellow bucket.
+
+    :param run_stamp: Identifier of the attempt. It has to distinguish attempts, not just runs: a
+        re-run skips whatever the previous attempt already converted, so its report is a smaller set
+        rather than a superset, and overwriting would erase the record of what was converted.
+    """
+    return f"{NIFTI_REPORTS_PREFIX}/{run_stamp}_conversion_report.csv"
+
+
+def report_row(study: str, result: dict) -> dict:
+    """
+    One study's report line.
+
+    :param study: Source study prefix relative to the bucket root.
+    :param result: Its `conversion_result`.
+    """
+    parts = study.rstrip("/").split("/")
+    return {"accession": parts[-1],
+            "exam_date": "-".join(parts[1:4]) if len(parts) >= 5 else "",
+            "path": study,
+            "status": result["status"],
+            "exit_code": "" if result["exit_code"] is None else result["exit_code"],
+            "uploaded": "yes" if result["uploaded"] else "no",
+            "files_converted": result["files_converted"],
+            "output": result["output"]}
+
+
+def build_report_csv(rows: List[dict]) -> str:
+    """
+    Render report rows as CSV. dcm2niix output is multi-line, which the csv module quotes for us.
+
+    :param rows: Rows from `report_row`.
+    """
+    buffer = io.StringIO()
+    writer = csv.DictWriter(buffer, fieldnames=REPORT_COLUMNS, extrasaction="ignore")
+    writer.writeheader()
+    writer.writerows(rows)
+    return buffer.getvalue()

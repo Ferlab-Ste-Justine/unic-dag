@@ -101,12 +101,13 @@ def get_skip_existing(params=None) -> bool:
 
 @task.virtualenv(task_id="convert_studies", requirements=CONVERT_REQUIREMENTS,
                  system_site_packages=True, executor_config=CONVERT_EXECUTOR_CONFIG)
-def convert_studies(studies: List[str], skip_existing: bool) -> None:
+def convert_studies(studies: List[str], skip_existing: bool, run_stamp: str) -> None:
     """
-    Convert every resolved study, a few at a time.
+    Convert every resolved study, a few at a time, then write the run's report.
 
     :param studies: Source study prefixes, as resolved by `resolve_studies`.
     :param skip_existing: True to leave studies whose NIfTI output already exists untouched.
+    :param run_stamp: Identifier of the run, used to name the report.
     """
     import logging
     from concurrent.futures import ThreadPoolExecutor, as_completed
@@ -115,7 +116,8 @@ def convert_studies(studies: List[str], skip_existing: bool) -> None:
     from airflow.exceptions import AirflowFailException
 
     from lib.config import VNA_CLINIQUE_RED_BUCKET, VNA_CLINIQUE_YELLOW_BUCKET
-    from lib.nifti import STUDY_WORKERS, convert_study, vna_s3_hook
+    from lib.nifti import PROBLEM_STATUSES, STUDY_WORKERS, ConversionStatus, \
+        build_report_csv, conversion_result, convert_study, report_key, report_row, vna_s3_hook
 
     red_s3 = vna_s3_hook(VNA_CLINIQUE_RED_BUCKET)
     yellow_s3 = vna_s3_hook(VNA_CLINIQUE_YELLOW_BUCKET)
@@ -125,7 +127,7 @@ def convert_studies(studies: List[str], skip_existing: bool) -> None:
     red_s3.get_conn()
     yellow_s3.get_conn()
 
-    def _convert(study: str) -> Tuple[str, str]:
+    def _convert(study: str) -> Tuple[str, dict]:
         try:
             return study, convert_study(study=study, red_s3=red_s3, yellow_s3=yellow_s3,
                                         skip_existing=skip_existing)
@@ -134,7 +136,8 @@ def convert_studies(studies: List[str], skip_existing: bool) -> None:
         # the filesystem can raise would fail the batch on whatever the tuple missed.
         except Exception as e:  # pylint: disable=broad-exception-caught
             logging.exception('%s: conversion failed', study)  # keep the traceback for unexpected errors
-            return study, f"FAILED: {type(e).__name__}: {e}"
+            return study, conversion_result(ConversionStatus.FAILED, output=f"{type(e).__name__}: {e}",
+                                            detail=f"{type(e).__name__}: {e}")
 
     # Results are consumed as they land rather than all at the end, so a long backfill reports progress
     # instead of staying silent until the last study.
@@ -142,16 +145,28 @@ def convert_studies(studies: List[str], skip_existing: bool) -> None:
     with ThreadPoolExecutor(max_workers=STUDY_WORKERS) as executor:
         futures = [executor.submit(_convert, study) for study in studies]
         for future in as_completed(futures):
-            study, status = future.result()
-            results.append((study, status))
-            log = logging.warning if status.startswith(("WARNING", "FAILED")) else logging.info
-            log('[%s/%s] %s: %s', len(results), len(studies), study, status)
+            study, result = future.result()
+            results.append((study, result))
+            log = logging.warning if result["status"] in PROBLEM_STATUSES else logging.info
+            log('[%s/%s] %s: %s (%s)', len(results), len(studies), study,
+                result["status"], result["detail"])
 
-    def _tally(prefix: str) -> int:
-        return sum(1 for _, status in results if status.startswith(prefix))
+    # Every status is reported in a fixed order, zeros included, so the line reads the same from one
+    # run to the next.
+    statuses = [result["status"] for _, result in results]
+    logging.info('out of %s study folder(s): %s', len(statuses),
+                 ', '.join(f'{statuses.count(status)} {status}' for status in ConversionStatus))
 
-    failed = [study for study, status in results if status.startswith("FAILED")]
-    logging.info('%s converted, %s skipped, %s with warnings, %s failed, out of %s study folder(s)',
-                 _tally("ok"), _tally("skipped"), _tally("WARNING"), len(failed), len(results))
+    report_rows = [report_row(study, result) for study, result in results
+                   if result["status"] in PROBLEM_STATUSES]
+    key = report_key(run_stamp)
+    yellow_s3.load_string(string_data=build_report_csv(report_rows), key=key,
+                          bucket_name=VNA_CLINIQUE_YELLOW_BUCKET, replace=True)
+    logging.info('reported %s problematic study folder(s) in %s/%s',
+                 len(report_rows), VNA_CLINIQUE_YELLOW_BUCKET, key)
+
+    # Only a hard failure fails the task. A partial conversion was uploaded, and a report-only or
+    # absent study is a source-data fact that no retry can change; both are in the report instead.
+    failed = [study for study, result in results if result["status"] == ConversionStatus.FAILED]
     if failed:
         raise AirflowFailException(f"{len(failed)} of {len(results)} studies failed: {failed[:20]}")
