@@ -1,18 +1,23 @@
 # pylint: disable=invalid-name
-"""Unit tests for the pure helpers in lib.nifti.
+"""Unit tests for lib.nifti.
 
 Covers Orthanc decompression, exam date parsing, source-to-output prefix mapping, the study folder
-walk including wildcards, accession file parsing, and the run report.
+walk including wildcards, accession file parsing, the per-study exit-code contract, and the run
+report.
 """
 import csv
 import io
+import os
+import subprocess
 import zlib
 from datetime import date
+from pathlib import Path
 from unittest.mock import MagicMock
 
 import pytest
 from airflow.exceptions import AirflowFailException
 
+from lib import nifti
 from lib.config import NIFTI_PREFIX, NIFTI_SIDECARS_PREFIX
 from lib.nifti import (
     DICOM_MAGIC,
@@ -21,6 +26,7 @@ from lib.nifti import (
     ConversionStatus,
     build_report_csv,
     conversion_result,
+    convert_study,
     dcm2niix_output,
     get_output_prefix,
     is_report_only,
@@ -223,6 +229,145 @@ def test_is_report_only_false_when_image_series_present(tmp_path, relative_paths
 
 def test_is_report_only_false_for_an_empty_directory(tmp_path):
     assert is_report_only(str(tmp_path)) is False
+
+
+STUDY = "dicoms/2018/02/28/RA201801877901"
+NIFTI_PREFIX_OF_STUDY = "nifti/2018/02/28/RA201801877901/"
+IMAGE_SERIES = ("IRM cérébrale C-/AX T2 TSE/a.dcm",)
+REPORT_SERIES = ("IRM cérébrale C-/FUJI Basic Text SR for HL7 Radiological Report/a.dcm",)
+
+
+def hook_stub(output_exists: bool = False):
+    """
+    S3Hook stub for convert_study: `output_exists` drives the skip_existing check, and the empty
+    paginator makes the pre-conversion cleanup a no-op.
+    """
+    s3 = MagicMock()
+    s3.get_conn.return_value.list_objects_v2.return_value = {"KeyCount": 1 if output_exists else 0}
+    s3.get_conn.return_value.get_paginator.return_value.paginate.return_value = []
+    return s3
+
+
+def patch_conversion(monkeypatch, returncode: int, staged=IMAGE_SERIES, output: str = "",
+                     writes_output: bool = True):
+    """
+    Replace the two calls convert_study makes to the outside world.
+
+    :param returncode: Exit code both dcm2niix passes report.
+    :param staged: Paths the download lays down under the study's input directory. Empty means the
+        study prefix holds nothing.
+    :param output: What dcm2niix writes to stdout.
+    :param writes_output: False to have dcm2niix exit without producing a file.
+    """
+    def _download(local_dir, **_):
+        stage(Path(local_dir), *staged)
+        return len(staged)
+
+    def _run(options, in_dir, out_dir):
+        if writes_output:
+            accession = os.path.basename(in_dir.rstrip(os.sep))
+            # -z is the compressing NIfTI pass; the other one writes the nominative sidecar.
+            suffix = "nii.gz" if "-z" in options else "json"
+            Path(out_dir, f"{accession}_AX_T2.{suffix}").write_bytes(b"")
+        return subprocess.CompletedProcess(args=["dcm2niix"], returncode=returncode,
+                                           stdout=output, stderr="")
+
+    monkeypatch.setattr(nifti, "download_study", _download)
+    monkeypatch.setattr(nifti, "run_dcm2niix", _run)
+
+
+def test_convert_study_uploads_a_clean_conversion(monkeypatch):
+    patch_conversion(monkeypatch, returncode=0)
+    yellow = hook_stub()
+
+    result = convert_study(STUDY, red_s3=hook_stub(), yellow_s3=yellow, skip_existing=False)
+
+    assert result["status"] == ConversionStatus.OK
+    assert result["exit_code"] == 0
+    assert result["uploaded"] is True
+    assert result["files_converted"] == 1
+    assert result["output"] == ""  # a clean run has nothing to report
+    assert yellow.load_file.call_args.kwargs["key"].startswith(NIFTI_PREFIX_OF_STUDY)
+
+
+def test_convert_study_uploads_a_partial_conversion(monkeypatch):
+    """rc=8 means series were skipped, which says nothing about the ones that converted."""
+    patch_conversion(monkeypatch, returncode=8, output="Error: Converted 886 of 1772 files")
+    yellow = hook_stub()
+
+    result = convert_study(STUDY, red_s3=hook_stub(), yellow_s3=yellow, skip_existing=False)
+
+    assert result["status"] == ConversionStatus.PARTIAL
+    assert result["exit_code"] == 8
+    assert result["uploaded"] is True
+    assert result["files_converted"] == 1
+    assert "Error: Converted 886 of 1772 files" in result["output"]
+    assert yellow.load_file.call_args.kwargs["key"].startswith(NIFTI_PREFIX_OF_STUDY)
+
+
+def test_convert_study_reports_a_study_holding_only_a_report(monkeypatch):
+    """rc=2 over report-only content is the correct outcome, not a failure."""
+    patch_conversion(monkeypatch, returncode=2, staged=REPORT_SERIES,
+                     output="Error: no valid DICOM images were found")
+    yellow = hook_stub()
+
+    result = convert_study(STUDY, red_s3=hook_stub(), yellow_s3=yellow, skip_existing=False)
+
+    assert result["status"] == ConversionStatus.REPORT_ONLY
+    assert result["exit_code"] == 2
+    assert result["uploaded"] is False
+    assert "no valid DICOM images" in result["output"]
+    yellow.load_file.assert_not_called()
+
+
+def test_convert_study_fails_when_rc_2_holds_image_series(monkeypatch):
+    """rc=2 is confirmed against the staged files: a refused image series is a different problem."""
+    patch_conversion(monkeypatch, returncode=2, staged=IMAGE_SERIES,
+                     output="Error: no valid DICOM images were found")
+
+    with pytest.raises(AirflowFailException, match="holds image series"):
+        convert_study(STUDY, red_s3=hook_stub(), yellow_s3=hook_stub(), skip_existing=False)
+
+
+@pytest.mark.parametrize("returncode", [1, 3, 5])
+def test_convert_study_fails_on_any_other_exit_code(monkeypatch, returncode):
+    patch_conversion(monkeypatch, returncode=returncode, output="Error: unable to load")
+    yellow = hook_stub()
+
+    with pytest.raises(AirflowFailException, match=f"rc={returncode}"):
+        convert_study(STUDY, red_s3=hook_stub(), yellow_s3=yellow, skip_existing=False)
+    yellow.load_file.assert_not_called()
+
+
+def test_convert_study_fails_when_a_tolerated_exit_code_produced_nothing(monkeypatch):
+    """rc=8 with an empty output directory has nothing to keep, so it stays a failure."""
+    patch_conversion(monkeypatch, returncode=8, writes_output=False)
+
+    with pytest.raises(AirflowFailException, match="produced no output"):
+        convert_study(STUDY, red_s3=hook_stub(), yellow_s3=hook_stub(), skip_existing=False)
+
+
+def test_convert_study_reports_a_study_with_no_source_objects(monkeypatch):
+    patch_conversion(monkeypatch, returncode=0, staged=())
+    yellow = hook_stub()
+
+    result = convert_study(STUDY, red_s3=hook_stub(), yellow_s3=yellow, skip_existing=False)
+
+    assert result["status"] == ConversionStatus.MISSING
+    assert result["exit_code"] is None
+    assert result["uploaded"] is False
+    yellow.load_file.assert_not_called()
+
+
+def test_convert_study_leaves_existing_output_alone(monkeypatch):
+    patch_conversion(monkeypatch, returncode=0)
+    yellow = hook_stub(output_exists=True)
+
+    result = convert_study(STUDY, red_s3=hook_stub(), yellow_s3=yellow, skip_existing=True)
+
+    assert result["status"] == ConversionStatus.SKIPPED
+    assert result["uploaded"] is False
+    yellow.load_file.assert_not_called()
 
 
 def test_report_key_names_the_attempt():
