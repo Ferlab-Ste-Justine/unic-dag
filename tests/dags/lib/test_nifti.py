@@ -219,9 +219,24 @@ def test_is_report_only_detects_a_study_holding_just_a_report(tmp_path):
     assert is_report_only(staged) is True
 
 
+def test_is_report_only_accepts_a_report_beside_a_presentation_state(tmp_path):
+    """
+    A presentation state carries annotations, never pixel data, so a study pairing one with a report
+    has nothing to convert. The two sit under separately encoded spellings of the same series name.
+    """
+    staged = stage(tmp_path,
+                   "STANDARD IRM cérébrale C-/FUJI Basic Text SR for HL7 Radiological Report/a.dcm",
+                   "STANDARD IRM crale C-/FUJI Presentation State - ANNOTATIONS/b.dcm")
+    assert is_report_only(staged) is True
+
+
 @pytest.mark.parametrize("relative_paths", [
     ("IRM cérébrale C-/AX T2 TSE/a.dcm",),                                    # images only
     ("IRM cérébrale C-/Basic Text SR/a.dcm", "IRM cérébrale C-/AX T2/b.dcm"),  # images alongside
+    # a report and a presentation state alongside real series: still a study worth converting
+    ("STANDARD IRM cérébrale C-/FUJI Basic Text SR for HL7 Radiological Report/a.dcm",
+     "STANDARD IRM crale C-/FUJI Presentation State - ANNOTATIONS/b.dcm",
+     "STANDARD IRM cérébrale C-/SAG 3D FLAIR/c.dcm"),
 ])
 def test_is_report_only_false_when_image_series_present(tmp_path, relative_paths):
     assert is_report_only(stage(tmp_path, *relative_paths)) is False
@@ -235,6 +250,10 @@ STUDY = "dicoms/2018/02/28/RA201801877901"
 NIFTI_PREFIX_OF_STUDY = "nifti/2018/02/28/RA201801877901/"
 IMAGE_SERIES = ("IRM cérébrale C-/AX T2 TSE/a.dcm",)
 REPORT_SERIES = ("IRM cérébrale C-/FUJI Basic Text SR for HL7 Radiological Report/a.dcm",)
+REPORT_AND_PRESENTATION_STATE = (
+    "STANDARD IRM cérébrale C-/FUJI Basic Text SR for HL7 Radiological Report/a.dcm",
+    "STANDARD IRM crale C-/FUJI Presentation State - ANNOTATIONS/b.dcm",
+)
 
 
 def hook_stub(output_exists: bool = False):
@@ -317,6 +336,20 @@ def test_convert_study_reports_a_study_holding_only_a_report(monkeypatch):
     assert result["exit_code"] == 2
     assert result["uploaded"] is False
     assert "no valid DICOM images" in result["output"]
+    yellow.load_file.assert_not_called()
+
+
+def test_convert_study_reports_a_report_paired_with_a_presentation_state(monkeypatch):
+    """The shape the VNA emits for a study with no acquisition: a report and its annotations."""
+    patch_conversion(monkeypatch, returncode=2, staged=REPORT_AND_PRESENTATION_STATE,
+                     output="Found 2 DICOM file(s)\nNo valid DICOM images were found")
+    yellow = hook_stub()
+
+    result = convert_study(STUDY, red_s3=hook_stub(), yellow_s3=yellow, skip_existing=False)
+
+    assert result["status"] == ConversionStatus.REPORT_ONLY
+    assert result["exit_code"] == 2
+    assert result["uploaded"] is False
     yellow.load_file.assert_not_called()
 
 

@@ -80,9 +80,10 @@ PROBLEM_STATUSES = [ConversionStatus.PARTIAL, ConversionStatus.REPORT_ONLY,
                     ConversionStatus.MISSING, ConversionStatus.FAILED]
 
 # A series whose path carries one of these holds a report rather than images. Used to confirm that a
-# dcm2niix "no images" exit really is a report-only study.
+# dcm2niix "no images" exit really is a report-only study. A presentation state carries annotations
+# and display parameters, never pixel data.
 REPORT_MARKERS = ["sr for hl7", "basic text sr", "structured report", "radiological report",
-                  "rapport", "dose report"]
+                  "rapport", "dose report", "presentation state"]
 
 # dcm2niix quotes the full path of every file it skips, and a DICOM filename is a ~130 character UID.
 # A study can skip a dozen of them, so the names are trimmed to keep the report's output column
@@ -386,7 +387,8 @@ def sanitize_dcm2niix_output(text: str, work_dir: str = "") -> str:
 
 def is_report_only(local_dir: str) -> bool:
     """
-    Whether every staged file sits in a series whose path marks it as a report rather than images.
+    Whether every staged file sits in a series whose path marks it as a report or other non-image
+    object rather than images.
 
     :param local_dir: Directory holding the staged DICOMs.
     """
