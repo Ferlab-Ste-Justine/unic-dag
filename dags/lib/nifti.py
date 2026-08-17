@@ -19,15 +19,16 @@ import zlib
 from concurrent.futures import ThreadPoolExecutor
 from datetime import date, datetime
 from enum import Enum
-from typing import List, Optional
+from typing import Dict, List, Optional
 
 import pandas as pd
 from airflow.exceptions import AirflowFailException
+from airflow.models import Param
 from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from botocore.config import Config
 
-from lib.config import DICOM_PREFIX, MINIO_CONN_ID, NIFTI_PREFIX, NIFTI_REPORTS_PREFIX, \
-    NIFTI_SIDECARS_PREFIX, VNA_CLINIQUE_RED_BUCKET, VNA_CLINIQUE_YELLOW_BUCKET
+from lib.config import MINIO_CONN_ID, NIFTI_PREFIX, NIFTI_REPORTS_PREFIX, NIFTI_SIDECARS_PREFIX, \
+    VNA_CLINIQUE_RED_BUCKET, VNA_CLINIQUE_YELLOW_BUCKET
 from lib.publish_utils import determine_minio_conn_id_from_config
 
 # Orthanc StorageCompression (.cmp) layout
@@ -124,14 +125,39 @@ def parse_exam_date(value: str) -> date:
         raise AirflowFailException(f"exam date '{value}' is not ISO 8601 (e.g. 2026-01-15)") from e
 
 
-def study_pattern(exam_date: date, accession_number: str) -> str:
+def study_pattern(exam_date: date, accession_number: str, parent_prefix: str) -> str:
     """
-    Build a source study prefix from an exam date and an accession number.
+    Build a study prefix from an exam date and an accession number.
 
     :param exam_date: Date of the exam.
     :param accession_number: Accession number, may contain `*` wildcards.
+    :param parent_prefix: Prefix the studies live under, one per representation.
     """
-    return f"{DICOM_PREFIX}/{exam_date:%Y/%m/%d}/{accession_number}"
+    return f"{parent_prefix}/{exam_date:%Y/%m/%d}/{accession_number}"
+
+
+def study_selection_params(parent_prefix: str, action: str) -> Dict[str, Param]:
+    """
+    Params picking which studies a DAG acts on, either as prefixes or from an accession number file.
+
+    :param parent_prefix: Prefix the studies live under, one per representation.
+    :param action: Verb naming what the DAG does to a study, used in the descriptions.
+    """
+    return {
+        "paths": Param([], type=["null", "array"],
+                       description=f"Study prefixes to {action}, one per line. Wildcards allowed in any "
+                                   f"segment. Ex: {parent_prefix}/2026/01/01/RA202600012345, "
+                                   f"{parent_prefix}/2026/01/01/RA2026000*, {parent_prefix}/2026/01/*. "
+                                   f"Mutually exclusive with 'accession_file_key'."),
+        "accession_file_bucket": Param(None, type=["null", "string"],
+                                       description="(Optional) Bucket holding the accession number CSV file. Required with 'accession_file_key'."),
+        "accession_file_key": Param(None, type=["null", "string"],
+                                    description="(Optional) Key of the accession number CSV file. Required with 'accession_file_bucket'. Mutually exclusive with 'paths'."),
+        "accession_number_column": Param("accessionNumber", type="string",
+                                         description="Accession number column in the CSV file. Wildcards allowed in values."),
+        "exam_date_column": Param("examDate", type="string",
+                                  description="Exam date column in the CSV file. Must be ISO 8601. Ex: 2026-01-15"),
+    }
 
 
 def get_output_prefix(study: str, parent_prefix: str) -> str:
@@ -163,16 +189,17 @@ def vna_s3_hook(bucket: str) -> S3Hook:
                   config=Config(max_pool_connections=STUDY_WORKERS * DOWNLOAD_WORKERS))
 
 
-def read_accession_patterns(s3: S3Hook, bucket: str, key: str,
-                            accession_number_column: str, exam_date_column: str) -> List[str]:
+def read_accession_patterns(s3: S3Hook, bucket: str, key: str, accession_number_column: str,
+                            exam_date_column: str, parent_prefix: str) -> List[str]:
     """
-    Read a CSV of accession numbers and exam dates into a list of source study prefixes.
+    Read a CSV of accession numbers and exam dates into a list of study prefixes.
 
     :param s3: Hook for the bucket holding the file.
     :param bucket: Bucket name of the CSV file.
     :param key: Key of the CSV file.
     :param accession_number_column: Column holding the accession numbers, wildcards allowed in values.
     :param exam_date_column: Column holding the exam dates, `YYYY-MM-DD` only.
+    :param parent_prefix: Prefix the studies live under, one per representation.
     """
     csv_data = s3.get_key(key=key, bucket_name=bucket).get()['Body'].read()
     # Everything as string: accession numbers can carry leading zeros, and dates must not be guessed
@@ -186,7 +213,8 @@ def read_accession_patterns(s3: S3Hook, bucket: str, key: str,
 
     df = df[[accession_number_column, exam_date_column]].dropna()
     return [study_pattern(exam_date=parse_exam_date(row[exam_date_column]),
-                          accession_number=str(row[accession_number_column]).strip())
+                          accession_number=str(row[accession_number_column]).strip(),
+                          parent_prefix=parent_prefix)
             for _, row in df.iterrows()]
 
 

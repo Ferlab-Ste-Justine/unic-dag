@@ -18,7 +18,7 @@ import pytest
 from airflow.exceptions import AirflowFailException
 
 from lib import nifti
-from lib.config import NIFTI_PREFIX, NIFTI_SIDECARS_PREFIX
+from lib.config import DICOM_PREFIX, NIFTI_PREFIX, NIFTI_SIDECARS_PREFIX
 from lib.nifti import (
     DICOM_MAGIC,
     DICOM_PREAMBLE_LEN,
@@ -98,9 +98,13 @@ def test_parse_exam_date_rejects_everything_else(value):
         parse_exam_date(value)
 
 
-def test_study_pattern_builds_dated_prefix():
-    assert study_pattern(exam_date=date(2026, 1, 2), accession_number="RA2026000*") == \
-           "dicoms/2026/01/02/RA2026000*"
+@pytest.mark.parametrize("parent_prefix, expected", [
+    (DICOM_PREFIX, "dicoms/2026/01/02/RA2026000*"),
+    (NIFTI_PREFIX, "nifti/2026/01/02/RA2026000*"),
+])
+def test_study_pattern_builds_dated_prefix(parent_prefix, expected):
+    assert study_pattern(exam_date=date(2026, 1, 2), accession_number="RA2026000*",
+                         parent_prefix=parent_prefix) == expected
 
 
 @pytest.mark.parametrize("parent_prefix, expected", [
@@ -156,8 +160,19 @@ def test_read_accession_patterns_builds_dated_prefixes():
     csv_content = "accessionNumber,examDate\nRA202600012345,2026-01-01\nRA2026000*,2026-02-03\n"
     patterns = read_accession_patterns(s3=accession_file_stub(csv_content), bucket=BUCKET,
                                        key="lists/cohort.csv",
-                                       accession_number_column="accessionNumber", exam_date_column="examDate")
+                                       accession_number_column="accessionNumber", exam_date_column="examDate",
+                                       parent_prefix=DICOM_PREFIX)
     assert patterns == ["dicoms/2026/01/01/RA202600012345", "dicoms/2026/02/03/RA2026000*"]
+
+
+def test_read_accession_patterns_honours_the_parent_prefix():
+    """The same cohort file addresses the NIfTI outputs as well as the source DICOMs."""
+    csv_content = "accessionNumber,examDate\nRA202600012345,2026-01-01\n"
+    patterns = read_accession_patterns(s3=accession_file_stub(csv_content), bucket=BUCKET,
+                                       key="lists/cohort.csv",
+                                       accession_number_column="accessionNumber", exam_date_column="examDate",
+                                       parent_prefix=NIFTI_PREFIX)
+    assert patterns == ["nifti/2026/01/01/RA202600012345"]
 
 
 def test_read_accession_patterns_reports_missing_columns():
@@ -166,7 +181,8 @@ def test_read_accession_patterns_reports_missing_columns():
     with pytest.raises(AirflowFailException, match="accessionNumber"):
         read_accession_patterns(s3=accession_file_stub(csv_content), bucket=BUCKET,
                                 key="lists/cohort.csv",
-                                accession_number_column="accessionNumber", exam_date_column="examDate")
+                                accession_number_column="accessionNumber", exam_date_column="examDate",
+                                parent_prefix=DICOM_PREFIX)
 
 
 # A verbatim excerpt of dcm2niix output, including the long UID filenames that get trimmed out of the
