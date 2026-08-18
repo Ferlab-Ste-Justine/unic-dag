@@ -67,6 +67,16 @@ def _secret_env(name: str, secret_name: str, key: str) -> k8s.V1EnvVar:
             secret_key_ref=k8s.V1SecretKeySelector(name=secret_name, key=key)))
 
 
+def rclone_base_env() -> List[k8s.V1EnvVar]:
+    """
+    Settings every rclone call takes, whichever remotes it uses.
+
+    An empty config path keeps rclone memory-only. Left unset, it looks for a config file that is
+    never there and says so on every call.
+    """
+    return [_env("RCLONE_CONFIG", "")]
+
+
 def minio_remote_env() -> List[k8s.V1EnvVar]:
     """rclone remote for the UnIC yellow MinIO, keyed by the dedicated SD4Health transfer user."""
     remote = MINIO_REMOTE.upper()

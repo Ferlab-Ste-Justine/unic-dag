@@ -10,7 +10,8 @@ from airflow.providers.cncf.kubernetes.utils.pod_manager import OnFinishAction
 from lib.config import FREESURFER_STATS_PREFIX, VNA_CLINIQUE_YELLOW_BUCKET
 from lib.sd4h import CEPH_BUCKET, CEPH_REMOTE, FREESURFER_STATS_PATH, MINIO_REMOTE, POD_NAMESPACE, \
     POD_SERVICE_ACCOUNT, RCLONE_IMAGE, RCLONE_TRANSFERS, VM_REMOTE, ceph_remote_env, \
-    minio_remote_env, pod_resources, ssh_key_volume, ssh_key_volume_mount, vm_remote_env
+    minio_remote_env, pod_resources, rclone_base_env, ssh_key_volume, ssh_key_volume_mount, \
+    vm_remote_env
 
 # One `rclone copy` per study prefix rather than one filtered copy of the whole tree: rclone tests
 # every filter rule against every path it lists, so a cohort of thousands of studies would spend its
@@ -64,7 +65,7 @@ def transfer_studies(arguments: List[str]) -> KubernetesPodOperator:
         image=RCLONE_IMAGE,
         cmds=["/bin/sh", "-c"],
         arguments=arguments,
-        env_vars=minio_remote_env() + ceph_remote_env(),
+        env_vars=rclone_base_env() + minio_remote_env() + ceph_remote_env(),
         container_resources=pod_resources(),
         # Keep a failed pod for inspection, reap it once it has succeeded.
         on_finish_action=OnFinishAction.DELETE_SUCCEEDED_POD,
@@ -90,7 +91,7 @@ def pull_stats() -> KubernetesPodOperator:
             f"--transfers={RCLONE_TRANSFERS}",
             "--stats=0",
         ],
-        env_vars=minio_remote_env() + vm_remote_env(),
+        env_vars=rclone_base_env() + minio_remote_env() + vm_remote_env(),
         volumes=[ssh_key_volume()],
         volume_mounts=[ssh_key_volume_mount()],
         container_resources=pod_resources(),
