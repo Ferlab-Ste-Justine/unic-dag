@@ -3,19 +3,28 @@
 Tasks converting the VNA clinique DICOMs to NIfTI.
 """
 import logging
-from typing import List
+from concurrent.futures import ThreadPoolExecutor
+from typing import Any, List, Mapping, Optional, Tuple
 
 from airflow.decorators import task
 from airflow.exceptions import AirflowFailException
+from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 from kubernetes.client import models as k8s
 
-from lib.config import DCM2NIIX_VERSION, VNA_CLINIQUE_RED_BUCKET
-from lib.nifti import list_study_folders, read_accession_patterns, vna_s3_hook
+from lib.config import DCM2NIIX_VERSION
+from lib.nifti import list_study_folders, prefix_has_objects, read_accession_patterns, vna_s3_hook
 
 # Dependencies installed into the convert_studies venv at task runtime.
 CONVERT_REQUIREMENTS = [
     f"dcm2niix=={DCM2NIIX_VERSION}",
 ]
+
+# Existence checks are one list_objects_v2 each, so they run concurrently. Kept under the connection
+# pool vna_s3_hook sizes, since the hook's client is shared by every worker.
+VERIFY_WORKERS = 16
+
+# A cohort file can leave thousands of studies unmatched; the log names the first few.
+MISSING_LOG_LIMIT = 20
 
 # convert_studies runs dcm2niix in its own KubernetesExecutor pod. The Helm values leave
 # `workers.resources` unset, so without this the pod is unbounded on a node that reserves nothing.
@@ -45,20 +54,15 @@ CONVERT_EXECUTOR_CONFIG = {
 }
 
 
-@task(task_id="resolve_studies")
-def resolve_studies(params=None) -> List[str]:
+def _validate_params(paths: Optional[List[str]], file_bucket: Optional[str],
+                     file_key: Optional[str]) -> None:
     """
-    Resolve the DAG params to the source study prefixes to convert.
+    Check that exactly one of the two study selection modes is fully specified.
 
-    Reads `params` rather than `dag_run.conf`: conf holds only what the trigger passed, so a partial
-    conf from the API or the CLI would miss the params that have a default.
+    :param paths: Study prefixes given directly.
+    :param file_bucket: Bucket holding the accession number file.
+    :param file_key: Key of the accession number file.
     """
-    paths = params["paths"]
-    file_bucket = params["accession_file_bucket"]
-    file_key = params["accession_file_key"]
-    accession_number_column = params["accession_number_column"]
-    exam_date_column = params["exam_date_column"]
-
     if bool(file_bucket) != bool(file_key):
         raise AirflowFailException(
             "DAG params 'accession_file_bucket' and 'accession_file_key' must be provided together.")
@@ -69,6 +73,83 @@ def resolve_studies(params=None) -> List[str]:
         raise AirflowFailException(
             "One of DAG params 'paths' or 'accession_file_bucket' + 'accession_file_key' is required.")
 
+
+def _resolve_patterns(s3: S3Hook, bucket: str, patterns: List[str]) -> Tuple[List[str], List[str]]:
+    """
+    Resolve patterns to the studies they match, deduped and in order of first appearance.
+
+    :param s3: Hook for the bucket being walked.
+    :param bucket: Bucket name to walk.
+    :param patterns: Prefixes or wildcard patterns to resolve.
+    :return: The study prefixes, and the patterns that matched none.
+    """
+    resolved, missing = [], []
+    for pattern in patterns:
+        found = list_study_folders(s3=s3, bucket=bucket, pattern=pattern)
+        resolved += found
+        if not found:
+            missing.append(pattern)
+
+    seen = set()  # dedupe, preserve order
+    return [s for s in resolved if not (s in seen or seen.add(s))], missing
+
+
+def _drop_empty_studies(s3: S3Hook, bucket: str, studies: List[str]) -> Tuple[List[str], List[str]]:
+    """
+    Split study prefixes into those holding objects and those holding none.
+
+    `list_study_folders` returns an exact prefix without walking the bucket, so this is the only thing
+    that rules out a study which does not exist yet.
+
+    :param s3: Hook for the bucket being checked.
+    :param bucket: Bucket name to check.
+    :param studies: Study prefixes to check.
+    :return: The prefixes holding objects, and those holding none.
+    """
+    with ThreadPoolExecutor(max_workers=VERIFY_WORKERS) as pool:
+        has_objects = list(pool.map(
+            lambda study: prefix_has_objects(s3=s3, bucket=bucket, prefix=study), studies))
+
+    empty = {study for study, exists in zip(studies, has_objects) if not exists}
+    return [study for study in studies if study not in empty], sorted(empty)
+
+
+def _log_missing(missing: List[str], pattern_count: int, bucket: str) -> None:
+    """
+    Warn about everything that resolved to no study, naming the first few.
+
+    :param missing: Patterns that matched nothing, and prefixes holding no object.
+    :param pattern_count: How many patterns were resolved in total.
+    :param bucket: Bucket that was searched.
+    """
+    if not missing:
+        return
+
+    shown = missing[:MISSING_LOG_LIMIT]
+    logging.warning('%s of %s pattern(s) matched no study in %s, showing %s: %s',
+                    len(missing), pattern_count, bucket, len(shown), shown)
+
+
+@task(task_id="resolve_studies")
+def resolve_studies(bucket: str, parent_prefix: str, verify_objects: bool = False,
+                    params: Optional[Mapping[str, Any]] = None) -> List[str]:
+    """
+    Resolve the DAG params to the study prefixes to act on.
+
+    :param bucket: Bucket holding the studies.
+    :param parent_prefix: Prefix the studies live under, one per representation.
+    :param verify_objects: If True, drop resolved prefixes holding no object. Needed whenever nothing
+        downstream reports a study that does not exist.
+    :param params: DAG params, injected by Airflow. Read instead of `dag_run.conf` because conf holds
+        only what the trigger passed, so a partial conf from the API or the CLI would miss the params
+        that have a default.
+    """
+    paths = params["paths"]
+    file_bucket = params["accession_file_bucket"]
+    file_key = params["accession_file_key"]
+
+    _validate_params(paths=paths, file_bucket=file_bucket, file_key=file_key)
+
     if paths:
         patterns = list(paths)
     else:
@@ -76,16 +157,18 @@ def resolve_studies(params=None) -> List[str]:
             s3=vna_s3_hook(file_bucket),
             bucket=file_bucket,
             key=file_key,
-            accession_number_column=accession_number_column,
-            exam_date_column=exam_date_column)
+            accession_number_column=params["accession_number_column"],
+            exam_date_column=params["exam_date_column"],
+            parent_prefix=parent_prefix)
 
-    red_s3 = vna_s3_hook(VNA_CLINIQUE_RED_BUCKET)
-    resolved = []
-    for pattern in patterns:
-        resolved += list_study_folders(s3=red_s3, bucket=VNA_CLINIQUE_RED_BUCKET, pattern=pattern)
+    s3 = vna_s3_hook(bucket)
+    studies, missing = _resolve_patterns(s3=s3, bucket=bucket, patterns=patterns)
 
-    seen = set()  # dedupe, preserve order
-    studies = [s for s in resolved if not (s in seen or seen.add(s))]
+    if verify_objects:
+        studies, empty = _drop_empty_studies(s3=s3, bucket=bucket, studies=studies)
+        missing += empty
+
+    _log_missing(missing=missing, pattern_count=len(patterns), bucket=bucket)
 
     if not studies:
         raise AirflowFailException(f"No study folder matched any of {len(patterns)} pattern(s)")

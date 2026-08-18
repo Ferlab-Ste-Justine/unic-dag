@@ -8,7 +8,8 @@ from airflow import DAG
 from airflow.models import Param
 from airflow.utils.trigger_rule import TriggerRule
 
-from lib.config import DEFAULT_ARGS, LOCAL_TZ
+from lib.config import DEFAULT_ARGS, DICOM_PREFIX, LOCAL_TZ, VNA_CLINIQUE_RED_BUCKET
+from lib.nifti import study_selection_params
 from lib.slack import Slack
 from lib.tasks.nifti import convert_studies, get_skip_existing, resolve_studies
 from lib.tasks.notify import start, end
@@ -96,18 +97,7 @@ args.update({
 with DAG(
         dag_id="anonymized_vna_clinique_nifti",
         params={
-            "paths": Param([], type=["null", "array"],
-                           description="Study prefixes to convert, one per line. Wildcards allowed in any segment. "
-                                       "Ex: dicoms/2026/01/01/RA202600012345, dicoms/2026/01/01/RA2026000*, "
-                                       "dicoms/2026/01/*. Mutually exclusive with 'accession_file_key'."),
-            "accession_file_bucket": Param(None, type=["null", "string"],
-                                           description="(Optional) Bucket holding the accession number CSV file. Required with 'accession_file_key'."),
-            "accession_file_key": Param(None, type=["null", "string"],
-                                        description="(Optional) Key of the accession number CSV file. Required with 'accession_file_bucket'. Mutually exclusive with 'paths'."),
-            "accession_number_column": Param("accessionNumber", type="string",
-                                             description="Accession number column in the CSV file. Wildcards allowed in values."),
-            "exam_date_column": Param("examDate", type="string",
-                                      description="Exam date column in the CSV file. Must be ISO 8601. Ex: 2026-01-15"),
+            **study_selection_params(parent_prefix=DICOM_PREFIX, action="convert"),
             "skip_existing": Param(True, type="boolean",
                                    description="Skip studies whose NIfTI output already exists. If False, that output is deleted and converted again."),
         },
@@ -121,7 +111,8 @@ with DAG(
         tags=["anonymized"],
         on_failure_callback=Slack.notify_dag_failure
 ) as dag:
-    resolve_studies_task = resolve_studies()
+    resolve_studies_task = resolve_studies(bucket=VNA_CLINIQUE_RED_BUCKET,
+                                           parent_prefix=DICOM_PREFIX)
     get_skip_existing_task = get_skip_existing()
 
     start("start_anonymized_vna_clinique_nifti") >> [resolve_studies_task, get_skip_existing_task] \
