@@ -9,10 +9,10 @@
       "main_class": "bio.ferlab.ui.etl.yellow.enriched.srfmm.Main",
       "multiple_main_methods": true,
       "datasets": [
-        {"dataset_id": "enriched_srfmm_participant_index" , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id": "enriched_srfmm_interventions"      , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": ["enriched_srfmm_participant_index"]},
-        {"dataset_id": "enriched_srfmm_hospitalisations"   , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": ["enriched_srfmm_participant_index", "enriched_srfmm_interventions"]},
-        {"dataset_id": "enriched_srfmm_patient_data"       , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": ["enriched_srfmm_participant_index"]}
+        {"dataset_id": "enriched_srfmm_participant_index", "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "enriched_srfmm_interventions"    , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": ["enriched_srfmm_participant_index"]},
+        {"dataset_id": "enriched_srfmm_hospitalisations" , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": ["enriched_srfmm_participant_index", "enriched_srfmm_interventions"]},
+        {"dataset_id": "enriched_srfmm_patient_data"     , "cluster_type": "small" , "run_type": "default", "pass_date": false, "dependencies": ["enriched_srfmm_participant_index"]}
       ]
     },
     {
