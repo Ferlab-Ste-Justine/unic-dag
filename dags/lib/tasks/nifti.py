@@ -106,6 +106,11 @@ def _drop_empty_studies(s3: S3Hook, bucket: str, studies: List[str]) -> Tuple[Li
     :param studies: Study prefixes to check.
     :return: The prefixes holding objects, and those holding none.
     """
+    # boto3 is only unsafe while a client is being created, and the hook caches its client without a
+    # lock, so it is built here rather than by whichever workers race for it first. An exact study
+    # prefix resolves without any listing, which leaves this as the first call to reach S3.
+    s3.get_conn()
+
     with ThreadPoolExecutor(max_workers=VERIFY_WORKERS) as pool:
         has_objects = list(pool.map(
             lambda study: prefix_has_objects(s3=s3, bucket=bucket, prefix=study), studies))
