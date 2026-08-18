@@ -1,10 +1,11 @@
 """
 rclone plumbing for the SD4Health transfers of the preterm imaging data.
 
-Both directions run rclone in a pod and configure their remotes entirely through
-`RCLONE_CONFIG_<REMOTE>_<OPTION>` environment variables, so no config file is ever written to disk.
-Three remotes are involved: the UnIC yellow MinIO (`yellow`), the SD4Health object store on Juno
-(`ceph`), and the SD4Health VM over SFTP (`sd4h`).
+Both directions run rclone in a pod, with each remote defined through
+`RCLONE_CONFIG_<REMOTE>_<OPTION>` environment variables so the credentials can come straight from the
+Kubernetes secrets with no config file to generate at startup. Three remotes are involved: the UnIC
+yellow MinIO (`yellow`), the SD4Health object store on Juno (`ceph`), and the SD4Health VM over SFTP
+(`sd4h`).
 """
 from typing import List
 
