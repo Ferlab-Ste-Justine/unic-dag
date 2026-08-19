@@ -48,54 +48,21 @@ def determine_minio_conn_id_from_config(minio_conn_id: str,
     """
     Choose the MinIO connection id granting the widest access across all the given buckets.
 
-    Each input bucket maps to a zone connection id (red > yellow > green by access breadth);
-    the widest one wins, so a config that touches the red (nominative) bucket resolves to
-    ``red_minio``. When no bucket maps to a known zone, ``minio_conn_id`` is returned as-is.
-
     :param minio_conn_id: Default connection id, used only when no bucket resolves to a zone.
-    :param input_buckets: Zero or more source buckets to consider (splat a list in).
-    :param output_bucket: Optional output bucket (publish flow); applies the clinical/nominative rules.
+    :param input_buckets: Zero or more source buckets to consider.
+    :param output_bucket: Optional destination bucket (publish flow), considered alongside the inputs.
     """
-    from functools import reduce
     from lib.config import GREEN_MINIO_CONN_ID, YELLOW_MINIO_CONN_ID, RED_MINIO_CONN_ID, RELEASED_BUCKET, \
         CATALOG_BUCKET, NOMINATIVE_BUCKET, VNA_CLINIQUE_RED_BUCKET, VNA_CLINIQUE_YELLOW_BUCKET
 
-    # Access breadth, higher == wider.
-    priority = {GREEN_MINIO_CONN_ID: 1, YELLOW_MINIO_CONN_ID: 2, RED_MINIO_CONN_ID: 3}
+    buckets = [bucket for bucket in (*input_buckets, output_bucket) if bucket]
 
-    def conn_for_bucket(input_bucket):
-        """Zone conn id implied by one (input_bucket, output_bucket) pair, or None if unknown."""
-        if output_bucket is None:
-            zone = {
-                RELEASED_BUCKET: GREEN_MINIO_CONN_ID,
-                CATALOG_BUCKET: YELLOW_MINIO_CONN_ID,
-                NOMINATIVE_BUCKET: RED_MINIO_CONN_ID,
-                VNA_CLINIQUE_RED_BUCKET: RED_MINIO_CONN_ID,
-                VNA_CLINIQUE_YELLOW_BUCKET: YELLOW_MINIO_CONN_ID,
-            }.get(input_bucket)
-            # Published buckets are one per resource, so match on their zone marker rather than listing each.
-            if zone is None and input_bucket:
-                if "clinical" in input_bucket:
-                    zone = GREEN_MINIO_CONN_ID
-                elif "nominative" in input_bucket:
-                    zone = RED_MINIO_CONN_ID
-            return zone
-
-        # The published buckets are one per resource, so they are matched on their zone marker rather
-        # than listed one by one.
-        if "clinical" in output_bucket and (input_bucket is None or input_bucket == RELEASED_BUCKET):
-            return GREEN_MINIO_CONN_ID
-        if "clinical" in output_bucket and input_bucket == CATALOG_BUCKET:
-            return YELLOW_MINIO_CONN_ID
-        if "nominative" in output_bucket:
-            return RED_MINIO_CONN_ID
-        return None
-
-    # `or (None,)` keeps one slot so output_bucket only calls still apply the clinical/nominative rules.
-    candidates = [conn for conn in map(conn_for_bucket, input_buckets or (None,)) if conn]
-
-    if not candidates:
-        # If the output bucket does not match any known "released" buckets, return the provided Minio connection ID.
-        return minio_conn_id
-    return reduce(lambda widest, conn: conn if priority[conn] > priority[widest] else widest,
-                  candidates)
+    # The published buckets are matched on the zone pattern contained in their name.
+    if any(bucket in (NOMINATIVE_BUCKET, VNA_CLINIQUE_RED_BUCKET) or "nominative" in bucket
+           for bucket in buckets):
+        return RED_MINIO_CONN_ID
+    if any(bucket in (CATALOG_BUCKET, VNA_CLINIQUE_YELLOW_BUCKET) for bucket in buckets):
+        return YELLOW_MINIO_CONN_ID
+    if any(bucket == RELEASED_BUCKET or "clinical" in bucket for bucket in buckets):
+        return GREEN_MINIO_CONN_ID
+    return minio_conn_id
