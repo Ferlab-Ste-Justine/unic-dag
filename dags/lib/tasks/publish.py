@@ -92,12 +92,12 @@ def extract_config_info_to_publish(
 
     :param resource_code: Resource code of the project to publish.
     :param version_to_publish: Version of the project to publish.
-    :param minio_conn_id: Minio connection id, if null determined by the ``DatalakeConfig`` class.
+    :param minio_conn_id: Fallback Minio connection id, used for the buckets which cannot map to a zone.
     :returns : Dictionary containing the source IDs, input & output buckets, output paths, and table names.
     """
     from lib.datalake_config import DatalakeConfig
 
-    # DatalakeConfig.__init__ defaults minio_conn_id to YELLOW_MINIO_CONN_ID when None.
+    # The publish task group passes YELLOW_MINIO_CONN_ID explicitly.
     config = DatalakeConfig(minio_conn_id=minio_conn_id)
     return config.extract_publish_config_info(resource_code=resource_code,
                                               version_to_publish=version_to_publish)
@@ -149,7 +149,11 @@ def publish_dictionary(
     )
 
     # define connection vars
-    s3 = S3Hook(aws_conn_id=determine_minio_conn_id_from_config(minio_conn_id, config.get("input_bucket")))
+    # The same hook reads the resource's released data and uploads the dictionary to the destination
+    # bucket, so both buckets have to be weighed when picking the connection.
+    s3 = S3Hook(aws_conn_id=determine_minio_conn_id_from_config(minio_conn_id,
+                                                                config.get("input_bucket"),
+                                                                output_bucket=s3_destination_bucket))
     ca_cert = unic_postgres_vlan2_ca_cert(PostgresEnv.PROD)
     pg = get_pg_ca_hook(pg_conn_id, ca_cert)
 
