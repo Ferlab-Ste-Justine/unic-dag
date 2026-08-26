@@ -10,7 +10,7 @@
       "multiple_main_methods": true,
       "datasets": [
         {"dataset_id": "enriched_parlonsmaat_emergency"            , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": ["enriched_parlonsmaat_participant_index"]},
-        {"dataset_id": "enriched_parlonsmaat_hospitalisations"     , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": ["enriched_parlonsmaat_participant_index"]},
+        {"dataset_id": "enriched_parlonsmaat_hospitalisations"     , "cluster_type": "small", "run_type": "initial", "pass_date": true, "dependencies": ["enriched_parlonsmaat_participant_index"]},
         {"dataset_id": "enriched_parlonsmaat_laboratory_results"   , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": ["enriched_parlonsmaat_participant_index"]},
         {"dataset_id": "enriched_parlonsmaat_mstp"                 , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": ["enriched_parlonsmaat_participant_index"]},
         {"dataset_id": "enriched_parlonsmaat_nurse_evaluation"     , "cluster_type": "small", "run_type": "initial", "pass_date": true, "dependencies": ["enriched_parlonsmaat_participant_index"]},
@@ -24,7 +24,7 @@
       "multiple_main_methods": false,
       "datasets": [
         {"dataset_id": "released_parlonsmaat_emergency"            , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id": "released_parlonsmaat_hospitalisations"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "released_parlonsmaat_hospitalisations"     , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": []},
         {"dataset_id": "released_parlonsmaat_laboratory_results"   , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "released_parlonsmaat_mstp"                 , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "released_parlonsmaat_nurse_evaluation"     , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": []}
@@ -37,7 +37,7 @@
       "multiple_main_methods": false,
       "datasets": [
         {"dataset_id": "published_parlonsmaat_emergency"            , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id": "published_parlonsmaat_hospitalisations"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id": "published_parlonsmaat_hospitalisations"     , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": []},
         {"dataset_id": "published_parlonsmaat_laboratory_results"   , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "published_parlonsmaat_mstp"                 , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id": "published_parlonsmaat_nurse_evaluation"     , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": []}
