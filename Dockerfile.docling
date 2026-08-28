@@ -1,0 +1,41 @@
+FROM apache/airflow:2.11.2-python3.12
+
+USER airflow
+
+# torch 3.x would break docling-ibm-models with the current pinned versions.
+RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu \
+      "torch<3" torchvision
+
+ARG DOCLING_VERSION=2.55.1
+
+RUN pip install --no-cache-dir \
+      "docling==${DOCLING_VERSION}" polars==1.12.0 deltalake==0.22.3 pyarrow==25.0.0
+
+ENV DOCLING_ARTIFACTS_PATH=/home/airflow/docling-models
+# output_dir must be a pathlib.Path, not a str: download_models() calls output_dir.mkdir(...).
+RUN python -c "\
+import os; \
+from pathlib import Path; \
+from docling.utils.model_downloader import download_models; \
+download_models(output_dir=Path(os.environ['DOCLING_ARTIFACTS_PATH']), progress=True, \
+                with_layout=True, with_tableformer=True, with_easyocr=True, \
+                with_code_formula=False, with_picture_classifier=False)" \
+ && find "${DOCLING_ARTIFACTS_PATH}" -maxdepth 2 -type d \
+ && du -sh "${DOCLING_ARTIFACTS_PATH}"
+
+# Set HF_HUB_OFFLINE=1 to avoid any model download attempts at runtime and force docling to use local cache.
+ENV HF_HUB_OFFLINE=1
+
+# Load the models and build them from disk for the same PdfPipelineOptions() used in the DAG.
+RUN python -c "\
+import os; \
+from docling.datamodel.base_models import InputFormat; \
+from docling.datamodel.pipeline_options import PdfPipelineOptions; \
+from docling.document_converter import DocumentConverter, PdfFormatOption; \
+o = PdfPipelineOptions(); \
+o.do_table_structure = True; \
+o.do_ocr = True; \
+o.artifacts_path = os.environ['DOCLING_ARTIFACTS_PATH']; \
+c = DocumentConverter(format_options={InputFormat.PDF: PdfFormatOption(pipeline_options=o)}); \
+c.initialize_pipeline(InputFormat.PDF); \
+print('-= The Docling pipeline has been initialized offline OK =-')"
