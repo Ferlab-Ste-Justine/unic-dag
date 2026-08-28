@@ -1,12 +1,12 @@
 FROM apache/airflow:2.11.2-python3.12
 
-ARG DOCLING_VERSION=2.55.1
-
 USER airflow
 
 # torch 3.x would break docling-ibm-models with the current pinned versions.
 RUN pip install --no-cache-dir --index-url https://download.pytorch.org/whl/cpu \
       "torch<3" torchvision
+
+ARG DOCLING_VERSION=2.55.1
 
 RUN pip install --no-cache-dir \
       "docling==${DOCLING_VERSION}" polars==1.12.0 deltalake==0.22.3 pyarrow==25.0.0
