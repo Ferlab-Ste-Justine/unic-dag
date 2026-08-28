@@ -16,13 +16,11 @@ Two ``@task.virtualenv`` consecutive tasks:
 """
 # pylint: disable=import-outside-toplevel, import-error, too-many-locals, too-many-statements, fixme
 
-# parse_and_write's body needs its own timedelta and a module-level `timedelta` would shadow it.
-import datetime as dt
-
+from datetime import timedelta
 from airflow.decorators import task, task_group
 from kubernetes.client import models as k8s
 
-from lib.config import INTERVAL_START_DAY, INTERVAL_END_DAY
+from lib.config import INTERVAL_START_DAY, INTERVAL_END_DAY, DEFAULT_TIMEOUT_HOURS
 
 # Dependencies installed into the parse_and_write venv at task runtime.
 PARSE_REQUIREMENTS = [
@@ -52,170 +50,6 @@ PARSE_EXECUTOR_CONFIG = {
         )
     )
 }
-
-# docling has nothing that can break a blocked model call, set so the task dies instead of hanging.
-PARSE_EXECUTION_TIMEOUT = dt.timedelta(hours=2)
-
-# ============================================================================================
-# TEMPORARY (UNIC-2068 diagnosis): To be removed after parse_and_write diagnosis..
-# ============================================================================================
-
-# Hosts docling's model loading depends on, plus controls. pypi/pythonhosted and github are the
-# controls: pip and easyocr both demonstrably succeeded in the failing run, so they MUST come back
-# OK. huggingface.co only serves metadata and a 302; the weight files come from a separate CDN host
-# that is frequently allowlisted separately, this is to test whether cdn is allowed on our infra.
-# us.aws.cdn.hf.co is where both repos below actually redirected on 2026-08-24; the probe logs the
-# host it is really sent to ("via="), so trust that over this list.
-DIAGNOSE_HOSTS = [
-    "pypi.org",
-    "files.pythonhosted.org",
-    "github.com",
-    "objects.githubusercontent.com",
-    "huggingface.co",
-    "us.aws.cdn.hf.co",
-    "download.pytorch.org",
-]
-
-# The two HF repos docling 2.55.1 downloads, as (repo_id, revision), transcribed from the 2.55.1
-# wheel -- the defaults move between releases, so do not infer them from another version:
-#   layout       layout_model_specs.py DOCLING_LAYOUT_HERON + LayoutOptions.model_spec
-#   tableformer  table_structure_model.py download_models(); note the tag, not a branch
-# The path inside each repo is NOT hardcoded: the probe reads the file listing from the HF API and
-# picks a .safetensors, so a renamed weight yields a bad-listing report instead of a phantom 404.
-DIAGNOSE_HF_MODELS = [
-    ("ds4sd/docling-layout-heron", "main"),
-    ("ds4sd/docling-models", "v2.3.0"),
-]
-
-
-@task(task_id="diagnose_runtime", executor_config=PARSE_EXECUTOR_CONFIG,
-      execution_timeout=dt.timedelta(minutes=20), retries=0)
-def diagnose_runtime() -> dict:
-    """ Log what ``parse_and_write``'s pod can actually see and reach.
-
-    A task with stdlib-only imports -- no venv, no pip -- so it cannot fail for install
-    reasons
-
-    Never raises: a broken probe must not skip the run that carries the faulthandler evidence.
-    ``retries=0`` deliberately overrides ``DEFAULT_ARGS``' 3 -- a failure here is the answer.
-
-    :return: ``{host_or_url: outcome}``, also pushed to XCom so it is visible in the UI.
-    """
-    import json
-    import logging
-    import os
-    import platform
-    import shutil
-    import socket
-    import time
-    import urllib.parse
-    import urllib.request
-
-    def _log_file(path: str) -> None:
-        """Log one /sys or /proc file's contents on a single line, tolerating its absence."""
-        try:
-            with open(path, encoding="utf-8") as handle:
-                logging.info("%s = %s", path, handle.read().strip().replace("\n", " | "))
-        except OSError as exc:
-            logging.info("%s unreadable: %s", path, exc)
-
-    def _runtime_facts() -> None:
-        # cpu.max is the CFS quota pod_override asked for, while os.cpu_count() reports the NODE's
-        # core count. The gap between the two is what makes native thread pools oversubscribe and
-        # spin against the quota, so log both side by side.
-        logging.info("python=%s cpu_count=%s sched_affinity=%s", platform.python_version(),
-                     os.cpu_count(), len(os.sched_getaffinity(0)))
-        for path in ("/sys/fs/cgroup/cpu.max", "/sys/fs/cgroup/cpu.stat",
-                     "/sys/fs/cgroup/memory.max", "/sys/fs/cgroup/memory.current"):
-            _log_file(path)
-        for path in ("/tmp", os.path.expanduser("~")):
-            usage = shutil.disk_usage(path)
-            logging.info("disk %-10s total=%.1fGi free=%.1fGi", path,
-                         usage.total / 2 ** 30, usage.free / 2 ** 30)
-        # The model caches land under HOME; if it is unset or read-only, downloads fail oddly.
-        logging.info("HOME=%s TMPDIR=%s home_writable=%s", os.environ.get("HOME"),
-                     os.environ.get("TMPDIR"), os.access(os.path.expanduser("~"), os.W_OK))
-        # workers.env is unset in the prod Helm values, so a proxy the cluster expects would be
-        # absent here -- which on its own would produce exactly this hang.
-        logging.info("proxy/hf env: %s", {key: value for key, value in os.environ.items()
-                                          if "proxy" in key.lower()
-                                          or key.startswith(("HF_", "HUGGINGFACE"))} or "(none)")
-
-    def _probe_host(host: str) -> str:
-        """Resolve, then open and immediately close a TCP connection to ``host:443``."""
-        try:
-            addrs = sorted({info[4][0] for info in socket.getaddrinfo(host, 443)})
-        except OSError as exc:
-            logging.warning("DNS  FAIL %-32s %s: %s", host, type(exc).__name__, exc)
-            return f"dns-fail:{type(exc).__name__}"
-        started = time.monotonic()
-        try:
-            with socket.create_connection((host, 443), timeout=10):
-                pass  # a completed handshake is the whole test
-            logging.info("TCP  OK   %-32s %5.2fs %s", host, time.monotonic() - started, addrs)
-            return "ok"
-        except OSError as exc:
-            # An elapsed time near the full timeout means packets are being DROPPED, which is what
-            # produces an unbounded block instead of an exception. A fast refusal is different
-            logging.warning("TCP  FAIL %-32s %5.2fs %s: %s -> %s", host,
-                            time.monotonic() - started, type(exc).__name__, exc, addrs)
-            return f"tcp-fail:{type(exc).__name__}"
-
-    def _get(url: str, headers: dict, timeout: int):
-        """GET ``url`` following redirects; return (body, final_url)."""
-        request = urllib.request.Request(
-            url, headers={"User-Agent": "unic-dag-egress-probe", **headers})
-        with urllib.request.urlopen(request, timeout=timeout) as response:
-            return response.read(), response.geturl()
-
-    def _probe_hf_model(repo_id: str, revision: str) -> str:
-        """List a HF repo, then range-GET one of its weight blobs and name the CDN host.
-
-        Two hops on purpose, because they are two different hosts and either can be the one that
-        is blocked: the listing is served by huggingface.co, the blob by a CDN it 302s to.
-        """
-        api = f"https://huggingface.co/api/models/{repo_id}/revision/{revision}"
-        started = time.monotonic()
-        try:
-            body, _ = _get(api, {}, 20)
-            files = [f["rfilename"] for f in json.loads(body).get("siblings", [])]
-            logging.info("HF   API  OK   %-34s rev=%-8s %5.2fs files=%s",
-                         repo_id, revision, time.monotonic() - started, files)
-        except Exception as exc:  # pylint: disable=broad-except
-            logging.warning("HF   API  FAIL %-34s rev=%-8s %5.2fs %s: %s", repo_id, revision,
-                            time.monotonic() - started, type(exc).__name__, exc)
-            return f"api-fail:{type(exc).__name__}"
-
-        weights = [f for f in files if f.endswith(".safetensors")]
-        if not weights:
-            logging.warning("HF   no .safetensors in %s@%s; listing was %s", repo_id, revision, files)
-            return "no-weights-in-listing"
-
-        url = f"https://huggingface.co/{repo_id}/resolve/{revision}/{weights[0]}"
-        started = time.monotonic()
-        try:
-            body, final_url = _get(url, {"Range": "bytes=0-1023"}, 30)
-            host = urllib.parse.urlparse(final_url).hostname
-            logging.info("HF   BLOB OK   %-34s %s bytes=%d via=%s %5.2fs",
-                         repo_id, weights[0], len(body), host, time.monotonic() - started)
-            return f"ok via {host}"
-        except Exception as exc:  # pylint: disable=broad-except
-            logging.warning("HF   BLOB FAIL %-34s %s %5.2fs %s: %s", repo_id, weights[0],
-                            time.monotonic() - started, type(exc).__name__, exc)
-            return f"blob-fail:{type(exc).__name__}"
-
-    logging.info("=== runtime facts ===")
-    _runtime_facts()
-    logging.info("=== dns, then tcp:443 ===")
-    summary = {host: _probe_host(host) for host in DIAGNOSE_HOSTS}
-    logging.info("=== huggingface: list repo, then range-GET a weights blob ===")
-    summary.update({repo: _probe_hf_model(repo, rev) for repo, rev in DIAGNOSE_HF_MODELS})
-    logging.info("=== summary ===")
-    for key, value in summary.items():
-        logging.info("%-100s %s", key, value)
-    return summary
-
-# ==================== end of the TEMPORARY UNIC-2068 diagnosis block ========================
 
 
 @task.virtualenv(requirements=["pyhocon==0.3.61"], system_site_packages=True)
@@ -252,8 +86,8 @@ def extract_config(input_source_id: str, report_delta_destination_id: str,
 
 @task.virtualenv(requirements=PARSE_REQUIREMENTS, system_site_packages=True,
                  executor_config=PARSE_EXECUTOR_CONFIG,
-                 execution_timeout=PARSE_EXECUTION_TIMEOUT,
-                 retries=1)
+                 execution_timeout= 0.5 * DEFAULT_TIMEOUT_HOURS,
+                 retries=2)
 def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destination_id: str,
                     tables_destination_id: str, report_md_destination_id: str,
                     interval_start: str, interval_end: str,
@@ -278,27 +112,10 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
     :return: Per-window counts (``rows_read``, ``pdfs_parsed``, ``skipped``, ``tables_extracted``,
         ``reports_written``) plus ``dates`` — the number of ``dte_of_message`` partitions processed.
     """
-    # --- TEMPORARY (UNIC-2068 diagnosis): ordering-sensitive, keep first --------------------
-    # os env vars MUST precede every other import in this body: huggingface_hub
-    # freezes its timeouts into module constants at import time, and OpenMP reads OMP_NUM_THREADS
-    # when its runtime initializes at `import torch`. Setting them later has no effect.
-    import os
-
-    # Turn a stalled HuggingFace transfer into an exception instead of an unbounded block.
-    os.environ.setdefault("HF_HUB_ETAG_TIMEOUT", "20")
-    os.environ.setdefault("HF_HUB_DOWNLOAD_TIMEOUT", "60")
-    # Match the pod's CFS quota, or the BLAS/OpenMP pools size themselves off the node's core
-    # count and thrash. Literal because module globals (PARSE_POD_CPU) are NOT visible inside the
-    # venv subprocess -- keep the two in sync.
-    os.environ.setdefault("OMP_NUM_THREADS", "8")
-    # --- end of the ordering-sensitive part -------------------------------------------------
 
     import base64
-    import faulthandler
     import logging
     import tempfile
-    import threading
-    import time
     from datetime import date, timedelta
     from pathlib import Path
 
@@ -311,50 +128,6 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
     from lib.hl7_io_utils import (_detect_format, build_storage_options, delete_report_tree_for_date,
                                    write_report_delta, write_report_markdown_tree, write_tables)
 
-    # --- TEMPORARY (UNIC-2068 diagnosis): make a silent block describe itself ---------------
-    # execution_timeout fires SIGALRM in the PARENT airflow process running
-    # execute_in_subprocess, so its traceback points at proc.stdout.readline(), never at docling.
-    # faulthandler runs in THIS process and is the only thing that names the real blocking frame.
-    faulthandler.dump_traceback_later(300, repeat=True, exit=False)
-
-    # docling mutes its own model download (download_hf_model calls disable_progress_bars before
-    # snapshot_download), which is why the log simply stops. Make huggingface_hub and urllib3
-    # narrate every HTTP request instead: one line per request with the URL, which names the CDN
-    # host and shows exactly which call never comes back.
-    for logger_name in ("huggingface_hub", "urllib3.connectionpool", "filelock"):
-        logging.getLogger(logger_name).setLevel(logging.DEBUG)
-
-    def _heartbeat() -> None:
-        """Log liveness plus whether the HuggingFace cache is still growing, every 30s.
-
-        The in-dag replacement for ``find ~/.cache/huggingface -name '*.incomplete'``, which
-        needs a shell in the pod: a cache whose byte count keeps rising is a slow download, one
-        that is static is a stalled one. Because this runs on its own thread, whether it *keeps
-        logging* is itself a measurement -- if it goes quiet too, the GIL is held by native code
-        that never releases it, i.e. the task is compute-bound rather than blocked on the network.
-        """
-        started = time.monotonic()
-        while True:
-            time.sleep(30)
-            cache_bytes = 0
-            for root, _dirs, files in os.walk(os.path.expanduser("~/.cache/huggingface")):
-                for name in files:
-                    try:
-                        cache_bytes += os.path.getsize(os.path.join(root, name))
-                    except OSError:
-                        pass  # a partial file can vanish mid-walk; its bytes are not the point
-            try:
-                with open("/proc/self/status", encoding="utf-8") as handle:
-                    status = dict(line.split(":", 1) for line in handle if ":" in line)
-                rss = status.get("VmRSS", "?").strip()
-                threads = status.get("Threads", "?").strip()
-            except OSError:
-                rss, threads = "?", "?"
-            logging.info("HEARTBEAT t+%ds rss=%s threads=%s hf_cache=%.1fMiB",
-                         int(time.monotonic() - started), rss, threads, cache_bytes / 2 ** 20)
-
-    threading.Thread(target=_heartbeat, daemon=True, name="unic-heartbeat").start()
-    # --- end TEMPORARY ----------------------------------------------------------------------
 
     config = DatalakeConfig.from_dict(config_dict)
 
@@ -492,21 +265,6 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
                 "tables_extracted": tables_df.height, "reports_written": reports_written}
 
     # ---- orchestration: process each date partition, accumulate counts ----
-    # --- TEMPORARY (UNIC-2068 diagnosis) ----------------------------------------------------
-    # Name the model docling is about to fetch BEFORE the call that hangs. Also yields the exact
-    # repo_id and revision for this docling version, which must be obtained since docling's default
-    # layout spec changes between minor versions.
-    try:
-        from docling.datamodel.pipeline_options import LayoutOptions
-        from docling.datamodel.settings import settings as docling_settings
-        model_spec = LayoutOptions().model_spec
-        logging.info("docling layout model: repo_id=%s revision=%s cache_dir=%s artifacts_path=%s",
-                     model_spec.repo_id, getattr(model_spec, "revision", None),
-                     docling_settings.cache_dir, docling_settings.artifacts_path)
-    except Exception as exc:  # pylint: disable=broad-except
-        logging.warning("could not resolve docling layout model spec: %s", exc)
-    # --- end TEMPORARY ----------------------------------------------------------------------
-
     converter = build_converter(doc_batch_concurrency, enable_ocr)
     dates = _partition_dates_in_window()
     logging.info("Processing %d date partition(s) in [%s, %s)", len(dates), interval_start, interval_end)
@@ -536,8 +294,6 @@ def hl7_pdf_docling_parsing(input_source_id: str, report_delta_destination_id: s
     :param doc_batch_concurrency: docling threaded multi-document concurrencdatasety (1 = sequential).
     :param enable_ocr: Run OCR for scanned PDFs (table-structure detection is always on).
     """
-    # TEMPORARY (UNIC-2068 diagnosis)
-    diagnostics = diagnose_runtime()
 
     config_dict = extract_config(
         input_source_id=input_source_id,
@@ -545,8 +301,6 @@ def hl7_pdf_docling_parsing(input_source_id: str, report_delta_destination_id: s
         tables_destination_id=tables_destination_id,
         report_md_destination_id=report_md_destination_id,
     )
-
-    diagnostics >> config_dict  # TEMPORARY (UNIC-2068 diagnosis)
 
     parse_and_write(
         config_dict=config_dict,
