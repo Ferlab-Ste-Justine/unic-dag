@@ -26,7 +26,7 @@ CONFIG = {
                 {"dataset_id": "enriched_sprintkid_live_region_v20_import_template_balanced", "cluster_type": "medium", "run_type": "default", "pass_date": True, "dependencies": ["enriched_sprintkid_live_region_v20_import_template"]},
                 {"dataset_id": "enriched_sprintkid_participant_index"                       , "cluster_type": "medium", "run_type": "default", "pass_date": True, "dependencies": ["enriched_sprintkid_stream_2_aefi_screening", "enriched_sprintkid_respiratory_pathogen_diagnostics"]},
                 {"dataset_id": "enriched_sprintkid_patient_data"                            , "cluster_type": "medium", "run_type": "default", "pass_date": True, "dependencies": ["enriched_sprintkid_respiratory_pathogen_diagnostics"]},
-                {"dataset_id": "enriched_sprintkid_respiratory_pathogen_diagnostics"        , "cluster_type": "medium", "run_type": "default", "pass_date": True, "dependencies": []},
+                {"dataset_id": "enriched_sprintkid_respiratory_pathogen_diagnostics"        , "cluster_type": "medium", "run_type": "initial", "pass_date": True, "dependencies": []},
                 {"dataset_id": "enriched_sprintkid_stream_2_aefi_screening"                 , "cluster_type": "medium", "run_type": "default", "pass_date": True, "dependencies": []},
                 {"dataset_id": "enriched_sprintkid_stream_34_screening"                     , "cluster_type": "small" , "run_type": "default", "pass_date": True, "dependencies": ["enriched_sprintkid_respiratory_pathogen_diagnostics"]},
                 {"dataset_id": "enriched_surveillancegermes_patient"                        , "cluster_type": "medium", "run_type": "default", "pass_date": True, "dependencies": []},
