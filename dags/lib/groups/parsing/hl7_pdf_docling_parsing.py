@@ -112,8 +112,27 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
         ``reports_written``) plus ``dates`` — the number of ``dte_of_message`` partitions processed.
     """
 
-    import base64
+    import importlib.util
     import logging
+    import os
+    import sys
+
+    # TEMPORARY diagnostic --
+    # OMP_NUM_THREADS comes from PARSE_EXECUTOR_CONFIG, demonstrates whether the pod_override applied;
+    # DOCLING_ARTIFACTS_PATH / HF_HUB_OFFLINE are ENV lines in Dockerfile.docling, demonstrates which image ran.
+    logging.info("[PROBE] OMP_NUM_THREADS=%r DOCLING_ARTIFACTS_PATH=%r HF_HUB_OFFLINE=%r "
+                 "models_dir=%s python=%s",
+                 os.environ.get("OMP_NUM_THREADS"), os.environ.get("DOCLING_ARTIFACTS_PATH"),
+                 os.environ.get("HF_HUB_OFFLINE"),
+                 os.path.isdir("/home/airflow/docling-models"), sys.executable)
+    for _mod in ("polars", "docling", "deltalake", "pyarrow"):
+        try:
+            _spec = importlib.util.find_spec(_mod)
+        except Exception:  # pylint: disable=broad-except
+            _spec = None
+        logging.info("[PROBE] %s -> %s", _mod, _spec.origin if _spec else "NOT FOUND")
+
+    import base64
     import tempfile
     from datetime import date, timedelta
     from pathlib import Path
