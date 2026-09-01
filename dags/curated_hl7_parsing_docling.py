@@ -51,6 +51,7 @@ dag = DAG(
     schedule=IntervalTimetable(interval=timedelta(weeks=13)),  # ~3 months
     catchup=True,
     max_active_runs=1,  # docling is heavy -> process backfill windows one at a time
+    dagrun_timeout=timedelta(hours=10),
     is_paused_upon_creation=True,
     render_template_as_native_obj=True,
     tags=["curated", "hl7", "docling"],
