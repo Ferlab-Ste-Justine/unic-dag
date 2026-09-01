@@ -9,26 +9,20 @@ TaskGroup that parses the base64-encoded PDF documents stored in the
 and writes back a markdown report (Delta table) + the extracted tables (date-first CSV tree),
 with a primary key of the format ``dte_of_message, hl7_id``.
 
-Two ``@task.virtualenv`` consecutive tasks:
-  1. ``extract_config`` — resolve the input + two output datasets into a ``DatalakeConfig`` and validate the
-     outputs are in the nominative zone.
-  2. ``parse_and_write`` — read the run's ``dte_of_message`` interval window, parse with docling, write outputs.
+Two consecutive tasks:
+  1. ``extract_config`` — ``@task.virtualenv``: resolve the
+     input + three output datasets into a ``DatalakeConfig`` and validate the outputs are nominative.
+  2. ``parse_and_write`` — a plain ``@task`` on the custom docling image: read the run's ``dte_of_message`` interval window,
+     parse with docling, write outputs.
 """
 # pylint: disable=import-outside-toplevel, import-error, too-many-locals, too-many-statements, fixme
 
-from datetime import timedelta
 from airflow.decorators import task, task_group
 from kubernetes.client import models as k8s
 
-from lib.config import INTERVAL_START_DAY, INTERVAL_END_DAY, DEFAULT_TIMEOUT_HOURS
+from lib.config import INTERVAL_START_DAY, INTERVAL_END_DAY
 
-# Dependencies installed into the parse_and_write venv at task runtime.
-PARSE_REQUIREMENTS = [
-    "docling==2.55.1",
-    "polars==1.12.0",
-    "deltalake==0.22.3",
-    "pyarrow==25.0.0",
-]
+DOCLING_IMAGE = "ghcr.io/ferlab-ste-justine/unic-airflow-docling:0.1.0"
 
 # parse_and_write runs docling in its own KubernetesExecutor pod.
 # executor_config / pod_override is resolved at DAG-parse time and is NOT Jinja-templatable
@@ -41,6 +35,14 @@ PARSE_EXECUTOR_CONFIG = {
                 k8s.V1Container(
                     # The worker container is named "base" so the override targets it.
                     name="base",
+                    # Instantiate the pod with the docling custom image.
+                    image=DOCLING_IMAGE,
+                    # The pod carries a CFS cpu bandwidth quota while os.cpu_count() reports the node's cores,
+                    # so the OpenMP pools (libgomp used by torch underneath docling)
+                    # would size themselves off the node's reported cores and attempt to use all of them. Must be
+                    # pod env rather than os.environ, since OpenMP reads it once, when
+                    # its runtime initializes at `import torch`.
+                    env=[k8s.V1EnvVar(name="OMP_NUM_THREADS", value=PARSE_POD_CPU)],
                     resources=k8s.V1ResourceRequirements(
                         requests={"memory": PARSE_POD_MEMORY, "cpu": PARSE_POD_CPU},
                         limits={"memory": PARSE_POD_MEMORY, "cpu": PARSE_POD_CPU},
@@ -84,10 +86,7 @@ def extract_config(input_source_id: str, report_delta_destination_id: str,
     return config.to_dict()
 
 
-@task.virtualenv(requirements=PARSE_REQUIREMENTS, system_site_packages=True,
-                 executor_config=PARSE_EXECUTOR_CONFIG,
-                 execution_timeout= 0.5 * DEFAULT_TIMEOUT_HOURS,
-                 retries=2)
+@task(executor_config=PARSE_EXECUTOR_CONFIG, retries=2)
 def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destination_id: str,
                     tables_destination_id: str, report_md_destination_id: str,
                     interval_start: str, interval_end: str,
@@ -248,6 +247,9 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
         next_d = (date.fromisoformat(d) + timedelta(days=1)).isoformat()  # exclusive upper of the 1-day window
         df_d = _read_obx_pdfs_for_date(d)
         pdf_files, meta_by_stem, skipped_rows = _materialize_pdfs(df_d, tmp_dir)
+        # The PDFs are on disk now, thus drop the df that holds the original curated base64 column
+        rows_read = df_d.height
+        del df_d
         results = run(converter, pdf_files) if pdf_files else []
         report_df, tables_df = _build_outputs(results, meta_by_stem, skipped_rows)
 
@@ -260,17 +262,21 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
             report_df, report_md_pattern_uri=report_md_pattern_uri, minio_conn_id=config.minio_conn_id)
 
         logging.info("[%s] %d rows, %d PDFs, %d skipped, %d tables, %d report.md",
-                     d, df_d.height, len(pdf_files), len(skipped_rows), tables_df.height, reports_written)
-        return {"rows_read": df_d.height, "pdfs_parsed": len(pdf_files), "skipped": len(skipped_rows),
+                     d, rows_read, len(pdf_files), len(skipped_rows), tables_df.height, reports_written)
+        return {"rows_read": rows_read, "pdfs_parsed": len(pdf_files), "skipped": len(skipped_rows),
                 "tables_extracted": tables_df.height, "reports_written": reports_written}
 
     # ---- orchestration: process each date partition, accumulate counts ----
-    converter = build_converter(doc_batch_concurrency, enable_ocr)
     dates = _partition_dates_in_window()
     logging.info("Processing %d date partition(s) in [%s, %s)", len(dates), interval_start, interval_end)
 
     logging_statistics = {"rows_read": 0, "pdfs_parsed": 0, "skipped": 0,
                           "tables_extracted": 0, "reports_written": 0}
+    # Avoid converter build + temp dir creation if there are no dates to process.
+    if not dates:
+        return {**logging_statistics, "dates": 0}
+
+    converter = build_converter(doc_batch_concurrency, enable_ocr)
     with tempfile.TemporaryDirectory() as tmp_dir:  # one temp dir shared by every date in this run
         for d in dates:
             for key, count in _process_date(d, converter, tmp_dir).items():
