@@ -17,7 +17,7 @@
         {"dataset_id": "enriched_chooseme_tests_respiratoires"        , "cluster_type": "small" , "run_type": "default", "pass_date": true, "dependencies": ["enriched_chooseme_patient"]},
         {"dataset_id": "enriched_chooseme_prescriptions_biologiques"  , "cluster_type": "small" , "run_type": "default", "pass_date": true, "dependencies": ["enriched_chooseme_patient"]},
         {"dataset_id": "enriched_chooseme_prescriptions_respiratoires", "cluster_type": "small" , "run_type": "default", "pass_date": true, "dependencies": ["enriched_chooseme_patient"]},
-        {"dataset_id": "enriched_chooseme_prelevements"               , "cluster_type": "small" , "run_type": "default", "pass_date": true, "dependencies": ["enriched_chooseme_patient"]},
+        {"dataset_id": "enriched_chooseme_prelevements"               , "cluster_type": "small" , "run_type": "initial", "pass_date": true, "dependencies": ["enriched_chooseme_patient"]},
         {"dataset_id": "enriched_chooseme_administrations_medicaments", "cluster_type": "small" , "run_type": "default", "pass_date": true, "dependencies": ["enriched_chooseme_patient"]},
         {"dataset_id": "enriched_chooseme_district_area"              , "cluster_type": "small" , "run_type": "default", "pass_date": true, "dependencies": ["enriched_chooseme_participant_index"]}
       ]
@@ -28,14 +28,14 @@
       "main_class": "bio.ferlab.ui.etl.released.Main",
       "multiple_main_methods": false,
       "datasets": [
-        {"dataset_id": "released_chooseme_patient"                    , "cluster_type": "small" , "run_type": "default", "pass_date": true, "dependencies": []},
-        {"dataset_id": "released_chooseme_hospitalisations"           , "cluster_type": "small" , "run_type": "default", "pass_date": true, "dependencies": []},
+        {"dataset_id": "released_chooseme_patient"                    , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []},
+        {"dataset_id": "released_chooseme_hospitalisations"           , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []},
         {"dataset_id": "released_chooseme_visites_urgences"           , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []},
         {"dataset_id": "released_chooseme_visites_ambulatoires"       , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []},
         {"dataset_id": "released_chooseme_tests_respiratoires"        , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []},
         {"dataset_id": "released_chooseme_prescriptions_biologiques"  , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []},
         {"dataset_id": "released_chooseme_prescriptions_respiratoires", "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []},
-        {"dataset_id": "released_chooseme_prelevements"               , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []},
+        {"dataset_id": "released_chooseme_prelevements"               , "cluster_type": "small", "run_type": "initial", "pass_date": true, "dependencies": []},
         {"dataset_id": "released_chooseme_administrations_medicaments", "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []},
         {"dataset_id": "released_chooseme_district_area"              , "cluster_type": "small", "run_type": "default", "pass_date": true, "dependencies": []}
       ]
