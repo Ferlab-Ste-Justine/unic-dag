@@ -80,12 +80,13 @@ with dag:
         dag=dag
     )
 
+    # Temp
     anonymized_document_index = SparkOperator(
         task_id=ANONYMIZED_DESTINATION,
         name=ANONYMIZED_DESTINATION.replace("_", "-"),
         arguments=[
             "--config", CONFIG_FILE,
-            "--steps", run_type(),
+            "--steps", "initial",
             "--app-name", ANONYMIZED_DESTINATION,
             "--destination", ANONYMIZED_DESTINATION
         ],
