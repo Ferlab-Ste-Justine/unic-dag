@@ -29,6 +29,10 @@ Ce DAG traite les tables chargées lors de la seconde batch de chargement de Csc
 
 Les tables jobs et jobs_sections sont traitées par le DAG `curated_cscmed_jobs`.
 
+### Chargement incrémental
+Talend ne livre plus un snapshot complet à chaque charge : chaque partition
+`ingested_on_dte` de la zone rouge ne contient que les lignes nouvelles ou modifiées.
+
 ### Tests QA
 Les tests QA anonymized sont répartis en 5 shards par test.
 
@@ -118,10 +122,6 @@ _SIZE_RANK = {"large": 0, "medium": 1, "small": 2}
 ANON_DESTINATIONS = [dataset["dataset_id"] for dataset in
                      sorted(ANON_DATASETS, key=lambda d: _SIZE_RANK[d["cluster_type"].strip()])]
 
-# equal_counts is skipped for demographic: the anonymization intentionally filters out
-# test-patient records (ExcludedTestIds), so its row count will always differ from raw by design.
-EQUAL_COUNTS_DESTINATIONS = [d for d in ANON_DESTINATIONS if d != "anonymized_cscmed_demographic"]
-
 QA_SHARDS = 5
 
 
@@ -140,9 +140,7 @@ dag_config = {
             "destination_subzone": "curated",
             "main_class": "bio.ferlab.ui.etl.red.curated.Main",
             "multiple_main_methods": True,
-            "pre_tests": [{"name": "greater_or_equal_partition_counts",
-                           "destinations": [dataset["dataset_id"] for dataset in CURATED_DATASETS],
-                           "cluster_type": "small"}],
+            "pre_tests": [],
             "datasets": CURATED_DATASETS,
             "optimize": [],
             "post_tests": []
@@ -152,11 +150,10 @@ dag_config = {
             "destination_subzone": "anonymized",
             "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
             "multiple_main_methods": False,
-            "pre_tests": shard_tests("greater_or_equal_partition_counts", ANON_DESTINATIONS, "medium"),
+            "pre_tests": [],
             "datasets": ANON_DATASETS,
             "optimize": [],
-            "post_tests": shard_tests("lower_or_equal_null_counts", ANON_DESTINATIONS, "medium")
-                          + shard_tests("equal_counts", EQUAL_COUNTS_DESTINATIONS, "medium")
+            "post_tests": shard_tests("greater_or_equal_counts", ANON_DESTINATIONS, "medium")
         }
     ]
 }
