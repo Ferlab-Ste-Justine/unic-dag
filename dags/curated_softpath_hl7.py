@@ -1,6 +1,7 @@
 """
 DAG pour le parsing des messages HL7 de Softpath
 """
+# pylint: disable=invalid-name
 from datetime import datetime, timedelta
 from typing import List
 
@@ -8,6 +9,7 @@ from airflow import DAG
 
 from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE, LOCAL_TZ
 # from core.slack import Slack
+from lib.groups.parsing.hl7_pdf_docling_parsing import hl7_pdf_docling_parsing
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
 from lib.tasks.notify import end, start
@@ -18,10 +20,15 @@ DOC = """
 ETL curated pour parser les messages HL7 softpath déposé en zone rouge
 
 ### Description
-Cet ETL roule pour parser les messages HL7 et les convertir de messages .hl7 au format Delta. 
+Cet ETL roule pour parser les messages HL7 et les convertir de messages .hl7 au format Delta.
 Cet ETL roule 1 fois par jour.
 Elle parse des données de la date précédante de la date de la run dans airflow, par exemple:
 La run du 2 janvier 2020 parse les données du 1 janvier dans le lac.
+
+### Parsing docling
+La dernière étape parse avec docling les documents PDF encodés en base64 de la table OBX curated
+(`curated_softpath_hl7_oru_r01_obx`) et écrit le rapport markdown, les tables extraites et un
+`report.md` par document.
 
 """
 
@@ -29,6 +36,13 @@ ANONYMIZED_ZONE = "yellow"
 CURATED_ZONE = "red"
 ANONYMIZED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.anonymized.hl7.Main"
 CURATED_MAIN_CLASS = "bio.ferlab.ui.etl.red.curated.hl7.Main"
+
+DOCLING_INPUT_SOURCE_ID = "curated_softpath_hl7_oru_r01_obx"
+DOCLING_REPORT_DELTA_DESTINATION_ID = "curated_softpath_hl7_oru_r01_obx_parsing_reports_delta"
+DOCLING_TABLES_DESTINATION_ID = "curated_softpath_hl7_oru_r01_obx_parsing_tables"
+DOCLING_REPORT_MD_DESTINATION_ID = "curated_softpath_hl7_oru_r01_obx_parsing_report_md"
+DOCLING_DOC_BATCH_CONCURRENCY = 4
+DOCLING_ENABLE_OCR = True
 args = DEFAULT_ARGS.copy()
 args.update({
     'provide_context': True,
@@ -105,4 +119,13 @@ with dag:
         dag=dag
     ) for task_name, cluster_size in softpath_hl7_anonymized_tasks]
 
-    start("start_curated_softpath_hl7") >> softpath_hl7_curated >> start("start_anonymized_softpath_hl7") >> softpath_hl7_anonymized >> end("end_anonymized_softpath_hl7")
+    hl7_docling_pipeline = hl7_pdf_docling_parsing(
+        input_source_id=DOCLING_INPUT_SOURCE_ID,
+        report_delta_destination_id=DOCLING_REPORT_DELTA_DESTINATION_ID,
+        tables_destination_id=DOCLING_TABLES_DESTINATION_ID,
+        report_md_destination_id=DOCLING_REPORT_MD_DESTINATION_ID,
+        doc_batch_concurrency=DOCLING_DOC_BATCH_CONCURRENCY,
+        enable_ocr=DOCLING_ENABLE_OCR,
+    )
+
+    start("start_curated_softpath_hl7") >> softpath_hl7_curated >> start("start_anonymized_softpath_hl7") >> softpath_hl7_anonymized >> hl7_docling_pipeline >> end("end_anonymized_softpath_hl7")
