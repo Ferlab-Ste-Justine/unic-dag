@@ -26,8 +26,8 @@ DOCLING_IMAGE = "ghcr.io/ferlab-ste-justine/unic-airflow-docling:0.1.0"
 
 # parse_and_write runs docling in its own KubernetesExecutor pod.
 # executor_config / pod_override is resolved at DAG-parse time and is NOT Jinja-templatable
-PARSE_POD_MEMORY = "24Gi"
-PARSE_POD_CPU = "8"
+PARSE_POD_MEMORY = "16Gi"
+PARSE_POD_CPU = "6"
 PARSE_EXECUTOR_CONFIG = {
     "pod_override": k8s.V1Pod(
         spec=k8s.V1PodSpec(
@@ -86,7 +86,8 @@ def extract_config(input_source_id: str, report_delta_destination_id: str,
     return config.to_dict()
 
 
-@task(executor_config=PARSE_EXECUTOR_CONFIG, retries=2)
+# Caps this task to one docling pod per DAG, across all of its concurrent runs.
+@task(executor_config=PARSE_EXECUTOR_CONFIG, retries=2, max_active_tis_per_dag=1)
 def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destination_id: str,
                     tables_destination_id: str, report_md_destination_id: str,
                     interval_start: str, interval_end: str,
