@@ -2,6 +2,7 @@
 import logging
 import os
 import re
+from contextlib import closing
 from datetime import datetime
 
 import pandas as pd
@@ -157,14 +158,15 @@ def publish_dictionary(
     ca_cert = unic_postgres_vlan2_ca_cert(PostgresEnv.PROD)
     pg = get_pg_ca_hook(pg_conn_id, ca_cert)
 
-    result_map = {
-        "Resource": pg.get_pandas_df(resource_query(resource_code)),
-        "Dict Tables": pg.get_pandas_df(dict_table_query(resource_code)),
-        "Variable": pg.get_pandas_df(variable_query(resource_code)),
-        "Value Sets": pg.get_pandas_df(value_set_query(resource_code)),
-        "Value Set Codes": pg.get_pandas_df(value_set_code_query(resource_code)),
-        "Mappings": pg.get_pandas_df(mapping_query(resource_code))
-    }
+    with closing(pg.get_conn()) as conn:
+        result_map = {
+            "Resource": pd.read_sql(resource_query(resource_code), conn),
+            "Dict Tables": pd.read_sql(dict_table_query(resource_code), conn),
+            "Variable": pd.read_sql(variable_query(resource_code), conn),
+            "Value Sets": pd.read_sql(value_set_query(resource_code), conn),
+            "Value Set Codes": pd.read_sql(value_set_code_query(resource_code), conn),
+            "Mappings": pd.read_sql(mapping_query(resource_code), conn)
+        }
 
     # set up local Excel file
     local_excel_directory = '/tmp/excel/'
