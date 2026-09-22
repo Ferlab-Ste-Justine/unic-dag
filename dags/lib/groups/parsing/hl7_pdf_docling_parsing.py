@@ -87,7 +87,7 @@ def extract_config(input_source_id: str, report_delta_destination_id: str,
 
 
 # Caps this task to one docling pod per DAG, across all of its concurrent runs.
-@task(executor_config=PARSE_EXECUTOR_CONFIG, retries=2, max_active_tis_per_dag=1)
+@task(retries=2, max_active_tis_per_dag=1)
 def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destination_id: str,
                     tables_destination_id: str, report_md_destination_id: str,
                     interval_start: str, interval_end: str,
@@ -311,7 +311,8 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
 @task_group(group_id="hl7_pdf_docling_parsing")
 def hl7_pdf_docling_parsing(input_source_id: str, report_delta_destination_id: str,
                             tables_destination_id: str, report_md_destination_id: str,
-                            doc_batch_concurrency: int = 4, enable_ocr: bool = False) -> None:
+                            doc_batch_concurrency: int = 4, enable_ocr: bool = False,
+                            executor_config: dict = None) -> None:
     """Resolve the curated OBX table, then parse its PDFs and write report + tables.
 
     The date window is each run's own ``data_interval`` (half-open ``[start, end)``)
@@ -322,7 +323,10 @@ def hl7_pdf_docling_parsing(input_source_id: str, report_delta_destination_id: s
     :param report_md_destination_id: datalake.sources id of the per-document report.md tree output pattern.
     :param doc_batch_concurrency: docling threaded multi-document concurrencdatasety (1 = sequential).
     :param enable_ocr: Run OCR for scanned PDFs (table-structure detection is always on).
+    :param executor_config: pod sizing for parse_and_write. Defaults to PARSE_EXECUTOR_CONFIG.
     """
+    if executor_config is None:
+        executor_config = PARSE_EXECUTOR_CONFIG
 
     config_dict = extract_config(
         input_source_id=input_source_id,
@@ -331,7 +335,7 @@ def hl7_pdf_docling_parsing(input_source_id: str, report_delta_destination_id: s
         report_md_destination_id=report_md_destination_id,
     )
 
-    parse_and_write(
+    parse_and_write.override(executor_config=executor_config)(
         config_dict=config_dict,
         input_source_id=input_source_id,
         report_delta_destination_id=report_delta_destination_id,

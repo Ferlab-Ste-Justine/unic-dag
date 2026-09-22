@@ -14,14 +14,12 @@ from datetime import timedelta
 import pendulum
 from airflow import DAG
 from airflow.models import Param
-from airflow.utils.task_group import TaskGroup
 from airflow.utils.trigger_rule import TriggerRule
 from kubernetes.client import models as k8s
 
 from lib.tasks.notify import start, end
-from lib.config import DEFAULT_ARGS, LOCAL_TZ, INTERVAL_START_DAY, INTERVAL_END_DAY
-from lib.groups.parsing.hl7_pdf_docling_parsing import (
-    DOCLING_IMAGE, extract_config, parse_and_write)
+from lib.config import DEFAULT_ARGS, LOCAL_TZ
+from lib.groups.parsing.hl7_pdf_docling_parsing import DOCLING_IMAGE, hl7_pdf_docling_parsing
 from lib.slack import Slack
 from timetables import IntervalTimetable
 
@@ -32,8 +30,9 @@ REPORT_MD_DESTINATION_ID = "curated_radimage_hl7_oru_r01_obx_parsing_report_md"
 
 # Overrides PARSE_EXECUTOR_CONFIG from lib.groups.parsing.hl7_pdf_docling_parsing, where the
 # original and the rationale for each field live.
+# Done since this is a backfill DAG that has a wider timedelta, thus needs more ressources.
 PARSE_POD_CPU = "8"
-PARSE_POD_MEMORY = "32Gi"
+PARSE_POD_MEMORY = "24Gi"
 
 RADIMAGE_EXECUTOR_CONFIG = {
     "pod_override": k8s.V1Pod(
@@ -83,25 +82,13 @@ dag = DAG(
 with dag:
     start_task = start("start_curated_radimage_hl7_docling_backfill")
     end_task = end("end_curated_radimage_hl7_docling_backfill")
-    # Imported tasks individually so that parse_and_write can run on a larger pod.
-    with TaskGroup(group_id="hl7_pdf_docling_parsing") as hl7_docling_pipeline:
-        config_dict = extract_config(
-            input_source_id=INPUT_SOURCE_ID,
-            report_delta_destination_id=REPORT_DELTA_DESTINATION_ID,
-            tables_destination_id=TABLES_DESTINATION_ID,
-            report_md_destination_id=REPORT_MD_DESTINATION_ID,
-        )
-
-        parse_and_write.override(executor_config=RADIMAGE_EXECUTOR_CONFIG)(
-            config_dict=config_dict,
-            input_source_id=INPUT_SOURCE_ID,
-            report_delta_destination_id=REPORT_DELTA_DESTINATION_ID,
-            tables_destination_id=TABLES_DESTINATION_ID,
-            report_md_destination_id=REPORT_MD_DESTINATION_ID,
-            interval_start=INTERVAL_START_DAY,
-            interval_end=INTERVAL_END_DAY,
-            doc_batch_concurrency="{{ params.doc_batch_concurrency }}",
-            enable_ocr="{{ params.enable_ocr }}",
-        )
-
+    hl7_docling_pipeline = hl7_pdf_docling_parsing(
+        input_source_id=INPUT_SOURCE_ID,
+        report_delta_destination_id=REPORT_DELTA_DESTINATION_ID,
+        tables_destination_id=TABLES_DESTINATION_ID,
+        report_md_destination_id=REPORT_MD_DESTINATION_ID,
+        doc_batch_concurrency="{{ params.doc_batch_concurrency }}",
+        enable_ocr="{{ params.enable_ocr }}",
+        executor_config=RADIMAGE_EXECUTOR_CONFIG,
+    )
     start_task >> hl7_docling_pipeline >> end_task
