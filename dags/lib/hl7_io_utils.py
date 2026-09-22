@@ -95,17 +95,14 @@ def _parsing_date_prefix(pattern: str, dte_of_message: str) -> str:
 
 # ---- tables: write (CSV tree) ----
 
-def write_tables(tables_df, *, tables_pattern_uri: str, minio_conn_id: str) -> None:
+def write_tables(tables_df, *, tables_pattern_uri: str, s3) -> None:
     """Write each extracted table to its placeholder-resolved key under the tables dataset.
 
     :param tables_df: polars frame with ``hl7_id``, ``dte_of_message``, ``table_index``, ``table_csv``.
     :param tables_pattern_uri: s3:// pattern uri of the tables dataset (holds ``{{date}}/{{hl7_id}}/{{table_no}}``).
-    :param minio_conn_id: Airflow MinIO connection id.
+    :param s3: S3Hook built by caller.
     """
-    from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-
     bucket, key_pattern = _split_uri(tables_pattern_uri)
-    s3 = S3Hook(aws_conn_id=minio_conn_id)
     for row in tables_df.iter_rows(named=True):
         key = _fill_parsing_path(key_pattern, row["dte_of_message"], row["hl7_id"], row["table_index"])
         # `table_csv` is already the serialized CSV produced by the parser; write it verbatim.
@@ -114,19 +111,16 @@ def write_tables(tables_df, *, tables_pattern_uri: str, minio_conn_id: str) -> N
 
 # ---- reports: write (markdown into the CSV tree) ----
 
-def write_report_markdown_tree(report_df, *, report_md_pattern_uri: str, minio_conn_id: str) -> int:
+def write_report_markdown_tree(report_df, *, report_md_pattern_uri: str, s3) -> int:
     """Write each successfully-parsed report's Markdown in the same date-first tree as the extracted tables.
     Rows whose ``report_markdown`` is null are ignored.
 
     :param report_df: polars frame with ``hl7_id``, ``dte_of_message``, ``report_markdown``.
     :param report_md_pattern_uri: s3:// pattern uri, ends in ``{{date}}/{{hl7_id}}``
-    :param minio_conn_id: Airflow MinIO connection id.
+    :param s3: S3Hook built by caller.
     :returns: number of report.md files written.
     """
-    from airflow.providers.amazon.aws.hooks.s3 import S3Hook
-
     bucket, key_pattern = _split_uri(report_md_pattern_uri)
-    s3 = S3Hook(aws_conn_id=minio_conn_id)
     written = 0
     for row in report_df.iter_rows(named=True):
         markdown = row["report_markdown"]
@@ -140,17 +134,16 @@ def write_report_markdown_tree(report_df, *, report_md_pattern_uri: str, minio_c
 
 # ---- tree: delete (per-date idempotency) ----
 
-def delete_report_tree_for_date(pattern_uri: str, dte_of_message: str, minio_conn_id: str) -> int:
+def delete_report_tree_for_date(pattern_uri: str, dte_of_message: str, s3) -> int:
     """Delete every object under a day's hl7 tree folder (the pattern truncated at ``{{hl7_id}}`` with
     ``{{date}}`` filled) so a subsequent per-date write leaves no orphaned leaves from an earlier run.
     Called once per date: tables and report.md share the tree, so the tables pattern's day-folder covers
     both. Returns the key count.
-    """
-    from airflow.providers.amazon.aws.hooks.s3 import S3Hook
 
+    :param s3: S3Hook built by caller.
+    """
     bucket, key_pattern = _split_uri(pattern_uri)
     prefix = f"{_parsing_date_prefix(key_pattern, dte_of_message)}/"
-    s3 = S3Hook(aws_conn_id=minio_conn_id)
     keys = s3.list_keys(bucket_name=bucket, prefix=prefix) or []
     for start in range(0, len(keys), 1000):  # S3 DeleteObjects caps at 1000 keys per call
         s3.delete_objects(bucket=bucket, keys=keys[start:start + 1000])
