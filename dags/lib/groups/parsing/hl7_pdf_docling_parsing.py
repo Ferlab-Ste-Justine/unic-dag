@@ -140,6 +140,7 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
 
     import polars as pl
     from airflow.exceptions import AirflowFailException
+    from airflow.providers.amazon.aws.hooks.s3 import S3Hook
     from typing import Tuple
 
     from lib.datalake_config import DatalakeConfig
@@ -157,6 +158,8 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
         )
 
     storage_options = build_storage_options(config.minio_conn_id)
+    # One hook for the whole run: credentials are cached per S3Hook instance.
+    s3 = S3Hook(aws_conn_id=config.minio_conn_id)
     report_delta_uri = config.source_s3_path(report_delta_destination_id, scheme="s3")
     tables_pattern_uri = config.source_s3_path(tables_destination_id, scheme="s3")
     report_md_pattern_uri = config.source_s3_path(report_md_destination_id, scheme="s3")
@@ -274,12 +277,12 @@ def parse_and_write(config_dict: dict, input_source_id: str, report_delta_destin
         report_df, tables_df = _build_outputs(results, meta_by_stem, skipped_rows)
 
         # Overwrite this date only: clear the shared day-folder, then replace the report Delta partition.
-        delete_report_tree_for_date(tables_pattern_uri, d, config.minio_conn_id)
+        delete_report_tree_for_date(tables_pattern_uri, d, s3)
         write_report_delta(report_df, report_uri=report_delta_uri, storage_options=storage_options,
                            window_start=d, window_end=next_d)
-        write_tables(tables_df, tables_pattern_uri=tables_pattern_uri, minio_conn_id=config.minio_conn_id)
+        write_tables(tables_df, tables_pattern_uri=tables_pattern_uri, s3=s3)
         reports_written = write_report_markdown_tree(
-            report_df, report_md_pattern_uri=report_md_pattern_uri, minio_conn_id=config.minio_conn_id)
+            report_df, report_md_pattern_uri=report_md_pattern_uri, s3=s3)
 
         logging.info("[%s] %d rows, %d PDFs, %d skipped, %d tables, %d report.md",
                      d, rows_read, len(pdf_files), len(skipped_rows), tables_df.height, reports_written)

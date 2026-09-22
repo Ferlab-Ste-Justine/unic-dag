@@ -72,9 +72,11 @@ def test_delete_report_tree_for_date(fake_s3_hook):
                 "hl7/extracted/2025/08/15/RAD_1/report.md",
                 "hl7/extracted/2025/08/15/RAD_2/table_0.csv"]
     captured = fake_s3_hook(day_keys)
+    from airflow.providers.amazon.aws.hooks.s3 import S3Hook  # the patched double
 
     deleted = hl7_io_utils.delete_report_tree_for_date(
-        "s3://red-prd/hl7/extracted/{{date}}/{{hl7_id}}/table_{{table_no}}.csv", "2025-08-15", "redminio")
+        "s3://red-prd/hl7/extracted/{{date}}/{{hl7_id}}/table_{{table_no}}.csv", "2025-08-15",
+        S3Hook(aws_conn_id="redminio"))
 
     assert deleted == 3
     assert captured["conn_id"] == "redminio"
