@@ -1,0 +1,40 @@
+{
+    "concurrency": 3,
+    "schedule": "0 8 1 * *",
+    "timeout_hours": 2,
+    "steps": [{
+      "destination_zone": "red",
+      "destination_subzone": "curated",
+      "main_class": "bio.ferlab.ui.etl.red.curated.Main",
+      "multiple_main_methods": true,
+      "pre_tests": [
+         {"name": "greater_or_equal_partition_counts", "destinations": ["curated_bd_previnf_*"], "cluster_type": "xsmall"}
+      ],
+      "datasets": [
+         {"dataset_id":"curated_bd_previnf_tab_denominateurs_anneeprecedente", "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+         {"dataset_id":"curated_bd_previnf_tab_indicateurs_anneeprecedente"  , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+         {"dataset_id":"curated_bd_previnf_tab_parametrescalculsindicateurs" , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []}
+      ],
+      "optimize" : [],
+      "post_tests": []
+    },
+    {
+      "destination_zone": "yellow",
+      "destination_subzone": "anonymized",
+      "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+      "multiple_main_methods": false,
+      "pre_tests": [
+         {"name": "greater_or_equal_partition_counts", "destinations": ["anonymized_bd_previnf_*"], "cluster_type": "xsmall"}
+      ],
+      "datasets": [
+         {"dataset_id":"anonymized_bd_previnf_tab_denominateurs_anneeprecedente", "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "dependencies": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_indicateurs"                  , "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "dependencies": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_indicateurs_anneeprecedente"  , "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "dependencies": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_listdenominateurs"            , "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "dependencies": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_parametrescalculsindicateurs" , "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "dependencies": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_unites"                       , "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "dependencies": []}
+      ],
+      "optimize" : [],
+      "post_tests": []
+    }]
+  }
