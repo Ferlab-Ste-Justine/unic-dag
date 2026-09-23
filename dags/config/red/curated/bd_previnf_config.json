@@ -27,12 +27,12 @@
          {"name": "greater_or_equal_partition_counts", "destinations": ["anonymized_bd_previnf_*"], "cluster_type": "xsmall"}
       ],
       "datasets": [
-         {"dataset_id":"anonymized_bd_previnf_tab_denominateurs_anneeprecedente", "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "dependencies": []},
-         {"dataset_id":"anonymized_bd_previnf_tab_indicateurs"                  , "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "dependencies": []},
-         {"dataset_id":"anonymized_bd_previnf_tab_indicateurs_anneeprecedente"  , "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "dependencies": []},
-         {"dataset_id":"anonymized_bd_previnf_tab_listdenominateurs"            , "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "dependencies": []},
-         {"dataset_id":"anonymized_bd_previnf_tab_parametrescalculsindicateurs" , "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "dependencies": []},
-         {"dataset_id":"anonymized_bd_previnf_tab_unites"                       , "cluster_type": "xsmall", "run_type": "initial", "pass_date": false, "dependencies": []}
+         {"dataset_id":"anonymized_bd_previnf_tab_denominateurs_anneeprecedente", "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_indicateurs"                  , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_indicateurs_anneeprecedente"  , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_listdenominateurs"            , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_parametrescalculsindicateurs" , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+         {"dataset_id":"anonymized_bd_previnf_tab_unites"                       , "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []}
       ],
       "optimize" : [],
       "post_tests": []
