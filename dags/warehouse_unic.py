@@ -10,7 +10,7 @@ from lib.datasets import anonymized_unic_patient_index
 from lib.slack import Slack
 from tasks import create_tasks
 
-TIMEOUT_HOURS = 4
+TIMEOUT_HOURS = 8
 
 CONFIG = {
     "steps": [{
