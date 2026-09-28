@@ -13,7 +13,8 @@ from lib.config import LOCAL_TZ
 from lib.sensors.external_task import (
     DEFAULT_POKE_INTERVAL,
     DEFAULT_TIMEOUT,
-    _same_day_execution_date,
+    _latest_run_execution_date,
+    _window,
     wait_for,
 )
 
@@ -35,25 +36,41 @@ def make_session():
     return _make
 
 
-def test_same_day_execution_date(make_session):
+def test_latest_run_execution_date(make_session):
     """
     It should return the latest run's execution date within the day window.
     """
     session = make_session([_run(pendulum.datetime(2026, 7, 3, 10, tz=LOCAL_TZ)),
                             _run(pendulum.datetime(2026, 7, 3, 13, tz=LOCAL_TZ))])
-    result = _same_day_execution_date("warehouse_unic")(
+    result = _latest_run_execution_date("warehouse_unic")(
         logical_date=LOGICAL_DATE, data_interval_end=DATA_INTERVAL_END, session=session)
     assert result == pendulum.datetime(2026, 7, 3, 13, tz=LOCAL_TZ)
 
 
-def test_same_day_execution_date_no_run(make_session):
+def test_latest_run_execution_date_no_run(make_session):
     """
     It should return the interval-end day when the window has no run, so the sensor keeps waiting.
     """
     session = make_session([])
-    result = _same_day_execution_date("warehouse_unic")(
+    result = _latest_run_execution_date("warehouse_unic")(
         logical_date=LOGICAL_DATE, data_interval_end=DATA_INTERVAL_END, session=session)
     assert result == pendulum.datetime(2026, 7, 3, tz=LOCAL_TZ)
+
+
+def test_window():
+    """
+    It should cover only the interval-end day without lookback.
+    """
+    assert _window(DATA_INTERVAL_END, lookback_days=0) == (
+        pendulum.datetime(2026, 7, 3, tz=LOCAL_TZ), pendulum.datetime(2026, 7, 4, tz=LOCAL_TZ))
+
+
+def test_window_lookback():
+    """
+    It should start the window lookback_days before the interval-end day.
+    """
+    assert _window(DATA_INTERVAL_END, lookback_days=1) == (
+        pendulum.datetime(2026, 7, 2, tz=LOCAL_TZ), pendulum.datetime(2026, 7, 4, tz=LOCAL_TZ))
 
 
 def test_wait_for_tasks():
