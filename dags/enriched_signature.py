@@ -217,6 +217,13 @@ with dag:
             skip_index=True
         )
 
-    wait_for_lab_results = wait_for("warehouse_unic", "warehouse.warehouse_lab_results",
-                                    task_id="wait_for_warehouse_lab_results")
-    start() >> wait_for_lab_results >> enriched >> released >> published >> end()
+    wait_for_upstreams = [
+        wait_for("curated_unic", "anonymized.anonymized_unic_patient_index",
+                 task_id="wait_for_anonymized_unic_patient_index"),
+        wait_for("warehouse_unic", "warehouse.warehouse_lab_results",
+                 task_id="wait_for_warehouse_lab_results"),
+        # curated_cscmed_jobs runs the day before this DAG
+        wait_for("curated_cscmed_jobs", "curated.curated_cscmed_jobs_sections", "anonymized.anonymized_cscmed_jobs",
+                 task_id="wait_for_anonymized_cscmed_jobs", lookback_days=1),
+    ]
+    start() >> wait_for_upstreams >> enriched >> released >> published >> end()
