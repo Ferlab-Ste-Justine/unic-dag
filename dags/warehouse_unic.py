@@ -35,7 +35,7 @@ CONFIG = {
             {"dataset_id": "warehouse_obstetrical_form_family_medical_history"  , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
             {"dataset_id": "warehouse_obstetrical_form_personal_medical_history", "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
             {"dataset_id": "warehouse_obstetrical_form_pregnancy_history"       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
-            {"dataset_id": "warehouse_pathology"                                , "cluster_type": "medium", "run_type": "initial", "pass_date": False, "dependencies": []},
+            {"dataset_id": "warehouse_pathology"                                , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
             {"dataset_id": "warehouse_pregnancy_index"                          , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
             {"dataset_id": "warehouse_respiratory_care"                         , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
             {"dataset_id": "warehouse_sociodemographics"                        , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
