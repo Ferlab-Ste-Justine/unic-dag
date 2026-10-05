@@ -29,6 +29,7 @@ CONFIG = {
             {"dataset_id": "warehouse_lab_results"                              , "cluster_type": "large" , "run_type": "default", "pass_date": False, "dependencies": []},
             {"dataset_id": "warehouse_maternal_ultrasound"                      , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
             {"dataset_id": "warehouse_medical_imaging"                          , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
+            {"dataset_id": "warehouse_medical_photo_metadata"                   , "cluster_type": "small" , "run_type": "default", "pass_date": False, "dependencies": []},
             {"dataset_id": "warehouse_medication_administration"                , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
             {"dataset_id": "warehouse_medication_service"                       , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
             {"dataset_id": "warehouse_microbiology"                             , "cluster_type": "medium", "run_type": "default", "pass_date": False, "dependencies": []},
