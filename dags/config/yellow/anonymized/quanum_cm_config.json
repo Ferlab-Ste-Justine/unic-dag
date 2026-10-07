@@ -1,0 +1,25 @@
+{
+    "concurrency": 2,
+    "schedule": "0 14 * * 6",
+    "timeout_hours": 6,
+    "steps": [
+      {
+        "destination_zone": "yellow",
+        "destination_subzone": "anonymized",
+        "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+        "multiple_main_methods": false,
+        "pre_tests": [
+          {"name": "greater_or_equal_partition_counts", "destinations": ["anonymized_quanum_cm_document_index", "anonymized_quanum_cm_patient_encounter_join", "anonymized_quanum_cm_encounter_documents"], "cluster_type": "xsmall"}
+        ],
+        "datasets": [
+          {"dataset_id": "anonymized_quanum_cm_document_index"        , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []},
+          {"dataset_id": "anonymized_quanum_cm_patient_encounter_join", "cluster_type": "xsmall", "run_type": "default", "pass_date": false, "dependencies": []},
+          {"dataset_id": "anonymized_quanum_cm_encounter_documents"   , "cluster_type": "medium", "run_type": "default", "pass_date": false, "dependencies": []}
+        ],
+        "optimize" : [],
+        "post_tests": [
+          {"name": "lower_or_equal_null_counts", "destinations": ["anonymized_quanum_cm_document_index", "anonymized_quanum_cm_patient_encounter_join", "anonymized_quanum_cm_encounter_documents"], "cluster_type": "xsmall"},
+          {"name": "equal_counts", "destinations": ["anonymized_quanum_cm_patient_encounter_join"], "cluster_type": "xsmall"}
+        ]
+      }]
+  }
