@@ -12,6 +12,7 @@ from airflow.models import Param
 from airflow.operators.empty import EmptyOperator
 
 from lib.tasks.optimize import optimize
+from lib.tasks.qa import test
 from lib.config import DEFAULT_PARAMS, DEFAULT_ARGS, SPARK_FAILURE_MSG, JAR, CONFIG_FILE, LOCAL_TZ
 from lib.operators.spark import SparkOperator
 from lib.slack import Slack
@@ -37,6 +38,7 @@ This DAG will:
 2. Union curated Chartmaxx and Quanum data into curated_quanumchartmaxx tables.
 3. Anonymize curated Chartmaxx legacy tables. *These tables will stop being anonymized once project dependencies are migrated to the new quanumchartmaxx tables.*
 4. Anonymized curated_quanumchartmaxx tables.
+5. Anonymize the Quanum cm_* document metadata tables directly from raw, with no curated step.
 """
 
 QUANUM_CURATED_ZONE = "red"
@@ -256,6 +258,9 @@ with dag:
             ("anonymized_quanum_clinique_de_pneumologie_suivi", "small-etl"),
             ("anonymized_quanum_dossier_obstetrical_*", "small-etl"),
             ("anonymized_quanum_pneumologie_consultation_initiale", "small-etl"),
+            ("anonymized_quanum_cm_document_index", "medium-etl"),
+            ("anonymized_quanum_cm_encounter_documents", "medium-etl"),
+            ("anonymized_quanum_cm_patient_encounter_join", "small-etl"),
         ]
 
         anonymized_quanum_tasks = [SparkOperator(
@@ -270,10 +275,13 @@ with dag:
             dag=dag
         ) for task_name, cluster_size in anonymized_quanum_config]
 
+        cm_equal_counts = test("equal_counts", ["anonymized_quanum_cm_patient_encounter_join"], "quanum_cm",
+                               QUANUMCHARTMAXX_ANONYMIZED_ZONE, "anonymized", CONFIG_FILE, JAR, dag)
+
         anonymized_quanum_optimization_tasks = optimize(['anonymized_quanum_*'], "quanum",
                                                         QUANUMCHARTMAXX_ANONYMIZED_ZONE, "anonymized", CONFIG_FILE, JAR, dag)
 
-        anonymized_quanum_tasks >> anonymized_quanum_optimization_tasks
+        anonymized_quanum_tasks >> cm_equal_counts >> anonymized_quanum_optimization_tasks
 
 
     @task_group(group_id="anonymized_quanumchartmaxx")
