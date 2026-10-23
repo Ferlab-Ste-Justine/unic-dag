@@ -36,12 +36,12 @@ dag_config = {
             "destination_subzone": "curated",
             "main_class": "bio.ferlab.ui.etl.red.curated.Main",
             "multiple_main_methods": True,
-            "pre_tests": [{"name": "greater_or_equal_partition_counts", "destinations": ["curated_cscmed_jobs_sections"], "cluster_type": "small"}],
+            "pre_tests": [],
             "datasets": [
                 {"dataset_id": "curated_cscmed_jobs_sections", "cluster_type": "large", "run_type": "default", "pass_date": False, "dependencies": []}
             ],
             "optimize": [],
-            "post_tests": []
+            "post_tests": [{"name": "greater_or_equal_counts", "destinations": ["curated_cscmed_jobs_sections"], "cluster_type": "small"}]
         },
         {
             "destination_zone": "yellow",
