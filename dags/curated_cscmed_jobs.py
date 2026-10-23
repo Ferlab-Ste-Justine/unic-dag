@@ -23,6 +23,11 @@ Ce DAG traite exclusivement les deux tables chargées lors de la première batch
 
 Les autres tables CscMed (cliniques, quickform, etc.) sont traitées par le DAG `curated_cscmed`.
 
+### Chargement incrémental
+Pour jobs_sections, Talend ne livre plus un snapshot complet à chaque charge : chaque partition
+`ingested_on_dte` de la zone rouge ne contient que les lignes nouvelles ou modifiées, fusionnées
+(Upsert sur fkJobs, fkSection) dans curated_cscmed_jobs_sections. La table jobs reste un snapshot complet.
+
 ### Horaire
 * __Date de début__ - 9 avril 2026
 * __Jour et heure__ - Jeudi, 18h heure de Montréal
@@ -36,12 +41,12 @@ dag_config = {
             "destination_subzone": "curated",
             "main_class": "bio.ferlab.ui.etl.red.curated.Main",
             "multiple_main_methods": True,
-            "pre_tests": [{"name": "greater_or_equal_partition_counts", "destinations": ["curated_cscmed_jobs_sections"], "cluster_type": "small"}],
+            "pre_tests": [],
             "datasets": [
                 {"dataset_id": "curated_cscmed_jobs_sections", "cluster_type": "large", "run_type": "default", "pass_date": False, "dependencies": []}
             ],
             "optimize": [],
-            "post_tests": []
+            "post_tests": [{"name": "greater_or_equal_counts", "destinations": ["curated_cscmed_jobs_sections"], "cluster_type": "small"}]
         },
         {
             "destination_zone": "yellow",
