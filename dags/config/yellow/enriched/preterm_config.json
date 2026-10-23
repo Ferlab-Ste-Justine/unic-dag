@@ -15,7 +15,7 @@
         {"dataset_id":"enriched_preterm_district_area_from_birth"   , "cluster_type": "small"  , "run_type": "default", "pass_date": false, "dependencies": ["enriched_preterm_participant_index"]},
         {"dataset_id":"enriched_preterm_mri"                        , "cluster_type": "small"  , "run_type": "default", "pass_date": false, "dependencies": ["enriched_preterm_participant_index"]},
         {"dataset_id":"enriched_preterm_brain_mri_report"           , "cluster_type": "small"  , "run_type": "default", "pass_date": false, "dependencies": ["enriched_preterm_participant_index"]},
-        {"dataset_id":"enriched_preterm_psychiatric_diagnosis"      , "cluster_type": "small"  , "run_type": "default", "pass_date": false, "dependencies": ["enriched_preterm_participant_index"]}
+        {"dataset_id":"enriched_preterm_psychiatric_diagnosis"      , "cluster_type": "small"  , "run_type": "initial", "pass_date": false, "dependencies": ["enriched_preterm_participant_index"]}
 
       ]
     },
@@ -31,7 +31,7 @@
         {"dataset_id":"released_preterm_district_area_from_birth"   , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id":"released_preterm_mri"                        , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
         {"dataset_id":"released_preterm_brain_mri_report"           , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id":"released_preterm_psychiatric_diagnosis"      , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+        {"dataset_id":"released_preterm_psychiatric_diagnosis"      , "cluster_type": "small", "run_type": "initial", "pass_date": false, "dependencies": []}
 
       ]
     }
