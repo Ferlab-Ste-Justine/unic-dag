@@ -29,7 +29,7 @@ args["execution_timeout"] = timedelta(hours=3 / 4 * TIMEOUT_HOURS)
 
 dag = DAG(
     dag_id="omop_unic",
-    schedule=None, // to change when we want to add a schedule
+    schedule=None,
     params=DEFAULT_PARAMS,
     default_args=args,
     start_date=DEFAULT_START_DATE,
