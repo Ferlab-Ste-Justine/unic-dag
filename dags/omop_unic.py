@@ -9,7 +9,7 @@ from lib.config import DEFAULT_ARGS, DEFAULT_PARAMS, DEFAULT_START_DATE, CONFIG_
 from lib.slack import Slack
 from tasks import create_tasks
 
-TIMEOUT_HOURS = 2
+TIMEOUT_HOURS = 4
 
 CONFIG = {
     "steps": [{
