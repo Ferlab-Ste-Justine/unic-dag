@@ -1,0 +1,12 @@
+{
+  "timeout_hours": 4,
+  "steps": [{
+    "destination_zone": "yellow",
+    "destination_subzone": "anonymized",
+    "main_class": "bio.ferlab.ui.etl.yellow.anonymized.Main",
+    "multiple_main_methods": false,
+    "datasets": [
+      {"dataset_id": "omop_athena_*", "cluster_type": "large", "run_type": "default", "pass_date": false, "dependencies": []}
+    ]
+  }]
+}
