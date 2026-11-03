@@ -1,11 +1,12 @@
 # pylint: disable=too-many-instance-attributes
-from airflow.exceptions import AirflowSkipException
+from airflow.exceptions import AirflowException, AirflowSkipException
 from airflow.providers.cncf.kubernetes.operators.pod import KubernetesPodOperator
 from airflow.providers.cncf.kubernetes.utils.pod_manager import OnFinishAction
 from kubernetes.client import models as k8s
 from kubernetes.client.exceptions import ApiException
 
 from lib.cleanup import cleanup_pods
+from lib.slack import Slack
 
 
 class SparkOperator(KubernetesPodOperator):
@@ -23,6 +24,7 @@ class SparkOperator(KubernetesPodOperator):
             zone: str,
             spark_config: str = '',
             skip: bool = False,
+            skip_on_failure: bool = False,
             **kwargs,
     ) -> None:
         super().__init__(
@@ -40,6 +42,7 @@ class SparkOperator(KubernetesPodOperator):
         self.namespace = f'unic-{zone}'
         self.spark_config = spark_config
         self.skip = skip
+        self.skip_on_failure = skip_on_failure
 
     def execute(self, context):
         if self.skip:
@@ -127,9 +130,21 @@ class SparkOperator(KubernetesPodOperator):
                 ),
             )
 
-        super().execute(context)
+        try:
+            super().execute(context)
 
-        cleanup_pods(self.pod.metadata.name, self.pod.metadata.namespace, self.spark_failure_msg)
+            cleanup_pods(self.pod.metadata.name, self.pod.metadata.namespace, self.spark_failure_msg)
+        except AirflowException as exception:
+            if not self.skip_on_failure:
+                raise
+
+            # An exception carrying spark_failure_msg comes from cleanup_pods, which already cleaned up
+            if str(exception) != self.spark_failure_msg and self.pod:
+                cleanup_pods(self.pod.metadata.name, self.pod.metadata.namespace, self.spark_failure_msg,
+                             failed=True)
+
+            Slack.notify_task_skip_on_failure(context)
+            raise AirflowSkipException(f'Skipped after failure: {exception}') from exception
 
     def on_kill(self) -> None:
         # A killed, timed-out, or manually-cleared task interrupts execute() before cleanup_pods()
