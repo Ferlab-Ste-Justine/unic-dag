@@ -41,7 +41,7 @@ dag_config = {
                 {"dataset_id": "curated_cscmed_jobs_sections", "cluster_type": "large", "run_type": "default", "pass_date": False, "dependencies": []}
             ],
             "optimize": [],
-            "post_tests": [{"name": "greater_or_equal_counts", "destinations": ["curated_cscmed_jobs_sections"], "cluster_type": "small"}]
+            "post_tests": [{"name": "greater_counts", "destinations": ["curated_cscmed_jobs_sections"], "cluster_type": "small"}]
         },
         {
             "destination_zone": "yellow",
