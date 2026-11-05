@@ -23,6 +23,10 @@ ETL enriched pour le projet Inidicateurs SIP.
 Cet ETL met à jour d'une façon hebdomadaire 6 tables : Sejour, Catheter, Ventilation, Extubation, Ecmo et Scores à partir de ICCA. 
 Ces tables vont être utilisées pour générer les graphes Power BI pour afficher les indicateurs demandés.
 
+### Tests QA
+* `enriched_indicateurssip_unmapped_stringmap_values` - Détecte les valeurs sources non nulles qui ne sont pas mappées par les string maps.
+En cas d'échec, la tâche est ignorée (skipped) et une alerte Slack est envoyée, pour ne pas bloquer la publication.
+
 ### Horaire
 * __Date de début__ - 19 Decembre 2023
 * __Date de fin__ - aucune
@@ -51,6 +55,9 @@ CONFIG = {
                 {"dataset_id": "enriched_indicateurssip_demandes_lits"            , "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_catheter"]},
                 {"dataset_id": "enriched_indicateurssip_toutes_les_infections"    , "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_catheter"]},
                 {"dataset_id": "enriched_indicateurssip_central_catheters_details", "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_ventilation", "enriched_indicateurssip_extubation", "enriched_indicateurssip_lits", "enriched_indicateurssip_infirmieres", "enriched_indicateurssip_ecmo", "enriched_indicateurssip_scores", "enriched_indicateurssip_infections", "enriched_indicateurssip_demandes_lits", "enriched_indicateurssip_toutes_les_infections"]},
+            ],
+            "post_tests": [
+                {"name": "unmapped_stringmap_values", "destinations": ["enriched_indicateurssip_sejour"], "cluster_type": "xsmall", "blocking": False},
             ]
         },
         {
