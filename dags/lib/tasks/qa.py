@@ -9,7 +9,7 @@ from lib.operators.spark import SparkOperator
 
 def test(test_name: str, destinations: List[str], resource: str, zone: str, subzone: str,
          config_file: str, jar: str, dag: DAG, cluster_type : str = QA_TEST_CLUSTER_TYPE,
-         task_id_suffix: str = None) -> SparkOperator:
+         task_id_suffix: str = None, blocking: bool = True) -> SparkOperator:
     """
     Create QA test task.
 
@@ -24,6 +24,7 @@ def test(test_name: str, destinations: List[str], resource: str, zone: str, subz
     :param cluster_type: Spark cluster size to run the test on.
     :param task_id_suffix: Optional discriminator appended to the task id. Lets several test entries
                            have the same test name.
+    :param blocking: If False, a failure notifies Slack and skips the task instead of failing it, so the next tasks can run.
     :return: SparkOperator task instance of the QA test.
     """
     task_id = "_".join([subzone, resource, test_name] + ([task_id_suffix] if task_id_suffix else []))
@@ -46,5 +47,6 @@ def test(test_name: str, destinations: List[str], resource: str, zone: str, subz
         spark_failure_msg=QA_TEST_SPARK_FAILURE_MSG,
         spark_config=f"{cluster_type}-etl",
         retries=QA_TEST_RETRIES,
+        skip_on_failure=not blocking,
         dag=dag
     )

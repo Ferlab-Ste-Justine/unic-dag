@@ -90,12 +90,15 @@ The root fields of the file are :
 </details>
 
 
-<details> <summary>Each <b>test</b> (pre or post) must contain</summary>
+<details> <summary>Each <b>test</b> (pre or post) can contain</summary>
 
-| Test Field     | Type   | Required | Default | Description                                      |
-|----------------|--------|----------|---------|--------------------------------------------------|
-| `name`         | string | ✅        | –       | Name of the QA test in `unic-etl`.               |
-| `destinations` | string | ✅        | –       | List of dataset IDs to test. Supports wildcards. |
+| Test Field     | Type   | Required | Default | Description                                                                                                                                 |
+|----------------|--------|----------|---------|---------------------------------------------------------------------------------------------------------------------------------------------|
+| `name`         | string | ✅        | –       | Name of the QA test in `unic-etl`.                                                                                                          |
+| `destinations` | string | ✅        | –       | List of dataset IDs to test. Supports wildcards.                                                                                            |
+| `cluster_type` | string | ✅        | –       | Cluster size (`"xsmall"`, `"small"`, `"medium"` or `"large"`).                                                                              |
+| `suffix`       | string | ❌        | –       | Appended to the task ID. Required to run the same test more than once in a step.                                                            |
+| `blocking`     | bool   | ❌        | `true`  | If `false`, a failure notifies Slack and skips the task instead of failing it, so the next tasks still run.                                 |
 
 </details>
 

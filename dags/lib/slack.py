@@ -63,6 +63,23 @@ class Slack:
         Slack.notify(f'Task {dag_link} was skipped. {slack_msg}', level=Slack.WARNING)
 
     @staticmethod
+    def notify_task_skip_on_failure(context):
+        dag_id = context['dag'].dag_id
+        task_id = context['task'].task_id
+
+        slack_msg = f"""
+            *Execution Time*: {context['execution_date']},
+            *Log Url*: {context['task_instance'].log_url}
+            """
+
+        dag_link = Slack._dag_link(
+            f'{dag_id}.{task_id}', dag_id, context['run_id'], task_id,
+        )
+
+        Slack.notify(f'Task {dag_link} failed and was skipped so the next tasks can run. {slack_msg}',
+                     level=Slack.WARNING)
+
+    @staticmethod
     def notify_task_retry(context):
         dag_id = context['dag'].dag_id
         task_id = context['task'].task_id
