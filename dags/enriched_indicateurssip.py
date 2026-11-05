@@ -1,9 +1,7 @@
 """
 Enriched Indicateurs SIP
 """
-# pylint: disable=too-many-locals
 from datetime import datetime, timedelta
-from typing import List
 
 from airflow import DAG
 from airflow.decorators import task_group
@@ -13,9 +11,8 @@ from airflow.utils.trigger_rule import TriggerRule
 from lib.config import DEFAULT_PARAMS, DEFAULT_TIMEOUT_HOURS, DEFAULT_ARGS, SPARK_FAILURE_MSG, \
     GREEN_MINIO_CONN_ID, JAR, CONFIG_FILE, RELEASED_BUCKET, LOCAL_TZ, LOGICAL_DATE
 from lib.operators.copy_csv_to_postgres import CopyCsvToPostgres
-from lib.operators.spark import SparkOperator
 from lib.slack import Slack
-from lib.tasks.notify import start, end
+from tasks import create_tasks
 
 DOC = """
 # Enriched Indicateurs SIP
@@ -29,11 +26,53 @@ Ces tables vont être utilisées pour générer les graphes Power BI pour affich
 ### Horaire
 * __Date de début__ - 19 Decembre 2023
 * __Date de fin__ - aucune
-* __Jour et heure__ - 22 heure de Montréal
+* __Jour et heure__ - 22h heure de Montréal
 * __Intervalle__ - Chaque Jour
-
-
 """
+
+CONFIG = {
+    "steps": [
+        {
+            "destination_zone": "yellow",
+            "destination_subzone": "enriched",
+            "main_class": "bio.ferlab.ui.etl.yellow.enriched.indicateurssip.Main",
+            "multiple_main_methods": True,
+            "datasets": [
+                {"dataset_id": "enriched_indicateurssip_participant_index"        , "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": []},
+                {"dataset_id": "enriched_indicateurssip_sejour"                   , "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_participant_index"]},
+                {"dataset_id": "enriched_indicateurssip_catheter"                 , "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_sejour"]},
+                {"dataset_id": "enriched_indicateurssip_ventilation"              , "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_catheter"]},
+                {"dataset_id": "enriched_indicateurssip_extubation"               , "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_catheter"]},
+                {"dataset_id": "enriched_indicateurssip_lits"                     , "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_catheter"]},
+                {"dataset_id": "enriched_indicateurssip_infirmieres"              , "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_catheter"]},
+                {"dataset_id": "enriched_indicateurssip_ecmo"                     , "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_catheter"]},
+                {"dataset_id": "enriched_indicateurssip_scores"                   , "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_catheter"]},
+                {"dataset_id": "enriched_indicateurssip_infections"               , "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_catheter"]},
+                {"dataset_id": "enriched_indicateurssip_demandes_lits"            , "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_catheter"]},
+                {"dataset_id": "enriched_indicateurssip_toutes_les_infections"    , "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_catheter"]},
+                {"dataset_id": "enriched_indicateurssip_central_catheters_details", "cluster_type": "small", "run_type": "initial", "pass_date": False, "dependencies": ["enriched_indicateurssip_ventilation", "enriched_indicateurssip_extubation", "enriched_indicateurssip_lits", "enriched_indicateurssip_infirmieres", "enriched_indicateurssip_ecmo", "enriched_indicateurssip_scores", "enriched_indicateurssip_infections", "enriched_indicateurssip_demandes_lits", "enriched_indicateurssip_toutes_les_infections"]},
+            ]
+        },
+        {
+            "destination_zone": "green",
+            "destination_subzone": "released",
+            "datasets": [
+                {"dataset_id": "released_indicateurssip_sejour"                   , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+                {"dataset_id": "released_indicateurssip_catheter"                 , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+                {"dataset_id": "released_indicateurssip_ventilation"              , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+                {"dataset_id": "released_indicateurssip_extubation"               , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+                {"dataset_id": "released_indicateurssip_lits"                     , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+                {"dataset_id": "released_indicateurssip_infirmieres"              , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+                {"dataset_id": "released_indicateurssip_ecmo"                     , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+                {"dataset_id": "released_indicateurssip_scores"                   , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+                {"dataset_id": "released_indicateurssip_infections"               , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+                {"dataset_id": "released_indicateurssip_central_catheters_details", "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+                {"dataset_id": "released_indicateurssip_demandes_lits"            , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+                {"dataset_id": "released_indicateurssip_toutes_les_infections"    , "cluster_type": "small", "run_type": "default", "pass_date": False, "dependencies": []},
+            ]
+        }
+    ]
+}
 
 # Update default args
 args = DEFAULT_ARGS.copy()
@@ -56,350 +95,11 @@ dag = DAG(
 )
 
 with dag:
+    create_tasks(dag=dag, dag_config=CONFIG, config_file=CONFIG_FILE, jar=JAR, resource="indicateurssip",
+                 spark_failure_msg=SPARK_FAILURE_MSG)
 
-    @task_group()
-    def enriched():
-        enriched_zone = "yellow"
-        enriched_main_class = "bio.ferlab.ui.etl.yellow.enriched.indicateurssip.Main"
-
-        def enriched_arguments(destination: str) -> List[str]:
-            return [
-                destination,
-                "--config", CONFIG_FILE,
-                "--steps", "initial",
-                "--app-name", destination,
-            ]
-
-
-        enriched_participant_index = SparkOperator(
-            task_id="enriched_indicateurssip_participant_index",
-            name="enriched-indicateurssip-participant-index",
-            arguments=enriched_arguments("enriched_indicateurssip_participant_index"),
-            zone=enriched_zone,
-            spark_class=enriched_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag
-        )
-
-        enriched_sejour = SparkOperator(
-            task_id="enriched_indicateurssip_sejour",
-            name="enriched-indicateurssip-sejour",
-            arguments=enriched_arguments("enriched_indicateurssip_sejour"),
-            zone=enriched_zone,
-            spark_class=enriched_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        enriched_catheter = SparkOperator(
-            task_id="enriched_indicateurssip_catheter",
-            name="enriched-indicateurssip-catheter",
-            arguments=enriched_arguments("enriched_indicateurssip_catheter"),
-            zone=enriched_zone,
-            spark_class=enriched_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        enriched_ventilation = SparkOperator(
-            task_id="enriched_indicateurssip_ventilation",
-            name="enriched-indicateurssip-ventilation",
-            arguments=enriched_arguments("enriched_indicateurssip_ventilation"),
-            zone=enriched_zone,
-            spark_class=enriched_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        enriched_extubation = SparkOperator(
-            task_id="enriched_indicateurssip_extubation",
-            name="enriched-indicateurssip-extubation",
-            arguments=enriched_arguments("enriched_indicateurssip_extubation"),
-            zone=enriched_zone,
-            spark_class=enriched_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        enriched_lits = SparkOperator(
-            task_id="enriched_indicateurssip_lits",
-            name="enriched-indicateurssip-lits",
-            arguments=enriched_arguments("enriched_indicateurssip_lits"),
-            zone=enriched_zone,
-            spark_class=enriched_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        enriched_infirmieres = SparkOperator(
-            task_id="enriched_indicateurssip_infirmieres",
-            name="enriched-indicateurssip-infirmieres",
-            arguments=enriched_arguments("enriched_indicateurssip_infirmieres"),
-            zone=enriched_zone,
-            spark_class=enriched_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        enriched_ecmo = SparkOperator(
-            task_id="enriched_indicateurssip_ecmo",
-            name="enriched-indicateurssip-ecmo",
-            arguments=enriched_arguments("enriched_indicateurssip_ecmo"),
-            zone=enriched_zone,
-            spark_class=enriched_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        enriched_scores = SparkOperator(
-            task_id="enriched_indicateurssip_scores",
-            name="enriched-indicateurssip-scores",
-            arguments=enriched_arguments("enriched_indicateurssip_scores"),
-            zone=enriched_zone,
-            spark_class=enriched_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        enriched_infections = SparkOperator(
-            task_id="enriched_indicateurssip_infections",
-            name="enriched-indicateurssip-infections",
-            arguments=enriched_arguments("enriched_indicateurssip_infections") + ["--date", LOGICAL_DATE],
-            zone=enriched_zone,
-            spark_class=enriched_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        enriched_central_catheters_details = SparkOperator(
-            task_id="enriched_indicateurssip_central_catheters_details",
-            name="enriched-indicateurssip-central-catheters-details",
-            arguments=enriched_arguments("enriched_indicateurssip_central_catheters_details"),
-            zone=enriched_zone,
-            spark_class=enriched_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        enriched_demandes_lits = SparkOperator(
-            task_id="enriched_indicateurssip_demandes_lits",
-            name="enriched-indicateurssip-demandes-lits",
-            arguments=enriched_arguments("enriched_indicateurssip_demandes_lits"),
-            zone=enriched_zone,
-            spark_class=enriched_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        enriched_toutes_les_infections = SparkOperator(
-            task_id="enriched_indicateurssip_toutes_les_infections",
-            name="enriched-indicateurssip-toutes-les-infections",
-            arguments=enriched_arguments("enriched_indicateurssip_toutes_les_infections"),
-            zone=enriched_zone,
-            spark_class=enriched_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-
-
-        enriched_participant_index >> enriched_sejour >> enriched_catheter >> [enriched_ventilation,
-                                                          enriched_extubation, enriched_lits, enriched_infirmieres,
-                                                          enriched_ecmo, enriched_scores, enriched_infections, enriched_demandes_lits,enriched_toutes_les_infections] >> enriched_central_catheters_details
-
-    ENRICHED_GROUP = enriched()
-
-    @task_group()
-    def released():
-        released_zone = "green"
-        released_main_class = "bio.ferlab.ui.etl.released.Main"
-
-        def released_arguments(destination: str, steps: str = "default") -> List[str]:
-            """
-            Generate Spark task arguments for the released ETL process
-            """
-            return [
-                "--config", CONFIG_FILE,
-                "--steps", steps,
-                "--app-name", destination,
-                "--destination", destination
-            ]
-
-
-        released_sejour = SparkOperator(
-            task_id="released_indicateurssip_sejour",
-            name="released-indicateurssip-sejour",
-            arguments=released_arguments("released_indicateurssip_sejour"),
-            zone=released_zone,
-            spark_class=released_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        released_catheter = SparkOperator(
-            task_id="released_indicateurssip_catheter",
-            name="released-indicateurssip-catheter",
-            arguments=released_arguments("released_indicateurssip_catheter"),
-            zone=released_zone,
-            spark_class=released_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        released_ventilation = SparkOperator(
-            task_id="released_indicateurssip_ventilation",
-            name="released-indicateurssip-ventilation",
-            arguments=released_arguments("released_indicateurssip_ventilation"),
-            zone=released_zone,
-            spark_class=released_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        released_extubation = SparkOperator(
-            task_id="released_indicateurssip_extubation",
-            name="released-indicateurssip-extubation",
-            arguments=released_arguments("released_indicateurssip_extubation"),
-            zone=released_zone,
-            spark_class=released_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        released_lits = SparkOperator(
-            task_id="released_indicateurssip_lits",
-            name="released-indicateurssip-lits",
-            arguments=released_arguments("released_indicateurssip_lits"),
-            zone=released_zone,
-            spark_class=released_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        released_infirmieres = SparkOperator(
-            task_id="released_indicateurssip_infirmieres",
-            name="released-indicateurssip-infirmieres",
-            arguments=released_arguments("released_indicateurssip_infirmieres"),
-            zone=released_zone,
-            spark_class=released_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        released_ecmo = SparkOperator(
-            task_id="released_indicateurssip_ecmo",
-            name="released-indicateurssip-ecmo",
-            arguments=released_arguments("released_indicateurssip_ecmo"),
-            zone=released_zone,
-            spark_class=released_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        released_scores = SparkOperator(
-            task_id="released_indicateurssip_scores",
-            name="released-indicateurssip-scores",
-            arguments=released_arguments("released_indicateurssip_scores"),
-            zone=released_zone,
-            spark_class=released_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        released_infections = SparkOperator(
-            task_id="released_indicateurssip_infections",
-            name="released-indicateurssip-infections",
-            arguments=released_arguments("released_indicateurssip_infections"),
-            zone=released_zone,
-            spark_class=released_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        released_central_catheters_details = SparkOperator(
-            task_id="released_indicateurssip_central_catheters_details",
-            name="released-indicateurssip-central-catheters-details",
-            arguments=released_arguments("released_indicateurssip_central_catheters_details"),
-            zone=released_zone,
-            spark_class=released_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        released_demandes_lits = SparkOperator(
-            task_id="released_indicateurssip_demandes_lits",
-            name="released-indicateurssip-demandes-lits",
-            arguments=released_arguments("released_indicateurssip_demandes_lits"),
-            zone=released_zone,
-            spark_class=released_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-        released_toutes_les_infections = SparkOperator(
-            task_id="released_indicateurssip_toutes_les_infections",
-            name="released-indicateurssip-toutes-les-infections",
-            arguments=released_arguments("released_indicateurssip_toutes_les_infections"),
-            zone=released_zone,
-            spark_class=released_main_class,
-            spark_jar=JAR,
-            spark_failure_msg=SPARK_FAILURE_MSG,
-            spark_config="small-etl",
-            dag=dag,
-        )
-
-
-        [released_sejour, released_catheter, released_ventilation, released_extubation, released_lits, released_infirmieres, released_ecmo, released_scores, released_infections, released_central_catheters_details, released_demandes_lits, released_toutes_les_infections]
-
-    RELEASED_GROUP = released()
+    # InfectionsETL expects the logical date as an ISO date-time, which pass_date does not provide
+    dag.get_task("enriched.enriched_indicateurssip_infections").arguments += ["--date", LOGICAL_DATE]
 
     @task_group()
     def published():
@@ -408,19 +108,18 @@ with dag:
         ca_cert = Variable.get('postgres_ca_certificate', None)
 
         copy_conf = [
-            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/catheter/catheter.csv"                                  , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "catheter"   }              ,
-            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/extubation/extubation.csv"                              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "extubation" }              ,
-            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/sejour/sejour.csv"                                      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "sejour"     }              ,
-            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/ventilation/ventilation.csv"                            , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ventilation"}              ,
-            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/lits/lits.csv"                                          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "lits"       }              ,
-            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/infirmieres/infirmieres.csv"                            , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infirmieres"}              ,
-            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/ecmo/ecmo.csv"                                          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ecmo"}                     ,
-            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/scores/scores.csv"                                      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "scores"}                   ,
-            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/infections/infections.csv"                              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infections"}               ,
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/catheter/catheter.csv"                                  , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "catheter"},
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/extubation/extubation.csv"                              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "extubation"},
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/sejour/sejour.csv"                                      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "sejour"},
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/ventilation/ventilation.csv"                            , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ventilation"},
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/lits/lits.csv"                                          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "lits"},
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/infirmieres/infirmieres.csv"                            , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infirmieres"},
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/ecmo/ecmo.csv"                                          , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "ecmo"},
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/scores/scores.csv"                                      , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "scores"},
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/infections/infections.csv"                              , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "infections"},
             {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/central_catheters_details/central_catheters_details.csv", "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "central_catheters_details"},
-            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/demandes_lits/demandes_lits.csv"                        , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "demandes_lits"}            ,
-            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/toutes_les_infections/toutes_les_infections.csv"        , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "toutes_les_infections"}    ,
-
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/demandes_lits/demandes_lits.csv"                        , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "demandes_lits"},
+            {"src_s3_bucket" :  RELEASED_BUCKET, "src_s3_key" :  "released/indicateurssip/toutes_les_infections/toutes_les_infections.csv"        , "dts_postgres_schema" : "indicateurs_sip", "dts_postgres_tablename" : "toutes_les_infections"},
         ]
 
         published_indicateurs_sip = CopyCsvToPostgres(
@@ -435,6 +134,4 @@ with dag:
 
         published_indicateurs_sip
 
-    PUBLISHED_GROUP = published()
-
-    start() >> ENRICHED_GROUP >> RELEASED_GROUP >> PUBLISHED_GROUP >> end()
+    dag.get_task("released.end_released_indicateurssip") >> published()
