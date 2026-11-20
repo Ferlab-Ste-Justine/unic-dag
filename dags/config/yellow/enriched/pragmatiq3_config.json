@@ -1,0 +1,31 @@
+{
+  "concurrency": 4,
+  "schedule": null,
+  "timeout_hours": 4,
+  "steps": [
+    {
+      "destination_zone": "yellow",
+      "destination_subzone": "enriched",
+      "main_class": "bio.ferlab.ui.etl.yellow.enriched.pragmatiq3.Main",
+      "multiple_main_methods": true,
+      "datasets": [
+        {"dataset_id":"enriched_pragmatiq3_participant_index"             , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id":"enriched_pragmatiq3_hospitalization_follow_up"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id":"enriched_pragmatiq3_emergency_department_follow_up", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id":"enriched_pragmatiq3_external_clinic_follow_up"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+      ]
+    },
+    {
+      "destination_zone": "green",
+      "destination_subzone": "released",
+      "main_class": "bio.ferlab.ui.etl.released.Main",
+      "multiple_main_methods": false,
+      "datasets": [
+        {"dataset_id":"released_pragmatiq3_participant_index"             , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id":"released_pragmatiq3_hospitalization_follow_up"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id":"released_pragmatiq3_emergency_department_follow_up", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
+        {"dataset_id":"released_pragmatiq3_external_clinic_follow_up"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+      ]
+    }
+  ]
+}
