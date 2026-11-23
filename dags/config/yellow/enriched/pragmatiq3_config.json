@@ -10,9 +10,9 @@
       "multiple_main_methods": true,
       "datasets": [
         {"dataset_id":"enriched_pragmatiq3_participant_index"             , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id":"enriched_pragmatiq3_hospitalization_follow_up"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id":"enriched_pragmatiq3_emergency_department_follow_up", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []},
-        {"dataset_id":"enriched_pragmatiq3_external_clinic_follow_up"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": []}
+        {"dataset_id":"enriched_pragmatiq3_hospitalization_follow_up"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_pragmatiq3_participant_index"]},
+        {"dataset_id":"enriched_pragmatiq3_emergency_department_follow_up", "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_pragmatiq3_participant_index"]},
+        {"dataset_id":"enriched_pragmatiq3_external_clinic_follow_up"     , "cluster_type": "small", "run_type": "default", "pass_date": false, "dependencies": ["enriched_pragmatiq3_participant_index"]}
       ]
     },
     {
