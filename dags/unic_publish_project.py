@@ -79,6 +79,7 @@ for env in PostgresEnv:
         >> validate_publish_dictionary(
             resource_code=get_resource_code_task,
             pg_conn_id=pg_conn_id,
+            include_dictionary=get_include_dictionary_task,
             skip=get_skip_index_task
         ) \
         >>  index_opensearch(
