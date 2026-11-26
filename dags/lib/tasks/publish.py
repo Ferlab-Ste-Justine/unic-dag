@@ -312,17 +312,18 @@ def get_publish_dictionary(resource_code: str, pg_conn_id: str) -> bool:
 
 
 @task.short_circuit
-def validate_publish_dictionary(resource_code: str, pg_conn_id, skip: bool = False) -> bool:
+def validate_publish_dictionary(resource_code: str, pg_conn_id, include_dictionary: bool, skip: bool = False) -> bool:
     """
     Validate if the dictionary is to be published in the portal.
 
     :param resource_code: Resource code associated to the dict.
     :param pg_conn_id: Postgres connection id.
+    :param include_dictionary: Specify if the dictionary should be included. If False, skips the task.
     :param skip: If True, skips the task. False by default.
     :return: ShortCircuitOperator.
     """
 
-    if skip:
+    if skip or not include_dictionary:
         raise AirflowSkipException()
 
     return get_publish_dictionary(resource_code=resource_code, pg_conn_id=pg_conn_id)
