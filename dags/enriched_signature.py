@@ -82,11 +82,11 @@ with dag:
         ENRICHED_MAIN_CLASS = "bio.ferlab.ui.etl.yellow.enriched.signature.Main"
 
 
-        def enriched_arguments(destination: str, start_date: bool, end_date: bool) -> List[str]:
+        def enriched_arguments(destination: str, start_date: bool, end_date: bool, steps: str = "default") -> List[str]:
             arguments = [
                 destination,
                 "--config", CONFIG_FILE,
-                "--steps", "default",
+                "--steps", steps,
                 "--app-name", destination,
             ]
 
@@ -139,7 +139,7 @@ with dag:
         enriched_monthly_visit_evaluation = SparkOperator(
             task_id="enriched_signature_monthly_visit_evaluation",
             name="enriched-signature-monthly-visit-evaluation",
-            arguments=enriched_arguments("enriched_signature_monthly_visit_evaluation", start_date=False, end_date=True),
+            arguments=enriched_arguments("enriched_signature_monthly_visit_evaluation", start_date=False, end_date=True, steps="initial"),
             zone=ENRICHED_ZONE,
             spark_class=ENRICHED_MAIN_CLASS,
             spark_jar=MASTER_JAR,
